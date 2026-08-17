@@ -1,0 +1,4 @@
+
+# reglas de COIPO_ERRORES (rutas absolutas, personales)
+.claude/rules/errores-*.md
+data/catastro_gef_singeometria.duckdb
