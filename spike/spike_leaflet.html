@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Spike · Leaflet canvas con N puntos</title>
+<link rel="stylesheet" href="./vendor/leaflet.css">
+<style>
+  html, body { margin:0; height:100%; background:#0d1117; color:#e6edf3;
+               font:13px/1.4 system-ui, sans-serif; }
+  #mapa { position:absolute; inset:0; background:#0d1117; }
+  .leaflet-container { background:#0d1117; }
+  #hud { position:absolute; top:8px; left:8px; z-index:1000; background:#161b22ee;
+         border:1px solid #30363d; border-radius:6px; padding:8px 10px; min-width:260px; }
+  #hud b { color:#7ee787; }
+  .fila { display:flex; justify-content:space-between; gap:12px; }
+</style>
+</head>
+<body>
+<div id="mapa"></div>
+<div id="hud">
+  <div class="fila"><span>motor</span><b>Leaflet canvas</b></div>
+  <div class="fila"><span>filas</span><b id="filas">–</b></div>
+  <div class="fila"><span>1er pintado</span><b id="tPintado">–</b></div>
+  <div class="fila"><span>fps</span><b id="fps">–</b></div>
+  <div class="fila"><span>refiltrado</span><b id="tFiltro">–</b></div>
+</div>
+<script src="./vendor/leaflet.js"></script>
+<script>
+// Contraprueba del punto 1 del encargo: el visor de referencia usa Leaflet con
+// UN SOLO L.canvas compartido y circleMarkers, y le funciona con 14.705 puntos.
+// Aqui hay 1.827.933. ?n= permite barrer el tamano para ver DONDE se rompe, en
+// vez de afirmar que se rompe.
+const N_PED = Number(new URLSearchParams(location.search).get('n') || 0);
+const COLOR = ['#b4b4b9','#dfc25f','#c9d68c','#2d7a3e','#5cb3b0','#bca68c','#f2f4f8','#3a7ec6','#e75454'];
+const g = id => document.getElementById(id);
+const ms = v => v==null ? '–' : Math.round(v)+' ms';
+window.__spike = {listo:false, filas:0, tPintado:null, fps:null, tFiltro:null, avisos:[], error:null};
+const t0 = performance.now();
+
+(async function main(){
+  const meta = await (await fetch('./datos/spike.json')).json();
+  const buf  = await (await fetch('./datos/cbn_spike.bin')).arrayBuffer();
+  const total = meta.filas;
+  const n = N_PED > 0 ? Math.min(N_PED, total) : total;
+  const lon = new Float32Array(buf, meta.campos.lon.offset, total);
+  const lat = new Float32Array(buf, meta.campos.lat.offset, total);
+  const uso = new Uint8Array (buf, meta.campos.uso.offset, total);
+  window.__spike.filas = n; g('filas').textContent = n.toLocaleString('es-CL');
+
+  const map = L.map('mapa', {
+    preferCanvas: true,
+    // El renderer compartido exacto del visor de referencia.
+    renderer: L.canvas({padding:0.5, tolerance:8}),
+    center:[-38.5,-71.3], zoom:4, zoomControl:false, attributionControl:false,
+  });
+
+  const grupo = L.layerGroup().addTo(map);
+  const marcas = new Array(n);
+  // El patron "pool" del repo de referencia: construir una vez, filtrar es
+  // cambiar la pertenencia al LayerGroup.
+  for (let i=0;i<n;i++){
+    const m = L.circleMarker([lat[i], lon[i]], {
+      radius:1.2, weight:0, stroke:false,
+      fillColor: COLOR[uso[i]] || '#f0f', fillOpacity:0.9,
+      bubblingMouseEvents:false,
+    });
+    marcas[i] = m; m.addTo(grupo);
+  }
+
+  // Leaflet no avisa de "ya pinte": se mide tras dos frames, que es cuando el
+  // canvas ya volco el lote.
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    window.__spike.tPintado = performance.now()-t0;
+    g('tPintado').textContent = ms(window.__spike.tPintado);
+    window.__spike.listo = true;
+    medirFps(map, grupo, marcas, uso, n);
+  }));
+})().catch(e=>{ window.__spike.error = String(e && e.stack || e); console.error(e); });
+
+function medirFps(map, grupo, marcas, uso, n){
+  let frames=0; const ini=performance.now();
+  const paso=(t)=>{ frames++;
+    map.setView([-38.5, -71.3 + Math.sin((t-ini)/2000*6.28)*4], 4, {animate:false});
+    if (t-ini < 2000) requestAnimationFrame(paso);
+    else { window.__spike.fps = frames/((t-ini)/1000);
+           g('fps').textContent = window.__spike.fps.toFixed(1);
+           medirFiltro(grupo, marcas, uso, n); }
+  };
+  requestAnimationFrame(paso);
+}
+
+function medirFiltro(grupo, marcas, uso, n){
+  const t=performance.now();
+  grupo.clearLayers();
+  for (let i=0;i<n;i++) if (uso[i]===3) grupo.addLayer(marcas[i]);
+  const dt=performance.now()-t;
+  window.__spike.tFiltro = dt;
+  g('tFiltro').textContent = ms(dt);
+  window.__spike.listoFiltro = true;
+}
+</script>
+</body>
+</html>

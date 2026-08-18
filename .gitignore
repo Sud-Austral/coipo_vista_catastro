@@ -2,3 +2,12 @@
 # reglas de COIPO_ERRORES (rutas absolutas, personales)
 .claude/rules/errores-*.md
 data/catastro_gef_singeometria.duckdb
+
+# Fase 0: el spike es codigo de medicion, se versiona. Sus insumos y salidas no:
+# el .bin se regenera con gen_bin.py y las capturas con medir.py.
+spike/datos/
+spike/vendor/
+spike/captura-*.png
+
+node_modules/
+dist/

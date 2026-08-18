@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Spike · 1,83 M puntos con deck.gl</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0d1117; color: #e6edf3;
+               font: 13px/1.4 system-ui, sans-serif; }
+  #mapa { position: absolute; inset: 0; }
+  #hud  { position: absolute; top: 8px; left: 8px; z-index: 10; background: #161b22ee;
+          border: 1px solid #30363d; border-radius: 6px; padding: 8px 10px; min-width: 260px; }
+  #hud b { color: #7ee787; }
+  .fila { display: flex; justify-content: space-between; gap: 12px; }
+</style>
+</head>
+<body>
+<div id="mapa"></div>
+<div id="hud">
+  <div class="fila"><span>estado</span><b id="estado">arrancando…</b></div>
+  <div class="fila"><span>filas</span><b id="filas">–</b></div>
+  <div class="fila"><span>descarga</span><b id="tDescarga">–</b></div>
+  <div class="fila"><span>1er pintado</span><b id="tPintado">–</b></div>
+  <div class="fila"><span>fps</span><b id="fps">–</b></div>
+  <div class="fila"><span>refiltrado</span><b id="tFiltro">–</b></div>
+</div>
+
+<script src="./vendor/deck.gl.min.js"></script>
+<script>
+// ---------------------------------------------------------------------------
+// Spike de la Fase 0. Objetivo unico: MIRAR si deck.gl pinta 1,83 M de puntos
+// y medir cuanto tarda. No es codigo de la app.
+//
+// PARAMETROS QUE EL PLAN OBLIGA A RESPETAR, y por que:
+//  - getPosition con size:3. Con size:2 deck.gl compara binaryValue.size contra
+//    this.size (que en LNGLAT es 3), no coinciden, y cae al bucle por fila SIN
+//    avisar: se pierde todo el beneficio del binario. spike_roto.html lo prueba.
+//  - getFillColor con size:4, que es el tamano de instanceFillColors.
+//  - stroked:false y getRadius escalar: como funcion, deck.gl reserva bytes por
+//    punto de mas.
+// ---------------------------------------------------------------------------
+const {Deck, ScatterplotLayer, MapView, OrthographicView} = deck;
+
+// Paleta PROVISIONAL. La definitiva se decide en la Fase 5 con criterio de
+// accesibilidad; aqui solo hace falta distinguir 9 clases a ojo.
+const COLOR = [
+  [180, 180, 185],  // 01 areas urbanas e industriales
+  [223, 194,  95],  // 02 terrenos agricolas
+  [201, 214, 140],  // 03 praderas y matorrales
+  [ 45, 122,  62],  // 04 bosques
+  [ 92, 179, 176],  // 05 humedales
+  [188, 166, 140],  // 06 areas desprovistas de vegetacion
+  [242, 244, 248],  // 07 nieves eternas y glaciares
+  [ 58, 126, 198],  // 08 cuerpos de agua
+  [231,  84,  84],  // 09 areas no reconocidas
+];
+
+const VISTA = {longitude: -71.3, latitude: -38.5, zoom: 3.6, pitch: 0, bearing: 0};
+
+// Inyeccion de defectos para las pruebas negativas. Una prueba que no se ha
+// visto fallar no es una prueba, y un verificador que solo se ha visto en verde
+// no verifica nada. Se inyectan sobre ESTE mismo archivo, no sobre una copia,
+// porque una copia se desincroniza y acaba probando codigo que ya no existe.
+//   ?roto=vacio       -> data: [] (el canvas sigue ahi, vacio: el fallo que un
+//                        verificador flojo aprueba)
+//   ?roto=size2       -> getPosition size:2 (deck.gl cae al bucle por fila)
+//   ?roto=colorcrudo  -> normalized:false (pinta TODO BLANCO, sin avisar).
+//                        Es el defecto REAL que aparecio en la primera corrida.
+const ROTO = new URLSearchParams(location.search).get('roto') || '';
+
+// Supuesto S4 del plan: si DataFilterExtension acepta el canal binario en uint8
+// (1 B/punto) o hay que gastar float32 (4 B/punto). Sobre 3,39 M de puntos son
+// 3,4 MB frente a 13,6 MB por cada cambio de filtro.
+//   ?filtro=f32 -> canal Float32Array  (linea base segura)
+//   ?filtro=u8  -> canal Uint8Array
+// En ambos casos se deja visible SOLO el uso 04 (bosques): 943.456 de 1.827.933.
+const FILTRO = new URLSearchParams(location.search).get('filtro') || '';
+
+const g = (id) => document.getElementById(id);
+const ms = (v) => (v == null ? '–' : Math.round(v) + ' ms');
+
+// Estado observable desde fuera (lo lee medir.py por CDP).
+window.__spike = {
+  listo: false, filas: 0, tDescarga: null, tPintado: null,
+  fps: null, tFiltro: null, avisos: [], error: null,
+};
+
+// Cazamos los avisos de deck.gl: el modo de fallo peligroso de este proyecto
+// (caer al camino lento, o DataFilterExtension pasandose de categorias) se
+// manifiesta como log.warn, no como excepcion.
+const warnOriginal = console.warn;
+console.warn = function (...a) { window.__spike.avisos.push(a.join(' ')); warnOriginal.apply(console, a); };
+
+const t0 = performance.now();
+
+async function main() {
+  const meta = await (await fetch('./datos/spike.json')).json();
+  const buf = await (await fetch('./datos/cbn_spike.bin')).arrayBuffer();
+  const n = meta.filas;
+  window.__spike.tDescarga = performance.now() - t0;
+  window.__spike.filas = n;
+  g('filas').textContent = n.toLocaleString('es-CL');
+  g('tDescarga').textContent = ms(window.__spike.tDescarga);
+  g('estado').textContent = 'construyendo atributos…';
+
+  // Vistas tipadas sin copia sobre el mismo ArrayBuffer.
+  const lon = new Float32Array(buf, meta.campos.lon.offset, n);
+  const lat = new Float32Array(buf, meta.campos.lat.offset, n);
+  const uso = new Uint8Array(buf, meta.campos.uso.offset, n);
+
+  // Interleavado a size:3. Es la unica copia que hacemos, y es obligatoria.
+  const tamPos = ROTO === 'size2' ? 2 : 3;
+  const pos = new Float32Array(n * tamPos);
+  for (let i = 0; i < n; i++) { pos[i * tamPos] = lon[i]; pos[i * tamPos + 1] = lat[i]; }
+
+  const col = new Uint8Array(n * 4);
+  for (let i = 0; i < n; i++) {
+    const c = COLOR[uso[i]] || [255, 0, 255];   // magenta = valor fuera de vocabulario
+    col[i * 4] = c[0]; col[i * 4 + 1] = c[1]; col[i * 4 + 2] = c[2]; col[i * 4 + 3] = 255;
+  }
+
+  // filtro: 1 = visible. Empieza todo visible.
+  const filtro = new Float32Array(n).fill(1);
+
+  // Canal de DataFilterExtension, solo si se pidio medir S4.
+  let atrFiltro = null, extensiones = [], propsFiltro = {};
+  if (FILTRO) {
+    const visible = (i) => (uso[i] === 3 ? 1 : 0);      // 3 = ID_USO '04', bosques
+    const canal = FILTRO === 'u8' ? new Uint8Array(n) : new Float32Array(n);
+    for (let i = 0; i < n; i++) canal[i] = visible(i);
+    atrFiltro = {value: canal, size: 1};
+    extensiones = [new deck.DataFilterExtension({filterSize: 1})];
+    propsFiltro = {filterRange: [0.5, 1.5]};
+    window.__spike.bytesFiltro = canal.byteLength;
+    window.__spike.visiblesEsperados = Array.prototype.reduce.call(canal, (a, b) => a + b, 0);
+  }
+
+  const capa = (extra = {}) => new ScatterplotLayer({
+    id: 'puntos',
+    data: ROTO === 'vacio' ? [] : {length: n, attributes: {
+      getPosition:  {value: pos, size: tamPos},
+      // OJO: `normalized: false` sobre un Uint8Array pinta TODO BLANCO y deck.gl
+      // no avisa. El shader espera el color en 0..1; con normalized:false recibe
+      // 0..255 crudo y satura. Medido: primera corrida del spike salio en blanco.
+      getFillColor: {value: col, size: 4, normalized: ROTO !== 'colorcrudo'},
+      ...(atrFiltro ? {getFilterValue: atrFiltro} : {}),
+    }},
+    radiusUnits: 'pixels',
+    getRadius: 1.2,          // escalar, no funcion
+    radiusMinPixels: 0.6,
+    radiusMaxPixels: 3,
+    stroked: false,
+    pickable: true,
+    extensions: extensiones,
+    ...propsFiltro,
+    ...extra,
+  });
+
+  g('estado').textContent = 'pintando…';
+  let pintado = false;
+
+  const deckgl = new Deck({
+    parent: document.getElementById('mapa'),
+    views: new MapView({repeat: false}),
+    initialViewState: VISTA,
+    controller: true,
+    layers: [capa()],
+    onAfterRender: () => {
+      if (pintado) return;
+      pintado = true;
+      window.__spike.tPintado = performance.now() - t0;
+      g('tPintado').textContent = ms(window.__spike.tPintado);
+      g('estado').textContent = 'medido';
+      window.__spike.listo = true;
+      medirFps(deckgl, capa, n, filtro, uso);
+    },
+    onError: (e) => { window.__spike.error = String(e && e.message || e); g('estado').textContent = 'ERROR'; },
+  });
+  window.__deck = deckgl;
+}
+
+// Cuenta frames reales durante un paneo continuo de 2 s.
+function medirFps(deckgl, capa, n, filtro, uso) {
+  let frames = 0;
+  const ini = performance.now();
+  const paso = (t) => {
+    frames++;
+    const k = (t - ini) / 2000;
+    deckgl.setProps({viewState: {...VISTA, longitude: -71.3 + Math.sin(k * 6.28) * 4, zoom: 3.6 + Math.sin(k * 3.14) * 0.8}});
+    if (t - ini < 2000) requestAnimationFrame(paso);
+    else {
+      window.__spike.fps = frames / ((t - ini) / 1000);
+      g('fps').textContent = window.__spike.fps.toFixed(1);
+      deckgl.setProps({viewState: undefined, initialViewState: VISTA});
+      medirRefiltrado(deckgl, capa, n, filtro, uso);
+    }
+  };
+  requestAnimationFrame(paso);
+}
+
+// Simula el caso real: recalcular la mascara de 1,83 M filas y subirla.
+function medirRefiltrado(deckgl, capa, n, filtro, uso) {
+  const t = performance.now();
+  for (let i = 0; i < n; i++) filtro[i] = uso[i] === 3 ? 1 : 0;   // solo bosques
+  const tPasada = performance.now() - t;
+  window.__spike.tFiltro = tPasada;
+  g('tFiltro').textContent = ms(tPasada) + ' (pasada JS)';
+  window.__spike.listoFiltro = true;
+}
+
+main().catch((e) => {
+  window.__spike.error = String(e && e.stack || e);
+  g('estado').textContent = 'ERROR';
+  console.error(e);
+});
+</script>
+</body>
+</html>
