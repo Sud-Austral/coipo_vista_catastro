@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Spike · Leaflet armazon + deck.gl capa de puntos</title>
+<link rel="stylesheet" href="./vendor/leaflet.css">
+<style>
+  html, body { margin:0; height:100%; background:#0d1117; color:#e6edf3;
+               font:13px/1.4 system-ui, sans-serif; }
+  #mapa { position:absolute; inset:0; }
+  #hud { position:absolute; top:8px; right:8px; z-index:1000; background:#161b22ee;
+         border:1px solid #30363d; border-radius:6px; padding:8px 10px; min-width:250px; }
+  #hud b { color:#7ee787; }
+  .fila { display:flex; justify-content:space-between; gap:12px; }
+  /* El contenedor de deck vive en el overlayPane de Leaflet y NO debe comerse
+     los eventos: el arrastre y el zoom los sigue manejando Leaflet. */
+  .deck-overlay { position:absolute; left:0; top:0; pointer-events:none; }
+</style>
+</head>
+<body>
+<div id="mapa"></div>
+<div id="hud">
+  <div class="fila"><span>motor</span><b>Leaflet + deck.gl</b></div>
+  <div class="fila"><span>filas</span><b id="filas">–</b></div>
+  <div class="fila"><span>1er pintado</span><b id="tPintado">–</b></div>
+  <div class="fila"><span>fps</span><b id="fps">–</b></div>
+  <div class="fila"><span>refiltrado</span><b id="tFiltro">–</b></div>
+  <div class="fila"><span>desfase</span><b id="desfase">–</b></div>
+</div>
+<script src="./vendor/leaflet.js"></script>
+<script src="./vendor/deck.gl.min.js"></script>
+<script>
+// ---------------------------------------------------------------------------
+// Opcion (a): Leaflet sigue siendo el armazon --mapas base, controles,
+// atribucion, EtiquetaImagen-- y deck.gl pinta SOLO la capa de puntos sobre un
+// lienzo propio dentro del overlayPane.
+//
+// EL DETALLE QUE HAY QUE MEDIR: las dos librerias usan convenciones de zoom
+// distintas. Leaflet cuenta con teselas de 256 px (mundo = 256 * 2^z) y deck.gl
+// con 512 (mundo = 512 * 2^z), asi que para la MISMA escala
+//     zoomDeck = zoomLeaflet - 1
+// Equivocarse aqui no lanza ningun error: dibuja los puntos al doble o a la
+// mitad de escala sobre un mapa base correcto. Por eso el spike se mira con el
+// mapa base ENCENDIDO: si la sincronia falla, la nube de puntos no calza con la
+// costa y se ve de inmediato.
+//
+// zoomAnimation:false a proposito. Durante la animacion de zoom Leaflet informa
+// del zoom DESTINO mientras el mapa base aun se esta escalando, y los puntos se
+// adelantarian. Es el coste conocido de este patron.
+// ---------------------------------------------------------------------------
+const {Deck, ScatterplotLayer, MapView} = deck;
+const CON_BASE = new URLSearchParams(location.search).get('basemap') !== '0';
+const COLOR = [[180,180,185],[223,194,95],[201,214,140],[45,122,62],[92,179,176],
+               [188,166,140],[242,244,248],[58,126,198],[231,84,84]];
+const g = (id) => document.getElementById(id);
+const ms = (v) => (v == null ? '–' : Math.round(v) + ' ms');
+window.__spike = {listo:false, filas:0, tPintado:null, fps:null, tFiltro:null, avisos:[], error:null};
+const t0 = performance.now();
+
+(async function main(){
+  const meta = await (await fetch('./datos/spike.json')).json();
+  const buf  = await (await fetch('./datos/cbn_spike.bin')).arrayBuffer();
+  const n = meta.filas;
+  const lon = new Float32Array(buf, meta.campos.lon.offset, n);
+  const lat = new Float32Array(buf, meta.campos.lat.offset, n);
+  const uso = new Uint8Array (buf, meta.campos.uso.offset, n);
+  window.__spike.filas = n;
+  g('filas').textContent = n.toLocaleString('es-CL');
+
+  const pos = new Float32Array(n*3);
+  for (let i=0;i<n;i++){ pos[i*3]=lon[i]; pos[i*3+1]=lat[i]; }
+  const col = new Uint8Array(n*4);
+  for (let i=0;i<n;i++){
+    const c = COLOR[uso[i]] || [255,0,255];
+    col[i*4]=c[0]; col[i*4+1]=c[1]; col[i*4+2]=c[2]; col[i*4+3]=255;
+  }
+  const canal = new Uint8Array(n).fill(1);
+
+  const map = L.map('mapa', {
+    preferCanvas: true,
+    renderer: L.canvas({padding:0.5, tolerance:8}),
+    center:[-38.5,-71.3], zoom:5,
+    zoomAnimation: false,
+    zoomControl: true,
+  });
+  if (CON_BASE) {
+    L.tileLayer('https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+      {attribution:'&copy; OpenStreetMap &middot; &copy; CARTO', maxZoom:19}).addTo(map);
+  }
+
+  // Lienzo de deck dentro del overlayPane, para que Leaflet lo mueva con el mapa.
+  const cont = L.DomUtil.create('div','deck-overlay', map.getPanes().overlayPane);
+  const canvas = document.createElement('canvas');
+  cont.appendChild(canvas);
+
+  function vista(){
+    const s = map.getSize();
+    const tl = map.containerPointToLayerPoint([0,0]);
+    L.DomUtil.setPosition(cont, tl);
+    // EL CONTENEDOR TIENE QUE TENER CAJA. deck.gl pisa el tamano en linea del
+    // lienzo con width/height: 100%, asi que si el padre no mide, el canvas
+    // queda a 0x0 -- y deck sigue pintando en su bufer WebGL tan tranquilo:
+    // medido, 57.511 pixeles no transparentes dentro de un elemento invisible,
+    // con onAfterRender disparando y CERO errores. El sintoma es un mapa base
+    // perfecto y ni un punto encima.
+    cont.style.width  = s.x+'px';
+    cont.style.height = s.y+'px';
+    const dpr = window.devicePixelRatio || 1;
+    if (canvas.width !== Math.round(s.x*dpr) || canvas.height !== Math.round(s.y*dpr)){
+      canvas.width = Math.round(s.x*dpr);
+      canvas.height = Math.round(s.y*dpr);
+    }
+    const c = map.getCenter();
+    return {longitude:c.lng, latitude:c.lat, zoom: map.getZoom()-1, pitch:0, bearing:0};
+  }
+
+  const capa = () => new ScatterplotLayer({
+    id:'puntos',
+    data:{length:n, attributes:{
+      getPosition:{value:pos, size:3},
+      getFillColor:{value:col, size:4, normalized:true},
+      getFilterValue:{value:canal, size:1},
+    }},
+    radiusUnits:'pixels', getRadius:1.2, radiusMinPixels:0.6, radiusMaxPixels:3,
+    stroked:false, pickable:true,
+    extensions:[new deck.DataFilterExtension({filterSize:1})],
+    filterRange:[0.5,1.5],
+  });
+
+  let pintado = false;
+  const deckgl = new Deck({
+    canvas,
+    views: new MapView({repeat:false}),
+    controller: false,
+    viewState: vista(),
+    layers: [capa()],
+    onAfterRender: () => {
+      if (pintado) return;
+      pintado = true;
+      window.__spike.tPintado = performance.now()-t0;
+      g('tPintado').textContent = ms(window.__spike.tPintado);
+      window.__spike.listo = true;
+      setTimeout(()=>medir(map, deckgl, capa, canal, uso, n), 400);
+    },
+  });
+  const resync = () => deckgl.setProps({viewState: vista()});
+  map.on('move zoom moveend zoomend viewreset resize', resync);
+  window.__map = map; window.__deck = deckgl;
+
+  // Comprobacion NUMERICA de la sincronia: se proyecta una coordenada conocida
+  // con Leaflet y con el viewport de deck y se comparan en pixeles. Mirar la
+  // captura caza el error de escala; esto lo cuantifica.
+  window.__desfase = () => {
+    const p = [-70.6506, -33.4372];               // Santiago
+    const a = map.latLngToContainerPoint([p[1], p[0]]);
+    const vp = deckgl.getViewports()[0];
+    // Sin viewport no hay comparacion posible: se DEVUELVE el motivo, no se
+    // lanza. Un throw aqui, dentro de un setTimeout, no lo captura el .catch
+    // del arranque, y la medicion entera se queda colgada esperando un flag
+    // que ya nunca llega: eso fue lo que agoto los 180 s la primera vez.
+    if (!vp) return {error:'deck sin viewport (lienzo a 0x0?)', pixeles:null};
+    const b = vp.project(p);
+    return {leaflet:[a.x,a.y], deck:[b[0],b[1]], pixeles: Math.hypot(a.x-b[0], a.y-b[1])};
+  };
+})().catch((e)=>{ window.__spike.error = String(e && e.stack || e); console.error(e); });
+
+function medir(map, deckgl, capa, canal, uso, n){
+  try { medirInterno(map, deckgl, capa, canal, uso, n); }
+  catch (e) {
+    // Que la medicion falle tiene que VERSE. Antes moria en silencio dentro del
+    // setTimeout y el arnes esperaba 180 s a un flag que no iba a llegar.
+    window.__spike.error = 'medir(): ' + (e && e.stack || e);
+    window.__spike.listoFiltro = true;
+  }
+}
+
+function medirInterno(map, deckgl, capa, canal, uso, n){
+  const d = window.__desfase();
+  window.__spike.desfase = d.pixeles;
+  g('desfase').textContent = d.pixeles == null ? (d.error || '?') : d.pixeles.toFixed(2)+' px';
+
+  let frames = 0;
+  const ini = performance.now();
+  const paso = (t) => {
+    frames++;
+    map.setView([-38.5, -71.3 + Math.sin((t-ini)/2000*6.28)*4], 5, {animate:false});
+    if (t-ini < 2000) requestAnimationFrame(paso);
+    else {
+      window.__spike.fps = frames/((t-ini)/1000);
+      g('fps').textContent = window.__spike.fps.toFixed(1);
+      const t1 = performance.now();
+      for (let i=0;i<n;i++) canal[i] = uso[i]===3 ? 1 : 0;
+      deckgl.setProps({layers:[capa()]});
+      window.__spike.tFiltro = performance.now()-t1;
+      g('tFiltro').textContent = ms(window.__spike.tFiltro);
+      window.__spike.desfase2 = window.__desfase().pixeles;
+      window.__spike.listoFiltro = true;
+    }
+  };
+  requestAnimationFrame(paso);
+}
+</script>
+</body>
+</html>

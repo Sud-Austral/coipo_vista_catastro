@@ -1,0 +1,105 @@
+{
+  "esquema": 1,
+  "fuente": "Catastro de Usos de la Tierra y Recursos Vegetacionales, CONAF",
+  "capas": {
+    "cbn_puntos": {
+      "archivo": "cbn_puntos.bin",
+      "filas": 1827933,
+      "bytes": 23763129,
+      "sha256": "f21016c2e79b3aa0195aa3338703fb516704246c67f608f0929ad18e1a4d066a",
+      "campos": {
+        "lon": {
+          "tipo": "f32",
+          "offset": 0
+        },
+        "lat": {
+          "tipo": "f32",
+          "offset": 7311732
+        },
+        "ha": {
+          "tipo": "f32",
+          "offset": 14623464
+        },
+        "uso": {
+          "tipo": "u8",
+          "offset": 21935196
+        }
+      },
+      "bbox": [
+        -75.7205581665039,
+        -56.523136138916016,
+        -66.42137145996094,
+        -17.502954483032227
+      ]
+    }
+  },
+  "usos": [
+    {
+      "id": "01",
+      "etiqueta": "Áreas Urbanas e Industriales",
+      "ipcc": "Asentamientos",
+      "n": 26300,
+      "ha": 864391.88
+    },
+    {
+      "id": "02",
+      "etiqueta": "Terrenos Agrícolas",
+      "ipcc": "Tierras de Cultivo",
+      "n": 74810,
+      "ha": 4088178.5
+    },
+    {
+      "id": "03",
+      "etiqueta": "Praderas y Matorrales",
+      "ipcc": "Praderas",
+      "n": 549029,
+      "ha": 29282362.0
+    },
+    {
+      "id": "04",
+      "etiqueta": "Bosques",
+      "ipcc": "Tierras Forestales",
+      "n": 943456,
+      "ha": 18862754.0
+    },
+    {
+      "id": "05",
+      "etiqueta": "Humedales",
+      "ipcc": "Humedales",
+      "n": 48682,
+      "ha": 831088.25
+    },
+    {
+      "id": "06",
+      "etiqueta": "Áreas Desprovistas de Vegetación",
+      "ipcc": "Otros Usos de la Tierra",
+      "n": 86960,
+      "ha": 17191344.0
+    },
+    {
+      "id": "07",
+      "etiqueta": "Nieves Eternas y Glaciares",
+      "ipcc": "Otros Usos de la Tierra",
+      "n": 39744,
+      "ha": 2756878.75
+    },
+    {
+      "id": "08",
+      "etiqueta": "Cuerpos de Agua",
+      "ipcc": "Humedales",
+      "n": 58947,
+      "ha": 1453000.62
+    },
+    {
+      "id": "09",
+      "etiqueta": "Áreas no Reconocidas",
+      "ipcc": "No Aplica",
+      "n": 5,
+      "ha": 331198.88
+    }
+  ],
+  "total": {
+    "filas": 1827933,
+    "ha": 75661200.0
+  }
+}

@@ -1,13 +1,70 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Isotipo CONAF recortado del banner institucional. Rutas relativas: la
+         app se sirve bajo /coipo_vista_catastro/, y una barra inicial pediria
+         los iconos a la raiz del dominio. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon-180.png" />
+    <meta name="theme-color" content="#064928" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <meta
+      name="description"
+      content="Visor del Catastro de Usos de la Tierra y Recursos Vegetacionales de CONAF: 1.827.933 polígonos del Catastro de Bosque Nativo por uso de suelo, con superficie y ubicación."
+    />
+    <title>Catastro de Usos de la Tierra y Recursos Vegetacionales — CONAF</title>
+
+    <!-- SIN el atributo crossorigin, y no es un olvido: no lo "arregles".
+         Leaflet pide las teselas con <img> y sin crossOrigin, o sea peticiones
+         en modo no-CORS. Un preconnect anonimo abre la conexion en OTRO pool de
+         sockets, no se reutiliza para esas peticiones y obliga al navegador a
+         abrir una segunda: el apreton se pagaria dos veces en vez de cero.
+         El host esta acoplado a BASEMAPS.Claro en src/config.js. -->
+    <link rel="preconnect" href="https://basemaps.cartocdn.com" />
+    <link rel="dns-prefetch" href="https://basemaps.cartocdn.com" />
+
+    <link rel="canonical" href="https://sud-austral.github.io/coipo_vista_catastro/" />
+
+    <style>
+      /* Cascaron de arranque, en linea y con la banda ya dimensionada: el
+         bundle son ~700 kB y el .bin 23,8 MB, asi que sin esto la primera
+         pantalla es blanco puro durante segundos. Se elimina en main.jsx
+         antes del primer render. */
+      html, body { margin: 0; height: 100%; }
+      #arranque {
+        position: fixed; inset: 0; display: grid; place-content: center;
+        gap: 12px; text-align: center;
+        font: 15px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: #0f2e1c; background: #f6f8f6;
+      }
+      #arranque .banda { height: 6px; width: 220px; border-radius: 3px; background: #064928; opacity: .18; }
+      @media (prefers-color-scheme: dark) {
+        #arranque { color: #e7efe9; background: #10161b; }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    <div id="arranque">
+      <div class="banda"></div>
+      <p>Cargando el Catastro nacional…</p>
+      <p id="arranque-lento" hidden>Está tardando más de lo normal.</p>
+    </div>
+    <script>
+      // setTimeout clasico y no un observer: el unico objetivo es que, si la
+      // descarga se atasca, la pantalla deje de mentir diciendo "cargando".
+      setTimeout(function () {
+        var e = document.getElementById('arranque-lento')
+        if (e) e.hidden = false
+      }, 15000)
+    </script>
+    <noscript>
+      <p style="font: 15px system-ui; padding: 24px">
+        Este visor necesita JavaScript. Los datos publicados están disponibles en
+        <a href="./datos/manifest.json">datos/manifest.json</a>.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
