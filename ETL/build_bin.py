@@ -122,7 +122,18 @@ def construir():
         raise SystemExit(f"tamano inesperado: {real} != {esperado}")
 
     conteo = np.bincount(uso, minlength=len(USOS))
-    ha_por_uso = [float(ha[uso == i].sum()) for i in range(len(USOS))]
+
+    # LAS CIFRAS SE ACUMULAN EN float64, SIEMPRE.
+    # En el .bin la superficie viaja en float32 --error de 0,09 ha sobre el total
+    # nacional, despreciable-- pero SUMAR en float32 no lo es: a 75 millones el
+    # ULP de float32 son 8 ha, asi que el total quedaba cuantizado a saltos de 8
+    # (75.661.200,00 es multiplo exacto de 8) mientras las sumas por uso, al ser
+    # numeros mas chicos, caian en otro punto de la rejilla. Resultado: el
+    # manifest se contradecia consigo mismo por 3,12 ha y la app ensenaba una
+    # cifra distinta de la que declaraba su propio total. Lo cazo la asercion D7
+    # del workflow, que para eso esta.
+    ha64 = ha.astype(np.float64)
+    ha_por_uso = [float(ha64[uso == i].sum()) for i in range(len(USOS))]
 
     manifest = {
         "esquema": 1,
@@ -154,7 +165,9 @@ def construir():
             }
             for i, c in enumerate(USOS)
         ],
-        "total": {"filas": n, "ha": round(float(ha.sum()), 2)},
+        # El total sale de la MISMA suma que las partes, no de otra pasada: si se
+        # calcula por separado vuelve a poder contradecirlas.
+        "total": {"filas": n, "ha": round(sum(ha_por_uso), 2)},
     }
     ruta_man = os.path.join(SALIDA, "manifest.json")
     with open(ruta_man, "w", encoding="utf-8", newline="\n") as fh:

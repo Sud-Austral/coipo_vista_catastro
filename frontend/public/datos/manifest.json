@@ -39,28 +39,28 @@
       "etiqueta": "Áreas Urbanas e Industriales",
       "ipcc": "Asentamientos",
       "n": 26300,
-      "ha": 864391.88
+      "ha": 864391.83
     },
     {
       "id": "02",
       "etiqueta": "Terrenos Agrícolas",
       "ipcc": "Tierras de Cultivo",
       "n": 74810,
-      "ha": 4088178.5
+      "ha": 4088178.65
     },
     {
       "id": "03",
       "etiqueta": "Praderas y Matorrales",
       "ipcc": "Praderas",
       "n": 549029,
-      "ha": 29282362.0
+      "ha": 29282364.33
     },
     {
       "id": "04",
       "etiqueta": "Bosques",
       "ipcc": "Tierras Forestales",
       "n": 943456,
-      "ha": 18862754.0
+      "ha": 18862754.85
     },
     {
       "id": "05",
@@ -74,32 +74,32 @@
       "etiqueta": "Áreas Desprovistas de Vegetación",
       "ipcc": "Otros Usos de la Tierra",
       "n": 86960,
-      "ha": 17191344.0
+      "ha": 17191344.49
     },
     {
       "id": "07",
       "etiqueta": "Nieves Eternas y Glaciares",
       "ipcc": "Otros Usos de la Tierra",
       "n": 39744,
-      "ha": 2756878.75
+      "ha": 2756878.66
     },
     {
       "id": "08",
       "etiqueta": "Cuerpos de Agua",
       "ipcc": "Humedales",
       "n": 58947,
-      "ha": 1453000.62
+      "ha": 1453000.56
     },
     {
       "id": "09",
       "etiqueta": "Áreas no Reconocidas",
       "ipcc": "No Aplica",
       "n": 5,
-      "ha": 331198.88
+      "ha": 331198.86
     }
   ],
   "total": {
     "filas": 1827933,
-    "ha": 75661200.0
+    "ha": 75661200.5
   }
 }
