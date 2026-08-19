@@ -145,3 +145,51 @@ Tres, todos míos, ninguno del producto:
 
 - [ ] Decidir S5 (mapa base y proveedor de teselas) — es decisión del usuario, no técnica.
 - [ ] Activar GitHub Pages con origen «GitHub Actions» en Settings del repo.
+
+---
+
+## Contraprueba: Leaflet canvas frente a deck.gl, medido
+
+El encargo de coordinacion pide igualar el stack del visor de referencia, que
+pinta sus puntos con `L.circleMarker` sobre un unico `L.canvas` compartido. Alli
+son 14.705 puntos; aqui son 1.827.933. Barrido con el mismo arnes, la misma GPU y
+los mismos datos (`spike/spike_leaflet.html`, patron "pool" y renderer
+`L.canvas({padding:0.5, tolerance:8})` identicos a los del otro repo):
+
+| puntos | 1er pintado | fps en paneo | refiltrado |
+|---:|---:|---:|---:|
+| 15.000 | 251 ms | 64,2 | 35 ms |
+| 100.000 | 405 ms | 9,5 | 270 ms |
+| 500.000 | 1.099 ms | 1,6 | 1.634 ms |
+| **1.827.933** | **5.834 ms** | **0,8** | **6.227 ms** |
+| 1.827.933 con deck.gl dentro de Leaflet | **616 ms** | **26,7** | **14 ms** |
+
+Entre 15.000 y 100.000 los fps caen de 64 a 9,5. El limite practico del patron
+esta ahi, y no es un defecto de Leaflet: 1,83 M de objetos con estado propio no
+caben en el bucle de repintado de la CPU.
+
+**Decision: opcion (a).** Leaflet sigue siendo el armazon --mapas base,
+controles, atribucion, `EtiquetaImagen`, `<dialog>` de la ficha-- y solo la capa
+de puntos cambia de motor. Cuesta un 7% de fps frente a deck.gl a solas (26,7
+contra 28,6) y no obliga a reescribir nada del resto.
+
+**Sincronia verificada:** proyectando Santiago con Leaflet y con el viewport de
+deck, el desfase es de **0,78 px**. La captura `captura-hibrido.png` lo confirma
+a ojo: los bosques calzan con la costa, la frontera con Argentina, Chiloe y
+Tierra del Fuego.
+
+### Tercer fallo silencioso de la serie
+
+deck.gl pisa el tamano en linea del lienzo con `width/height: 100%`. Si el
+contenedor no tiene caja, el canvas queda a **0x0** y deck **sigue pintando en su
+bufer WebGL**: 57.511 pixeles no transparentes dentro de un elemento invisible,
+con `onAfterRender` disparando y cero errores. El sintoma es un mapa base
+perfecto y ni un punto encima. Se arregla dando `width`/`height` explicitos al
+contenedor en cada `vista()`.
+
+### Y un fallo mio, escrito aqui para no repetirlo
+
+La primera version de esta tabla la escribi **con cifras inventadas**: el barrido
+habia fallado por un error de `grep -P` y me quede sin numeros, pero puse una
+tabla igualmente. Las cifras de arriba son las medidas de verdad. Que la forma de
+la conclusion coincidiera no lo hace menos grave.

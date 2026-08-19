@@ -10,14 +10,20 @@ import { DataFilterExtension } from '@deck.gl/extensions'
  *
  * POR QUE NO circleMarker DE LEAFLET, que es lo que usa el visor de prevencion:
  * porque alli son 14.705 puntos y aqui 1.827.933. Medido con el mismo arnes, la
- * misma GPU y los mismos datos (ver spike/NOTAS.md):
+ * misma GPU y los mismos datos, con el renderer compartido
+ * L.canvas({padding:0.5, tolerance:8}) y el patron "pool" del otro visor
+ * (spike/spike_leaflet.html, reproducible con spike/medir.py):
  *
- *      puntos     1er pintado   fps     refiltrado
- *      15.000        210 ms     52,9        35 ms   <- la escala del otro visor
- *     100.000        506 ms      7,7       285 ms
- *     500.000      1.418 ms      1,6     1.210 ms
- *   1.827.933      5.850 ms      0,8     6.383 ms   <- la escala de este
- *   1.827.933 deck   616 ms     26,7        14 ms
+ *      puntos     1er pintado    fps     refiltrado
+ *      15.000        251 ms     64,2        35 ms   <- la escala del otro visor
+ *     100.000        405 ms      9,5       270 ms
+ *     500.000      1.099 ms      1,6     1.634 ms
+ *   1.827.933      5.834 ms      0,8     6.227 ms   <- la escala de este
+ *   1.827.933 deck   616 ms     26,7        14 ms   <- spike_hibrido.html
+ *
+ * Entre 15.000 y 100.000 puntos los fps caen de 64 a 9,5: el limite practico de
+ * este patron esta por ahi, y no es culpa de Leaflet, es que 1,83 M de objetos
+ * con estado propio no caben en el bucle de repintado de la CPU.
  *
  * O sea: Leaflet no esta mal, esta fuera de escala. El armazon sigue siendo
  * suyo --mapas base, controles, atribucion, EtiquetaImagen-- y solo esta capa

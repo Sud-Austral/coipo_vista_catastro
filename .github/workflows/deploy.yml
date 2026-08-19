@@ -1,0 +1,181 @@
+name: Desplegar en GitHub Pages
+
+# El ETL NO corre aqui, y es deliberado: su insumo es
+# data/catastro_gef_singeometria.duckdb, 321 MiB que estan en .gitignore y que
+# GitHub no aceptaria de todos modos (bloquea archivos > 100 MiB). Los artefactos
+# derivados se generan en local con `python ETL/build_bin.py` y SE COMMITEAN.
+# Lo que hace este workflow es comprobar que lo commiteado es integro y coherente
+# con su manifest, y publicar.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un despliegue a la vez. Ademas protege el limite blando de 10 builds/hora de
+# Pages cuando se empujan varios commits seguidos.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  datos:
+    name: Integridad de los datos commiteados
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Comprobar manifest, tamanos y sha256
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, sys
+
+          raiz = 'frontend/public/datos'
+          man = json.load(open(f'{raiz}/manifest.json', encoding='utf-8'))
+          fallos = []
+
+          # D1 - el manifest declara el esquema que el frontend sabe leer.
+          if man.get('esquema') != 1:
+              fallos.append(f"esquema {man.get('esquema')} != 1")
+
+          # D2 - ninguna marca de tiempo. Es lo que permite commitear datos: si
+          # el manifest llevara fecha, cada regeneracion ensuciaria git aunque
+          # los datos fueran identicos, y el historial creceria sin motivo.
+          crudo = open(f'{raiz}/manifest.json', encoding='utf-8').read()
+          import re
+          if re.search(r'\d{4}-\d{2}-\d{2}T', crudo):
+              fallos.append('el manifest contiene una marca de tiempo')
+
+          for nombre, capa in man['capas'].items():
+              ruta = os.path.join(raiz, capa['archivo'])
+              # D3 - existe y mide exactamente lo declarado.
+              real = os.path.getsize(ruta)
+              if real != capa['bytes']:
+                  fallos.append(f"{nombre}: {real} bytes, el manifest dice {capa['bytes']}")
+
+              # D4 - los offsets cuadran con el numero de filas. Un .bin truncado
+              # abre vistas tipadas VALIDAS sobre basura y el mapa saldria con
+              # puntos en medio del Pacifico, sin ningun error.
+              n = capa['filas']
+              esperado = n * 4 * 3 + n
+              if capa['bytes'] != esperado:
+                  fallos.append(f'{nombre}: {capa["bytes"]} != {esperado} para {n} filas')
+
+              # D5 - sha256 exacto. Compara CONTENIDO, no tamano.
+              h = hashlib.sha256()
+              with open(ruta, 'rb') as fh:
+                  for b in iter(lambda: fh.read(1 << 20), b''):
+                      h.update(b)
+              if h.hexdigest() != capa['sha256']:
+                  fallos.append(f'{nombre}: sha256 no coincide')
+
+              # D6 - ningun archivo cerca del bloqueo de 100 MiB de git.
+              if real > 50 * 1024 * 1024:
+                  fallos.append(f'{nombre}: {real/1048576:.0f} MiB, por encima del aviso de 50 MiB')
+
+              print(f'  {nombre}: {n:,} filas, {real/1e6:.1f} MB, sha256 {capa["sha256"][:16]}...')
+
+          # D7 - la suma de superficie por uso reproduce el total nacional. Es la
+          # cifra que la app ensena en grande; si no cuadra con sus propias
+          # partes, algo se rompio entre el ETL y lo commiteado.
+          suma = sum(u['ha'] for u in man['usos'])
+          if abs(suma - man['total']['ha']) > 1:
+              fallos.append(f"usos suman {suma:,.2f} ha y el total dice {man['total']['ha']:,.2f}")
+          print(f"  total nacional: {man['total']['ha']:,.2f} ha en {man['total']['filas']:,} poligonos")
+
+          if fallos:
+              print('\nFALLA:')
+              for f in fallos:
+                  print(f'  - {f}')
+              sys.exit(1)
+          print('\nintegridad OK')
+          PY
+
+  build:
+    name: Compilar el frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run lint
+        working-directory: frontend
+      - run: npm run build
+        working-directory: frontend
+
+      # La trampa mas cara de este stack: un `base` mal resuelto NO hace fallar
+      # el build -- termina con codigo 0 y emite rutas que piden los assets a la
+      # raiz del dominio, asi que el sitio publicado sale en blanco. Se comprueba
+      # el ARTEFACTO, no la configuracion.
+      - name: Comprobar el base path en dist/index.html
+        working-directory: frontend
+        run: |
+          if ! grep -q '/coipo_vista_catastro/assets/' dist/index.html; then
+            echo "FALLA: dist/index.html no referencia /coipo_vista_catastro/assets/"
+            grep -oE '(src|href)="[^"]*"' dist/index.html
+            exit 1
+          fi
+          if [ ! -s dist/datos/manifest.json ] || [ ! -s dist/datos/cbn_puntos.bin ]; then
+            echo "FALLA: los datos no llegaron a dist/"
+            exit 1
+          fi
+          echo "base path y datos OK"
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+
+  deploy:
+    name: Publicar
+    needs: [datos, build]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  humo:
+    name: Prueba de humo sobre el sitio publicado
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      # Unico punto donde se observa Pages de verdad. Todo lo anterior mira
+      # artefactos locales; esto mira lo que recibe una persona.
+      - name: Pedir el sitio y sus datos
+        run: |
+          BASE="https://sud-austral.github.io/coipo_vista_catastro"
+          set -e
+          echo "--- index.html"
+          curl -fsS -o /dev/null -w "  HTTP %{http_code}  %{size_download} B\n" "$BASE/"
+          echo "--- manifest.json"
+          curl -fsS "$BASE/datos/manifest.json" | head -c 200; echo
+          echo "--- cbn_puntos.bin (cabecera)"
+          # Accept-Encoding: identity OBLIGATORIO. Pages comprime
+          # application/octet-stream, y sin esto se leen bytes gzip donde se
+          # esperan datos y se diagnostica el problema equivocado.
+          curl -fsS -H 'Accept-Encoding: identity' -r 0-15 \
+            -o /dev/null -w "  HTTP %{http_code}  %{size_download} B\n" "$BASE/datos/cbn_puntos.bin"
+          echo "--- tamano completo declarado vs servido"
+          DECL=$(curl -fsS "$BASE/datos/manifest.json" | python3 -c "import json,sys;print(json.load(sys.stdin)['capas']['cbn_puntos']['bytes'])")
+          REAL=$(curl -fsS -H 'Accept-Encoding: identity' -o /dev/null -w '%{size_download}' "$BASE/datos/cbn_puntos.bin")
+          echo "  declarado $DECL / servido $REAL"
+          [ "$DECL" = "$REAL" ] || { echo "FALLA: el .bin servido no mide lo declarado"; exit 1; }
+          echo "humo OK"
