@@ -1,2 +1,12 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# El .bin es columnar crudo: si git le aplicara conversion de finales de linea
+# convertiria cada 0x0A en 0x0D0A y lo corromperia en silencio -- las vistas
+# tipadas seguirian abriendo, con los puntos desplazados. `text=auto` lo detecta
+# como binario casi siempre, y "casi siempre" no es suficiente para 23,8 MB de
+# coordenadas.
+*.bin      binary -text -diff
+*.parquet  binary -text -diff
+*.png      binary -text -diff
+*.jpg      binary -text -diff
