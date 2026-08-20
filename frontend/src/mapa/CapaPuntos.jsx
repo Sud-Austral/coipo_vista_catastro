@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import L from 'leaflet'
 import { Deck, MapView } from '@deck.gl/core'
 import { ScatterplotLayer } from '@deck.gl/layers'
@@ -33,7 +33,23 @@ import { DataFilterExtension } from '@deck.gl/extensions'
  * Devuelve null: dirige a deck.gl y a Leaflet por efectos, como los Capa* del
  * visor de referencia.
  */
+/**
+ * Radio en pixeles a partir de la superficie, con raiz cuadrada y acotado.
+ * Se calcula UNA vez por conjunto de datos, no por fotograma: es un atributo
+ * binario mas, del mismo tamano que el canal de filtro.
+ */
+function radiosDesdeSuperficie(ha, n) {
+  const r = new Float32Array(n)
+  for (let i = 0; i < n; i++) {
+    // 1,1 px para el poligono mediano (2,83 ha) y ~12 px para los mayores.
+    r[i] = Math.min(12, Math.max(0.9, 0.65 * Math.sqrt(ha[i])))
+  }
+  return r
+}
+
 export default function CapaPuntos({ map, datos, paleta, filtro, onPunto }) {
+  const radio = useMemo(() => radiosDesdeSuperficie(datos.ha, datos.n), [datos])
+
   const deckRef = useRef(null)
   const contRef = useRef(null)
   const canvasRef = useRef(null)
@@ -130,11 +146,18 @@ export default function CapaPuntos({ map, datos, paleta, filtro, onPunto }) {
         },
       },
       radiusUnits: 'pixels',
-      // Escalar y no funcion: como funcion, deck.gl reserva 4 B por punto de
-      // mas para un valor que no varia.
-      getRadius: 1.2,
+      // El radio CRECE con la superficie del poligono, y no es proporcional:
+      // va acotado por arriba y por abajo. Decir "proporcional" seria falso --
+      // el rango real va de 0,1 ha a 1.295.122 ha, o sea 13 millones a 1, y ni
+      // siquiera en raiz cuadrada cabe en unos pocos pixeles.
+      //
+      // Raiz cuadrada y no lineal: el area del disco es lo que el ojo compara,
+      // asi que el RADIO tiene que ir con la raiz para que el AREA vaya con el
+      // dato. Con radio lineal, un poligono diez veces mayor se dibuja cien
+      // veces mas grande.
+      getRadius: { value: radio, size: 1 },
       radiusMinPixels: 0.6,
-      radiusMaxPixels: 4,
+      radiusMaxPixels: 12,
       stroked: false,
       pickable: true,
       // uint8 medido identico a float32 en render, y ocupa 1 byte por punto en
@@ -146,10 +169,10 @@ export default function CapaPuntos({ map, datos, paleta, filtro, onPunto }) {
         // undefined: la ficha se arma desde el indice, no desde el objeto.
         if (info && info.index >= 0 && onPunto) onPunto(info.index)
       },
-      updateTriggers: { getFilterValue: filtro, getFillColor: paleta },
+      updateTriggers: { getFilterValue: filtro, getFillColor: paleta, getRadius: radio },
     })
     deckgl.setProps({ layers: [capa] })
-  }, [datos, paleta, filtro, onPunto])
+  }, [datos, paleta, filtro, radio, onPunto])
 
   return null
 }

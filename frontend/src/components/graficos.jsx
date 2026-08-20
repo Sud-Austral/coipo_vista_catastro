@@ -228,3 +228,42 @@ export function IconoIndicadores() {
     </svg>
   )
 }
+
+/**
+ * Barra apilada: dos segmentos que SUMAN, sobre un eje común.
+ *
+ * Apilada y no mancuerna, y la razón es del dato: una mancuerna conecta dos
+ * valores con una línea y eso codifica un INTERVALO —«la verdad está entre
+ * estos dos»—. Deforestación y sustitución son clases disjuntas y la pérdida
+ * bruta es su SUMA, así que la forma tiene que sumar. El apilado *es* la suma:
+ * la longitud total es la pérdida, y el total va escrito al final.
+ *
+ * Los dos segmentos se distinguen por color Y por trama, nunca sólo por color.
+ */
+export function BarraApilada({ etiqueta, glosa, partes, max, total, nota }) {
+  return (
+    <div className="apilada">
+      <p className="apilada-etq">
+        {etiqueta}
+        {glosa && <span className="fila-glosa">{glosa}</span>}
+      </p>
+      <div className="apilada-barra">
+        {partes.map((p) => (
+          <span
+            key={p.clave}
+            className={p.trama ? 'tramada' : undefined}
+            style={{ width: `${max > 0 ? (100 * p.valor) / max : 0}%`, background: p.color }}
+            title={`${p.etiqueta}: ${p.texto}`}
+          />
+        ))}
+        <b>{total}</b>
+      </div>
+      {nota && <p className="nota">{nota}</p>}
+    </div>
+  )
+}
+
+/** Separador de discontinuidad: no es una nota, es un corte en el gráfico. */
+export function Discontinuidad({ children }) {
+  return <p className="discontinuidad"><span>{children}</span></p>
+}

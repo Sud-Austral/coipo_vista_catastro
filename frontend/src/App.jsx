@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
 import {
   ANCHO_KPI,
+  DATA,
   ANCHO_PANEL,
   BASEMAPS,
   CORTE_KPI,
@@ -15,13 +16,15 @@ import {
   paletaRGB,
 } from './config'
 import { canalFiltro, cargarPuntos, tablaColor } from './datos/binario'
-import { resumenFiltrado, resumenNacional } from './indicadores'
+import { ambitoTexto, resumenFiltrado, resumenNacional } from './indicadores'
 import { guardarDisposicion, leerDisposicion } from './preferencias'
+import { escribirURL, leerURL } from './urlState'
 import CapaPuntos from './mapa/CapaPuntos'
 import EtiquetaImagen from './components/EtiquetaImagen'
 import ModalFicha from './components/ModalFicha'
 import PanelIndicadores from './components/PanelIndicadores'
 import PanelLateral from './components/PanelLateral'
+import SeccionDescargas from './components/SeccionDescargas'
 import Tirador from './components/Tirador'
 import { IconoIndicadores } from './components/graficos'
 import { useFechaImagen } from './hooks/useFechaImagen'
@@ -42,19 +45,35 @@ const regimenDe = (ancho) => (ancho > CORTE_KPI ? 1 : ancho > CORTE_PANEL ? 2 : 
 // paneles anclados, para poder restaurarla al volver de un régimen de cajón.
 const disposicion = leerDisposicion()
 
+// El estado compartible se lee UNA vez, al arrancar. A partir de ahí manda el
+// estado de React y la URL sólo lo refleja.
+const inicial = leerURL()
+
 const temaOscuro = () =>
   window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
 
 export default function App() {
   const contenedor = useRef(null)
   const [map, setMap] = useState(null)
-  const [base, setBase] = useState('Claro')
+  const [base, setBase] = useState(inicial.base ?? 'Claro')
   const [datos, setDatos] = useState(null)
   const [error, setError] = useState(null)
   const [oscuro, setOscuro] = useState(temaOscuro)
-  const [ambito, setAmbito] = useState({ region: null, provincia: null, comuna: null })
+  const [ambito, setAmbito] = useState(inicial.ambito)
   const [usosActivos, setUsosActivos] = useState(() => new Set())
   const [ficha, setFicha] = useState(null)
+  const [simef, setSimef] = useState(null)
+
+  // SIMEF es OTRA FUENTE y se carga aparte a proposito: si su archivo falta o
+  // falla, el resto del visor sigue entero y solo esa seccion lo dice.
+  useEffect(() => {
+    const ctrl = new AbortController()
+    fetch(`${DATA}/simef.json`, { signal: ctrl.signal, cache: 'no-cache' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setSimef)
+      .catch(() => {})
+    return () => ctrl.abort()
+  }, [])
 
   // ---------- disposición de los paneles ----------
   // Un solo booleano por panel para los dos regímenes: anclado significa que su
@@ -87,8 +106,8 @@ export default function App() {
       // Leaflet informa del zoom DESTINO mientras el mapa base aún se escala:
       // los puntos se adelantarían. Es el coste conocido de este patrón.
       zoomAnimation: false,
-      center: VISTA_INICIAL.center,
-      zoom: VISTA_INICIAL.zoom,
+      center: inicial.centro ?? VISTA_INICIAL.center,
+      zoom: inicial.zoom ?? VISTA_INICIAL.zoom,
       minZoom: 3,
       maxBounds: LIMITES,
       maxBoundsViscosity: 0.5,
@@ -289,6 +308,53 @@ export default function App() {
 
   const manifest = datos?.manifest ?? null
 
+  // Los usos viajan en la URL como CÓDIGOS y en el estado como índices: un
+  // índice depende del orden del manifest, y un enlace guardado en un correo
+  // tiene que sobrevivir a un reproceso del ETL. La conversión sólo se puede
+  // hacer cuando el manifest ya está, así que va aquí y una sola vez.
+  const usosDeLaUrl = useRef(inicial.usos ?? null)
+  useEffect(() => {
+    if (!manifest || !usosDeLaUrl.current) return
+    const s = new Set()
+    for (const cod of usosDeLaUrl.current) {
+      const i = manifest.usos.findIndex((u) => u.cod === cod)
+      if (i >= 0) s.add(i)
+    }
+    usosDeLaUrl.current = null
+    setUsosActivos(s)
+  }, [manifest])
+
+  // La URL refleja el estado. pushState para lo que se reconoce como «hice
+  // algo»; el paneo va con replaceState desde el efecto del mapa.
+  useEffect(() => {
+    if (!manifest) return
+    escribirURL(
+      {
+        ambito,
+        usos: [...usosActivos].map((i) => manifest.usos[i]?.cod).filter(Boolean),
+        base,
+        centro: map ? [map.getCenter().lat, map.getCenter().lng] : null,
+        zoom: map ? map.getZoom() : null,
+      },
+      { push: true },
+    )
+  }, [manifest, ambito, usosActivos, base]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // El encuadre se escribe agrupado y SIN entrada de historial.
+  useEffect(() => {
+    if (!map || !manifest) return
+    const al = () =>
+      escribirURL({
+        ambito,
+        usos: [...usosActivos].map((i) => manifest.usos[i]?.cod).filter(Boolean),
+        base,
+        centro: [map.getCenter().lat, map.getCenter().lng],
+        zoom: map.getZoom(),
+      })
+    map.on('moveend', al)
+    return () => map.off('moveend', al)
+  }, [map, manifest, ambito, usosActivos, base])
+
   // Índices de comuna que caen dentro del ámbito. Un Set vacío significa «todas»,
   // no «ninguna».
   const comunasDelAmbito = useMemo(() => {
@@ -432,7 +498,16 @@ export default function App() {
         abierto={panelVisible}
         onCerrar={cerrarPanel}
         oscuro={oscuro}
-      />
+      >
+        <SeccionDescargas
+          datos={datos}
+          filtro={filtro}
+          resumen={resumen}
+          manifest={manifest}
+          ambitoTxt={manifest ? ambitoTexto(ambito, manifest) : 'todo Chile'}
+          nFiltrado={resumen?.n ?? 0}
+        />
+      </PanelLateral>
 
       {/* Hermano del panel y no hijo suyo: .panel scrollea, y dentro quedaba
           recortado por su overflow y se iba con el scroll. */}
@@ -452,6 +527,7 @@ export default function App() {
       <div className="funda-kpi">
         <PanelIndicadores
           resumen={resumen}
+          simef={simef}
           manifest={manifest}
           ambito={ambito}
           abierto={kpiVisible}

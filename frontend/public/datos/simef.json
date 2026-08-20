@@ -1,0 +1,932 @@
+{
+  "esquema": 1,
+  "fuente": "SIMEF · Sistema Integrado de Monitoreo de Ecosistemas Forestales",
+  "aviso": "SIMEF es otra fuente, no una continuación del Catastro. Cada par de años cubre un conjunto distinto de regiones, así que las barras no se comparan entre sí salvo donde se indica. Antofagasta no tiene capa SIMEF.",
+  "regiones_con_ancla_oficial": [
+    "01",
+    "03",
+    "15"
+  ],
+  "pares": [
+    {
+      "clave": "D_TC_01_13",
+      "desde": 2001,
+      "hasta": 2013,
+      "anios": 12,
+      "regiones": 12,
+      "regiones_cod": [
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "16"
+      ],
+      "con_ancla_oficial": [],
+      "deforestacion": 133134.5,
+      "sustitucion": 111993.8,
+      "perdida_bruta": 245128.3,
+      "por_anio": 20427.36,
+      "n_deforestacion": 20069,
+      "n_sustitucion": 16618,
+      "marginal": false,
+      "por_region": [
+        {
+          "cod": "10",
+          "nombre": "Los Lagos",
+          "deforestacion": 42331.82,
+          "sustitucion": 7922.43,
+          "n_def": 8400,
+          "n_sus": 1542
+        },
+        {
+          "cod": "05",
+          "nombre": "Valparaíso",
+          "deforestacion": 18472.21,
+          "sustitucion": 184.52,
+          "n_def": 2488,
+          "n_sus": 33
+        },
+        {
+          "cod": "09",
+          "nombre": "La Araucanía",
+          "deforestacion": 17148.93,
+          "sustitucion": 35513.24,
+          "n_def": 1771,
+          "n_sus": 3525
+        },
+        {
+          "cod": "14",
+          "nombre": "Los Ríos",
+          "deforestacion": 16649.13,
+          "sustitucion": 11618.22,
+          "n_def": 1458,
+          "n_sus": 1790
+        },
+        {
+          "cod": "08",
+          "nombre": "Biobío",
+          "deforestacion": 14913.28,
+          "sustitucion": 19220.57,
+          "n_def": 1749,
+          "n_sus": 4705
+        },
+        {
+          "cod": "07",
+          "nombre": "Maule",
+          "deforestacion": 8247.09,
+          "sustitucion": 23997.98,
+          "n_def": 1515,
+          "n_sus": 3235
+        },
+        {
+          "cod": "16",
+          "nombre": "Ñuble",
+          "deforestacion": 5518.45,
+          "sustitucion": 10023.73,
+          "n_def": 1029,
+          "n_sus": 1536
+        },
+        {
+          "cod": "06",
+          "nombre": "O'Higgins",
+          "deforestacion": 3031.66,
+          "sustitucion": 2800.97,
+          "n_def": 579,
+          "n_sus": 194
+        },
+        {
+          "cod": "13",
+          "nombre": "Metropolitana",
+          "deforestacion": 2884.01,
+          "sustitucion": 193.17,
+          "n_def": 508,
+          "n_sus": 50
+        },
+        {
+          "cod": "11",
+          "nombre": "Aysén",
+          "deforestacion": 2336.49,
+          "sustitucion": 518.97,
+          "n_def": 406,
+          "n_sus": 8
+        },
+        {
+          "cod": "04",
+          "nombre": "Coquimbo",
+          "deforestacion": 965.31,
+          "sustitucion": 0.0,
+          "n_def": 120,
+          "n_sus": 0
+        },
+        {
+          "cod": "12",
+          "nombre": "Magallanes",
+          "deforestacion": 636.12,
+          "sustitucion": 0.0,
+          "n_def": 46,
+          "n_sus": 0
+        }
+      ]
+    },
+    {
+      "clave": "D_TC_12_17",
+      "desde": 2012,
+      "hasta": 2017,
+      "anios": 5,
+      "regiones": 1,
+      "regiones_cod": [
+        "15"
+      ],
+      "con_ancla_oficial": [
+        "15"
+      ],
+      "deforestacion": 11.38,
+      "sustitucion": 0.0,
+      "perdida_bruta": 11.38,
+      "por_anio": 2.28,
+      "n_deforestacion": 1,
+      "n_sustitucion": 0,
+      "marginal": true,
+      "por_region": [
+        {
+          "cod": "15",
+          "nombre": "Arica y Parinacota",
+          "deforestacion": 11.38,
+          "sustitucion": 0.0,
+          "n_def": 1,
+          "n_sus": 0
+        }
+      ]
+    },
+    {
+      "clave": "D_TC_13_16",
+      "desde": 2013,
+      "hasta": 2016,
+      "anios": 3,
+      "regiones": 12,
+      "regiones_cod": [
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "16"
+      ],
+      "con_ancla_oficial": [],
+      "deforestacion": 25313.9,
+      "sustitucion": 2633.81,
+      "perdida_bruta": 27947.71,
+      "por_anio": 9315.9,
+      "n_deforestacion": 11664,
+      "n_sustitucion": 2590,
+      "marginal": false,
+      "por_region": [
+        {
+          "cod": "10",
+          "nombre": "Los Lagos",
+          "deforestacion": 9838.21,
+          "sustitucion": 84.25,
+          "n_def": 5674,
+          "n_sus": 16
+        },
+        {
+          "cod": "09",
+          "nombre": "La Araucanía",
+          "deforestacion": 5771.93,
+          "sustitucion": 453.32,
+          "n_def": 1784,
+          "n_sus": 493
+        },
+        {
+          "cod": "05",
+          "nombre": "Valparaíso",
+          "deforestacion": 2671.39,
+          "sustitucion": 145.19,
+          "n_def": 775,
+          "n_sus": 97
+        },
+        {
+          "cod": "06",
+          "nombre": "O'Higgins",
+          "deforestacion": 2359.88,
+          "sustitucion": 804.05,
+          "n_def": 1935,
+          "n_sus": 892
+        },
+        {
+          "cod": "08",
+          "nombre": "Biobío",
+          "deforestacion": 1305.58,
+          "sustitucion": 635.7,
+          "n_def": 387,
+          "n_sus": 576
+        },
+        {
+          "cod": "13",
+          "nombre": "Metropolitana",
+          "deforestacion": 1055.73,
+          "sustitucion": 0.0,
+          "n_def": 268,
+          "n_sus": 0
+        },
+        {
+          "cod": "07",
+          "nombre": "Maule",
+          "deforestacion": 559.93,
+          "sustitucion": 44.01,
+          "n_def": 154,
+          "n_sus": 35
+        },
+        {
+          "cod": "14",
+          "nombre": "Los Ríos",
+          "deforestacion": 548.34,
+          "sustitucion": 82.12,
+          "n_def": 371,
+          "n_sus": 135
+        },
+        {
+          "cod": "16",
+          "nombre": "Ñuble",
+          "deforestacion": 518.95,
+          "sustitucion": 385.17,
+          "n_def": 144,
+          "n_sus": 346
+        },
+        {
+          "cod": "12",
+          "nombre": "Magallanes",
+          "deforestacion": 375.91,
+          "sustitucion": 0.0,
+          "n_def": 47,
+          "n_sus": 0
+        },
+        {
+          "cod": "11",
+          "nombre": "Aysén",
+          "deforestacion": 279.66,
+          "sustitucion": 0.0,
+          "n_def": 102,
+          "n_sus": 0
+        },
+        {
+          "cod": "04",
+          "nombre": "Coquimbo",
+          "deforestacion": 28.39,
+          "sustitucion": 0.0,
+          "n_def": 23,
+          "n_sus": 0
+        }
+      ]
+    },
+    {
+      "clave": "D_TC_13_17",
+      "desde": 2013,
+      "hasta": 2017,
+      "anios": 4,
+      "regiones": 1,
+      "regiones_cod": [
+        "01"
+      ],
+      "con_ancla_oficial": [
+        "01"
+      ],
+      "deforestacion": 0.0,
+      "sustitucion": 0.0,
+      "perdida_bruta": 0.0,
+      "por_anio": 0.0,
+      "n_deforestacion": 0,
+      "n_sustitucion": 0,
+      "marginal": true,
+      "por_region": [
+        {
+          "cod": "01",
+          "nombre": "Tarapacá",
+          "deforestacion": 0.0,
+          "sustitucion": 0.0,
+          "n_def": 0,
+          "n_sus": 0
+        }
+      ]
+    },
+    {
+      "clave": "D_TC_15_17",
+      "desde": 2015,
+      "hasta": 2017,
+      "anios": 2,
+      "regiones": 1,
+      "regiones_cod": [
+        "03"
+      ],
+      "con_ancla_oficial": [
+        "03"
+      ],
+      "deforestacion": 26.55,
+      "sustitucion": 0.0,
+      "perdida_bruta": 26.55,
+      "por_anio": 13.28,
+      "n_deforestacion": 6,
+      "n_sustitucion": 0,
+      "marginal": true,
+      "por_region": [
+        {
+          "cod": "03",
+          "nombre": "Atacama",
+          "deforestacion": 26.55,
+          "sustitucion": 0.0,
+          "n_def": 6,
+          "n_sus": 0
+        }
+      ]
+    },
+    {
+      "clave": "D_TC_16_17",
+      "desde": 2016,
+      "hasta": 2017,
+      "anios": 1,
+      "regiones": 12,
+      "regiones_cod": [
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "16"
+      ],
+      "con_ancla_oficial": [],
+      "deforestacion": 34789.47,
+      "sustitucion": 4052.59,
+      "perdida_bruta": 38842.06,
+      "por_anio": 38842.06,
+      "n_deforestacion": 14155,
+      "n_sustitucion": 1260,
+      "marginal": false,
+      "por_region": [
+        {
+          "cod": "10",
+          "nombre": "Los Lagos",
+          "deforestacion": 21277.67,
+          "sustitucion": 143.77,
+          "n_def": 11371,
+          "n_sus": 48
+        },
+        {
+          "cod": "08",
+          "nombre": "Biobío",
+          "deforestacion": 5535.83,
+          "sustitucion": 2141.62,
+          "n_def": 1108,
+          "n_sus": 606
+        },
+        {
+          "cod": "07",
+          "nombre": "Maule",
+          "deforestacion": 2057.7,
+          "sustitucion": 260.72,
+          "n_def": 216,
+          "n_sus": 65
+        },
+        {
+          "cod": "05",
+          "nombre": "Valparaíso",
+          "deforestacion": 1535.0,
+          "sustitucion": 485.71,
+          "n_def": 287,
+          "n_sus": 116
+        },
+        {
+          "cod": "06",
+          "nombre": "O'Higgins",
+          "deforestacion": 1285.24,
+          "sustitucion": 0.37,
+          "n_def": 235,
+          "n_sus": 1
+        },
+        {
+          "cod": "13",
+          "nombre": "Metropolitana",
+          "deforestacion": 1176.01,
+          "sustitucion": 0.0,
+          "n_def": 197,
+          "n_sus": 0
+        },
+        {
+          "cod": "09",
+          "nombre": "La Araucanía",
+          "deforestacion": 531.66,
+          "sustitucion": 754.25,
+          "n_def": 175,
+          "n_sus": 295
+        },
+        {
+          "cod": "14",
+          "nombre": "Los Ríos",
+          "deforestacion": 493.75,
+          "sustitucion": 141.05,
+          "n_def": 215,
+          "n_sus": 66
+        },
+        {
+          "cod": "16",
+          "nombre": "Ñuble",
+          "deforestacion": 491.63,
+          "sustitucion": 125.1,
+          "n_def": 142,
+          "n_sus": 63
+        },
+        {
+          "cod": "11",
+          "nombre": "Aysén",
+          "deforestacion": 316.17,
+          "sustitucion": 0.0,
+          "n_def": 195,
+          "n_sus": 0
+        },
+        {
+          "cod": "12",
+          "nombre": "Magallanes",
+          "deforestacion": 53.17,
+          "sustitucion": 0.0,
+          "n_def": 6,
+          "n_sus": 0
+        },
+        {
+          "cod": "04",
+          "nombre": "Coquimbo",
+          "deforestacion": 35.64,
+          "sustitucion": 0.0,
+          "n_def": 8,
+          "n_sus": 0
+        }
+      ]
+    },
+    {
+      "clave": "D_TC_17_19",
+      "desde": 2017,
+      "hasta": 2019,
+      "anios": 2,
+      "regiones": 15,
+      "regiones_cod": [
+        "01",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16"
+      ],
+      "con_ancla_oficial": [
+        "01",
+        "03",
+        "15"
+      ],
+      "deforestacion": 22497.39,
+      "sustitucion": 14421.7,
+      "perdida_bruta": 36919.09,
+      "por_anio": 18459.54,
+      "n_deforestacion": 10219,
+      "n_sustitucion": 4338,
+      "marginal": false,
+      "por_region": [
+        {
+          "cod": "10",
+          "nombre": "Los Lagos",
+          "deforestacion": 7334.27,
+          "sustitucion": 281.73,
+          "n_def": 3572,
+          "n_sus": 77
+        },
+        {
+          "cod": "09",
+          "nombre": "La Araucanía",
+          "deforestacion": 3643.43,
+          "sustitucion": 5153.98,
+          "n_def": 1294,
+          "n_sus": 1092
+        },
+        {
+          "cod": "14",
+          "nombre": "Los Ríos",
+          "deforestacion": 2915.35,
+          "sustitucion": 2609.5,
+          "n_def": 1001,
+          "n_sus": 420
+        },
+        {
+          "cod": "07",
+          "nombre": "Maule",
+          "deforestacion": 1577.43,
+          "sustitucion": 1425.03,
+          "n_def": 965,
+          "n_sus": 477
+        },
+        {
+          "cod": "08",
+          "nombre": "Biobío",
+          "deforestacion": 1516.75,
+          "sustitucion": 4229.06,
+          "n_def": 1178,
+          "n_sus": 1864
+        },
+        {
+          "cod": "05",
+          "nombre": "Valparaíso",
+          "deforestacion": 1457.58,
+          "sustitucion": 0.0,
+          "n_def": 496,
+          "n_sus": 0
+        },
+        {
+          "cod": "16",
+          "nombre": "Ñuble",
+          "deforestacion": 1268.7,
+          "sustitucion": 678.25,
+          "n_def": 869,
+          "n_sus": 399
+        },
+        {
+          "cod": "13",
+          "nombre": "Metropolitana",
+          "deforestacion": 1231.87,
+          "sustitucion": 0.0,
+          "n_def": 275,
+          "n_sus": 0
+        },
+        {
+          "cod": "06",
+          "nombre": "O'Higgins",
+          "deforestacion": 1209.54,
+          "sustitucion": 44.15,
+          "n_def": 396,
+          "n_sus": 9
+        },
+        {
+          "cod": "11",
+          "nombre": "Aysén",
+          "deforestacion": 286.27,
+          "sustitucion": 0.0,
+          "n_def": 144,
+          "n_sus": 0
+        },
+        {
+          "cod": "12",
+          "nombre": "Magallanes",
+          "deforestacion": 31.0,
+          "sustitucion": 0.0,
+          "n_def": 15,
+          "n_sus": 0
+        },
+        {
+          "cod": "04",
+          "nombre": "Coquimbo",
+          "deforestacion": 23.65,
+          "sustitucion": 0.0,
+          "n_def": 12,
+          "n_sus": 0
+        },
+        {
+          "cod": "03",
+          "nombre": "Atacama",
+          "deforestacion": 1.55,
+          "sustitucion": 0.0,
+          "n_def": 2,
+          "n_sus": 0
+        },
+        {
+          "cod": "01",
+          "nombre": "Tarapacá",
+          "deforestacion": 0.0,
+          "sustitucion": 0.0,
+          "n_def": 0,
+          "n_sus": 0
+        },
+        {
+          "cod": "15",
+          "nombre": "Arica y Parinacota",
+          "deforestacion": 0.0,
+          "sustitucion": 0.0,
+          "n_def": 0,
+          "n_sus": 0
+        }
+      ]
+    },
+    {
+      "clave": "D_TC_19_21",
+      "desde": 2019,
+      "hasta": 2021,
+      "anios": 2,
+      "regiones": 15,
+      "regiones_cod": [
+        "01",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16"
+      ],
+      "con_ancla_oficial": [
+        "01",
+        "03",
+        "15"
+      ],
+      "deforestacion": 9242.6,
+      "sustitucion": 739.99,
+      "perdida_bruta": 9982.59,
+      "por_anio": 4991.3,
+      "n_deforestacion": 4980,
+      "n_sustitucion": 313,
+      "marginal": false,
+      "por_region": [
+        {
+          "cod": "10",
+          "nombre": "Los Lagos",
+          "deforestacion": 2578.41,
+          "sustitucion": 32.56,
+          "n_def": 2203,
+          "n_sus": 15
+        },
+        {
+          "cod": "07",
+          "nombre": "Maule",
+          "deforestacion": 2044.36,
+          "sustitucion": 182.98,
+          "n_def": 439,
+          "n_sus": 53
+        },
+        {
+          "cod": "06",
+          "nombre": "O'Higgins",
+          "deforestacion": 1119.36,
+          "sustitucion": 0.0,
+          "n_def": 333,
+          "n_sus": 0
+        },
+        {
+          "cod": "08",
+          "nombre": "Biobío",
+          "deforestacion": 620.37,
+          "sustitucion": 282.18,
+          "n_def": 405,
+          "n_sus": 145
+        },
+        {
+          "cod": "14",
+          "nombre": "Los Ríos",
+          "deforestacion": 615.61,
+          "sustitucion": 64.05,
+          "n_def": 297,
+          "n_sus": 17
+        },
+        {
+          "cod": "09",
+          "nombre": "La Araucanía",
+          "deforestacion": 532.09,
+          "sustitucion": 159.69,
+          "n_def": 257,
+          "n_sus": 66
+        },
+        {
+          "cod": "11",
+          "nombre": "Aysén",
+          "deforestacion": 523.22,
+          "sustitucion": 0.0,
+          "n_def": 304,
+          "n_sus": 0
+        },
+        {
+          "cod": "13",
+          "nombre": "Metropolitana",
+          "deforestacion": 432.89,
+          "sustitucion": 0.0,
+          "n_def": 255,
+          "n_sus": 0
+        },
+        {
+          "cod": "05",
+          "nombre": "Valparaíso",
+          "deforestacion": 346.15,
+          "sustitucion": 0.0,
+          "n_def": 196,
+          "n_sus": 0
+        },
+        {
+          "cod": "16",
+          "nombre": "Ñuble",
+          "deforestacion": 343.62,
+          "sustitucion": 18.53,
+          "n_def": 249,
+          "n_sus": 17
+        },
+        {
+          "cod": "12",
+          "nombre": "Magallanes",
+          "deforestacion": 74.26,
+          "sustitucion": 0.0,
+          "n_def": 31,
+          "n_sus": 0
+        },
+        {
+          "cod": "04",
+          "nombre": "Coquimbo",
+          "deforestacion": 6.56,
+          "sustitucion": 0.0,
+          "n_def": 5,
+          "n_sus": 0
+        },
+        {
+          "cod": "03",
+          "nombre": "Atacama",
+          "deforestacion": 4.3,
+          "sustitucion": 0.0,
+          "n_def": 4,
+          "n_sus": 0
+        },
+        {
+          "cod": "15",
+          "nombre": "Arica y Parinacota",
+          "deforestacion": 1.0,
+          "sustitucion": 0.0,
+          "n_def": 1,
+          "n_sus": 0
+        },
+        {
+          "cod": "01",
+          "nombre": "Tarapacá",
+          "deforestacion": 0.4,
+          "sustitucion": 0.0,
+          "n_def": 1,
+          "n_sus": 0
+        }
+      ]
+    },
+    {
+      "clave": "D_TC_21_23",
+      "desde": 2021,
+      "hasta": 2023,
+      "anios": 2,
+      "regiones": 12,
+      "regiones_cod": [
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "16"
+      ],
+      "con_ancla_oficial": [],
+      "deforestacion": 9962.93,
+      "sustitucion": 479.71,
+      "perdida_bruta": 10442.64,
+      "por_anio": 5221.32,
+      "n_deforestacion": 7089,
+      "n_sustitucion": 114,
+      "marginal": false,
+      "por_region": [
+        {
+          "cod": "10",
+          "nombre": "Los Lagos",
+          "deforestacion": 3707.24,
+          "sustitucion": 10.64,
+          "n_def": 3725,
+          "n_sus": 5
+        },
+        {
+          "cod": "07",
+          "nombre": "Maule",
+          "deforestacion": 2145.43,
+          "sustitucion": 339.64,
+          "n_def": 770,
+          "n_sus": 72
+        },
+        {
+          "cod": "11",
+          "nombre": "Aysén",
+          "deforestacion": 950.56,
+          "sustitucion": 0.0,
+          "n_def": 930,
+          "n_sus": 0
+        },
+        {
+          "cod": "12",
+          "nombre": "Magallanes",
+          "deforestacion": 898.34,
+          "sustitucion": 0.0,
+          "n_def": 273,
+          "n_sus": 0
+        },
+        {
+          "cod": "06",
+          "nombre": "O'Higgins",
+          "deforestacion": 598.2,
+          "sustitucion": 0.0,
+          "n_def": 273,
+          "n_sus": 0
+        },
+        {
+          "cod": "05",
+          "nombre": "Valparaíso",
+          "deforestacion": 382.28,
+          "sustitucion": 0.0,
+          "n_def": 269,
+          "n_sus": 0
+        },
+        {
+          "cod": "14",
+          "nombre": "Los Ríos",
+          "deforestacion": 379.72,
+          "sustitucion": 2.22,
+          "n_def": 291,
+          "n_sus": 1
+        },
+        {
+          "cod": "08",
+          "nombre": "Biobío",
+          "deforestacion": 275.53,
+          "sustitucion": 2.64,
+          "n_def": 172,
+          "n_sus": 2
+        },
+        {
+          "cod": "13",
+          "nombre": "Metropolitana",
+          "deforestacion": 227.61,
+          "sustitucion": 0.0,
+          "n_def": 81,
+          "n_sus": 0
+        },
+        {
+          "cod": "16",
+          "nombre": "Ñuble",
+          "deforestacion": 198.35,
+          "sustitucion": 122.3,
+          "n_def": 150,
+          "n_sus": 32
+        },
+        {
+          "cod": "09",
+          "nombre": "La Araucanía",
+          "deforestacion": 195.45,
+          "sustitucion": 2.27,
+          "n_def": 150,
+          "n_sus": 2
+        },
+        {
+          "cod": "04",
+          "nombre": "Coquimbo",
+          "deforestacion": 4.22,
+          "sustitucion": 0.0,
+          "n_def": 5,
+          "n_sus": 0
+        }
+      ]
+    }
+  ],
+  "pares_comparables": [
+    [
+      "D_TC_17_19",
+      "D_TC_19_21"
+    ]
+  ]
+}

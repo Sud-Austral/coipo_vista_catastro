@@ -24,6 +24,12 @@
      con ella: viven en su propia barra de composición. */
   --plantacion: #8bc34a;
   --mixto: #4d7c3f;
+  /* Deforestación y sustitución (SIMEF). Tampoco entran en la paleta validada
+     de nueve usos, porque nunca comparten superficie con ella: viven en su
+     propia barra apilada, donde además se distinguen por trama y no sólo por
+     color. */
+  --deforestacion: #c0392b;
+  --sustitucion: #e67e22;
   --sombra: 0 1px 2px rgb(20 33 26 / 0.08), 0 4px 12px rgb(20 33 26 / 0.06);
 }
 
@@ -40,6 +46,8 @@
     --acento: #4cc98a;
     --plantacion: #9ccc65;
     --mixto: #5d8c4f;
+    --deforestacion: #e05c4c;
+    --sustitucion: #f0902f;
     --sombra: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.3);
   }
 }

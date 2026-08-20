@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AVISO_PUNTOS, BASEMAPS, COLOR_USO } from '../config'
 import { fmt, ha, haExacta } from '../formato'
+import { flush } from '../urlState'
 
 /**
  * Panel de control.
@@ -25,6 +26,7 @@ export default function PanelLateral({
   abierto,
   onCerrar,
   oscuro,
+  children,
 }) {
   const cabecera = useRef(null)
   const montado = useRef(false)
@@ -70,6 +72,9 @@ export default function PanelLateral({
   const paleta = COLOR_USO[oscuro ? 'oscuro' : 'claro']
 
   const compartir = async () => {
+    // flush PRIMERO: la URL se escribe con 250 ms de retraso, así que sin esto
+    // pulsar el botón justo después de mover el mapa copia el encuadre ANTERIOR.
+    flush()
     const url = window.location.href
     if (navigator.share) {
       try {
@@ -167,11 +172,24 @@ export default function PanelLateral({
         <span className="aviso-copia" aria-live="polite">{aviso}</span>
       </section>
 
+      {/* La sección de descargas llega como children y no como diez props más:
+          este panel sigue sin saber nada de exportar. */}
+      {children}
+
       <section>
         <h2>Clases de uso</h2>
         <p className="nota">
           Pulsa una clase para aislarla en el mapa. El color no es la única marca: el nombre y la
           superficie van escritos al lado.
+        </p>
+        {/* «CRECE CON», nunca «es proporcional a». Con el radio acotado por
+            arriba y por abajo no hay proporcionalidad, y el rango real del dato
+            va de 0,1 ha a 1.295.122 ha: ninguna escala proporcional cabe en unos
+            pocos píxeles. Decirlo mal en la única línea permanente sería el
+            rigor fallando dentro del mecanismo que existe para protegerlo. */}
+        <p className="nota">
+          El tamaño del punto <strong>crece con</strong> la superficie del polígono, con un mínimo
+          y un máximo para que siga siendo visible y se pueda pulsar. No es proporcional.
         </p>
         <ul className="leyenda">
           {(resumen?.usos ?? []).map((u) => {

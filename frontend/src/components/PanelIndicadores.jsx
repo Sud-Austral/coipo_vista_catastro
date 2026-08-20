@@ -8,7 +8,15 @@ import {
   estructurasBosqueNativo,
   resumenSnaspe,
 } from '../indicadores'
-import { Advertencia, BarraFila, Cifra, Composicion, TablaKpi } from './graficos'
+import {
+  Advertencia,
+  BarraApilada,
+  BarraFila,
+  Cifra,
+  Composicion,
+  Discontinuidad,
+  TablaKpi,
+} from './graficos'
 
 /**
  * Panel de lectura.
@@ -35,6 +43,7 @@ import { Advertencia, BarraFila, Cifra, Composicion, TablaKpi } from './graficos
  */
 export default function PanelIndicadores({
   resumen,
+  simef,
   manifest,
   ambito,
   abierto,
@@ -417,6 +426,8 @@ export default function PanelIndicadores({
               </>
             )}
           </Seccion>
+          <SeccionSimef simef={simef} />
+          <SeccionAnios manifest={manifest} />
         </>
       )}
 
@@ -455,5 +466,182 @@ function Seccion({ id, titulo, cifra, bajada, nota, advertencia, tabla, abiertaP
         )}
       </div>
     </details>
+  )
+}
+
+/**
+ * S7 · Cambio de bosque nativo. ES OTRA FUENTE, y el título lo dice.
+ *
+ * Barras apiladas y no una línea de tiempo: cada par de años cubre un conjunto
+ * distinto de regiones, así que unirlos con una línea afirmaría una continuidad
+ * que no existe. Los pares que no cubren las 15 regiones van SEPARADOS por una
+ * discontinuidad, que no es una nota: es un corte en el gráfico.
+ */
+function SeccionSimef({ simef }) {
+  if (!simef) {
+    return (
+      <Seccion
+        id="s7"
+        titulo="Cambio de bosque nativo · SIMEF"
+        cifra="—"
+        bajada="Deforestación y sustitución medidas por SIMEF, una fuente distinta del Catastro."
+        nota="No se pudieron cargar los datos de SIMEF. El resto del visor no depende de ellos."
+      >
+        <p className="apagada">Sin datos de SIMEF.</p>
+      </Seccion>
+    )
+  }
+
+  const utiles = simef.pares.filter((p) => !p.marginal)
+  const maxBruta = Math.max(...utiles.map((p) => p.perdida_bruta), 1)
+  const completos = utiles.filter((p) => p.regiones >= 15)
+  const parciales = utiles.filter((p) => p.regiones < 15)
+  const comp = simef.pares_comparables[0]
+  const a = comp ? utiles.find((p) => p.clave === comp[0]) : null
+  const b = comp ? utiles.find((p) => p.clave === comp[1]) : null
+
+  const barra = (p) => (
+    <BarraApilada
+      key={p.clave}
+      etiqueta={`${p.desde}–${p.hasta}`}
+      glosa={`${p.anios} ${p.anios === 1 ? 'año' : 'años'} · ${p.regiones} regiones`}
+      max={maxBruta}
+      total={ha(p.perdida_bruta)}
+      partes={[
+        {
+          clave: 'd',
+          valor: p.deforestacion,
+          color: 'var(--deforestacion)',
+          etiqueta: 'Deforestación',
+          texto: haExacta(p.deforestacion),
+        },
+        {
+          clave: 's',
+          valor: p.sustitucion,
+          color: 'var(--sustitucion)',
+          trama: true,
+          etiqueta: 'Sustitución',
+          texto: haExacta(p.sustitucion),
+        },
+      ]}
+      nota={`${ha(p.por_anio)} por año · ${
+        p.con_ancla_oficial.length
+          ? `${p.con_ancla_oficial.length} de ${p.regiones} regiones con cifra oficial de contraste`
+          : 'sin cifra oficial de contraste'
+      }`}
+    />
+  )
+
+  return (
+    <Seccion
+      id="s7"
+      titulo="Cambio de bosque nativo · SIMEF"
+      cifra={b ? ha(b.perdida_bruta) : '—'}
+      bajada="Pérdida bruta de bosque nativo: deforestación más sustitución. Son clases disjuntas, así que se suman."
+      nota={`${utiles.length} períodos con datos · la barra más larga es ${ha(maxBruta)}`}
+      advertencia={{
+        titulo: 'Por qué estas barras no se comparan entre sí',
+        cuerpo:
+          `${simef.aviso} Sólo Arica y Parinacota, Tarapacá y Atacama tienen cifra oficial ` +
+          'publicada contra la que contrastar; en el resto la comprobación es interna. Por eso ' +
+          'no se dibuja ninguna línea de tiempo ni ningún total 2001–2023: sería la suma de ' +
+          'seis territorios distintos.',
+      }}
+      tabla={{
+        titulo: 'Pérdida bruta de bosque nativo por período',
+        cabeceras: ['Período', 'Años', 'Regiones', 'Deforestación', 'Sustitución', 'Bruta'],
+        filas: utiles.map((p) => [
+          `${p.desde}–${p.hasta}`,
+          String(p.anios),
+          String(p.regiones),
+          haExacta(p.deforestacion),
+          haExacta(p.sustitucion),
+          haExacta(p.perdida_bruta),
+        ]),
+      }}
+    >
+      {a && b && (
+        <p className="destacado">
+          En el único par de períodos plenamente comparables entre sí —{a.desde}–{a.hasta} y{' '}
+          {b.desde}–{b.hasta}, ambos de {a.anios} años y ambos con las {a.regiones} regiones—, la
+          pérdida bruta de bosque nativo baja de <strong>{ha(a.perdida_bruta)}</strong> a{' '}
+          <strong>{ha(b.perdida_bruta)}</strong>.
+        </p>
+      )}
+
+      {/* La leyenda va ANTES de las barras, no después: dos colores sin nombre
+          no significan nada, y en varios períodos la sustitución es tan pequeña
+          que su segmento no se ve. Que se distingan por trama además de por
+          color sirve de poco si nadie sabe qué es cada uno. */}
+      <p className="leyenda-linea">
+        <span className="muestra" style={{ background: 'var(--deforestacion)' }} />
+        Deforestación: el bosque nativo pasó a un uso que no es bosque.
+        <br />
+        <span className="muestra tramada" style={{ background: 'var(--sustitucion)' }} />
+        Sustitución: pasó a plantación. Las dos son disjuntas y aquí se suman.
+      </p>
+      {completos.map(barra)}
+      {parciales.length > 0 && (
+        <>
+          <Discontinuidad>Períodos que no cubren todas las regiones</Discontinuidad>
+          {parciales.map(barra)}
+        </>
+      )}
+    </Seccion>
+  )
+}
+
+/**
+ * S8 · De cuándo es cada dato.
+ *
+ * No es un indicador: es una propiedad de TODOS los números del visor, y por eso
+ * el año va además pegado a cada región en todas partes. Aquí se ve el conjunto,
+ * que es lo que no cabe en una etiqueta: diez años entre la región más antigua y
+ * la más reciente.
+ *
+ * Lista vertical y no una línea de tiempo horizontal: en 288 px, diez saltos de
+ * año dan 24 px por año, y en 2024 hay cinco regiones cuyos rótulos habría que
+ * apilar en ese hueco.
+ */
+function SeccionAnios({ manifest }) {
+  if (!manifest) return null
+  const anio = (r) => parseInt(String(r.anio).slice(0, 4), 10)
+  const filas = manifest.regiones.slice().sort((x, y) => anio(x) - anio(y) || x.orden - y.orden)
+  const min = anio(filas[0])
+  const max = anio(filas[filas.length - 1])
+  return (
+    <Seccion
+      id="s8"
+      titulo="De cuándo es cada dato"
+      cifra={`${min}–${max}`}
+      bajada="Cada región se levantó en un año distinto. Ésta es la lista completa, de la más antigua a la más reciente."
+      nota={`${max - min} años entre la región más antigua y la más reciente`}
+      advertencia={{
+        titulo: 'Por qué esto no es una serie temporal',
+        cuerpo:
+          'El Catastro es una foto por región, no una secuencia. Comparar dos regiones compara ' +
+          'dos años distintos, y restar una de otra no mide ningún cambio. En este visor no ' +
+          'existe ningún control que ofrezca dos años del Catastro: lo que no se puede hacer, ' +
+          'no se dibuja.',
+      }}
+      tabla={{
+        titulo: 'Año de levantamiento por región',
+        cabeceras: ['Región', 'Año', 'Polígonos'],
+        filas: filas.map((r) => [r.nombre, String(r.anio), numero(r.n)]),
+      }}
+    >
+      <div className="serie-anios">
+        {filas.map((r) => (
+          <div className="anio-fila" key={r.cod} title={`${r.oficial ?? r.nombre} · ${r.anio}`}>
+            <span className="anio-num">{r.anio}</span>
+            <span
+              className="anio-barra"
+              style={{ width: `${20 + (70 * (anio(r) - min)) / Math.max(1, max - min)}%` }}
+            />
+            <span>{r.nombre}</span>
+          </div>
+        ))}
+      </div>
+    </Seccion>
   )
 }

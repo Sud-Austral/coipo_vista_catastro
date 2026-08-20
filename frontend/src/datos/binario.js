@@ -17,7 +17,10 @@ const CONSTRUCTOR = { f32: Float32Array, u16: Uint16Array, u8: Uint8Array }
 const ANCHO = { f32: 4, u16: 2, u8: 1 }
 
 export async function cargarPuntos(señal) {
-  const man = await pedir(`${DATA}/manifest.json`, señal).then((r) => r.json())
+  // El manifest se pide SIN caché: es el índice, pesa poco, y si llega viejo
+  // arrastra consigo la versión equivocada de todo lo demás.
+  const man = await pedir(`${DATA}/manifest.json`, señal, { cache: 'no-cache' })
+    .then((r) => r.json())
   if (man.esquema !== 2) {
     // Ruidoso a proposito: un manifest de otra version abriria vistas tipadas
     // perfectamente validas sobre offsets equivocados, y el mapa saldria
@@ -30,15 +33,30 @@ export async function cargarPuntos(señal) {
   const capa = man.capas?.cbn_puntos
   if (!capa) throw new Error('manifest.json no declara la capa cbn_puntos')
 
-  const buf = await pedir(`${DATA}/${capa.archivo}`, señal).then((r) => r.arrayBuffer())
+  // El sha256 va en la URL, y no es adorno: el .bin se llama siempre igual, así
+  // que sin esto un navegador que ya lo visitó reutiliza su copia en caché y la
+  // contrasta contra un manifest nuevo. El síntoma exacto es el error de abajo,
+  // con el tamaño viejo (23.763.129 B = 13 B/fila, el formato de 4 columnas)
+  // contra el declarado. Vite pone hash a JS y CSS, pero lo de public/ se copia
+  // con el mismo nombre, y GitHub Pages sirve con max-age=600 y no deja
+  // configurar cabeceras.
+  const buf = await pedir(
+    `${DATA}/${capa.archivo}?v=${capa.sha256.slice(0, 12)}`,
+    señal,
+  ).then((r) => r.arrayBuffer())
   const n = capa.filas
 
   const esperado = Object.values(capa.campos).reduce((a, c) => a + ANCHO[c.tipo] * n, 0)
   if (buf.byteLength !== esperado) {
+    const filasQueCabrian = buf.byteLength / (esperado / n)
     throw new Error(
-      `${capa.archivo} mide ${buf.byteLength} bytes y el manifest declara ${esperado}. ` +
-        'Se prefiere no dibujar: un .bin truncado abre vistas tipadas válidas sobre ' +
-        'basura y pondría puntos en medio del Pacífico sin ningún error.',
+      `${capa.archivo} mide ${buf.byteLength} bytes y el manifest declara ${esperado}.\n\n` +
+        'Se prefiere no dibujar: un .bin de otro tamaño abre vistas tipadas válidas sobre ' +
+        'basura y pondría los puntos en medio del Pacífico sin dar ningún error.\n\n' +
+        (Number.isInteger(filasQueCabrian)
+          ? 'Lo más probable es una copia en caché de una versión anterior de los datos. ' +
+            'Recarga forzando la actualización (Ctrl+Shift+R, o Cmd+Shift+R en Mac).'
+          : 'El archivo parece truncado o incompleto.'),
     )
   }
 
@@ -95,8 +113,8 @@ export function canalFiltro(datos, { usos, comunas }) {
   return f
 }
 
-async function pedir(url, señal) {
-  const r = await fetch(url, { signal: señal })
+async function pedir(url, señal, opciones = {}) {
+  const r = await fetch(url, { signal: señal, ...opciones })
   if (!r.ok) throw new Error(`${url}: HTTP ${r.status}`)
   return r
 }

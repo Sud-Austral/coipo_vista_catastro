@@ -24,16 +24,13 @@ sys.stdout.reconfigure(encoding="utf-8")
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATOS = os.path.join(RAIZ, "frontend", "public", "datos")
 
-# Cifra oficial publicada por CONAF para el total nacional del Catastro.
-OFICIAL_HA = 75_661_194.48
 FILAS_CBN = 1_827_933
 BYTES_POR_FILA = 19          # 3 f32 + 1 u16 + 5 u8
 
-# Cifra oficial de Plantacion. Es la que cierra la decision de los 7.191
-# poligonos de La Araucania cuyo texto dice "Bosque" y cuyo codigo dice
-# "Plantacion": agregando por CODIGO se reproduce al decimal, agregando por
-# texto faltan 24.591 ha.
-OFICIAL_PLANTACION_HA = 3_142_779.81
+# Las cifras oficiales NO se escriben aqui: se leen de oficiales.json, que
+# `ETL/cifras_oficiales.py` parsea de la planilla que CONAF publico dentro de la
+# propia base. Una constante escrita a mano se desincroniza el dia que alguien
+# actualiza la planilla, y entonces la prueba mide su propia copia.
 
 # La tolerancia sale de la DEFINICION, no del gusto: el unico desvio posible
 # entre un total y la suma de sus partes es el redondeo de cada parte a dos
@@ -118,9 +115,26 @@ def comprobar(man, crudo, tam, hashes):
     if abs(suma_usos - total) > TOL_TABLA(len(man["usos"])):
         fallos.append(f"D7 los usos suman {suma_usos:,.2f} y el total dice {total:,.2f}")
 
-    d = total - OFICIAL_HA
-    if abs(d) > TOL_OFICIAL:
-        fallos.append(f"D8 total {total:,.2f} se aleja {d:+,.2f} de la cifra oficial")
+    ofi = leer_oficiales()
+    if ofi is None:
+        fallos.append("D8 falta oficiales.json: no hay contra que contrastar")
+    else:
+        # Se comprueban TODAS las dimensiones publicadas, no solo el total: un
+        # ETL puede acertar el total y repartirlo mal.
+        for clave, valor in sorted(ofi["total_pais"].items()):
+            if clave == "total":
+                mio, limite = total, TOL_OFICIAL
+            else:
+                dim, cod = clave.split(":")
+                lista = man["usos"] if dim == "uso" else man["subusos"]
+                fila = next((x for x in lista if x["cod"] == cod), None)
+                mio, limite = (fila["ha"] if fila else None), 10.0
+            if mio is None:
+                fallos.append(f"D8 no hay cifra propia para {clave}")
+                continue
+            if abs(mio - valor) > limite:
+                fallos.append(f"D8 {clave}: {mio:,.2f} contra {valor:,.2f} oficial "
+                              f"({mio - valor:+,.2f}, tolerancia {limite:g})")
 
     if man["total"]["filas"] != FILAS_CBN:
         fallos.append(f"D9 filas {man['total']['filas']:,} != {FILAS_CBN:,}")
@@ -174,11 +188,24 @@ def comprobar(man, crudo, tam, hashes):
     # oficial de Plantacion. Es la asercion que se pone roja si alguien vuelve a
     # agregar por texto.
     pl = next(s for s in man["subusos"] if s["cod"] == "0401")
-    if abs(pl["ha"] - OFICIAL_PLANTACION_HA) > 0.1:
-        fallos.append(f"D16 Plantacion {pl['ha']:,.2f} != oficial "
-                      f"{OFICIAL_PLANTACION_HA:,.2f} (se agrego por texto?)")
+    if ofi:
+        oficial_pl = ofi["total_pais"].get("subuso:0401")
+        if oficial_pl and abs(pl["ha"] - oficial_pl) > 0.1:
+            fallos.append(f"D16 Plantacion {pl['ha']:,.2f} != oficial {oficial_pl:,.2f} "
+                          f"(se agrego por texto?)")
 
     return fallos
+
+
+def leer_oficiales():
+    """Las cifras publicadas por CONAF. Si el archivo no esta, se dice: la
+    comprobacion contra el exterior se pierde, y callarlo dejaria el gate
+    aparentemente verde sin su unica asercion que mira fuera."""
+    ruta = os.path.join(DATOS, "oficiales.json")
+    if not os.path.exists(ruta):
+        return None
+    with open(ruta, encoding="utf-8") as fh:
+        return json.load(fh)
 
 
 def leer():
@@ -206,6 +233,12 @@ def _off(man, campo, valor):
     return m
 
 
+def _uso(man, cod, ha):
+    m = copy.deepcopy(man)
+    next(u for u in m["usos"] if u["cod"] == cod)["ha"] = ha
+    return m
+
+
 def _sub(man, cod, ha):
     m = copy.deepcopy(man)
     next(s for s in m["subusos"] if s["cod"] == cod)["ha"] = ha
@@ -225,6 +258,8 @@ NEGATIVAS = [
      lambda m, c, t, h: ({**copy.deepcopy(m), "total": {**m["total"], "ha": m["total"]["ha"] + 5}}, c, t, h)),
     ("D8 total lejos de lo oficial", "D8",
      lambda m, c, t, h: ({**copy.deepcopy(m), "total": {**m["total"], "ha": 75_700_000.0}}, c, t, h)),
+    ("D8 un uso repartido mal", "D8",
+     lambda m, c, t, h: (_uso(m, "03", 29_000_000.0), c, t, h)),
     ("D10 un subuso de Bosques perdido", "D10",
      lambda m, c, t, h: (_sub(m, "0403", 0.0), c, t, h)),
     ("D16 Plantacion agregada por texto", "D16",
@@ -244,12 +279,16 @@ def main():
 
     print(f"  cbn_puntos: {cap['filas']:,} filas x {BYTES_POR_FILA} B = "
           f"{cap['bytes']/1e6:.1f} MB · sha256 {cap['sha256'][:16]}…")
-    print(f"  total nacional {man['total']['ha']:,.2f} ha · "
-          f"{man['total']['ha'] - OFICIAL_HA:+.2f} contra la cifra oficial (±{TOL_OFICIAL:g})")
+    ofi = leer_oficiales()
+    oficial_total = ofi["total_pais"]["total"] if ofi else None
+    print(f"  total nacional {man['total']['ha']:,.2f} ha" + (
+        f" · {man['total']['ha'] - oficial_total:+.2f} contra la cifra oficial "
+        f"(±{TOL_OFICIAL:g})" if oficial_total else " · SIN oficiales.json"))
     pl = next(s for s in man["subusos"] if s["cod"] == "0401")
     bn = next(s for s in man["subusos"] if s["cod"] == "0402")
-    print(f"  bosque nativo {bn['ha']:,.2f} ha · plantación {pl['ha']:,.2f} ha "
-          f"({pl['ha'] - OFICIAL_PLANTACION_HA:+.2f} contra la oficial)")
+    oficial_pl = ofi["total_pais"].get("subuso:0401") if ofi else None
+    print(f"  bosque nativo {bn['ha']:,.2f} ha · plantación {pl['ha']:,.2f} ha" + (
+        f" ({pl['ha'] - oficial_pl:+.2f} contra la oficial)" if oficial_pl else ""))
     print(f"  filas sin dato: {cap['sin_dato']}")
     for campo, vals in man["codigos_desconocidos"].items():
         if vals:

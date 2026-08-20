@@ -1,0 +1,363 @@
+{
+  "esquema": 1,
+  "fuente": "tab.xls_cifras_oficiales_catastrocon_usos_de_la_tierra, publicada por CONAF dentro de la propia base",
+  "anio_discrepante": [
+    {
+      "region": "Arica y Parinacota",
+      "en_la_planilla_oficial": "2014",
+      "en_las_capas": "2015",
+      "usado": "2015"
+    },
+    {
+      "region": "Antofagasta",
+      "en_la_planilla_oficial": "2018-2020",
+      "en_las_capas": "2018-2019",
+      "usado": "2018-2019"
+    },
+    {
+      "region": "Coquimbo",
+      "en_la_planilla_oficial": "2015",
+      "en_las_capas": "2014",
+      "usado": "2014"
+    }
+  ],
+  "nota_anio": "El año de levantamiento tiene tres fuentes: la columna `periodo` de cada capa, el nombre del shapefile de origen que asignó CONAF, y la planilla oficial de cifras. Las dos primeras coinciden en las 22 capas; la planilla difiere en tres regiones. Este visor usa el de las capas, que es el que respaldan dos fuentes, y publica la diferencia en vez de resolverla en silencio.",
+  "nota": "Cifras oficiales publicadas por CONAF. Son la única referencia externa contra la que este visor se contrasta: todo lo demás comprueba que el manifest es coherente consigo mismo, y un ETL puede ser coherente y estar equivocado.",
+  "total_pais": {
+    "uso:01": 864391.79,
+    "uso:02": 4088178.63,
+    "uso:03": 29282364.62,
+    "subuso:0401": 3142779.81,
+    "subuso:0402": 15536329.03,
+    "subuso:0403": 183646.1,
+    "uso:04": 18862754.94,
+    "uso:05": 831088.27,
+    "uso:06": 17191344.4,
+    "uso:07": 2756878.73,
+    "uso:08": 1452994.24,
+    "uso:09": 331198.86,
+    "total": 75661194.48
+  },
+  "regiones": [
+    {
+      "region": "Antofagasta",
+      "asterisco": false,
+      "valores": {
+        "uso:01": 273150.33,
+        "uso:02": 6419.86,
+        "uso:03": 4710223.73,
+        "subuso:0401": 3049.86,
+        "subuso:0402": 11899.32,
+        "subuso:0403": 0.0,
+        "uso:04": 14949.18,
+        "uso:05": 47483.44,
+        "uso:06": 7543701.0,
+        "uso:07": 0.0,
+        "uso:08": 10036.44,
+        "uso:09": 0.0,
+        "total": 12605963.98
+      },
+      "anio_actualizacion": "2018-2020"
+    },
+    {
+      "region": "Arica y Parinacota",
+      "asterisco": false,
+      "valores": {
+        "uso:01": 10577.41,
+        "uso:02": 12707.74,
+        "uso:03": 923141.54,
+        "subuso:0401": 20.78,
+        "subuso:0402": 47151.34,
+        "subuso:0403": 0.0,
+        "uso:04": 47172.12,
+        "uso:05": 23759.69,
+        "uso:06": 665853.28,
+        "uso:07": 7109.13,
+        "uso:08": 4158.67,
+        "uso:09": 0.0,
+        "total": 1694479.58
+      },
+      "anio_actualizacion": "2014"
+    },
+    {
+      "region": "Atacama",
+      "asterisco": false,
+      "valores": {
+        "uso:01": 46177.8,
+        "uso:02": 37486.3,
+        "uso:03": 5262601.43,
+        "subuso:0401": 276.4,
+        "subuso:0402": 3224.2,
+        "subuso:0403": 0.0,
+        "uso:04": 3500.6,
+        "uso:05": 8919.4,
+        "uso:06": 2196833.8,
+        "uso:07": 0.0,
+        "uso:08": 8206.6,
+        "uso:09": 0.0,
+        "total": 7563725.93
+      },
+      "anio_actualizacion": "2018"
+    },
+    {
+      "region": "Aysén",
+      "asterisco": false,
+      "valores": {
+        "uso:01": 6468.7,
+        "uso:02": 37519.9,
+        "uso:03": 2606728.97,
+        "subuso:0401": 35473.6,
+        "subuso:0402": 5152384.3,
+        "subuso:0403": 2065.9,
+        "uso:04": 5189923.8,
+        "uso:05": 106484.6,
+        "uso:06": 1141667.8,
+        "uso:07": 1114479.1,
+        "uso:08": 463938.6,
+        "uso:09": 0.0,
+        "total": 10667211.47
+      },
+      "anio_actualizacion": "2020-2022"
+    },
+    {
+      "region": "Biobío",
+      "asterisco": true,
+      "valores": {
+        "uso:01": 38292.76,
+        "uso:02": 327892.63,
+        "uso:03": 320677.88,
+        "subuso:0401": 884932.29,
+        "subuso:0402": 615662.9,
+        "subuso:0403": 53979.99,
+        "uso:04": 1554575.18,
+        "uso:05": 10544.7,
+        "uso:06": 87525.77,
+        "uso:07": 15642.98,
+        "uso:08": 44425.1,
+        "uso:09": 0.0,
+        "total": 2399577.0
+      },
+      "anio_actualizacion": "2024"
+    },
+    {
+      "region": "Coquimbo",
+      "asterisco": false,
+      "valores": {
+        "uso:01": 39360.92,
+        "uso:02": 161959.45,
+        "uso:03": 3025767.81,
+        "subuso:0401": 12285.12,
+        "subuso:0402": 48474.86,
+        "subuso:0403": 886.43,
+        "uso:04": 61646.41,
+        "uso:05": 11555.15,
+        "uso:06": 758229.33,
+        "uso:07": 398.8,
+        "uso:08": 2709.82,
+        "uso:09": 0.0,
+        "total": 4061627.69
+      },
+      "anio_actualizacion": "2015"
+    },
+    {
+      "region": "La Araucanía",
+      "asterisco": true,
+      "valores": {
+        "uso:01": 21737.39,
+        "uso:02": 831478.58,
+        "uso:03": 408174.44,
+        "subuso:0401": 656014.37,
+        "subuso:0402": 1043078.86,
+        "subuso:0403": 40126.32,
+        "uso:04": 1739219.55,
+        "uso:05": 16714.94,
+        "uso:06": 101644.93,
+        "uso:07": 5386.77,
+        "uso:08": 56994.63,
+        "uso:09": 0.0,
+        "total": 3181351.23
+      },
+      "anio_actualizacion": "2024"
+    },
+    {
+      "region": "Los Lagos",
+      "asterisco": false,
+      "valores": {
+        "uso:01": 20409.0,
+        "uso:02": 459039.8,
+        "uso:03": 665257.0,
+        "subuso:0401": 98361.8,
+        "subuso:0402": 2791761.5,
+        "subuso:0403": 12407.4,
+        "uso:04": 2902530.7,
+        "uso:05": 56995.0,
+        "uso:06": 275593.8,
+        "uso:07": 224600.0,
+        "uso:08": 235066.7,
+        "uso:09": 0.0,
+        "total": 4839492.0
+      },
+      "anio_actualizacion": "2018"
+    },
+    {
+      "region": "Los Ríos",
+      "asterisco": true,
+      "valores": {
+        "uso:01": 12068.75,
+        "uso:02": 336483.89,
+        "uso:03": 144398.8,
+        "subuso:0401": 214251.45,
+        "subuso:0402": 938470.97,
+        "subuso:0403": 10823.96,
+        "uso:04": 1163546.38,
+        "uso:05": 11288.28,
+        "uso:06": 52324.57,
+        "uso:07": 5340.66,
+        "uso:08": 109855.82,
+        "uso:09": 0.0,
+        "total": 1835307.15
+      },
+      "anio_actualizacion": "2024"
+    },
+    {
+      "region": "Magallanes y de La Antártica",
+      "asterisco": false,
+      "valores": {
+        "uso:01": 21831.3,
+        "uso:02": 43936.69,
+        "uso:03": 7438525.09,
+        "subuso:0401": 286.18,
+        "subuso:0402": 2760176.6,
+        "subuso:0403": 0.0,
+        "uso:04": 2760462.78,
+        "uso:05": 511811.55,
+        "uso:06": 741017.32,
+        "uso:07": 1183880.61,
+        "uso:08": 436787.18,
+        "uso:09": 331198.86,
+        "total": 13469451.39
+      },
+      "anio_actualizacion": "2017-2019"
+    },
+    {
+      "region": "Maule",
+      "asterisco": true,
+      "valores": {
+        "uso:01": 31714.42,
+        "uso:02": 615229.53,
+        "uso:03": 573587.54,
+        "subuso:0401": 588926.49,
+        "subuso:0402": 598607.11,
+        "subuso:0403": 38968.26,
+        "uso:04": 1226501.86,
+        "uso:05": 2862.22,
+        "uso:06": 497990.21,
+        "uso:07": 47749.87,
+        "uso:08": 36817.72,
+        "uso:09": 0.0,
+        "total": 3032453.37
+      },
+      "anio_actualizacion": "2024"
+    },
+    {
+      "region": "Metropolitana",
+      "asterisco": false,
+      "valores": {
+        "uso:01": 146361.2,
+        "uso:02": 230872.8,
+        "uso:03": 441558.4,
+        "subuso:0401": 9287.9,
+        "subuso:0402": 383557.7,
+        "subuso:0403": 509.6,
+        "uso:04": 393355.2,
+        "uso:05": 3240.1,
+        "uso:06": 228192.7,
+        "uso:07": 86749.3,
+        "uso:08": 9302.2,
+        "uso:09": 0.0,
+        "total": 1539631.9
+      },
+      "anio_actualizacion": "2019"
+    },
+    {
+      "region": "O'Higgins",
+      "asterisco": false,
+      "valores": {
+        "uso:01": 41139.0,
+        "uso:02": 396377.5,
+        "uso:03": 363948.0,
+        "subuso:0401": 159310.2,
+        "subuso:0402": 428775.9,
+        "subuso:0403": 2152.6,
+        "uso:04": 590238.7,
+        "uso:05": 3594.3,
+        "uso:06": 185398.8,
+        "uso:07": 35994.1,
+        "uso:08": 17772.7,
+        "uso:09": 0.0,
+        "total": 1634463.1
+      },
+      "anio_actualizacion": "2020"
+    },
+    {
+      "region": "Tarapacá",
+      "asterisco": false,
+      "valores": {
+        "uso:01": 67993.84,
+        "uso:02": 6441.07,
+        "uso:03": 1589373.79,
+        "subuso:0401": 29264.19,
+        "subuso:0402": 33246.38,
+        "subuso:0403": 0.0,
+        "uso:04": 62510.57,
+        "uso:05": 11803.97,
+        "uso:06": 2489891.42,
+        "uso:07": 0.0,
+        "uso:08": 789.53,
+        "uso:09": 0.0,
+        "total": 4228804.19
+      },
+      "anio_actualizacion": "2016"
+    },
+    {
+      "region": "Valparaíso",
+      "asterisco": false,
+      "valores": {
+        "uso:01": 72055.5,
+        "uso:02": 189062.7,
+        "uso:03": 679982.7,
+        "subuso:0401": 76601.6,
+        "subuso:0402": 413765.3,
+        "subuso:0403": 1184.6,
+        "uso:04": 491551.5,
+        "uso:05": 2853.2,
+        "uso:06": 139179.3,
+        "uso:07": 17155.8,
+        "uso:08": 5695.9,
+        "uso:09": 0.0,
+        "total": 1597536.6
+      },
+      "anio_actualizacion": "2019"
+    },
+    {
+      "region": "Ñuble",
+      "asterisco": true,
+      "valores": {
+        "uso:01": 15053.47,
+        "uso:02": 395270.19,
+        "uso:03": 128417.5,
+        "subuso:0401": 374437.57,
+        "subuso:0402": 266091.8,
+        "subuso:0403": 20541.04,
+        "uso:04": 661070.41,
+        "uso:05": 1177.73,
+        "uso:06": 86300.37,
+        "uso:07": 12391.61,
+        "uso:08": 10436.63,
+        "uso:09": 0.0,
+        "total": 1310117.91
+      },
+      "anio_actualizacion": "2024"
+    }
+  ]
+}
