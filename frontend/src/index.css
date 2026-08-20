@@ -12,7 +12,18 @@
   --tinta-3: #6f7a73;
   --verde-institucional: #064928;
   --acento: #0a6b3d;
+  /* Los dos paneles miden lo mismo a propósito: deja el lienzo útil de los
+     gráficos en exactamente 288 px (320 − 2 × 16 de padding) tanto anclado como
+     en cajón, así los SVG se dibujan 1:1 y los filetes de 1 px no se emborronan
+     con un factor de escala fraccionario. */
   --ancho-panel: 320px;
+  --ancho-kpi: 320px;
+  /* Plantación y bosque mixto NO son clases de uso: son subusos de Bosques, y
+     su color sale de la misma familia del verde de bosque para que se lean como
+     lo que son. No entran en la paleta validada de nueve porque nunca compiten
+     con ella: viven en su propia barra de composición. */
+  --plantacion: #8bc34a;
+  --mixto: #4d7c3f;
   --sombra: 0 1px 2px rgb(20 33 26 / 0.08), 0 4px 12px rgb(20 33 26 / 0.06);
 }
 
@@ -27,6 +38,8 @@
     --tinta-3: #86958c;
     --verde-institucional: #0d6b3c;
     --acento: #4cc98a;
+    --plantacion: #9ccc65;
+    --mixto: #5d8c4f;
     --sombra: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.3);
   }
 }

@@ -5,44 +5,59 @@ import { DATA } from '../config'
  *
  * El .bin es columnar puro, sin cabecera: los offsets los declara el manifest y
  * aqui solo se abren vistas tipadas sobre el mismo ArrayBuffer. Cero parseo y
- * cero copia -- salvo las dos que son obligatorias, el interleavado de
- * posiciones y la tabla de color, que se explican abajo.
+ * cero copia, salvo las dos obligatorias que se explican abajo.
  *
- * El frontend NO hardcodea ningun dominio: los nueve usos, sus etiquetas y sus
- * cifras salen del manifest. Si el ETL cambia el vocabulario, la leyenda cambia
- * sola.
+ * El frontend NO hardcodea ningun dominio: los usos, subusos, estructuras,
+ * tipos forestales, unidades del SNASPE, comunas y regiones salen del manifest
+ * con sus etiquetas y sus cifras. Si el ETL cambia el vocabulario, la interfaz
+ * cambia sola.
  */
-export async function cargarPuntos(paletaRGB, señal) {
+
+const CONSTRUCTOR = { f32: Float32Array, u16: Uint16Array, u8: Uint8Array }
+const ANCHO = { f32: 4, u16: 2, u8: 1 }
+
+export async function cargarPuntos(señal) {
   const man = await pedir(`${DATA}/manifest.json`, señal).then((r) => r.json())
+  if (man.esquema !== 2) {
+    // Ruidoso a proposito: un manifest de otra version abriria vistas tipadas
+    // perfectamente validas sobre offsets equivocados, y el mapa saldria
+    // PLAUSIBLE, con los puntos desplazados. Es el peor fallo posible.
+    throw new Error(
+      `manifest.json declara esquema ${man.esquema} y este visor lee el 2. ` +
+        'Vuelve a generar los datos con `python ETL/build_bin.py`.',
+    )
+  }
   const capa = man.capas?.cbn_puntos
   if (!capa) throw new Error('manifest.json no declara la capa cbn_puntos')
 
   const buf = await pedir(`${DATA}/${capa.archivo}`, señal).then((r) => r.arrayBuffer())
   const n = capa.filas
 
-  const esperado = n * 4 * 3 + n
+  const esperado = Object.values(capa.campos).reduce((a, c) => a + ANCHO[c.tipo] * n, 0)
   if (buf.byteLength !== esperado) {
-    // Ruidoso a proposito: un .bin truncado abriria vistas tipadas validas sobre
-    // basura y el mapa saldria con puntos en medio del Pacifico.
-    throw new Error(`cbn_puntos.bin mide ${buf.byteLength} y el manifest declara ${esperado}`)
+    throw new Error(
+      `${capa.archivo} mide ${buf.byteLength} bytes y el manifest declara ${esperado}. ` +
+        'Se prefiere no dibujar: un .bin truncado abre vistas tipadas válidas sobre ' +
+        'basura y pondría puntos en medio del Pacífico sin ningún error.',
+    )
   }
 
-  const c = capa.campos
-  const lon = new Float32Array(buf, c.lon.offset, n)
-  const lat = new Float32Array(buf, c.lat.offset, n)
-  const ha = new Float32Array(buf, c.ha.offset, n)
-  const uso = new Uint8Array(buf, c.uso.offset, n)
+  // Vistas sin copia sobre el mismo ArrayBuffer.
+  const col = {}
+  for (const [nombre, c] of Object.entries(capa.campos)) {
+    col[nombre] = new CONSTRUCTOR[c.tipo](buf, c.offset, n)
+  }
 
   // Interleavado a [x, y, z]. Es la unica copia inevitable: deck.gl quiere las
   // posiciones juntas y el .bin las guarda por columna, que es lo que permite
-  // que lon/lat/ha/uso se lean sin tocar el resto.
+  // leer las demas sin tocar el resto.
   const pos = new Float32Array(n * 3)
   for (let i = 0; i < n; i++) {
-    pos[i * 3] = lon[i]
-    pos[i * 3 + 1] = lat[i]
+    pos[i * 3] = col.lon[i]
+    pos[i * 3 + 1] = col.lat[i]
   }
 
-  return { n, lon, lat, ha, uso, pos, manifest: man, capa, color: tablaColor(uso, n, paletaRGB) }
+  return { n, ...col, pos, manifest: man, capa }
 }
 
 /** RGBA por punto a partir del indice de uso. Se recalcula al cambiar de tema. */
@@ -59,11 +74,24 @@ export function tablaColor(uso, n, paletaRGB) {
   return col
 }
 
-/** Canal de filtro, 1 byte por punto: 1 visible, 0 oculto. */
-export function canalFiltro(uso, n, usosActivos) {
+/**
+ * Canal de filtro, 1 byte por punto: 1 visible, 0 oculto.
+ *
+ * `ambito` restringe por territorio y `usos` por clase. Un Set vacio significa
+ * "todas", no "ninguna": es la diferencia entre no haber filtrado y haber
+ * filtrado a cero, y confundirlas deja el mapa en negro sin explicacion.
+ */
+export function canalFiltro(datos, { usos, comunas }) {
+  const { n, uso, comuna } = datos
   const f = new Uint8Array(n)
-  if (!usosActivos || usosActivos.size === 0) return f.fill(1)
-  for (let i = 0; i < n; i++) f[i] = usosActivos.has(uso[i]) ? 1 : 0
+  const porUso = usos && usos.size > 0
+  const porComuna = comunas && comunas.size > 0
+  if (!porUso && !porComuna) return f.fill(1)
+  for (let i = 0; i < n; i++) {
+    if (porUso && !usos.has(uso[i])) continue
+    if (porComuna && !comunas.has(comuna[i])) continue
+    f[i] = 1
+  }
   return f
 }
 

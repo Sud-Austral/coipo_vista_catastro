@@ -27,14 +27,23 @@ DATOS = os.path.join(RAIZ, "frontend", "public", "datos")
 # Cifra oficial publicada por CONAF para el total nacional del Catastro.
 OFICIAL_HA = 75_661_194.48
 FILAS_CBN = 1_827_933
+BYTES_POR_FILA = 19          # 3 f32 + 1 u16 + 5 u8
 
-# Tolerancia entre el total y la suma de sus partes. Sale de la DEFINICION: el
-# ETL calcula el total como la suma de las nueve partes, asi que la unica
-# diferencia posible es el redondeo de nueve valores a dos decimales
-# (9 x 0,005 = 0,045 ha). Estuvo en 1 ha y era flojo: cazo el fallo de
-# acumulacion en float32 (3,12 ha) por suerte de magnitud, pero con las partes
-# ya corregidas el mismo total malo se quedaba en 0,48 y habria pasado en verde.
-TOL_PARTES = 0.1
+# Cifra oficial de Plantacion. Es la que cierra la decision de los 7.191
+# poligonos de La Araucania cuyo texto dice "Bosque" y cuyo codigo dice
+# "Plantacion": agregando por CODIGO se reproduce al decimal, agregando por
+# texto faltan 24.591 ha.
+OFICIAL_PLANTACION_HA = 3_142_779.81
+
+# La tolerancia sale de la DEFINICION, no del gusto: el unico desvio posible
+# entre un total y la suma de sus partes es el redondeo de cada parte a dos
+# decimales, o sea n x 0,005 ha. Un TOL_PARTES plano de 0,1 era un numero
+# elegido a ojo: cazo el fallo de acumulacion en float32 (3,12 ha) por suerte de
+# magnitud, y con las partes ya corregidas el mismo total malo se quedaba en
+# 0,48 y habria pasado en verde.
+def TOL_TABLA(n):
+    return n * 0.005
+
 
 # La superficie viaja en float32 en el .bin (+0,09 ha sobre el total) y la propia
 # serie CBN tiene residuos por region de hasta 6,33 ha contra lo publicado.
@@ -50,13 +59,19 @@ def sha256(ruta):
     return h.hexdigest()
 
 
+def suma_ha(filas, **filtro):
+    return sum(f["ha"] for f in filas
+               if all(f.get(k) == v for k, v in filtro.items()))
+
+
 def comprobar(man, crudo, tam, hashes):
     """Devuelve la lista de fallos. Recibe todo lo del disco ya leido para que
     las pruebas negativas puedan alterar una cosa sin tocar los archivos."""
     fallos = []
+    cap = man["capas"]["cbn_puntos"]
 
-    if man.get("esquema") != 1:
-        fallos.append(f"D1 esquema {man.get('esquema')} != 1")
+    if man.get("esquema") != 2:
+        fallos.append(f"D1 esquema {man.get('esquema')} != 2")
 
     # Ninguna marca de tiempo. Es lo que permite commitear datos: si el manifest
     # llevara fecha, cada regeneracion ensuciaria git aunque los datos fueran
@@ -64,46 +79,104 @@ def comprobar(man, crudo, tam, hashes):
     if re.search(r"\d{4}-\d{2}-\d{2}T", crudo):
         fallos.append("D2 el manifest contiene una marca de tiempo")
 
-    for nombre, capa in man["capas"].items():
-        real = tam.get(capa["archivo"])
-        if real is None:
-            fallos.append(f"D3 {nombre}: falta {capa['archivo']}")
-            continue
-        if real != capa["bytes"]:
-            fallos.append(f"D3 {nombre}: {real} bytes, el manifest dice {capa['bytes']}")
+    real = tam.get(cap["archivo"])
+    if real is None:
+        fallos.append(f"D3 falta {cap['archivo']}")
+        return fallos
+    if real != cap["bytes"]:
+        fallos.append(f"D3 {real} bytes en disco, el manifest dice {cap['bytes']}")
 
-        # Los offsets cuadran con el numero de filas. Un .bin truncado abre
-        # vistas tipadas VALIDAS sobre basura y el mapa saldria con puntos en
-        # medio del Pacifico, sin ningun error.
-        n = capa["filas"]
-        esperado = n * 4 * 3 + n
-        if capa["bytes"] != esperado:
-            fallos.append(f"D4 {nombre}: {capa['bytes']} != {esperado} para {n} filas")
+    n = cap["filas"]
+    # Los offsets tienen que ser contiguos y ascendentes, y el total cuadrar con
+    # el ancho de fila. Un offset corrompido hoy pasaria en verde y el mapa
+    # saldria PLAUSIBLE, con los puntos desplazados.
+    anchos = {"f32": 4, "u16": 2, "u8": 1}
+    esperado = 0
+    for nombre, c in cap["campos"].items():
+        if c["offset"] != esperado:
+            fallos.append(f"D4 offset de {nombre}: {c['offset']} != {esperado}")
+        esperado += anchos[c["tipo"]] * n
+    if cap["bytes"] != esperado:
+        fallos.append(f"D4 {cap['bytes']} != {esperado} para {n} filas")
+    if cap["bytes"] != n * BYTES_POR_FILA:
+        fallos.append(f"D4 ancho de fila != {BYTES_POR_FILA} B")
 
-        if hashes.get(capa["archivo"]) != capa["sha256"]:
-            fallos.append(f"D5 {nombre}: sha256 no coincide")
+    if hashes.get(cap["archivo"]) != cap["sha256"]:
+        fallos.append("D5 sha256 no coincide")
 
-        if real and real > 50 * 1024 * 1024:
-            fallos.append(f"D6 {nombre}: {real/1048576:.0f} MiB, por encima del aviso de 50 MiB")
+    if real > 50 * 1024 * 1024:
+        fallos.append(f"D6 {real/1048576:.0f} MiB, por encima del aviso de 50 MiB")
 
-    suma = sum(u["ha"] for u in man["usos"])
-    if abs(suma - man["total"]["ha"]) > TOL_PARTES:
-        fallos.append(f"D7 usos suman {suma:,.2f} ha y el total dice {man['total']['ha']:,.2f}")
+    # --- las cifras cierran, contando los centinelas -------------------------
+    # Las filas en centinela NO se descuentan a mano ni se ignoran: entran en la
+    # ecuacion. Es la diferencia entre "las partes suman el total" y "las partes
+    # mas lo que no supimos clasificar suman el total", y solo la segunda es
+    # cierta. La estructura del bosque nativo se desvia -0,50 ha por una unica
+    # fila con el codigo 040200, que la guia oficial no nombra.
+    total = man["total"]["ha"]
+    suma_usos = suma_ha(man["usos"])
+    if abs(suma_usos - total) > TOL_TABLA(len(man["usos"])):
+        fallos.append(f"D7 los usos suman {suma_usos:,.2f} y el total dice {total:,.2f}")
 
-    # La unica asercion que mira FUERA del propio artefacto: todo lo demas
-    # comprueba que el manifest es coherente consigo mismo, y un ETL puede ser
-    # perfectamente coherente y estar equivocado.
-    d = man["total"]["ha"] - OFICIAL_HA
+    d = total - OFICIAL_HA
     if abs(d) > TOL_OFICIAL:
-        fallos.append(f"D8 total {man['total']['ha']:,.2f} ha se aleja {d:+,.2f} de la cifra oficial")
+        fallos.append(f"D8 total {total:,.2f} se aleja {d:+,.2f} de la cifra oficial")
 
-    # No es redundante con D4: aquel comprueba que el .bin mide lo que dice para
-    # N filas; este, que N es el numero de poligonos que tiene el Catastro. Un
-    # ETL que perdiera una capa entera pasaria D4 sin despeinarse.
     if man["total"]["filas"] != FILAS_CBN:
         fallos.append(f"D9 filas {man['total']['filas']:,} != {FILAS_CBN:,}")
     if sum(u["n"] for u in man["usos"]) != man["total"]["filas"]:
         fallos.append("D9 los conteos por uso no suman el total de filas")
+
+    # D10 - los subusos de Bosques suman Bosques.
+    bosques = next(u for u in man["usos"] if u["cod"] == "04")
+    sub = [s for s in man["subusos"] if s.get("uso") == "04" and s["n"]]
+    if abs(suma_ha(sub) - bosques["ha"]) > TOL_TABLA(len(sub) + 1):
+        fallos.append(f"D10 subusos de Bosques suman {suma_ha(sub):,.2f} "
+                      f"y Bosques dice {bosques['ha']:,.2f}")
+
+    # D11 - las estructuras del bosque nativo, MAS lo no clasificable, suman BN.
+    bn = next(s for s in man["subusos"] if s["cod"] == "0402")
+    est = [e for e in man["estructuras"] if e.get("subuso") == "0402" and e["n"]]
+    huerfano = sum(v for k, v in man["codigos_desconocidos"]["estructura"].items()
+                   if k.startswith("0402"))
+    # El manifest publica cuantas FILAS son huerfanas, no cuantas hectareas, asi
+    # que la comprobacion se hace en filas y la de hectareas se acota por arriba.
+    if sum(e["n"] for e in est) + huerfano != bn["n"]:
+        fallos.append(f"D11 las estructuras del bosque nativo suman "
+                      f"{sum(e['n'] for e in est) + huerfano:,} filas y el subuso dice {bn['n']:,}")
+
+    # D12 - las categorias del SNASPE suman el total del SNASPE.
+    por_cat = {}
+    for s in man["snaspe"]:
+        if s["n"]:
+            por_cat[s["categoria"]] = por_cat.get(s["categoria"], 0.0) + s["ha"]
+    if None in por_cat:
+        fallos.append("D12 hay unidades del SNASPE sin categoria asignada")
+    if abs(sum(por_cat.values()) - suma_ha(man["snaspe"])) > TOL_TABLA(len(man["snaspe"])):
+        fallos.append("D12 las categorias del SNASPE no suman el total de unidades")
+
+    # D13 - todo centinela declarado tiene su cuenta publicada, y al reves.
+    declarados = {k for k, c in cap["campos"].items() if c["centinela"] is not None}
+    if declarados != set(cap["sin_dato"]):
+        fallos.append(f"D13 centinelas declarados {sorted(declarados)} != "
+                      f"contados {sorted(cap['sin_dato'])}")
+
+    # D14 - los codigos que la guia no nombra se publican. Cero es un valor
+    # legitimo; lo que no vale es que el campo no exista.
+    if "codigos_desconocidos" not in man:
+        fallos.append("D14 el manifest no publica los codigos desconocidos")
+
+    # D15 - las correcciones del SNASPE se publican, nunca se aplican en silencio.
+    if not man.get("snaspe_categoria_corregida"):
+        fallos.append("D15 no se publican las correcciones de categoria del SNASPE")
+
+    # D16 - la decision de los 7.191 poligonos, comprobada contra la cifra
+    # oficial de Plantacion. Es la asercion que se pone roja si alguien vuelve a
+    # agregar por texto.
+    pl = next(s for s in man["subusos"] if s["cod"] == "0401")
+    if abs(pl["ha"] - OFICIAL_PLANTACION_HA) > 0.1:
+        fallos.append(f"D16 Plantacion {pl['ha']:,.2f} != oficial "
+                      f"{OFICIAL_PLANTACION_HA:,.2f} (se agrego por texto?)")
 
     return fallos
 
@@ -121,34 +194,42 @@ def leer():
     return man, crudo, tam, hashes
 
 
-# Cada defecto altera lo leido en memoria y declara que asercion DEBE ponerse
-# roja. Los archivos del disco no se tocan.
-NEGATIVAS = [
-    ("D2 marca de tiempo", "D2", lambda m, c, t, h: (m, c + '"generado":"2026-08-19T10:00:00"', t, h)),
-    ("D3 tamano declarado erroneo", "D3", lambda m, c, t, h: (_set(m, "bytes", 123), c, t, h)),
-    ("D5 sha256 alterado", "D5", lambda m, c, t, h: (_set(m, "sha256", "0" * 64), c, t, h)),
-    ("D7 total en float32", "D7", lambda m, c, t, h: (_tot(m, 75_661_196.88), c, t, h)),
-    ("D8 total lejos de lo oficial", "D8", lambda m, c, t, h: (_tot(m, 75_700_000.0), c, t, h)),
-    ("D9 falta una capa entera", "D9", lambda m, c, t, h: (_quita_uso(m), c, t, h)),
-]
-
-
-def _set(man, campo, valor):
+def _cap(man, campo, valor):
     m = copy.deepcopy(man)
     m["capas"]["cbn_puntos"][campo] = valor
     return m
 
 
-def _tot(man, valor):
+def _off(man, campo, valor):
     m = copy.deepcopy(man)
-    m["total"]["ha"] = valor
+    m["capas"]["cbn_puntos"]["campos"][campo]["offset"] = valor
     return m
 
 
-def _quita_uso(man):
+def _sub(man, cod, ha):
     m = copy.deepcopy(man)
-    m["usos"][3]["n"] = 0          # Bosques desaparece del conteo
+    next(s for s in m["subusos"] if s["cod"] == cod)["ha"] = ha
     return m
+
+
+NEGATIVAS = [
+    ("D2 marca de tiempo", "D2",
+     lambda m, c, t, h: (m, c + '"generado":"2026-08-20T10:00:00"', t, h)),
+    ("D3 tamano declarado erroneo", "D3",
+     lambda m, c, t, h: (_cap(m, "bytes", 123), c, t, h)),
+    ("D4 offset corrompido", "D4",
+     lambda m, c, t, h: (_off(m, "lat", 999), c, t, h)),
+    ("D5 sha256 alterado", "D5",
+     lambda m, c, t, h: (_cap(m, "sha256", "0" * 64), c, t, h)),
+    ("D7 total incoherente con sus partes", "D7",
+     lambda m, c, t, h: ({**copy.deepcopy(m), "total": {**m["total"], "ha": m["total"]["ha"] + 5}}, c, t, h)),
+    ("D8 total lejos de lo oficial", "D8",
+     lambda m, c, t, h: ({**copy.deepcopy(m), "total": {**m["total"], "ha": 75_700_000.0}}, c, t, h)),
+    ("D10 un subuso de Bosques perdido", "D10",
+     lambda m, c, t, h: (_sub(m, "0403", 0.0), c, t, h)),
+    ("D16 Plantacion agregada por texto", "D16",
+     lambda m, c, t, h: (_sub(m, "0401", 3_118_188.80), c, t, h)),
+]
 
 
 def main():
@@ -159,13 +240,20 @@ def main():
     if not os.path.isdir(DATOS):
         sys.exit(f"no existe {DATOS}")
     man, crudo, tam, hashes = leer()
+    cap = man["capas"]["cbn_puntos"]
 
-    for nombre, capa in man["capas"].items():
-        print(f"  {nombre}: {capa['filas']:,} filas, {capa['bytes']/1e6:.1f} MB, "
-              f"sha256 {capa['sha256'][:16]}…")
-    print(f"  total nacional: {man['total']['ha']:,.2f} ha en {man['total']['filas']:,} polígonos")
-    print(f"  contra la cifra oficial de CONAF: {man['total']['ha'] - OFICIAL_HA:+.2f} ha "
-          f"(tolerancia ±{TOL_OFICIAL:g})")
+    print(f"  cbn_puntos: {cap['filas']:,} filas x {BYTES_POR_FILA} B = "
+          f"{cap['bytes']/1e6:.1f} MB · sha256 {cap['sha256'][:16]}…")
+    print(f"  total nacional {man['total']['ha']:,.2f} ha · "
+          f"{man['total']['ha'] - OFICIAL_HA:+.2f} contra la cifra oficial (±{TOL_OFICIAL:g})")
+    pl = next(s for s in man["subusos"] if s["cod"] == "0401")
+    bn = next(s for s in man["subusos"] if s["cod"] == "0402")
+    print(f"  bosque nativo {bn['ha']:,.2f} ha · plantación {pl['ha']:,.2f} ha "
+          f"({pl['ha'] - OFICIAL_PLANTACION_HA:+.2f} contra la oficial)")
+    print(f"  filas sin dato: {cap['sin_dato']}")
+    for campo, vals in man["codigos_desconocidos"].items():
+        if vals:
+            print(f"  códigos de {campo} que la guía no nombra: {vals}")
 
     fallos = comprobar(man, crudo, tam, hashes)
     if fallos:
@@ -176,17 +264,16 @@ def main():
     print("\nintegridad OK")
 
     if args.negativas:
-        print("\n--- pruebas negativas: cada defecto DEBE poner roja su asercion ---")
+        print("\n--- pruebas negativas: cada defecto DEBE poner roja su aserción ---")
         malas = 0
         for nombre, esperada, romper in NEGATIVAS:
             m2, c2, t2, h2 = romper(man, crudo, tam, hashes)
             f2 = comprobar(m2, c2, t2, h2)
             cazado = any(x.startswith(esperada) for x in f2)
-            if not cazado:
-                malas += 1
-            print(f"  {nombre:<34} -> {'ROJA, correcto' if cazado else 'VERDE: EL GATE NO SIRVE'}")
+            malas += 0 if cazado else 1
+            print(f"  {nombre:<38} -> {'ROJA, correcto' if cazado else 'VERDE: EL GATE NO SIRVE'}")
         if malas:
-            print(f"\n{malas} asercion(es) no cazan su propio defecto")
+            print(f"\n{malas} aserción(es) no cazan su propio defecto")
             return 1
         print("\ntodas las aserciones se han visto fallar")
     return 0

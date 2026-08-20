@@ -1,148 +1,359 @@
-/* Rejilla de la aplicacion.
-   En este bloque solo existen dos pistas: panel de control y mapa. El panel de
-   indicadores y los tres regimenes con cajones llegan en el bloque 3, junto con
-   los tiradores; las variables --pista-* ya estan puestas para que anadirlo no
-   obligue a reescribir la rejilla. */
+/* ===========================================================================
+   Rejilla de la aplicación y mecánica de los dos paneles.
+
+   TRES REGÍMENES, con los cortes duplicados aquí y en config.js:
+     > 1200      los dos paneles anclados
+     901–1200    izquierdo anclado, derecho en cajón
+     ≤ 900       los dos en cajón
+   La duplicación es inevitable —una media query no puede leer una constante de
+   JS— así que .app publica data-regimen y la verificación comprueba que
+   coincida con el número de pistas que resuelve el CSS.
+   =========================================================================== */
+
+:root {
+  --alto-banner: 56px;
+}
 
 .app {
   display: grid;
-  grid-template-columns: var(--pista-panel, var(--ancho-panel)) minmax(0, 1fr);
+  /* TRES PISTAS SIEMPRE. Plegar un panel cambia el ANCHO de su pista a 0, nunca
+     el número de pistas: si la rejilla pasara a dos, la colocación automática
+     mandaría el panel derecho a la pista del mapa. */
+  grid-template-columns:
+    var(--pista-panel, var(--ancho-panel))
+    minmax(0, 1fr)
+    var(--pista-kpi, var(--ancho-kpi));
+  /* minmax(0, 1fr) y no 1fr: el mínimo de 1fr es auto, así que el contenido del
+     mapa podría empujar la fila más allá de 100dvh. */
   grid-template-rows: auto minmax(0, 1fr);
   height: 100dvh;
 }
+
+/* Las dos declaraciones de pista van en reglas de CLASE y no en el estilo en
+   línea de App.jsx: un estilo en línea le ganaría a esto en especificidad y el
+   panel no se plegaría nunca. Por eso App.jsx sólo escribe la variable cuando
+   el panel se ve. */
+.app.sin-panel { --pista-panel: 0px; }
+.app.sin-kpi   { --pista-kpi: 0px; }
 
 .banner {
   grid-column: 1 / -1;
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 10px 16px;
+  height: var(--alto-banner);
+  padding: 0 16px;
   background: var(--verde-institucional);
   color: #fff;
 }
-.banner-txt h1 { font-size: 16px; letter-spacing: 0.01em; }
-.banner-txt p { font-size: 12.5px; opacity: 0.85; margin-top: 2px; }
+.banner-txt h2 { font-size: 15px; font-weight: 600; letter-spacing: 0.01em; }
+.banner-txt p { font-size: 12px; opacity: 0.85; margin-top: 2px; }
 
-.panel {
-  grid-column: 1;
-  grid-row: 2;
+.panel,
+.panel-kpi {
   overflow-y: auto;
-  border-right: 1px solid var(--borde);
+  overflow-x: hidden;
   background: var(--superficie);
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-}
-.panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--tinta-3); }
-.bajada { font-size: 12.5px; color: var(--tinta-2); margin-top: 6px; }
-.nota { font-size: 11.5px; color: var(--tinta-3); margin-top: 8px; }
-
-.mapa {
-  grid-column: 2;
-  grid-row: 2;
+  /* Sin min-width:0 el contenido impone un ancho mínimo y la pista no puede
+     llegar a 0 al plegar: el panel se quedaría en ~200 px. */
   min-width: 0;
   position: relative;
+  padding-bottom: 24px;
+}
+.panel { grid-column: 1; grid-row: 2; border-right: 1px solid var(--borde); }
+.panel-kpi { border-left: 1px solid var(--borde); }
+
+.mapa { grid-column: 2; grid-row: 2; min-width: 0; position: relative; }
+
+/* COLOCACIÓN EXPLÍCITA, y es OBLIGATORIA junto al display:none de abajo: sin
+   ella la colocación automática recorre los ítems en orden de DOM y los
+   reasigna al desaparecer uno. Medido en el visor de referencia: al plegar el
+   panel izquierdo, el mapa caía en la pista de 0 px y EL MAPA DESAPARECÍA.
+   Sólo donde son ítems de la rejilla: en cajón están fuera de flujo. */
+@media (min-width: 901px) {
+  .app.sin-panel .panel { display: none; }
+}
+@media (min-width: 1201px) {
+  .panel-kpi { grid-column: 3; grid-row: 2; }
+  .app.sin-kpi .panel-kpi { display: none; }
 }
 
-/* El lienzo de deck.gl vive en el overlayPane de Leaflet y NO debe comerse los
-   eventos: arrastre y zoom los sigue manejando Leaflet. El picking de deck
-   funciona igual porque deck lee del canvas, no del DOM. */
-.deck-overlay {
-  position: absolute;
-  left: 0;
+/* Anclada, la funda no debe existir como caja: con display:contents el panel es
+   directamente el tercer ítem de la rejilla. Sólo por debajo de 1200 px se
+   convierte en la caja que recorta el cajón. */
+.funda-kpi { display: contents; }
+
+/* ---------- cabeceras de los paneles ---------- */
+.panel header,
+.panel-kpi header {
+  position: sticky;
   top: 0;
-  pointer-events: none;
+  z-index: 2;
+  padding: 14px 14px 10px;
+  background: var(--superficie);
+  border-bottom: 1px solid var(--borde);
+}
+.panel header h1 { font-size: 15px; line-height: 1.3; padding-right: 30px; }
+.panel-kpi header h2 { font-size: 15px; padding-right: 30px; }
+.panel .sub, .panel-kpi .ambito { font-size: 12px; color: var(--tinta-2); margin-top: 4px; }
+
+/* La X existe SIEMPRE: es quien pliega. Va absoluta contra el header, que es
+   sticky y por tanto posicionado. */
+.panel .cerrar,
+.panel-kpi .cerrar {
+  position: absolute; top: 10px; right: 10px;
+  width: 28px; height: 28px;
+  font-size: 20px; line-height: 1;
+  background: none; border: none; color: var(--tinta-2); cursor: pointer;
+  border-radius: 6px;
+}
+.panel .cerrar:hover, .panel-kpi .cerrar:hover { background: var(--superficie-2); }
+
+.panel section, .panel-kpi > section { padding: 14px; border-bottom: 1px solid var(--borde); }
+.panel h2, .panel-kpi h3 {
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--tinta-3); margin-bottom: 8px;
+}
+.panel footer, .panel-kpi footer { padding: 14px; font-size: 11px; color: var(--tinta-3); }
+.procedencia { margin-top: 4px; }
+.bajada { font-size: 12px; line-height: 1.4; color: var(--tinta-2); margin: -2px 0 10px; }
+/* Nunca opcional: aquí viven los límites de lo que el dato puede afirmar. */
+.nota { font-size: 11.5px; line-height: 1.4; color: var(--tinta-3); margin-top: 8px; }
+.apagada { font-size: 12.5px; color: var(--tinta-3); }
+
+/* Durante una recarga se atenúa en vez de vaciarse: un esqueleto que parpadea
+   cada vez que cambia un filtro es peor que un número que envejece medio
+   segundo. */
+.panel-kpi.refrescando .seccion { opacity: 0.55; }
+
+/* ---------- secciones plegables del panel derecho ---------- */
+.seccion { border-bottom: 1px solid var(--borde); }
+.seccion > summary {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: baseline;
+  gap: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  list-style: none;
+}
+.seccion > summary::-webkit-details-marker { display: none; }
+.seccion > summary:hover { background: var(--superficie-2); }
+.s-titulo { font-size: 13px; font-weight: 600; }
+.s-cifra { font-size: 12px; color: var(--tinta-2); font-variant-numeric: tabular-nums; }
+/* El ⚠ va en el SUMMARY, así que se ve también con la sección plegada. Plegar
+   el gráfico está bien; plegar la advertencia sería esconderla. */
+.s-aviso { font-size: 12px; }
+.s-cuerpo { padding: 0 14px 14px; }
+.seccion .portada { padding: 14px; }
+
+.advertencia { margin-top: 10px; font-size: 11.5px; }
+.advertencia > summary {
+  cursor: pointer; color: var(--tinta-2); padding: 4px 0;
+}
+.advertencia > summary::before { content: '▸ '; }
+.advertencia[open] > summary::before { content: '▾ '; }
+.advertencia > div {
+  color: var(--tinta-3); line-height: 1.45; padding: 6px 0 2px;
+  border-left: 2px solid var(--borde); padding-left: 10px; margin-top: 4px;
 }
 
-/* ---------- leyenda ---------- */
-.leyenda { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 2px; }
-.clase {
-  width: 100%;
+/* ---------- fila de barra ----------
+   DOS LÍNEAS: rótulo a ancho completo arriba, barra y cifras debajo. A una
+   línea con elipsis, «Áreas Desprovistas de Vegetación» sale como «Áreas
+   Desprovistas…»: quedan ~128 px ≈ 20 caracteres para la etiqueta. A ancho
+   completo entran 46. Cuesta 16 px por fila. */
+.fila-kpi {
   display: grid;
-  grid-template-columns: 12px 1fr auto;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: 'etq etq' 'barra num' 'barra extra';
+  column-gap: 8px;
   align-items: center;
-  gap: 8px;
-  padding: 5px 6px;
-  border: 0;
-  border-radius: 5px;
-  background: transparent;
-  cursor: pointer;
-  text-align: left;
+  width: 100%;
+  padding: 5px 0;
+  border: 0; background: none; text-align: left; color: inherit; font: inherit;
+}
+.fila-kpi.pulsable { cursor: pointer; border-radius: 5px; padding: 5px 6px; }
+.fila-kpi.pulsable:hover { background: var(--superficie-2); }
+/* Apagada: baja opacidad Y tacha la cifra. Sólo con opacidad, en una pantalla
+   con brillo alto los dos estados se ven casi iguales. */
+.fila-kpi.atenuada { opacity: 0.45; }
+.fila-kpi.atenuada .fila-num { text-decoration: line-through; }
+.fila-etq { grid-area: etq; font-size: 12px; line-height: 1.3; margin-bottom: 3px; }
+.fila-glosa { display: block; font-size: 11px; color: var(--tinta-3); }
+.fila-barra {
+  grid-area: barra; height: 6px; border-radius: 3px;
+  background: var(--superficie-2); overflow: hidden;
+}
+.fila-barra span { display: block; height: 100%; }
+.fila-num, .fila-extra {
+  font-size: 11.5px; white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.fila-num { grid-area: num; color: var(--tinta); }
+.fila-extra { grid-area: extra; color: var(--tinta-3); }
+
+/* ---------- cifra grande ---------- */
+.cifra-num { display: flex; align-items: baseline; gap: 6px; }
+.cifra-num b { font-size: 30px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.cifra-u { font-size: 14px; color: var(--tinta-2); }
+.cifra-etq { font-size: 12px; color: var(--tinta-2); margin-top: 2px; }
+
+/* ---------- barra de composición ----------
+   2 px de hueco del color de la superficie entre segmentos, no un borde: un
+   borde de 1 px sobre un segmento de 3 px lo convierte en su propio borde. */
+.composicion {
+  display: flex; height: 14px; border-radius: 4px; overflow: hidden;
+  margin: 12px 0 8px; background: var(--superficie-2);
+}
+.composicion span { display: block; height: 100%; box-shadow: 2px 0 0 var(--superficie); }
+.composicion span:last-child { box-shadow: none; }
+
+/* ---------- leyenda del panel de control ---------- */
+.leyenda { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 1px; }
+.clase {
+  width: 100%; display: grid; grid-template-columns: 12px 1fr auto;
+  align-items: center; gap: 8px; padding: 5px 6px;
+  border: 0; border-radius: 5px; background: none; cursor: pointer; text-align: left;
 }
 .clase:hover { background: var(--superficie-2); }
-/* La clase apagada baja opacidad Y tacha la cifra: si solo bajara opacidad, en
-   una pantalla con brillo alto los dos estados se ven casi iguales. */
 .clase.apagada { opacity: 0.42; }
 .clase.apagada .cifra { text-decoration: line-through; }
 .chip { width: 12px; height: 12px; border-radius: 3px; }
-.clase .nombre { font-size: 12.5px; }
+.clase .nombre { font-size: 12px; }
 .clase .cifra { font-size: 11.5px; color: var(--tinta-3); font-variant-numeric: tabular-nums; }
 
-.limpiar {
-  margin-top: 10px;
-  padding: 6px 10px;
-  border: 1px solid var(--borde);
-  border-radius: 6px;
-  background: var(--superficie);
-  cursor: pointer;
-}
-
-.campo { display: grid; gap: 4px; margin-top: 10px; font-size: 12.5px; }
+.campo { display: grid; gap: 4px; margin-top: 8px; font-size: 12px; }
 .campo select {
-  padding: 6px 8px;
-  border: 1px solid var(--borde);
-  border-radius: 6px;
-  background: var(--superficie);
+  padding: 6px 8px; border: 1px solid var(--borde); border-radius: 6px;
+  background: var(--superficie); max-width: 100%;
+}
+.limpiar, .compartir {
+  margin-top: 10px; padding: 6px 10px; width: 100%;
+  border: 1px solid var(--borde); border-radius: 6px;
+  background: var(--superficie); cursor: pointer; font-size: 12.5px;
+}
+.compartir { background: var(--acento); color: #fff; border-color: transparent; }
+.aviso-copia { display: block; margin-top: 6px; font-size: 11.5px; color: var(--acento); }
+
+/* ---------- gemela accesible ----------
+   La clase va en el <div> y NO en la <table>: width:1px no encoge una tabla —con
+   layout automático se queda en su ancho de contenido mínimo— y sin envoltorio
+   se lleva el scrollWidth del documento por encima del viewport. Un bloque sí
+   respeta el ancho, y su overflow:hidden corta el resto.
+   clip-path y no display:none, que la sacaría también del árbol de accesibilidad. */
+.tabla-kpi {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
 }
 
-.cifra-grande {
-  font-size: 26px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  margin-top: 8px;
+.grafico { display: block; margin: 8px 0; }
+.grafico .eje { font-size: 9px; }
+.grafico .anot { font-size: 10px; font-weight: 600; }
+
+/* ===========================================================================
+   TIRADORES
+   =========================================================================== */
+
+/* FIXED y HERMANO del panel, no hijo suyo. Dentro de .panel no funciona por dos
+   motivos a la vez: .panel tiene overflow-y:auto, así que un hijo absoluto queda
+   RECORTADO —el hit-testing respeta el recorte aunque getBoundingClientRect
+   siga informando la caja— y además se iría con el scroll del panel.
+   9 px de ancho contra 1 px de línea visible: el blanco de ratón cómodo son
+   ~8 px y el borde solo no se puede agarrar. touch-action:none es obligatorio o
+   el navegador se queda el gesto para hacer scroll y pointermove no llega. */
+.tirador {
+  position: fixed;
+  z-index: 998;
+  top: var(--alto-banner);
+  bottom: 0;
+  left: calc(var(--pista-panel, var(--ancho-panel)) - 4px);
+  width: 9px;
+  cursor: col-resize;
+  touch-action: none;
+  background: none; border: none; padding: 0;
 }
+/* Cada tirador se apaga con SU panel: el selector de la izquierda excluye al
+   gemelo, o plegar el panel de control escondería también el otro tirador. */
+.app.sin-panel .tirador:not(.tirador-kpi) { display: none; }
+.app.sin-kpi .tirador-kpi { display: none; }
+
+.tirador-kpi {
+  left: auto;
+  right: calc(var(--pista-kpi, var(--ancho-kpi)) - 4px);
+}
+
+/* La marca visible: sin esto el tirador es invisible y nadie descubre que el
+   panel se ensancha. */
+.tirador::before {
+  content: ''; position: absolute; inset: 0 4px; background: var(--borde);
+}
+.tirador:hover::before, .tirador:focus-visible::before {
+  background: var(--acento); inset: 0 3px;
+}
+/* Tres muescas al centro: la línea sola se confunde con el borde del panel. */
+.tirador::after {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  width: 3px; height: 26px; transform: translate(-50%, -50%);
+  border-left: 1px solid var(--tinta-3); border-right: 1px solid var(--tinta-3);
+  opacity: 0.55;
+}
+.tirador:hover::after, .tirador:focus-visible::after { opacity: 0; }
+
+/* Mientras se arrastra, el cursor y la selección se fijan en TODO el documento:
+   sin esto, al pasar sobre el mapa el cursor parpadea y el gesto selecciona
+   texto del panel. */
+.app.redimensionando { cursor: col-resize; user-select: none; }
+
+/* ===========================================================================
+   BOTONES DE REAPERTURA
+   Dependen del ESTADO, no del ancho: aparecen cuando su panel está oculto, esté
+   anclado (pista a 0) o en cajón (cerrado).
+   =========================================================================== */
+.abrir, .abrir-kpi { display: none; }
+.app.sin-panel .abrir,
+.app.sin-kpi .abrir-kpi {
+  display: grid; place-items: center; position: fixed; z-index: 999;
+  top: calc(var(--alto-banner) + 10px);
+  width: 36px; height: 36px;
+  background: var(--superficie); color: var(--tinta);
+  border: 1px solid var(--borde); border-radius: 6px;
+  box-shadow: var(--sombra); cursor: pointer;
+}
+.app.sin-panel .abrir { left: 10px; font-size: 16px; }
+/* Arriba-derecha es la única esquina que Leaflet deja libre: zoom
+   arriba-izquierda, atribución abajo-derecha, escala abajo-izquierda. */
+.app.sin-kpi .abrir-kpi { right: 10px; }
+/* El zoom de Leaflet vive arriba a la izquierda, igual que el ☰. */
+.app.sin-panel .leaflet-top.leaflet-left { margin-left: 52px; }
+
+/* ---------- capa de deck.gl ----------
+   Vive en el overlayPane de Leaflet y NO debe comerse los eventos: el arrastre
+   y el zoom los sigue manejando Leaflet. */
+.deck-overlay { position: absolute; left: 0; top: 0; pointer-events: none; }
 
 /* ---------- estados ---------- */
 .descargando {
-  position: absolute;
-  left: 50%;
-  bottom: 22px;
-  transform: translateX(-50%);
-  z-index: 500;
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: var(--superficie);
-  border: 1px solid var(--borde);
-  box-shadow: var(--sombra);
-  font-size: 12.5px;
+  position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+  z-index: 900; padding: 8px 14px; border-radius: 999px;
+  background: var(--superficie); border: 1px solid var(--borde);
+  box-shadow: var(--sombra); font-size: 12.5px;
+}
+.pantalla-error { max-width: 60ch; margin: 12vh auto; padding: 0 20px; display: grid; gap: 12px; }
+.pantalla-error pre {
+  overflow-x: auto; background: var(--superficie-2); padding: 10px; border-radius: 6px;
+  font-size: 12px; white-space: pre-wrap;
 }
 
-.pantalla-error { max-width: 60ch; margin: 12vh auto; padding: 0 20px; display: grid; gap: 12px; }
-.pantalla-error pre { overflow-x: auto; background: var(--superficie-2); padding: 10px; border-radius: 6px; }
-
-/* ---------- etiqueta de fecha de imagen ----------
-   Va como control de Leaflet en topleft, apilada bajo el zoom. El margen
-   izquierdo deja hueco para el boton de panel que llega en el bloque 3. */
 .fecha-imagen {
-  background: var(--superficie);
-  border: 1px solid var(--borde);
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 11.5px;
-  color: var(--tinta-2);
-  box-shadow: var(--sombra);
+  background: var(--superficie); border: 1px solid var(--borde);
+  border-radius: 6px; padding: 4px 8px; font-size: 11.5px;
+  color: var(--tinta-2); box-shadow: var(--sombra);
 }
 
 /* ---------- ficha ---------- */
 .ficha {
-  border: 0;
-  border-radius: 10px;
-  padding: 0;
-  max-width: 460px;
-  width: calc(100vw - 32px);
-  background: var(--superficie);
-  color: var(--tinta);
+  border: 0; border-radius: 10px; padding: 0; max-width: 460px;
+  width: calc(100vw - 32px); background: var(--superficie); color: var(--tinta);
   box-shadow: var(--sombra);
 }
 .ficha::backdrop { background: rgb(0 0 0 / 0.35); }
@@ -151,8 +362,7 @@
 .ficha-capa { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--tinta-3); }
 .ficha-caja h2 { font-size: 17px; }
 .ficha-cerrar {
-  position: absolute; top: -4px; right: -4px;
-  width: 30px; height: 30px;
+  position: absolute; top: -4px; right: -4px; width: 30px; height: 30px;
   border: 0; border-radius: 6px; background: transparent;
   font-size: 20px; line-height: 1; cursor: pointer; color: var(--tinta-2);
 }
@@ -162,8 +372,83 @@
 .ficha td { padding: 4px 0; font-variant-numeric: tabular-nums; }
 .ficha tr + tr th, .ficha tr + tr td { border-top: 1px solid var(--borde); }
 
+/* ===========================================================================
+   RÉGIMEN 2 — el panel derecho pasa a cajón (≤ 1200 px)
+
+   El cajón derecho NO puede deslizarse como el izquierdo, y no es una
+   preferencia: el desbordamiento hacia el INICIO de línea no es scrollable,
+   pero hacia el FINAL sí lo es, y documentElement.scrollWidth lo delata con el
+   cajón CERRADO. Por eso el panel vive dentro de una funda fija que lo recorta.
+   =========================================================================== */
+@media (max-width: 1200px) {
+  .app {
+    grid-template-columns: var(--pista-panel, var(--ancho-panel)) minmax(0, 1fr);
+  }
+  .funda-kpi {
+    display: block;
+    position: fixed;
+    inset: var(--alto-banner) 0 0 auto;
+    width: var(--ancho-kpi);
+    overflow: hidden;
+    /* Cerrada, la funda ocuparía 320 px sobre el mapa: sin esto se comería los
+       clics de una franja del mapa que se ve perfectamente. */
+    pointer-events: none;
+    z-index: 1000;
+  }
+  .panel-kpi {
+    position: absolute; inset: 0; width: var(--ancho-kpi);
+    transform: translateX(100%);
+    /* visibility y no sólo transform: un translateX saca el cajón de la PANTALLA
+       pero no del orden de tabulación ni del árbol de accesibilidad. El retardo
+       lo mantiene visible mientras dura el deslizamiento de salida. */
+    visibility: hidden;
+    transition: transform 0.18s ease, visibility 0s linear 0.18s;
+    box-shadow: var(--sombra);
+  }
+  .panel-kpi.abierto {
+    transform: none; visibility: visible; pointer-events: auto;
+    transition: transform 0.18s ease, visibility 0s;
+  }
+  /* En cajón el ancho es fijo: no hay borde que arrastrar. */
+  .tirador-kpi { display: none; }
+}
+
+/* ===========================================================================
+   RÉGIMEN 3 — los dos en cajón (≤ 900 px)
+   =========================================================================== */
 @media (max-width: 900px) {
   .app { grid-template-columns: minmax(0, 1fr); }
-  .panel { grid-column: 1; grid-row: 3; border-right: 0; border-top: 1px solid var(--borde); max-height: 45vh; }
-  .mapa { grid-column: 1; grid-row: 2; }
+  /* OBLIGATORIO devolver el mapa a la pista 1. La regla base le pone
+     grid-column: 2 —que es lo correcto mientras hay panel izquierdo anclado—
+     pero aquí sólo queda UNA pista, así que el 2 crea una pista implícita de
+     0 px y EL MAPA DESAPARECE. Medido: 0×844. El panel ya está fuera de flujo
+     (position: fixed), así que no ocupa pista y la 1 es del mapa. */
+  .mapa { grid-column: 1; }
+  .tirador { display: none; }
+  .panel {
+    position: fixed; z-index: 1000;
+    inset: var(--alto-banner) auto 0 0;
+    width: min(88vw, 340px);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.18s ease, visibility 0s linear 0.18s;
+    box-shadow: var(--sombra);
+  }
+  .panel.abierto {
+    transform: none; visibility: visible;
+    transition: transform 0.18s ease, visibility 0s;
+  }
+  .funda-kpi { width: min(88vw, 340px); }
+  .panel-kpi { width: 100%; }
+  .banner-txt h2 { font-size: 13px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel, .panel-kpi { transition: none; }
+}
+
+/* Objetivos táctiles: con puntero grueso los controles crecen. */
+@media (pointer: coarse) {
+  .clase, .fila-kpi.pulsable { padding-top: 8px; padding-bottom: 8px; }
+  .seccion > summary { padding-top: 14px; padding-bottom: 14px; }
 }

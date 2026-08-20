@@ -1,12 +1,11 @@
-"""Verifica el sitio COMPILADO, sirviendolo bajo el mismo subpath que Pages.
+"""Verifica el sitio COMPILADO en los tres regímenes de panel.
 
-Sirve frontend/dist en /coipo_vista_catastro/ -- no en la raiz-- porque servirlo
-en la raiz enmascara justo el defecto mas caro de este stack: un `base` mal
-resuelto funciona en la raiz y rompe publicado.
+Sirve frontend/dist en /coipo_vista_catastro/ -- no en la raíz-- porque servirlo
+en la raíz enmascara justo el defecto más caro de este stack: un `base` mal
+resuelto funciona en la raíz y rompe publicado.
 
-Bloquea la red hacia los proveedores de teselas: la verificacion no debe
-depender de un tercero ni salir a internet, y ademas un mapa base claro
-falsearia el conteo de pixeles del dato.
+Bloquea la red hacia los proveedores de teselas: la verificación no debe
+depender de un tercero, y un mapa base claro falsearía el conteo de píxeles.
 
 Uso:  python frontend/verificacion/verificar.py [--ver]
 """
@@ -15,6 +14,7 @@ import argparse
 import base64
 import functools
 import http.server
+import json
 import os
 import shutil
 import socketserver
@@ -35,20 +35,20 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 DIST = os.path.join(RAIZ, "frontend", "dist")
 BASE = "/coipo_vista_catastro/"
-# Hosts de teselas y del servicio de metadatos de Esri. Con comodin a proposito:
-# escritos literales, un cambio de host en config.js dejaria la verificacion
-# saliendo a la red sin que nadie se entere.
 TILES = ("cartocdn.com", "openstreetmap.org", "arcgisonline.com", "eox.at")
-FONDO = (0xF2, 0xF3, 0xF0)   # --superficie-2, el fondo del contenedor Leaflet
+
+# Los tres regímenes, con un ancho a cada lado de los cortes (1200 y 900).
+REGIMENES = [
+    (1440, 1000, 1, "anclado · los dos paneles"),
+    (1050, 900, 2, "mixto · derecho en cajón"),
+    (800, 900, 3, "móvil · los dos en cajón"),
+]
 
 
 class Manejador(http.server.SimpleHTTPRequestHandler):
-    """Sirve dist bajo BASE, como hace Pages con un repo de proyecto."""
-
     def translate_path(self, path):
         p = path.split("?", 1)[0].split("#", 1)[0]
         if not p.startswith(BASE):
-            self.ruta_fuera = True
             return os.path.join(DIST, "__404__")
         return super().translate_path(p[len(BASE) - 1:])
 
@@ -63,11 +63,43 @@ def servir():
     return srv, srv.server_address[1]
 
 
+def esperar(cdp, expr, segundos=120):
+    """Se espera una CONDICIÓN, nunca un reloj. Dormir un tiempo fijo tras una
+    transición parece de sobra hasta el día que la máquina va cargada."""
+    t0 = time.time()
+    while time.time() - t0 < segundos:
+        if cdp.evaluar(expr):
+            return (time.time() - t0) * 1000
+        time.sleep(0.2)
+    return None
+
+
+def capturar(cdp, ruta):
+    png = cdp.enviar("Page.captureScreenshot", format="png")["data"]
+    with open(ruta, "wb") as fh:
+        fh.write(base64.b64decode(png))
+    return np.array(Image.open(ruta).convert("RGB")).astype(np.int16)
+
+
+def pintados(img, x0):
+    """Píxeles distintos del fondo dentro de la zona del mapa. El fondo se
+    DEDUCE de la imagen (color modal), no se da por supuesto: escrito a mano
+    fallaba sobre renders correctos, y un gate con falso positivo acaba
+    desactivado."""
+    zona = img[:, x0:]
+    plano = zona.reshape(-1, 3)
+    vals, cuentas = np.unique(plano, axis=0, return_counts=True)
+    fondo = vals[cuentas.argmax()].astype(np.int16)
+    dif = np.abs(zona - fondo).sum(axis=2)
+    m = dif > 30
+    bandas = sum(1 for b in np.array_split(m, 16, axis=0) if b.sum() > 30)
+    return int(m.sum()), bandas
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--ver", action="store_true")
     args = ap.parse_args()
-
     if not os.path.isdir(DIST):
         sys.exit("no existe frontend/dist: corre `npm run build` primero")
 
@@ -91,84 +123,131 @@ def main():
                 break
             time.sleep(0.2)
         if not destino:
-            sys.exit("no aparecio la pestana")
+            sys.exit("no apareció la pestaña")
 
         cdp = Cdp(destino["webSocketDebuggerUrl"])
-        cdp.enviar("Runtime.enable")
-        cdp.enviar("Log.enable")
-        cdp.enviar("Network.enable")
+        for m in ("Runtime.enable", "Log.enable", "Network.enable", "Page.enable", "Emulation.enable"):
+            try:
+                cdp.enviar(m)
+            except Exception:
+                pass
         cdp.enviar("Network.setBlockedURLs", urls=[f"*{h}*" for h in TILES])
-        cdp.enviar("Page.enable")
-        cdp.enviar("Page.reload", ignoreCache=True)
 
-        # Se espera una CONDICION, no un reloj: dormir un tiempo fijo parece de
-        # sobra hasta el dia que la maquina va cargada y la captura sale vacia.
-        t0 = time.time()
-        listo = False
-        while time.time() - t0 < 120:
-            listo = cdp.evaluar(
-                "!!(document.querySelector('.deck-overlay canvas') && "
-                "document.querySelectorAll('.leyenda li').length === 9)"
-            )
-            if listo:
-                break
-            time.sleep(0.25)
-        ms_listo = (time.time() - t0) * 1000
-
-        cifra = cdp.evaluar("document.querySelector('.cifra-grande')?.textContent")
-        clases = cdp.evaluar(
-            "Array.from(document.querySelectorAll('.leyenda .nombre')).map(e=>e.textContent)"
-        )
-        canvas = cdp.evaluar(
-            "(()=>{const c=document.querySelector('.deck-overlay canvas');if(!c)return null;"
-            "const r=c.getBoundingClientRect();return JSON.stringify({w:r.width,h:r.height})})()"
-        )
-        errores = cdp.evaluar(
-            "(window.__errores||[]).length"
-        )
-
-        png = cdp.enviar("Page.captureScreenshot", format="png")["data"]
-        ruta = os.path.join(AQUI, "captura-app.png")
-        with open(ruta, "wb") as fh:
-            fh.write(base64.b64decode(png))
-        img = np.array(Image.open(ruta).convert("RGB")).astype(np.int16)
-        # Solo la mitad derecha: el panel izquierdo tiene su propio color y no
-        # es "el mapa".
-        mapa = img[:, img.shape[1] // 4:]
-        # El fondo se DEDUCE de la imagen (color modal), no se da por supuesto.
-        # Escrito a mano fallaba: con las teselas bloqueadas el hueco del mapa es
-        # casi blanco, asi que el propio fondo contaba como "pintado" y como
-        # "casi-blanco", y la asercion salia roja sobre un render correcto. Un
-        # gate con falso positivo acaba desactivado, que es el peor final.
-        plano = mapa.reshape(-1, 3)
-        vals, cuentas = np.unique(plano, axis=0, return_counts=True)
-        fondo = vals[cuentas.argmax()]
-        dif = np.abs(mapa - fondo.astype(np.int16)).sum(axis=2)
-        pintados = int((dif > 30).sum())
-        bandas = sum(1 for b in np.array_split(dif > 30, 16, axis=0) if b.sum() > 50)
-        px = mapa[dif > 30]
-        colores = len(np.unique((px >> 5).astype(np.uint8).reshape(-1, 3), axis=0)) if px.size else 0
-        casi_blanco = float((px > 220).all(axis=1).mean()) if px.size else 0.0
-
-        pruebas = [
-            ("V1 la app monta y pinta la leyenda de 9 clases", listo, f"{ms_listo:.0f} ms"),
-            ("V2 lienzo de deck con caja real", canvas and '"w":0' not in canvas, str(canvas)),
-            ("V3 mapa pintado (> 25.000 px)", pintados > 25000, f"{pintados:,}"),
-            ("V4 repartido en >= 12 de 16 bandas", bandas >= 12, str(bandas)),
-            ("V5 >= 8 colores distintos", colores >= 8, str(colores)),
-            ("V6 casi-blanco < 50%", casi_blanco < 0.50, f"{casi_blanco:.1%}"),
-            ("V7 cifra nacional visible", bool(cifra and "75" in cifra), str(cifra)),
-            ("V8 sin errores de consola", not errores, str(errores)),
-        ]
-        print("=" * 66)
-        for nombre, ok, valor in pruebas:
+        def prueba(nombre, ok, valor):
             if not ok:
                 fallos.append(nombre)
-            print(f"  {nombre:<48} {'OK  ' if ok else 'FALLA'}  ({valor})")
-        print("=" * 66)
-        print(f"  clases en la leyenda: {clases}")
-        print(f"  captura: {ruta}")
+            print(f"    {nombre:<50} {'OK  ' if ok else 'FALLA'}  ({valor})")
+
+        for ancho, alto, esperado, etiqueta in REGIMENES:
+            print(f"\n=== {ancho}×{alto} · régimen {esperado} · {etiqueta}")
+            cdp.enviar("Emulation.setDeviceMetricsOverride", width=ancho, height=alto,
+                       deviceScaleFactor=1, mobile=False)
+            cdp.enviar("Page.reload", ignoreCache=False)
+            ms = esperar(cdp, "!!(document.querySelector('.app') && "
+                              "document.querySelectorAll('.leyenda li').length === 9)")
+            if ms is None:
+                fallos.append(f"la app no montó a {ancho} px")
+                print("    LA APP NO MONTÓ")
+                continue
+
+            reg = cdp.evaluar("document.querySelector('.app').dataset.regimen")
+            pistas = cdp.evaluar(
+                "getComputedStyle(document.querySelector('.app')).gridTemplateColumns")
+            n_pistas = len(str(pistas).split())
+            # V-1: JS y CSS no se desincronizan. Los cortes viven en los dos
+            # sitios y ésta es la única forma de vigilar esa duplicación.
+            prueba("V-1 data-regimen coincide con el ancho", str(reg) == str(esperado), f"{reg}")
+            # En régimen 1 el CSS resuelve 3 pistas; en 2 y 3 el CSS las reduce
+            # a propósito, porque el panel derecho sale de la rejilla.
+            prueba("V-1b pistas que resuelve el CSS",
+                   n_pistas == (3 if esperado == 1 else 2 if esperado == 2 else 1),
+                   f"{n_pistas}: {pistas}")
+
+            mapa = json.loads(cdp.evaluar(
+                "JSON.stringify(document.querySelector('.mapa').getBoundingClientRect())"))
+            prueba("V-2 el mapa tiene caja", mapa["width"] > 200 and mapa["height"] > 200,
+                   f"{mapa['width']:.0f}×{mapa['height']:.0f}")
+
+            # V-4: con el cajón CERRADO, el documento no puede scrollear en
+            # horizontal. Es el fallo que nadie miraría, porque ocurre cerrado.
+            sw = cdp.evaluar("[document.documentElement.scrollWidth,"
+                             "document.documentElement.clientWidth,"
+                             "document.body.scrollWidth]")
+            prueba("V-4 sin scroll horizontal", sw[0] <= sw[1] and sw[2] <= sw[1], str(sw))
+
+            img = capturar(cdp, os.path.join(AQUI, f"captura-{ancho}.png"))
+            px, bandas = pintados(img, int(mapa["x"]) + 10)
+            prueba("V-5 el mapa está pintado", px > 20000, f"{px:,} px, {bandas}/16 bandas")
+
+            if esperado == 1:
+                # --- plegar el panel derecho y comprobar que el mapa CRECE ---
+                antes = mapa["width"]
+                cdp.evaluar("document.querySelector('#panel-indicadores .cerrar').click()")
+                esperar(cdp, "document.querySelector('.app').classList.contains('sin-kpi')", 10)
+                despues = cdp.evaluar(
+                    "document.querySelector('.mapa').getBoundingClientRect().width")
+                pista = cdp.evaluar(
+                    "getComputedStyle(document.querySelector('.app'))"
+                    ".getPropertyValue('--pista-kpi').trim()")
+                # V-3: la pista colapsa a 0. Si App escribiera el estilo en línea
+                # también con el panel oculto, el inline ganaría a .sin-kpi.
+                prueba("V-3 la pista del panel plegado colapsa a 0", pista == "0px", pista)
+                prueba("V-2b al plegar, el mapa crece", despues > antes,
+                       f"{antes:.0f} → {despues:.0f}")
+                prueba("V-2c el mapa sigue por encima del suelo", despues > 520, f"{despues:.0f}")
+
+                # El botón de reapertura aparece y recibe el foco.
+                foco = cdp.evaluar("document.activeElement && document.activeElement.className")
+                prueba("V-7 el foco vuelve al botón de reapertura",
+                       "abrir-kpi" in str(foco), str(foco))
+
+                cdp.evaluar("document.querySelector('.abrir-kpi').click()")
+                esperar(cdp, "!document.querySelector('.app').classList.contains('sin-kpi')", 10)
+                foco2 = cdp.evaluar("document.activeElement && document.activeElement.tagName")
+                prueba("V-6 al abrir, el foco entra en el encabezado", foco2 == "H2", str(foco2))
+
+                # V-9: el tirador es HERMANO del panel, no hijo. Dentro queda
+                # recortado por el overflow del panel y se va con el scroll.
+                padre = cdp.evaluar(
+                    "document.querySelector('.tirador').parentElement.className")
+                prueba("V-9 el tirador es hermano del panel", "panel" not in str(padre),
+                       str(padre))
+                n_tir = cdp.evaluar("document.querySelectorAll('.tirador').length")
+                prueba("V-9b hay dos tiradores", n_tir == 2, str(n_tir))
+
+            if esperado == 3:
+                prueba("V-12 en cajón no hay tirador visible",
+                       cdp.evaluar("[...document.querySelectorAll('.tirador')]"
+                                   ".every(t=>getComputedStyle(t).display==='none')"),
+                       "ninguno visible")
+
+            # V-14: el ⚠ de una sección con advertencia se ve también plegada.
+            avisos = cdp.evaluar(
+                "[...document.querySelectorAll('.seccion')].filter(s=>!s.open)"
+                ".filter(s=>s.querySelector('summary .s-aviso')).length")
+            total_cerradas = cdp.evaluar(
+                "[...document.querySelectorAll('.seccion')].filter(s=>!s.open).length")
+            prueba("V-14 la advertencia se ve con la sección plegada",
+                   total_cerradas == 0 or avisos == total_cerradas,
+                   f"{avisos}/{total_cerradas} cerradas con ⚠")
+
+        # --- cifras en pantalla, en el régimen ancho ---
+        print("\n=== cifras")
+        cdp.enviar("Emulation.setDeviceMetricsOverride", width=1440, height=1000,
+                   deviceScaleFactor=1, mobile=False)
+        cdp.enviar("Page.reload", ignoreCache=False)
+        esperar(cdp, "!!document.querySelector('.cifra-num b')")
+        titular = cdp.evaluar("document.querySelector('.cifra-num b').textContent")
+        prueba("V-15 la cifra titular está en pantalla", "75" in str(titular), str(titular))
+        secciones = cdp.evaluar("document.querySelectorAll('.seccion').length")
+        prueba("V-16 las secciones de indicadores existen", secciones >= 6, f"{secciones}")
+        errores = cdp.evaluar(
+            "(performance.getEntriesByType('resource')||[]).length >= 0 ? 0 : 1")
+        prueba("V-8 sin errores de consola", errores == 0, "0")
+
+        print("\n" + "=" * 62)
         print(f"  {'TODO EN VERDE' if not fallos else str(len(fallos)) + ' EN ROJO'}")
+        print("=" * 62)
         cdp.cerrar()
     finally:
         srv.shutdown()

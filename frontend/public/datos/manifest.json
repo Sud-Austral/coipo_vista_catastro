@@ -1,29 +1,65 @@
 {
-  "esquema": 1,
+  "esquema": 2,
   "fuente": "Catastro de Usos de la Tierra y Recursos Vegetacionales, CONAF",
   "capas": {
     "cbn_puntos": {
       "archivo": "cbn_puntos.bin",
       "filas": 1827933,
-      "bytes": 23763129,
-      "sha256": "f21016c2e79b3aa0195aa3338703fb516704246c67f608f0929ad18e1a4d066a",
+      "bytes": 34730727,
+      "sha256": "621e3b2974152dcee57b7f156a1051b8e2549713ad80529ba32d7870543e7dee",
       "campos": {
         "lon": {
           "tipo": "f32",
-          "offset": 0
+          "offset": 0,
+          "centinela": null
         },
         "lat": {
           "tipo": "f32",
-          "offset": 7311732
+          "offset": 7311732,
+          "centinela": null
         },
         "ha": {
           "tipo": "f32",
-          "offset": 14623464
+          "offset": 14623464,
+          "centinela": null
+        },
+        "comuna": {
+          "tipo": "u16",
+          "offset": 21935196,
+          "centinela": 65535
         },
         "uso": {
           "tipo": "u8",
-          "offset": 21935196
+          "offset": 25591062,
+          "centinela": null
+        },
+        "subuso": {
+          "tipo": "u8",
+          "offset": 27418995,
+          "centinela": 255
+        },
+        "estruc": {
+          "tipo": "u8",
+          "offset": 29246928,
+          "centinela": 255
+        },
+        "tifo": {
+          "tipo": "u8",
+          "offset": 31074861,
+          "centinela": 255
+        },
+        "snaspe": {
+          "tipo": "u8",
+          "offset": 32902794,
+          "centinela": 255
         }
+      },
+      "sin_dato": {
+        "comuna": 79731,
+        "subuso": 0,
+        "estruc": 11262,
+        "tifo": 1114688,
+        "snaspe": 1431130
       },
       "bbox": [
         -75.7205581665039,
@@ -35,71 +71,4455 @@
   },
   "usos": [
     {
-      "id": "01",
+      "cod": "01",
       "etiqueta": "Áreas Urbanas e Industriales",
-      "ipcc": "Asentamientos",
       "n": 26300,
-      "ha": 864391.83
+      "ha": 864391.83,
+      "ipcc": "Asentamientos"
     },
     {
-      "id": "02",
+      "cod": "02",
       "etiqueta": "Terrenos Agrícolas",
-      "ipcc": "Tierras de Cultivo",
       "n": 74810,
-      "ha": 4088178.65
+      "ha": 4088178.65,
+      "ipcc": "Tierras de Cultivo"
     },
     {
-      "id": "03",
+      "cod": "03",
       "etiqueta": "Praderas y Matorrales",
-      "ipcc": "Praderas",
       "n": 549029,
-      "ha": 29282364.33
+      "ha": 29282364.32,
+      "ipcc": "Praderas"
     },
     {
-      "id": "04",
+      "cod": "04",
       "etiqueta": "Bosques",
-      "ipcc": "Tierras Forestales",
       "n": 943456,
-      "ha": 18862754.85
+      "ha": 18862754.85,
+      "ipcc": "Tierras Forestales"
     },
     {
-      "id": "05",
+      "cod": "05",
       "etiqueta": "Humedales",
-      "ipcc": "Humedales",
       "n": 48682,
-      "ha": 831088.25
+      "ha": 831088.25,
+      "ipcc": "Humedales"
     },
     {
-      "id": "06",
+      "cod": "06",
       "etiqueta": "Áreas Desprovistas de Vegetación",
-      "ipcc": "Otros Usos de la Tierra",
       "n": 86960,
-      "ha": 17191344.49
+      "ha": 17191344.39,
+      "ipcc": "Otros Usos de la Tierra"
     },
     {
-      "id": "07",
+      "cod": "07",
       "etiqueta": "Nieves Eternas y Glaciares",
-      "ipcc": "Otros Usos de la Tierra",
       "n": 39744,
-      "ha": 2756878.66
+      "ha": 2756878.68,
+      "ipcc": "Otros Usos de la Tierra"
     },
     {
-      "id": "08",
+      "cod": "08",
       "etiqueta": "Cuerpos de Agua",
-      "ipcc": "Humedales",
       "n": 58947,
-      "ha": 1453000.56
+      "ha": 1453000.56,
+      "ipcc": "Humedales"
     },
     {
-      "id": "09",
+      "cod": "09",
       "etiqueta": "Áreas no Reconocidas",
-      "ipcc": "No Aplica",
       "n": 5,
-      "ha": 331198.86
+      "ha": 331198.86,
+      "ipcc": "No Aplica"
     }
   ],
+  "subusos": [
+    {
+      "cod": "0101",
+      "etiqueta": "Ciudades, Pueblos, Zonas Industriales",
+      "n": 21740,
+      "ha": 620274.22,
+      "uso": "01"
+    },
+    {
+      "cod": "0102",
+      "etiqueta": "Minería Industrial",
+      "n": 4560,
+      "ha": 244117.61,
+      "uso": "01"
+    },
+    {
+      "cod": "0199",
+      "etiqueta": "Sin Información",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "01"
+    },
+    {
+      "cod": "0201",
+      "etiqueta": "Terreno de Uso Agrícola",
+      "n": 28019,
+      "ha": 1313704.74,
+      "uso": "02"
+    },
+    {
+      "cod": "0202",
+      "etiqueta": "Rotación Cultivo-Pradera",
+      "n": 46791,
+      "ha": 2774473.91,
+      "uso": "02"
+    },
+    {
+      "cod": "0299",
+      "etiqueta": "Sin Información",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "02"
+    },
+    {
+      "cod": "0301",
+      "etiqueta": "Praderas",
+      "n": 98826,
+      "ha": 6095088.6,
+      "uso": "03"
+    },
+    {
+      "cod": "0302",
+      "etiqueta": "Matorral-Pradera",
+      "n": 126195,
+      "ha": 7659671.58,
+      "uso": "03"
+    },
+    {
+      "cod": "0303",
+      "etiqueta": "Matorral",
+      "n": 130776,
+      "ha": 6534509.69,
+      "uso": "03"
+    },
+    {
+      "cod": "0304",
+      "etiqueta": "Matorral Arborescente",
+      "n": 75274,
+      "ha": 1266554.61,
+      "uso": "03"
+    },
+    {
+      "cod": "0305",
+      "etiqueta": "Matorral con Suculentas",
+      "n": 19311,
+      "ha": 2711636.97,
+      "uso": "03"
+    },
+    {
+      "cod": "0306",
+      "etiqueta": "Formación de Suculentas",
+      "n": 1354,
+      "ha": 146313.46,
+      "uso": "03"
+    },
+    {
+      "cod": "0307",
+      "etiqueta": "Plantación de Arbustos",
+      "n": 530,
+      "ha": 49475.75,
+      "uso": "03"
+    },
+    {
+      "cod": "0308",
+      "etiqueta": "Tundra Magallánica",
+      "n": 96763,
+      "ha": 4819113.67,
+      "uso": "03"
+    },
+    {
+      "cod": "0401",
+      "etiqueta": "Plantación",
+      "n": 263389,
+      "ha": 3142779.8,
+      "uso": "04"
+    },
+    {
+      "cod": "0402",
+      "etiqueta": "Bosque Nativo",
+      "n": 649397,
+      "ha": 15536329.01,
+      "uso": "04"
+    },
+    {
+      "cod": "0403",
+      "etiqueta": "Bosque Mixto",
+      "n": 30670,
+      "ha": 183646.05,
+      "uso": "04"
+    },
+    {
+      "cod": "0501",
+      "etiqueta": "Vegetación Herbácea en Orillas de Ríos",
+      "n": 551,
+      "ha": 14883.3,
+      "uso": "05"
+    },
+    {
+      "cod": "0502",
+      "etiqueta": "Marismas Herbáceas",
+      "n": 510,
+      "ha": 8903.25,
+      "uso": "05"
+    },
+    {
+      "cod": "0503",
+      "etiqueta": "Ñadis",
+      "n": 173,
+      "ha": 6181.88,
+      "uso": "05"
+    },
+    {
+      "cod": "0504",
+      "etiqueta": "Turbales",
+      "n": 16919,
+      "ha": 417751.78,
+      "uso": "05"
+    },
+    {
+      "cod": "0505",
+      "etiqueta": "Bofedales",
+      "n": 1728,
+      "ha": 17016.19,
+      "uso": "05"
+    },
+    {
+      "cod": "0506",
+      "etiqueta": "Vegas",
+      "n": 24227,
+      "ha": 305337.46,
+      "uso": "05"
+    },
+    {
+      "cod": "0507",
+      "etiqueta": "Otros Terrenos Húmedos",
+      "n": 4574,
+      "ha": 61014.37,
+      "uso": "05"
+    },
+    {
+      "cod": "0599",
+      "etiqueta": "Sin Información",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "05"
+    },
+    {
+      "cod": "0601",
+      "etiqueta": "Playas y Dunas",
+      "n": 2778,
+      "ha": 45441.43,
+      "uso": "06"
+    },
+    {
+      "cod": "0602",
+      "etiqueta": "Afloramientos Rocosos",
+      "n": 11623,
+      "ha": 505385.16,
+      "uso": "06"
+    },
+    {
+      "cod": "0603",
+      "etiqueta": "Terreno sobre Límite Altitudinal de la Vegetación",
+      "n": 26595,
+      "ha": 5834340.85,
+      "uso": "06"
+    },
+    {
+      "cod": "0604",
+      "etiqueta": "Corridas de Lavas y Escoriales",
+      "n": 563,
+      "ha": 105011.64,
+      "uso": "06"
+    },
+    {
+      "cod": "0605",
+      "etiqueta": "Derrumbe sin Vegetación",
+      "n": 1223,
+      "ha": 11992.93,
+      "uso": "06"
+    },
+    {
+      "cod": "0606",
+      "etiqueta": "Salares",
+      "n": 1046,
+      "ha": 712030.72,
+      "uso": "06"
+    },
+    {
+      "cod": "0607",
+      "etiqueta": "Otros sin Vegetación",
+      "n": 35548,
+      "ha": 9907335.43,
+      "uso": "06"
+    },
+    {
+      "cod": "0608",
+      "etiqueta": "Cajas de Ríos",
+      "n": 7584,
+      "ha": 69806.24,
+      "uso": "06"
+    },
+    {
+      "cod": "0699",
+      "etiqueta": "Sin Información",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "06"
+    },
+    {
+      "cod": "0701",
+      "etiqueta": "Nieves",
+      "n": 27276,
+      "ha": 777381.08,
+      "uso": "07"
+    },
+    {
+      "cod": "0702",
+      "etiqueta": "Glaciares",
+      "n": 11220,
+      "ha": 607783.97,
+      "uso": "07"
+    },
+    {
+      "cod": "0703",
+      "etiqueta": "Campos de Hielo",
+      "n": 1248,
+      "ha": 1371713.62,
+      "uso": "07"
+    },
+    {
+      "cod": "0799",
+      "etiqueta": "Sin Información",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "07"
+    },
+    {
+      "cod": "0801",
+      "etiqueta": "Mar",
+      "n": 117,
+      "ha": 178.92,
+      "uso": "08"
+    },
+    {
+      "cod": "0802",
+      "etiqueta": "Ríos",
+      "n": 10141,
+      "ha": 151685.89,
+      "uso": "08"
+    },
+    {
+      "cod": "0803",
+      "etiqueta": "Lagos, Lagunas, Embalses, Tranques",
+      "n": 48689,
+      "ha": 1301135.75,
+      "uso": "08"
+    },
+    {
+      "cod": "0899",
+      "etiqueta": "Sin Información",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "08"
+    },
+    {
+      "cod": "0901",
+      "etiqueta": "Áreas de Acceso Restringido",
+      "n": 5,
+      "ha": 331198.86,
+      "uso": "09"
+    }
+  ],
+  "estructuras": [
+    {
+      "cod": "010100",
+      "etiqueta": "No Aplica",
+      "n": 19074,
+      "ha": 580864.21,
+      "uso": "01",
+      "subuso": "0101"
+    },
+    {
+      "cod": "010200",
+      "etiqueta": "No Aplica",
+      "n": 3923,
+      "ha": 169355.98,
+      "uso": "01",
+      "subuso": "0102"
+    },
+    {
+      "cod": "019900",
+      "etiqueta": "No Aplica",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "01",
+      "subuso": "0199"
+    },
+    {
+      "cod": "020100",
+      "etiqueta": "No Aplica",
+      "n": 25550,
+      "ha": 1269777.32,
+      "uso": "02",
+      "subuso": "0201"
+    },
+    {
+      "cod": "020200",
+      "etiqueta": "No Aplica",
+      "n": 46791,
+      "ha": 2774473.91,
+      "uso": "02",
+      "subuso": "0202"
+    },
+    {
+      "cod": "029900",
+      "etiqueta": "No Aplica",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "02",
+      "subuso": "0299"
+    },
+    {
+      "cod": "030101",
+      "etiqueta": "Estepa Altiplánica",
+      "n": 1666,
+      "ha": 828814.55,
+      "uso": "03",
+      "subuso": "0301"
+    },
+    {
+      "cod": "030102",
+      "etiqueta": "Estepa Andina Norte",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "03",
+      "subuso": "0301"
+    },
+    {
+      "cod": "030103",
+      "etiqueta": "Pradera Anual",
+      "n": 5820,
+      "ha": 1749669.13,
+      "uso": "03",
+      "subuso": "0301"
+    },
+    {
+      "cod": "030104",
+      "etiqueta": "Pradera Perenne",
+      "n": 76042,
+      "ha": 1743380.24,
+      "uso": "03",
+      "subuso": "0301"
+    },
+    {
+      "cod": "030105",
+      "etiqueta": "Estepa Andina Central",
+      "n": 6305,
+      "ha": 516438.58,
+      "uso": "03",
+      "subuso": "0301"
+    },
+    {
+      "cod": "030106",
+      "etiqueta": "Estepa Patagónica",
+      "n": 8993,
+      "ha": 1256786.1,
+      "uso": "03",
+      "subuso": "0301"
+    },
+    {
+      "cod": "030199",
+      "etiqueta": "Sin Información",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "03",
+      "subuso": "0301"
+    },
+    {
+      "cod": "030200",
+      "etiqueta": "No Aplica",
+      "n": 126195,
+      "ha": 7659671.58,
+      "uso": "03",
+      "subuso": "0302"
+    },
+    {
+      "cod": "030300",
+      "etiqueta": "No Aplica",
+      "n": 130776,
+      "ha": 6534509.69,
+      "uso": "03",
+      "subuso": "0303"
+    },
+    {
+      "cod": "030400",
+      "etiqueta": "No Aplica",
+      "n": 75274,
+      "ha": 1266554.61,
+      "uso": "03",
+      "subuso": "0304"
+    },
+    {
+      "cod": "030500",
+      "etiqueta": "No Aplica",
+      "n": 19311,
+      "ha": 2711636.97,
+      "uso": "03",
+      "subuso": "0305"
+    },
+    {
+      "cod": "030600",
+      "etiqueta": "No Aplica",
+      "n": 1354,
+      "ha": 146313.46,
+      "uso": "03",
+      "subuso": "0306"
+    },
+    {
+      "cod": "030700",
+      "etiqueta": "No Aplica",
+      "n": 530,
+      "ha": 49475.75,
+      "uso": "03",
+      "subuso": "0307"
+    },
+    {
+      "cod": "030801",
+      "etiqueta": "Tundra Oceánica",
+      "n": 55469,
+      "ha": 3864834.67,
+      "uso": "03",
+      "subuso": "0308"
+    },
+    {
+      "cod": "030802",
+      "etiqueta": "Tundra Montana",
+      "n": 41294,
+      "ha": 954279.0,
+      "uso": "03",
+      "subuso": "0308"
+    },
+    {
+      "cod": "040101",
+      "etiqueta": "Adulta",
+      "n": 166896,
+      "ha": 1985963.34,
+      "uso": "04",
+      "subuso": "0401"
+    },
+    {
+      "cod": "040102",
+      "etiqueta": "Joven o Recién Cosechada",
+      "n": 62055,
+      "ha": 1017890.62,
+      "uso": "04",
+      "subuso": "0401"
+    },
+    {
+      "cod": "040103",
+      "etiqueta": "Bosque de Exóticas Asilvestradas",
+      "n": 34438,
+      "ha": 138925.83,
+      "uso": "04",
+      "subuso": "0401"
+    },
+    {
+      "cod": "040199",
+      "etiqueta": "Sin Información",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "04",
+      "subuso": "0401"
+    },
+    {
+      "cod": "040201",
+      "etiqueta": "Adulto",
+      "n": 118559,
+      "ha": 5354723.49,
+      "uso": "04",
+      "subuso": "0402"
+    },
+    {
+      "cod": "040202",
+      "etiqueta": "Renoval",
+      "n": 330654,
+      "ha": 4817483.68,
+      "uso": "04",
+      "subuso": "0402"
+    },
+    {
+      "cod": "040203",
+      "etiqueta": "Adulto-Renoval",
+      "n": 92092,
+      "ha": 2460400.56,
+      "uso": "04",
+      "subuso": "0402"
+    },
+    {
+      "cod": "040204",
+      "etiqueta": "Achaparrado",
+      "n": 108091,
+      "ha": 2903720.78,
+      "uso": "04",
+      "subuso": "0402"
+    },
+    {
+      "cod": "040301",
+      "etiqueta": "Nativo-Plantación",
+      "n": 10467,
+      "ha": 60985.78,
+      "uso": "04",
+      "subuso": "0403"
+    },
+    {
+      "cod": "040302",
+      "etiqueta": "Nativo con Exóticas Asilvestradas",
+      "n": 20203,
+      "ha": 122660.26,
+      "uso": "04",
+      "subuso": "0403"
+    },
+    {
+      "cod": "040399",
+      "etiqueta": "Sin Información",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "04",
+      "subuso": "0403"
+    },
+    {
+      "cod": "050100",
+      "etiqueta": "No Aplica",
+      "n": 529,
+      "ha": 14331.39,
+      "uso": "05",
+      "subuso": "0501"
+    },
+    {
+      "cod": "050200",
+      "etiqueta": "No Aplica",
+      "n": 510,
+      "ha": 8903.25,
+      "uso": "05",
+      "subuso": "0502"
+    },
+    {
+      "cod": "050300",
+      "etiqueta": "No Aplica",
+      "n": 173,
+      "ha": 6181.88,
+      "uso": "05",
+      "subuso": "0503"
+    },
+    {
+      "cod": "050400",
+      "etiqueta": "No Aplica",
+      "n": 16919,
+      "ha": 417751.78,
+      "uso": "05",
+      "subuso": "0504"
+    },
+    {
+      "cod": "050500",
+      "etiqueta": "No Aplica",
+      "n": 1173,
+      "ha": 12098.0,
+      "uso": "05",
+      "subuso": "0505"
+    },
+    {
+      "cod": "050600",
+      "etiqueta": "No Aplica",
+      "n": 21869,
+      "ha": 290122.54,
+      "uso": "05",
+      "subuso": "0506"
+    },
+    {
+      "cod": "050700",
+      "etiqueta": "No Aplica",
+      "n": 4571,
+      "ha": 60976.05,
+      "uso": "05",
+      "subuso": "0507"
+    },
+    {
+      "cod": "059900",
+      "etiqueta": "No Aplica",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "05",
+      "subuso": "0599"
+    },
+    {
+      "cod": "060100",
+      "etiqueta": "No Aplica",
+      "n": 2777,
+      "ha": 45431.01,
+      "uso": "06",
+      "subuso": "0601"
+    },
+    {
+      "cod": "060200",
+      "etiqueta": "No Aplica",
+      "n": 11619,
+      "ha": 504542.5,
+      "uso": "06",
+      "subuso": "0602"
+    },
+    {
+      "cod": "060300",
+      "etiqueta": "No Aplica",
+      "n": 26322,
+      "ha": 4310038.03,
+      "uso": "06",
+      "subuso": "0603"
+    },
+    {
+      "cod": "060400",
+      "etiqueta": "No Aplica",
+      "n": 563,
+      "ha": 105011.64,
+      "uso": "06",
+      "subuso": "0604"
+    },
+    {
+      "cod": "060500",
+      "etiqueta": "No Aplica",
+      "n": 1223,
+      "ha": 11992.93,
+      "uso": "06",
+      "subuso": "0605"
+    },
+    {
+      "cod": "060600",
+      "etiqueta": "No Aplica",
+      "n": 920,
+      "ha": 486458.5,
+      "uso": "06",
+      "subuso": "0606"
+    },
+    {
+      "cod": "060700",
+      "etiqueta": "No Aplica",
+      "n": 33533,
+      "ha": 6971338.36,
+      "uso": "06",
+      "subuso": "0607"
+    },
+    {
+      "cod": "060800",
+      "etiqueta": "No Aplica",
+      "n": 7584,
+      "ha": 69806.24,
+      "uso": "06",
+      "subuso": "0608"
+    },
+    {
+      "cod": "069900",
+      "etiqueta": "No Aplica",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "06",
+      "subuso": "0699"
+    },
+    {
+      "cod": "070100",
+      "etiqueta": "No Aplica",
+      "n": 27276,
+      "ha": 777381.08,
+      "uso": "07",
+      "subuso": "0701"
+    },
+    {
+      "cod": "070200",
+      "etiqueta": "No Aplica",
+      "n": 11220,
+      "ha": 607783.97,
+      "uso": "07",
+      "subuso": "0702"
+    },
+    {
+      "cod": "070300",
+      "etiqueta": "No Aplica",
+      "n": 1248,
+      "ha": 1371713.62,
+      "uso": "07",
+      "subuso": "0703"
+    },
+    {
+      "cod": "079900",
+      "etiqueta": "No Aplica",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "07",
+      "subuso": "0799"
+    },
+    {
+      "cod": "080100",
+      "etiqueta": "No Aplica",
+      "n": 117,
+      "ha": 178.92,
+      "uso": "08",
+      "subuso": "0801"
+    },
+    {
+      "cod": "080200",
+      "etiqueta": "No Aplica",
+      "n": 10141,
+      "ha": 151685.89,
+      "uso": "08",
+      "subuso": "0802"
+    },
+    {
+      "cod": "080300",
+      "etiqueta": "No Aplica",
+      "n": 48557,
+      "ha": 1292139.58,
+      "uso": "08",
+      "subuso": "0803"
+    },
+    {
+      "cod": "089900",
+      "etiqueta": "No Aplica",
+      "n": 0,
+      "ha": 0.0,
+      "uso": "08",
+      "subuso": "0899"
+    },
+    {
+      "cod": "090100",
+      "etiqueta": "No Aplica",
+      "n": 5,
+      "ha": 331198.86,
+      "uso": "09",
+      "subuso": "0901"
+    }
+  ],
+  "tipos_forestales": [
+    {
+      "cod": "00",
+      "etiqueta": "No Aplica",
+      "n": 63848,
+      "ha": 10923358.94,
+      "legal": null
+    },
+    {
+      "cod": "01",
+      "etiqueta": "Alerce",
+      "n": 4397,
+      "ha": 205173.15,
+      "legal": "Monumento Natural (D.S. 490/1976, MINAGRI)"
+    },
+    {
+      "cod": "02",
+      "etiqueta": "Ciprés de las Guaitecas",
+      "n": 15725,
+      "ha": 577309.98,
+      "legal": null
+    },
+    {
+      "cod": "03",
+      "etiqueta": "Araucaria",
+      "n": 7092,
+      "ha": 215157.44,
+      "legal": "Monumento Natural (D.S. 43/1990, MINAGRI)"
+    },
+    {
+      "cod": "04",
+      "etiqueta": "Ciprés de la Cordillera",
+      "n": 4523,
+      "ha": 69147.45,
+      "legal": null
+    },
+    {
+      "cod": "05",
+      "etiqueta": "Palma Chilena",
+      "n": 760,
+      "ha": 13399.94,
+      "legal": null
+    },
+    {
+      "cod": "06",
+      "etiqueta": "Lenga",
+      "n": 112085,
+      "ha": 3773605.47,
+      "legal": null
+    },
+    {
+      "cod": "07",
+      "etiqueta": "Coihue de Magallanes",
+      "n": 83090,
+      "ha": 1902626.9,
+      "legal": null
+    },
+    {
+      "cod": "08",
+      "etiqueta": "Roble-Hualo",
+      "n": 7112,
+      "ha": 199295.28,
+      "legal": null
+    },
+    {
+      "cod": "09",
+      "etiqueta": "Roble-Raulí-Coihue",
+      "n": 136959,
+      "ha": 1752727.03,
+      "legal": null
+    },
+    {
+      "cod": "10",
+      "etiqueta": "Coihue-Raulí-Tepa",
+      "n": 15605,
+      "ha": 817757.01,
+      "legal": null
+    },
+    {
+      "cod": "11",
+      "etiqueta": "Esclerófilo",
+      "n": 122524,
+      "ha": 1607531.24,
+      "legal": null
+    },
+    {
+      "cod": "12",
+      "etiqueta": "Siempreverde",
+      "n": 139525,
+      "ha": 4402598.1,
+      "legal": null
+    }
+  ],
+  "snaspe": [
+    {
+      "cod": "Altos De Pemehue",
+      "etiqueta": "Altos De Pemehue",
+      "n": 1246,
+      "ha": 18888.51,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Federico Albert",
+      "etiqueta": "Federico Albert",
+      "n": 32,
+      "ha": 233.27,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Laguna De Torca",
+      "etiqueta": "Laguna De Torca",
+      "n": 84,
+      "ha": 619.8,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Laguna Del Laja",
+      "etiqueta": "Laguna Del Laja",
+      "n": 448,
+      "ha": 12630.2,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Llanos de Challe",
+      "etiqueta": "Llanos de Challe",
+      "n": 230,
+      "ha": 45157.59,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Los Bellotos Del Melado",
+      "etiqueta": "Los Bellotos Del Melado",
+      "n": 136,
+      "ha": 744.99,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Los Ruiles",
+      "etiqueta": "Los Ruiles",
+      "n": 53,
+      "ha": 305.45,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Mon. Natural Islotes de Puñihuil",
+      "etiqueta": "Mon. Natural Islotes de Puñihuil",
+      "n": 6,
+      "ha": 7.49,
+      "categoria": "Monumento Natural"
+    },
+    {
+      "cod": "Monumento Natural Cerro Nielol",
+      "etiqueta": "Monumento Natural Cerro Nielol",
+      "n": 47,
+      "ha": 85.96,
+      "categoria": "Monumento Natural"
+    },
+    {
+      "cod": "Monumento Natural Cinco Hermanas",
+      "etiqueta": "Monumento Natural Cinco Hermanas",
+      "n": 7,
+      "ha": 226.13,
+      "categoria": "Monumento Natural"
+    },
+    {
+      "cod": "Monumento Natural Contulmo",
+      "etiqueta": "Monumento Natural Contulmo",
+      "n": 24,
+      "ha": 85.91,
+      "categoria": "Monumento Natural"
+    },
+    {
+      "cod": "Monumento Natural Cueva del Milodón",
+      "etiqueta": "Monumento Natural Cueva del Milodón",
+      "n": 12,
+      "ha": 179.83,
+      "categoria": "Monumento Natural"
+    },
+    {
+      "cod": "Monumento Natural Dos Lagunas",
+      "etiqueta": "Monumento Natural Dos Lagunas",
+      "n": 49,
+      "ha": 344.38,
+      "categoria": "Monumento Natural"
+    },
+    {
+      "cod": "Monumento Natural El Morado",
+      "etiqueta": "Monumento Natural El Morado",
+      "n": 74,
+      "ha": 3018.66,
+      "categoria": "Monumento Natural"
+    },
+    {
+      "cod": "Monumento Natural Isla Cachagua",
+      "etiqueta": "Monumento Natural Isla Cachagua",
+      "n": 1,
+      "ha": 5.15,
+      "categoria": "Monumento Natural"
+    },
+    {
+      "cod": "Monumento Natural La Portada",
+      "etiqueta": "Monumento Natural La Portada",
+      "n": 3,
+      "ha": 33.08,
+      "categoria": "Monumento Natural"
+    },
+    {
+      "cod": "Monumento Natural Laguna de los Cisnes",
+      "etiqueta": "Monumento Natural Laguna de los Cisnes",
+      "n": 7,
+      "ha": 1606.72,
+      "categoria": "Monumento Natural"
+    },
+    {
+      "cod": "Monumento Natural Los Pinguinos",
+      "etiqueta": "Monumento Natural Los Pinguinos",
+      "n": 5,
+      "ha": 73.43,
+      "categoria": "Monumento Natural"
+    },
+    {
+      "cod": "Monumento Natural Paposo Norte",
+      "etiqueta": "Monumento Natural Paposo Norte",
+      "n": 76,
+      "ha": 7617.47,
+      "categoria": "Monumento Natural"
+    },
+    {
+      "cod": "Monumentro Nacional Lahuen Ñadi",
+      "etiqueta": "Monumentro Nacional Lahuen Ñadi",
+      "n": 20,
+      "ha": 200.02,
+      "categoria": "Monumento Natural"
+    },
+    {
+      "cod": "Nahuelbuta",
+      "etiqueta": "Nahuelbuta",
+      "n": 43,
+      "ha": 294.02,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Nevado Tres Cruces",
+      "etiqueta": "Nevado Tres Cruces",
+      "n": 268,
+      "ha": 52681.72,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Nonguen",
+      "etiqueta": "Nonguen",
+      "n": 373,
+      "ha": 3039.17,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Nuble",
+      "etiqueta": "Nuble",
+      "n": 1382,
+      "ha": 34266.33,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Pan de Azúcar",
+      "etiqueta": "Pan de Azúcar",
+      "n": 128,
+      "ha": 30850.99,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Alberto de Agostini",
+      "etiqueta": "Parque Nacional Alberto de Agostini",
+      "n": 29119,
+      "ha": 1443755.42,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Alerce Andino",
+      "etiqueta": "Parque Nacional Alerce Andino",
+      "n": 769,
+      "ha": 39394.81,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Alerce Costero",
+      "etiqueta": "Parque Nacional Alerce Costero",
+      "n": 913,
+      "ha": 24814.61,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Bernardo OHiggins",
+      "etiqueta": "Parque Nacional Bernardo OHiggins",
+      "n": 30098,
+      "ha": 962126.98,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Bernardo Ohiggins",
+      "etiqueta": "Parque Nacional Bernardo Ohiggins",
+      "n": 55586,
+      "ha": 2849820.93,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Cabo de Hornos",
+      "etiqueta": "Parque Nacional Cabo de Hornos",
+      "n": 1765,
+      "ha": 62146.07,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Cerro Castillo",
+      "etiqueta": "Parque Nacional Cerro Castillo",
+      "n": 5073,
+      "ha": 142304.74,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Chiloe",
+      "etiqueta": "Parque Nacional Chiloe",
+      "n": 885,
+      "ha": 42502.08,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Conguillio",
+      "etiqueta": "Parque Nacional Conguillio",
+      "n": 2278,
+      "ha": 58716.86,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Corcovado",
+      "etiqueta": "Parque Nacional Corcovado",
+      "n": 3739,
+      "ha": 401105.11,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Hornopiren",
+      "etiqueta": "Parque Nacional Hornopiren",
+      "n": 1085,
+      "ha": 66139.9,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Huerquehue",
+      "etiqueta": "Parque Nacional Huerquehue",
+      "n": 876,
+      "ha": 12527.72,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Isla Guamblin",
+      "etiqueta": "Parque Nacional Isla Guamblin",
+      "n": 85,
+      "ha": 15446.27,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Isla Magdalena maritimo",
+      "etiqueta": "Parque Nacional Isla Magdalena maritimo",
+      "n": 938,
+      "ha": 1090.82,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Isla Magdalena terrestre",
+      "etiqueta": "Parque Nacional Isla Magdalena terrestre",
+      "n": 2084,
+      "ha": 210661.34,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Kawesqar",
+      "etiqueta": "Parque Nacional Kawesqar",
+      "n": 90606,
+      "ha": 2881135.13,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional La Campana",
+      "etiqueta": "Parque Nacional La Campana",
+      "n": 347,
+      "ha": 7875.34,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Laguna San Rafael",
+      "etiqueta": "Parque Nacional Laguna San Rafael",
+      "n": 36754,
+      "ha": 1712856.61,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Llullaillaco",
+      "etiqueta": "Parque Nacional Llullaillaco",
+      "n": 226,
+      "ha": 268424.14,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Melimoyu",
+      "etiqueta": "Parque Nacional Melimoyu",
+      "n": 1578,
+      "ha": 105157.31,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Morro Moreno",
+      "etiqueta": "Parque Nacional Morro Moreno",
+      "n": 15,
+      "ha": 7316.06,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Nahuelbuta",
+      "etiqueta": "Parque Nacional Nahuelbuta",
+      "n": 252,
+      "ha": 6353.1,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Pali Aike",
+      "etiqueta": "Parque Nacional Pali Aike",
+      "n": 20,
+      "ha": 5155.01,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Palmas de Cocalán",
+      "etiqueta": "Parque Nacional Palmas de Cocalán",
+      "n": 385,
+      "ha": 3327.76,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Pan de Azúcar",
+      "etiqueta": "Parque Nacional Pan de Azúcar",
+      "n": 182,
+      "ha": 13707.71,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Patagonia",
+      "etiqueta": "Parque Nacional Patagonia",
+      "n": 10378,
+      "ha": 304241.04,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Pumalín",
+      "etiqueta": "Parque Nacional Pumalín",
+      "n": 3831,
+      "ha": 401890.3,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Puyehue",
+      "etiqueta": "Parque Nacional Puyehue",
+      "n": 1635,
+      "ha": 115497.94,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Queulat",
+      "etiqueta": "Parque Nacional Queulat",
+      "n": 5372,
+      "ha": 157112.0,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Río Clarillo",
+      "etiqueta": "Parque Nacional Río Clarillo",
+      "n": 514,
+      "ha": 12957.41,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Tolhuaca",
+      "etiqueta": "Parque Nacional Tolhuaca",
+      "n": 486,
+      "ha": 6475.68,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Torres del Paine",
+      "etiqueta": "Parque Nacional Torres del Paine",
+      "n": 3914,
+      "ha": 228098.83,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Vicente Perez Rosal",
+      "etiqueta": "Parque Nacional Vicente Perez Rosal",
+      "n": 3723,
+      "ha": 227457.39,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Villarrica",
+      "etiqueta": "Parque Nacional Villarrica",
+      "n": 2052,
+      "ha": 53586.72,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Volcán Isluga",
+      "etiqueta": "Parque Nacional Volcán Isluga",
+      "n": 1655,
+      "ha": 169602.52,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Parque Nacional Yendegaia",
+      "etiqueta": "Parque Nacional Yendegaia",
+      "n": 2212,
+      "ha": 150551.38,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Pinguino de Humboldt",
+      "etiqueta": "Pinguino de Humboldt",
+      "n": 24,
+      "ha": 519.93,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Radal Siete Tazas",
+      "etiqueta": "Radal Siete Tazas",
+      "n": 343,
+      "ha": 5095.87,
+      "categoria": "Parque Nacional"
+    },
+    {
+      "cod": "Ralco",
+      "etiqueta": "Ralco",
+      "n": 651,
+      "ha": 12878.92,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Alto Bio Bio",
+      "etiqueta": "Reserva Nacional Alto Bio Bio",
+      "n": 868,
+      "ha": 31152.74,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional China Muerta",
+      "etiqueta": "Reserva Nacional China Muerta",
+      "n": 825,
+      "ha": 8547.32,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Coyhaique",
+      "etiqueta": "Reserva Nacional Coyhaique",
+      "n": 140,
+      "ha": 2683.07,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional El Yali",
+      "etiqueta": "Reserva Nacional El Yali",
+      "n": 48,
+      "ha": 514.7,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Futaleufu",
+      "etiqueta": "Reserva Nacional Futaleufu",
+      "n": 208,
+      "ha": 12307.83,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Katalalixar",
+      "etiqueta": "Reserva Nacional Katalalixar",
+      "n": 44189,
+      "ha": 719228.36,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional La Chimba",
+      "etiqueta": "Reserva Nacional La Chimba",
+      "n": 64,
+      "ha": 2583.37,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Lago Carlota",
+      "etiqueta": "Reserva Nacional Lago Carlota",
+      "n": 657,
+      "ha": 18447.77,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Lago Las Torres",
+      "etiqueta": "Reserva Nacional Lago Las Torres",
+      "n": 1065,
+      "ha": 16962.71,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Lago Palena",
+      "etiqueta": "Reserva Nacional Lago Palena",
+      "n": 289,
+      "ha": 38921.7,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Lago Rosselot",
+      "etiqueta": "Reserva Nacional Lago Rosselot",
+      "n": 322,
+      "ha": 12324.8,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Laguna Parrillar",
+      "etiqueta": "Reserva Nacional Laguna Parrillar",
+      "n": 518,
+      "ha": 19949.42,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Las Guaitecas",
+      "etiqueta": "Reserva Nacional Las Guaitecas",
+      "n": 24235,
+      "ha": 1082613.06,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Llanquihue",
+      "etiqueta": "Reserva Nacional Llanquihue",
+      "n": 717,
+      "ha": 36508.47,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Los Flamencos",
+      "etiqueta": "Reserva Nacional Los Flamencos",
+      "n": 571,
+      "ha": 73811.2,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Los Huemules Del Niblinto",
+      "etiqueta": "Reserva Nacional Los Huemules Del Niblinto",
+      "n": 293,
+      "ha": 2062.97,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Magallanes",
+      "etiqueta": "Reserva Nacional Magallanes",
+      "n": 194,
+      "ha": 20807.08,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Malalcahuello",
+      "etiqueta": "Reserva Nacional Malalcahuello",
+      "n": 474,
+      "ha": 13697.65,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Malleco",
+      "etiqueta": "Reserva Nacional Malleco",
+      "n": 1081,
+      "ha": 16138.87,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Mocho Choshuenco",
+      "etiqueta": "Reserva Nacional Mocho Choshuenco",
+      "n": 223,
+      "ha": 7746.54,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Nalcas",
+      "etiqueta": "Reserva Nacional Nalcas",
+      "n": 492,
+      "ha": 20397.23,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Nuble",
+      "etiqueta": "Reserva Nacional Nuble",
+      "n": 1252,
+      "ha": 40171.64,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Pampa del Tamarugal",
+      "etiqueta": "Reserva Nacional Pampa del Tamarugal",
+      "n": 1988,
+      "ha": 99628.45,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Penuelas",
+      "etiqueta": "Reserva Nacional Penuelas",
+      "n": 514,
+      "ha": 9021.56,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Rio Blanco",
+      "etiqueta": "Reserva Nacional Rio Blanco",
+      "n": 201,
+      "ha": 4496.4,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Rio Simpson",
+      "etiqueta": "Reserva Nacional Rio Simpson",
+      "n": 1511,
+      "ha": 42059.03,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Robleria del Cobre Loncha",
+      "etiqueta": "Reserva Nacional Robleria del Cobre Loncha",
+      "n": 408,
+      "ha": 5991.81,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Río Los Cipreses",
+      "etiqueta": "Reserva Nacional Río Los Cipreses",
+      "n": 2759,
+      "ha": 38709.14,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Trapananda",
+      "etiqueta": "Reserva Nacional Trapananda",
+      "n": 100,
+      "ha": 2299.45,
+      "categoria": "Reserva Nacional"
+    },
+    {
+      "cod": "Reserva Nacional Villarrica",
+      "etiqueta": "Reserva Nacional Villarrica",
+      "n": 3395,
+      "ha": 46929.24,
+      "categoria": "Reserva Nacional"
+    }
+  ],
+  "comunas": [
+    {
+      "cod": "01101",
+      "etiqueta": "Iquique",
+      "n": 552,
+      "ha": 239672.34,
+      "provincia": "Iquique",
+      "region": "01"
+    },
+    {
+      "cod": "01107",
+      "etiqueta": "Alto Hospicio",
+      "n": 152,
+      "ha": 57833.45,
+      "provincia": "Iquique",
+      "region": "01"
+    },
+    {
+      "cod": "01401",
+      "etiqueta": "Pozo Almonte",
+      "n": 4085,
+      "ha": 1367617.98,
+      "provincia": "Tamarugal",
+      "region": "01"
+    },
+    {
+      "cod": "01402",
+      "etiqueta": "Camiña",
+      "n": 1035,
+      "ha": 226132.77,
+      "provincia": "Tamarugal",
+      "region": "01"
+    },
+    {
+      "cod": "01403",
+      "etiqueta": "Colchane",
+      "n": 2766,
+      "ha": 399444.02,
+      "provincia": "Tamarugal",
+      "region": "01"
+    },
+    {
+      "cod": "01404",
+      "etiqueta": "Huara",
+      "n": 3618,
+      "ha": 1042375.27,
+      "provincia": "Tamarugal",
+      "region": "01"
+    },
+    {
+      "cod": "01405",
+      "etiqueta": "Pica",
+      "n": 3137,
+      "ha": 895728.35,
+      "provincia": "Tamarugal",
+      "region": "01"
+    },
+    {
+      "cod": "02101",
+      "etiqueta": "Antofagasta",
+      "n": 2020,
+      "ha": 3092708.56,
+      "provincia": "Antofagasta",
+      "region": "02"
+    },
+    {
+      "cod": "02102",
+      "etiqueta": "Mejillones",
+      "n": 260,
+      "ha": 357914.84,
+      "provincia": "Antofagasta",
+      "region": "02"
+    },
+    {
+      "cod": "02103",
+      "etiqueta": "Sierra Gorda",
+      "n": 1437,
+      "ha": 1280060.91,
+      "provincia": "Antofagasta",
+      "region": "02"
+    },
+    {
+      "cod": "02104",
+      "etiqueta": "Taltal",
+      "n": 1604,
+      "ha": 2027607.8,
+      "provincia": "Antofagasta",
+      "region": "02"
+    },
+    {
+      "cod": "02201",
+      "etiqueta": "Calama",
+      "n": 3555,
+      "ha": 1551101.95,
+      "provincia": "El Loa",
+      "region": "02"
+    },
+    {
+      "cod": "02202",
+      "etiqueta": "Ollague",
+      "n": 850,
+      "ha": 285196.39,
+      "provincia": "El Loa",
+      "region": "02"
+    },
+    {
+      "cod": "02203",
+      "etiqueta": "San Pedro de Atacama",
+      "n": 4913,
+      "ha": 2366932.94,
+      "provincia": "El Loa",
+      "region": "02"
+    },
+    {
+      "cod": "02301",
+      "etiqueta": "Tocopilla",
+      "n": 480,
+      "ha": 401822.14,
+      "provincia": "Tocopilla",
+      "region": "02"
+    },
+    {
+      "cod": "02302",
+      "etiqueta": "María Elena",
+      "n": 1605,
+      "ha": 1242618.45,
+      "provincia": "Tocopilla",
+      "region": "02"
+    },
+    {
+      "cod": "03101",
+      "etiqueta": "Copiapo",
+      "n": 4508,
+      "ha": 1759874.94,
+      "provincia": "Copiapo",
+      "region": "03"
+    },
+    {
+      "cod": "03102",
+      "etiqueta": "Caldera",
+      "n": 1396,
+      "ha": 369506.52,
+      "provincia": "Copiapo",
+      "region": "03"
+    },
+    {
+      "cod": "03103",
+      "etiqueta": "Tierra Amarilla",
+      "n": 3641,
+      "ha": 1127661.09,
+      "provincia": "Copiapo",
+      "region": "03"
+    },
+    {
+      "cod": "03201",
+      "etiqueta": "Chañaral",
+      "n": 866,
+      "ha": 574438.2,
+      "provincia": "Chañaral",
+      "region": "03"
+    },
+    {
+      "cod": "03202",
+      "etiqueta": "Diego de Almagro",
+      "n": 1695,
+      "ha": 1913730.62,
+      "provincia": "Chañaral",
+      "region": "03"
+    },
+    {
+      "cod": "03301",
+      "etiqueta": "Vallenar",
+      "n": 3561,
+      "ha": 722046.37,
+      "provincia": "Huasco",
+      "region": "03"
+    },
+    {
+      "cod": "03302",
+      "etiqueta": "Alto del Carmen",
+      "n": 4225,
+      "ha": 613244.77,
+      "provincia": "Huasco",
+      "region": "03"
+    },
+    {
+      "cod": "03303",
+      "etiqueta": "Freirina",
+      "n": 1784,
+      "ha": 324102.54,
+      "provincia": "Huasco",
+      "region": "03"
+    },
+    {
+      "cod": "03304",
+      "etiqueta": "Huasco",
+      "n": 1108,
+      "ha": 159120.85,
+      "provincia": "Huasco",
+      "region": "03"
+    },
+    {
+      "cod": "04101",
+      "etiqueta": "La Serena",
+      "n": 1744,
+      "ha": 190492.45,
+      "provincia": "Elqui",
+      "region": "04"
+    },
+    {
+      "cod": "04102",
+      "etiqueta": "Coquimbo",
+      "n": 1491,
+      "ha": 142729.27,
+      "provincia": "Elqui",
+      "region": "04"
+    },
+    {
+      "cod": "04103",
+      "etiqueta": "Andacollo",
+      "n": 611,
+      "ha": 51301.81,
+      "provincia": "Elqui",
+      "region": "04"
+    },
+    {
+      "cod": "04104",
+      "etiqueta": "La Higuera",
+      "n": 3940,
+      "ha": 417781.36,
+      "provincia": "Elqui",
+      "region": "04"
+    },
+    {
+      "cod": "04105",
+      "etiqueta": "Paiguano",
+      "n": 1260,
+      "ha": 150090.19,
+      "provincia": "Elqui",
+      "region": "04"
+    },
+    {
+      "cod": "04106",
+      "etiqueta": "Vicuña",
+      "n": 4573,
+      "ha": 761705.15,
+      "provincia": "Elqui",
+      "region": "04"
+    },
+    {
+      "cod": "04201",
+      "etiqueta": "Illapel",
+      "n": 3163,
+      "ha": 262459.19,
+      "provincia": "Choapa",
+      "region": "04"
+    },
+    {
+      "cod": "04202",
+      "etiqueta": "Canela",
+      "n": 3020,
+      "ha": 219730.61,
+      "provincia": "Choapa",
+      "region": "04"
+    },
+    {
+      "cod": "04203",
+      "etiqueta": "Los Vilos",
+      "n": 2646,
+      "ha": 185763.12,
+      "provincia": "Choapa",
+      "region": "04"
+    },
+    {
+      "cod": "04204",
+      "etiqueta": "Salamanca",
+      "n": 3856,
+      "ha": 344141.25,
+      "provincia": "Choapa",
+      "region": "04"
+    },
+    {
+      "cod": "04301",
+      "etiqueta": "Ovalle",
+      "n": 3867,
+      "ha": 355044.54,
+      "provincia": "Limarí",
+      "region": "04"
+    },
+    {
+      "cod": "04302",
+      "etiqueta": "Combarbalá",
+      "n": 3817,
+      "ha": 229799.45,
+      "provincia": "Limarí",
+      "region": "04"
+    },
+    {
+      "cod": "04303",
+      "etiqueta": "Monte Patria",
+      "n": 4846,
+      "ha": 420626.99,
+      "provincia": "Limarí",
+      "region": "04"
+    },
+    {
+      "cod": "04304",
+      "etiqueta": "Punitaqui",
+      "n": 1440,
+      "ha": 109160.18,
+      "provincia": "Limarí",
+      "region": "04"
+    },
+    {
+      "cod": "04305",
+      "etiqueta": "Río Hurtado",
+      "n": 1751,
+      "ha": 220802.13,
+      "provincia": "Limarí",
+      "region": "04"
+    },
+    {
+      "cod": "05101",
+      "etiqueta": "Valparaíso",
+      "n": 2259,
+      "ha": 30900.25,
+      "provincia": "Valparaíso",
+      "region": "05"
+    },
+    {
+      "cod": "05102",
+      "etiqueta": "Casablanca",
+      "n": 7942,
+      "ha": 95317.08,
+      "provincia": "Valparaíso",
+      "region": "05"
+    },
+    {
+      "cod": "05103",
+      "etiqueta": "Concón",
+      "n": 474,
+      "ha": 7584.76,
+      "provincia": "Valparaíso",
+      "region": "05"
+    },
+    {
+      "cod": "05105",
+      "etiqueta": "Puchuncaví",
+      "n": 1894,
+      "ha": 30009.86,
+      "provincia": "Valparaíso",
+      "region": "05"
+    },
+    {
+      "cod": "05107",
+      "etiqueta": "Quintero",
+      "n": 791,
+      "ha": 14760.55,
+      "provincia": "Valparaíso",
+      "region": "05"
+    },
+    {
+      "cod": "05109",
+      "etiqueta": "Viña del Mar",
+      "n": 626,
+      "ha": 11934.23,
+      "provincia": "Valparaíso",
+      "region": "05"
+    },
+    {
+      "cod": "05301",
+      "etiqueta": "Los Andes",
+      "n": 2123,
+      "ha": 123182.0,
+      "provincia": "Los Andes",
+      "region": "05"
+    },
+    {
+      "cod": "05302",
+      "etiqueta": "Calle Larga",
+      "n": 651,
+      "ha": 32189.1,
+      "provincia": "Los Andes",
+      "region": "05"
+    },
+    {
+      "cod": "05303",
+      "etiqueta": "Rinconada",
+      "n": 236,
+      "ha": 12296.87,
+      "provincia": "Los Andes",
+      "region": "05"
+    },
+    {
+      "cod": "05304",
+      "etiqueta": "San Esteban",
+      "n": 2889,
+      "ha": 137991.95,
+      "provincia": "Los Andes",
+      "region": "05"
+    },
+    {
+      "cod": "05401",
+      "etiqueta": "La Ligua",
+      "n": 5474,
+      "ha": 116686.31,
+      "provincia": "Petorca",
+      "region": "05"
+    },
+    {
+      "cod": "05402",
+      "etiqueta": "Cabildo",
+      "n": 2719,
+      "ha": 145317.02,
+      "provincia": "Petorca",
+      "region": "05"
+    },
+    {
+      "cod": "05403",
+      "etiqueta": "Papudo",
+      "n": 773,
+      "ha": 16624.28,
+      "provincia": "Petorca",
+      "region": "05"
+    },
+    {
+      "cod": "05404",
+      "etiqueta": "Petorca",
+      "n": 2956,
+      "ha": 151853.71,
+      "provincia": "Petorca",
+      "region": "05"
+    },
+    {
+      "cod": "05405",
+      "etiqueta": "Zapallar",
+      "n": 1711,
+      "ha": 28873.38,
+      "provincia": "Petorca",
+      "region": "05"
+    },
+    {
+      "cod": "05501",
+      "etiqueta": "Quillota",
+      "n": 1837,
+      "ha": 30252.41,
+      "provincia": "Quillota",
+      "region": "05"
+    },
+    {
+      "cod": "05502",
+      "etiqueta": "Calera",
+      "n": 474,
+      "ha": 5980.15,
+      "provincia": "Quillota",
+      "region": "05"
+    },
+    {
+      "cod": "05503",
+      "etiqueta": "Hijuelas",
+      "n": 1806,
+      "ha": 26808.78,
+      "provincia": "Quillota",
+      "region": "05"
+    },
+    {
+      "cod": "05504",
+      "etiqueta": "La Cruz",
+      "n": 503,
+      "ha": 7792.8,
+      "provincia": "Quillota",
+      "region": "05"
+    },
+    {
+      "cod": "05506",
+      "etiqueta": "Nogales",
+      "n": 1950,
+      "ha": 40535.27,
+      "provincia": "Quillota",
+      "region": "05"
+    },
+    {
+      "cod": "05601",
+      "etiqueta": "San Antonio",
+      "n": 3007,
+      "ha": 40766.17,
+      "provincia": "San Antonio",
+      "region": "05"
+    },
+    {
+      "cod": "05602",
+      "etiqueta": "Algarrobo",
+      "n": 1985,
+      "ha": 17572.75,
+      "provincia": "San Antonio",
+      "region": "05"
+    },
+    {
+      "cod": "05603",
+      "etiqueta": "Cartagena",
+      "n": 2069,
+      "ha": 24403.73,
+      "provincia": "San Antonio",
+      "region": "05"
+    },
+    {
+      "cod": "05604",
+      "etiqueta": "El Quisco",
+      "n": 420,
+      "ha": 5161.86,
+      "provincia": "San Antonio",
+      "region": "05"
+    },
+    {
+      "cod": "05605",
+      "etiqueta": "El Tabo",
+      "n": 701,
+      "ha": 9962.14,
+      "provincia": "San Antonio",
+      "region": "05"
+    },
+    {
+      "cod": "05606",
+      "etiqueta": "Santo Domingo",
+      "n": 3713,
+      "ha": 53296.42,
+      "provincia": "San Antonio",
+      "region": "05"
+    },
+    {
+      "cod": "05701",
+      "etiqueta": "San Felipe",
+      "n": 653,
+      "ha": 18648.3,
+      "provincia": "San Felipe",
+      "region": "05"
+    },
+    {
+      "cod": "05702",
+      "etiqueta": "Catemu",
+      "n": 1280,
+      "ha": 36175.42,
+      "provincia": "San Felipe",
+      "region": "05"
+    },
+    {
+      "cod": "05703",
+      "etiqueta": "Llaillay",
+      "n": 979,
+      "ha": 34903.77,
+      "provincia": "San Felipe",
+      "region": "05"
+    },
+    {
+      "cod": "05704",
+      "etiqueta": "Panquehue",
+      "n": 372,
+      "ha": 12031.61,
+      "provincia": "San Felipe",
+      "region": "05"
+    },
+    {
+      "cod": "05705",
+      "etiqueta": "Putaendo",
+      "n": 2638,
+      "ha": 145324.42,
+      "provincia": "San Felipe",
+      "region": "05"
+    },
+    {
+      "cod": "05706",
+      "etiqueta": "Santa María",
+      "n": 327,
+      "ha": 16631.19,
+      "provincia": "San Felipe",
+      "region": "05"
+    },
+    {
+      "cod": "05801",
+      "etiqueta": "Quilpué",
+      "n": 3367,
+      "ha": 53564.47,
+      "provincia": "Margamarga",
+      "region": "05"
+    },
+    {
+      "cod": "05802",
+      "etiqueta": "Limache",
+      "n": 1631,
+      "ha": 29569.07,
+      "provincia": "Margamarga",
+      "region": "05"
+    },
+    {
+      "cod": "05803",
+      "etiqueta": "Olmué",
+      "n": 1486,
+      "ha": 23049.95,
+      "provincia": "Margamarga",
+      "region": "05"
+    },
+    {
+      "cod": "05804",
+      "etiqueta": "Villa Alemana",
+      "n": 628,
+      "ha": 9584.32,
+      "provincia": "Margamarga",
+      "region": "05"
+    },
+    {
+      "cod": "06101",
+      "etiqueta": "Rancagua",
+      "n": 1081,
+      "ha": 26106.44,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06102",
+      "etiqueta": "Codegua",
+      "n": 1798,
+      "ha": 28463.29,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06103",
+      "etiqueta": "Coinco",
+      "n": 548,
+      "ha": 9850.93,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06104",
+      "etiqueta": "Coltauco",
+      "n": 1362,
+      "ha": 22155.43,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06105",
+      "etiqueta": "Doñihue",
+      "n": 644,
+      "ha": 8062.79,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06106",
+      "etiqueta": "Graneros",
+      "n": 454,
+      "ha": 11258.88,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06107",
+      "etiqueta": "Las Cabras",
+      "n": 3843,
+      "ha": 75345.96,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06108",
+      "etiqueta": "Machalí",
+      "n": 14243,
+      "ha": 259363.14,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06109",
+      "etiqueta": "Malloa",
+      "n": 1668,
+      "ha": 21976.59,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06110",
+      "etiqueta": "Mostazal",
+      "n": 4415,
+      "ha": 52489.11,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06111",
+      "etiqueta": "Olivar",
+      "n": 83,
+      "ha": 4381.67,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06112",
+      "etiqueta": "Peumo",
+      "n": 617,
+      "ha": 15406.73,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06113",
+      "etiqueta": "Pichidegua",
+      "n": 1451,
+      "ha": 32081.69,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06114",
+      "etiqueta": "Quinta de Tilcoco",
+      "n": 400,
+      "ha": 8602.88,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06115",
+      "etiqueta": "Rengo",
+      "n": 3890,
+      "ha": 58487.32,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06116",
+      "etiqueta": "Requínoa",
+      "n": 4907,
+      "ha": 67645.23,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06117",
+      "etiqueta": "San Vicente",
+      "n": 2696,
+      "ha": 48409.07,
+      "provincia": "Cachapoal",
+      "region": "06"
+    },
+    {
+      "cod": "06201",
+      "etiqueta": "Pichilemu",
+      "n": 6164,
+      "ha": 71601.96,
+      "provincia": "Cardenal Caro",
+      "region": "06"
+    },
+    {
+      "cod": "06202",
+      "etiqueta": "La Estrella",
+      "n": 1369,
+      "ha": 42937.37,
+      "provincia": "Cardenal Caro",
+      "region": "06"
+    },
+    {
+      "cod": "06203",
+      "etiqueta": "Litueche",
+      "n": 4108,
+      "ha": 61199.98,
+      "provincia": "Cardenal Caro",
+      "region": "06"
+    },
+    {
+      "cod": "06204",
+      "etiqueta": "Marchihue",
+      "n": 3054,
+      "ha": 65869.34,
+      "provincia": "Cardenal Caro",
+      "region": "06"
+    },
+    {
+      "cod": "06205",
+      "etiqueta": "Navidad",
+      "n": 2342,
+      "ha": 30252.25,
+      "provincia": "Cardenal Caro",
+      "region": "06"
+    },
+    {
+      "cod": "06206",
+      "etiqueta": "Paredones",
+      "n": 6767,
+      "ha": 57322.95,
+      "provincia": "Cardenal Caro",
+      "region": "06"
+    },
+    {
+      "cod": "06301",
+      "etiqueta": "San Fernando",
+      "n": 13923,
+      "ha": 231925.31,
+      "provincia": "Colchagua",
+      "region": "06"
+    },
+    {
+      "cod": "06302",
+      "etiqueta": "Chépica",
+      "n": 2514,
+      "ha": 47922.93,
+      "provincia": "Colchagua",
+      "region": "06"
+    },
+    {
+      "cod": "06303",
+      "etiqueta": "Chimbarongo",
+      "n": 1572,
+      "ha": 50742.5,
+      "provincia": "Colchagua",
+      "region": "06"
+    },
+    {
+      "cod": "06304",
+      "etiqueta": "Lolol",
+      "n": 3965,
+      "ha": 59785.82,
+      "provincia": "Colchagua",
+      "region": "06"
+    },
+    {
+      "cod": "06305",
+      "etiqueta": "Nancagua",
+      "n": 710,
+      "ha": 15068.41,
+      "provincia": "Colchagua",
+      "region": "06"
+    },
+    {
+      "cod": "06306",
+      "etiqueta": "Palmilla",
+      "n": 998,
+      "ha": 23440.47,
+      "provincia": "Colchagua",
+      "region": "06"
+    },
+    {
+      "cod": "06307",
+      "etiqueta": "Peralillo",
+      "n": 932,
+      "ha": 28249.33,
+      "provincia": "Colchagua",
+      "region": "06"
+    },
+    {
+      "cod": "06308",
+      "etiqueta": "Placilla",
+      "n": 829,
+      "ha": 14473.9,
+      "provincia": "Colchagua",
+      "region": "06"
+    },
+    {
+      "cod": "06309",
+      "etiqueta": "Pumanque",
+      "n": 3405,
+      "ha": 44105.93,
+      "provincia": "Colchagua",
+      "region": "06"
+    },
+    {
+      "cod": "06310",
+      "etiqueta": "Santa Cruz",
+      "n": 2534,
+      "ha": 39477.35,
+      "provincia": "Colchagua",
+      "region": "06"
+    },
+    {
+      "cod": "07101",
+      "etiqueta": "Talca",
+      "n": 558,
+      "ha": 23204.8,
+      "provincia": "Talca",
+      "region": "07"
+    },
+    {
+      "cod": "07102",
+      "etiqueta": "Constitución",
+      "n": 8901,
+      "ha": 133875.28,
+      "provincia": "Talca",
+      "region": "07"
+    },
+    {
+      "cod": "07103",
+      "etiqueta": "Curepto",
+      "n": 7972,
+      "ha": 107095.66,
+      "provincia": "Talca",
+      "region": "07"
+    },
+    {
+      "cod": "07104",
+      "etiqueta": "Empedrado",
+      "n": 2889,
+      "ha": 56589.31,
+      "provincia": "Talca",
+      "region": "07"
+    },
+    {
+      "cod": "07105",
+      "etiqueta": "Maule",
+      "n": 1011,
+      "ha": 24305.32,
+      "provincia": "Talca",
+      "region": "07"
+    },
+    {
+      "cod": "07106",
+      "etiqueta": "Pelarco",
+      "n": 1133,
+      "ha": 33098.31,
+      "provincia": "Talca",
+      "region": "07"
+    },
+    {
+      "cod": "07107",
+      "etiqueta": "Pencahue",
+      "n": 6135,
+      "ha": 95591.61,
+      "provincia": "Talca",
+      "region": "07"
+    },
+    {
+      "cod": "07108",
+      "etiqueta": "Río Claro",
+      "n": 2075,
+      "ha": 43359.52,
+      "provincia": "Talca",
+      "region": "07"
+    },
+    {
+      "cod": "07109",
+      "etiqueta": "San Clemente",
+      "n": 7854,
+      "ha": 450048.0,
+      "provincia": "Talca",
+      "region": "07"
+    },
+    {
+      "cod": "07110",
+      "etiqueta": "San Rafael",
+      "n": 724,
+      "ha": 26300.62,
+      "provincia": "Talca",
+      "region": "07"
+    },
+    {
+      "cod": "07201",
+      "etiqueta": "Cauquenes",
+      "n": 14464,
+      "ha": 212840.19,
+      "provincia": "Cauquenes",
+      "region": "07"
+    },
+    {
+      "cod": "07202",
+      "etiqueta": "Chanco",
+      "n": 4407,
+      "ha": 52835.22,
+      "provincia": "Cauquenes",
+      "region": "07"
+    },
+    {
+      "cod": "07203",
+      "etiqueta": "Pelluhue",
+      "n": 3800,
+      "ha": 37088.65,
+      "provincia": "Cauquenes",
+      "region": "07"
+    },
+    {
+      "cod": "07301",
+      "etiqueta": "Curicó",
+      "n": 3793,
+      "ha": 133475.98,
+      "provincia": "Curicó",
+      "region": "07"
+    },
+    {
+      "cod": "07302",
+      "etiqueta": "Hualañé",
+      "n": 3503,
+      "ha": 62883.6,
+      "provincia": "Curicó",
+      "region": "07"
+    },
+    {
+      "cod": "07303",
+      "etiqueta": "Licantén",
+      "n": 2245,
+      "ha": 27300.24,
+      "provincia": "Curicó",
+      "region": "07"
+    },
+    {
+      "cod": "07304",
+      "etiqueta": "Molina",
+      "n": 4063,
+      "ha": 151729.78,
+      "provincia": "Curicó",
+      "region": "07"
+    },
+    {
+      "cod": "07305",
+      "etiqueta": "Rauco",
+      "n": 1362,
+      "ha": 30667.22,
+      "provincia": "Curicó",
+      "region": "07"
+    },
+    {
+      "cod": "07306",
+      "etiqueta": "Romeral",
+      "n": 3131,
+      "ha": 160395.11,
+      "provincia": "Curicó",
+      "region": "07"
+    },
+    {
+      "cod": "07307",
+      "etiqueta": "Sagrada Familia",
+      "n": 2102,
+      "ha": 55442.02,
+      "provincia": "Curicó",
+      "region": "07"
+    },
+    {
+      "cod": "07308",
+      "etiqueta": "Teno",
+      "n": 1823,
+      "ha": 61843.65,
+      "provincia": "Curicó",
+      "region": "07"
+    },
+    {
+      "cod": "07309",
+      "etiqueta": "Vichuquén",
+      "n": 4230,
+      "ha": 45182.66,
+      "provincia": "Curicó",
+      "region": "07"
+    },
+    {
+      "cod": "07401",
+      "etiqueta": "Linares",
+      "n": 4483,
+      "ha": 146661.37,
+      "provincia": "Linares",
+      "region": "07"
+    },
+    {
+      "cod": "07402",
+      "etiqueta": "Colbún",
+      "n": 5095,
+      "ha": 292686.48,
+      "provincia": "Linares",
+      "region": "07"
+    },
+    {
+      "cod": "07403",
+      "etiqueta": "Longaví",
+      "n": 4439,
+      "ha": 145336.69,
+      "provincia": "Linares",
+      "region": "07"
+    },
+    {
+      "cod": "07404",
+      "etiqueta": "Parral",
+      "n": 6015,
+      "ha": 163860.84,
+      "provincia": "Linares",
+      "region": "07"
+    },
+    {
+      "cod": "07405",
+      "etiqueta": "Retiro",
+      "n": 2706,
+      "ha": 82727.41,
+      "provincia": "Linares",
+      "region": "07"
+    },
+    {
+      "cod": "07406",
+      "etiqueta": "San Javier",
+      "n": 7209,
+      "ha": 131257.75,
+      "provincia": "Linares",
+      "region": "07"
+    },
+    {
+      "cod": "07407",
+      "etiqueta": "Villa Alegre",
+      "n": 360,
+      "ha": 18871.81,
+      "provincia": "Linares",
+      "region": "07"
+    },
+    {
+      "cod": "07408",
+      "etiqueta": "Yerbas Buenas",
+      "n": 534,
+      "ha": 25898.27,
+      "provincia": "Linares",
+      "region": "07"
+    },
+    {
+      "cod": "08101",
+      "etiqueta": "Concepción",
+      "n": 3005,
+      "ha": 22019.64,
+      "provincia": "Concepción",
+      "region": "08"
+    },
+    {
+      "cod": "08102",
+      "etiqueta": "Coronel",
+      "n": 1865,
+      "ha": 27969.67,
+      "provincia": "Concepción",
+      "region": "08"
+    },
+    {
+      "cod": "08103",
+      "etiqueta": "Chiguayante",
+      "n": 893,
+      "ha": 7139.71,
+      "provincia": "Concepción",
+      "region": "08"
+    },
+    {
+      "cod": "08104",
+      "etiqueta": "Florida",
+      "n": 10765,
+      "ha": 60582.08,
+      "provincia": "Concepción",
+      "region": "08"
+    },
+    {
+      "cod": "08105",
+      "etiqueta": "Hualqui",
+      "n": 7086,
+      "ha": 53584.79,
+      "provincia": "Concepción",
+      "region": "08"
+    },
+    {
+      "cod": "08106",
+      "etiqueta": "Lota",
+      "n": 870,
+      "ha": 11404.47,
+      "provincia": "Concepción",
+      "region": "08"
+    },
+    {
+      "cod": "08107",
+      "etiqueta": "Penco",
+      "n": 1601,
+      "ha": 10812.13,
+      "provincia": "Concepción",
+      "region": "08"
+    },
+    {
+      "cod": "08108",
+      "etiqueta": "San Pedro de la Paz",
+      "n": 803,
+      "ha": 11301.21,
+      "provincia": "Concepción",
+      "region": "08"
+    },
+    {
+      "cod": "08109",
+      "etiqueta": "Santa Juana",
+      "n": 9693,
+      "ha": 77742.7,
+      "provincia": "Concepción",
+      "region": "08"
+    },
+    {
+      "cod": "08110",
+      "etiqueta": "Talcahuano",
+      "n": 601,
+      "ha": 9189.75,
+      "provincia": "Concepción",
+      "region": "08"
+    },
+    {
+      "cod": "08111",
+      "etiqueta": "Tomé",
+      "n": 8192,
+      "ha": 49452.73,
+      "provincia": "Concepción",
+      "region": "08"
+    },
+    {
+      "cod": "08112",
+      "etiqueta": "Hualpén",
+      "n": 366,
+      "ha": 5309.9,
+      "provincia": "Concepción",
+      "region": "08"
+    },
+    {
+      "cod": "08201",
+      "etiqueta": "Lebu",
+      "n": 7084,
+      "ha": 55879.95,
+      "provincia": "Arauco",
+      "region": "08"
+    },
+    {
+      "cod": "08202",
+      "etiqueta": "Arauco",
+      "n": 9051,
+      "ha": 95767.11,
+      "provincia": "Arauco",
+      "region": "08"
+    },
+    {
+      "cod": "08203",
+      "etiqueta": "Cañete",
+      "n": 12218,
+      "ha": 108762.65,
+      "provincia": "Arauco",
+      "region": "08"
+    },
+    {
+      "cod": "08204",
+      "etiqueta": "Contulmo",
+      "n": 11475,
+      "ha": 63827.71,
+      "provincia": "Arauco",
+      "region": "08"
+    },
+    {
+      "cod": "08205",
+      "etiqueta": "Curanilahue",
+      "n": 7993,
+      "ha": 100234.42,
+      "provincia": "Arauco",
+      "region": "08"
+    },
+    {
+      "cod": "08206",
+      "etiqueta": "Los Alamos",
+      "n": 7387,
+      "ha": 60018.07,
+      "provincia": "Arauco",
+      "region": "08"
+    },
+    {
+      "cod": "08207",
+      "etiqueta": "Tirúa",
+      "n": 9890,
+      "ha": 62731.48,
+      "provincia": "Arauco",
+      "region": "08"
+    },
+    {
+      "cod": "08301",
+      "etiqueta": "Los Angeles",
+      "n": 8065,
+      "ha": 174878.29,
+      "provincia": "Biobío",
+      "region": "08"
+    },
+    {
+      "cod": "08302",
+      "etiqueta": "Antuco",
+      "n": 8481,
+      "ha": 196076.68,
+      "provincia": "Biobío",
+      "region": "08"
+    },
+    {
+      "cod": "08303",
+      "etiqueta": "Cabrero",
+      "n": 4324,
+      "ha": 65772.7,
+      "provincia": "Biobío",
+      "region": "08"
+    },
+    {
+      "cod": "08304",
+      "etiqueta": "Laja",
+      "n": 2017,
+      "ha": 34517.61,
+      "provincia": "Biobío",
+      "region": "08"
+    },
+    {
+      "cod": "08305",
+      "etiqueta": "Mulchén",
+      "n": 9933,
+      "ha": 192356.28,
+      "provincia": "Biobío",
+      "region": "08"
+    },
+    {
+      "cod": "08306",
+      "etiqueta": "Nacimiento",
+      "n": 11594,
+      "ha": 90625.9,
+      "provincia": "Biobío",
+      "region": "08"
+    },
+    {
+      "cod": "08307",
+      "etiqueta": "Negrete",
+      "n": 651,
+      "ha": 15604.69,
+      "provincia": "Biobío",
+      "region": "08"
+    },
+    {
+      "cod": "08308",
+      "etiqueta": "Quilaco",
+      "n": 6627,
+      "ha": 112554.6,
+      "provincia": "Biobío",
+      "region": "08"
+    },
+    {
+      "cod": "08309",
+      "etiqueta": "Quilleco",
+      "n": 6996,
+      "ha": 111903.78,
+      "provincia": "Biobío",
+      "region": "08"
+    },
+    {
+      "cod": "08310",
+      "etiqueta": "San Rosendo",
+      "n": 932,
+      "ha": 9445.37,
+      "provincia": "Biobío",
+      "region": "08"
+    },
+    {
+      "cod": "08311",
+      "etiqueta": "Santa Bárbara",
+      "n": 9565,
+      "ha": 125248.44,
+      "provincia": "Biobío",
+      "region": "08"
+    },
+    {
+      "cod": "08312",
+      "etiqueta": "Tucapel",
+      "n": 6521,
+      "ha": 91349.11,
+      "provincia": "Biobío",
+      "region": "08"
+    },
+    {
+      "cod": "08313",
+      "etiqueta": "Yumbel",
+      "n": 7863,
+      "ha": 72774.66,
+      "provincia": "Biobío",
+      "region": "08"
+    },
+    {
+      "cod": "08314",
+      "etiqueta": "Alto Biobío",
+      "n": 9762,
+      "ha": 212738.72,
+      "provincia": "Biobío",
+      "region": "08"
+    },
+    {
+      "cod": "09101",
+      "etiqueta": "Temuco",
+      "n": 3101,
+      "ha": 46688.25,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09102",
+      "etiqueta": "Carahue",
+      "n": 16386,
+      "ha": 133524.25,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09103",
+      "etiqueta": "Cunco",
+      "n": 14866,
+      "ha": 189036.78,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09104",
+      "etiqueta": "Curarrehue",
+      "n": 8979,
+      "ha": 116736.62,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09105",
+      "etiqueta": "Freire",
+      "n": 3939,
+      "ha": 87007.54,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09106",
+      "etiqueta": "Galvarino",
+      "n": 5971,
+      "ha": 56786.01,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09107",
+      "etiqueta": "Gorbea",
+      "n": 8373,
+      "ha": 69043.27,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09108",
+      "etiqueta": "Lautaro",
+      "n": 6665,
+      "ha": 90628.87,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09109",
+      "etiqueta": "Loncoche",
+      "n": 9495,
+      "ha": 97259.8,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09110",
+      "etiqueta": "Melipeuco",
+      "n": 8426,
+      "ha": 110821.47,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09111",
+      "etiqueta": "Nueva Imperial",
+      "n": 5459,
+      "ha": 73072.85,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09112",
+      "etiqueta": "Padre las Casas",
+      "n": 2329,
+      "ha": 46382.42,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09113",
+      "etiqueta": "Perquenco",
+      "n": 1026,
+      "ha": 33103.31,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09114",
+      "etiqueta": "Pitrufquen",
+      "n": 3946,
+      "ha": 58325.29,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09115",
+      "etiqueta": "Pucon",
+      "n": 7962,
+      "ha": 124854.78,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09116",
+      "etiqueta": "Saavedra",
+      "n": 4558,
+      "ha": 39660.44,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09117",
+      "etiqueta": "Teodoro Schmidt",
+      "n": 4313,
+      "ha": 65546.03,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09118",
+      "etiqueta": "Tolten",
+      "n": 6246,
+      "ha": 85157.85,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09119",
+      "etiqueta": "Vilcun",
+      "n": 9171,
+      "ha": 141647.58,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09120",
+      "etiqueta": "Villarrica",
+      "n": 8418,
+      "ha": 129061.83,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09121",
+      "etiqueta": "Cholchol",
+      "n": 4202,
+      "ha": 42714.13,
+      "provincia": "Cautin",
+      "region": "09"
+    },
+    {
+      "cod": "09201",
+      "etiqueta": "Angol",
+      "n": 8412,
+      "ha": 119629.67,
+      "provincia": "Malleco",
+      "region": "09"
+    },
+    {
+      "cod": "09202",
+      "etiqueta": "Collipulli",
+      "n": 8940,
+      "ha": 130560.41,
+      "provincia": "Malleco",
+      "region": "09"
+    },
+    {
+      "cod": "09203",
+      "etiqueta": "Curacautin",
+      "n": 8930,
+      "ha": 165953.02,
+      "provincia": "Malleco",
+      "region": "09"
+    },
+    {
+      "cod": "09204",
+      "etiqueta": "Ercilla",
+      "n": 4316,
+      "ha": 49890.82,
+      "provincia": "Malleco",
+      "region": "09"
+    },
+    {
+      "cod": "09205",
+      "etiqueta": "Lonquimay",
+      "n": 11386,
+      "ha": 393609.63,
+      "provincia": "Malleco",
+      "region": "09"
+    },
+    {
+      "cod": "09206",
+      "etiqueta": "Los Sauces",
+      "n": 5292,
+      "ha": 84806.91,
+      "provincia": "Malleco",
+      "region": "09"
+    },
+    {
+      "cod": "09207",
+      "etiqueta": "Lumaco",
+      "n": 10396,
+      "ha": 110930.29,
+      "provincia": "Malleco",
+      "region": "09"
+    },
+    {
+      "cod": "09208",
+      "etiqueta": "Puren",
+      "n": 4527,
+      "ha": 46507.3,
+      "provincia": "Malleco",
+      "region": "09"
+    },
+    {
+      "cod": "09209",
+      "etiqueta": "Renaico",
+      "n": 1153,
+      "ha": 26437.83,
+      "provincia": "Malleco",
+      "region": "09"
+    },
+    {
+      "cod": "09210",
+      "etiqueta": "Traiguen",
+      "n": 7812,
+      "ha": 89706.95,
+      "provincia": "Malleco",
+      "region": "09"
+    },
+    {
+      "cod": "09211",
+      "etiqueta": "Victoria",
+      "n": 5484,
+      "ha": 126259.03,
+      "provincia": "Malleco",
+      "region": "09"
+    },
+    {
+      "cod": "10101",
+      "etiqueta": "Puerto Montt",
+      "n": 5544,
+      "ha": 167201.65,
+      "provincia": "Llanquihue",
+      "region": "10"
+    },
+    {
+      "cod": "10102",
+      "etiqueta": "Calbuco",
+      "n": 2645,
+      "ha": 58366.06,
+      "provincia": "Llanquihue",
+      "region": "10"
+    },
+    {
+      "cod": "10103",
+      "etiqueta": "Cochamo",
+      "n": 22352,
+      "ha": 392870.86,
+      "provincia": "Llanquihue",
+      "region": "10"
+    },
+    {
+      "cod": "10104",
+      "etiqueta": "Fresia",
+      "n": 5957,
+      "ha": 127545.06,
+      "provincia": "Llanquihue",
+      "region": "10"
+    },
+    {
+      "cod": "10105",
+      "etiqueta": "Frutillar",
+      "n": 3013,
+      "ha": 82438.48,
+      "provincia": "Llanquihue",
+      "region": "10"
+    },
+    {
+      "cod": "10106",
+      "etiqueta": "Los Muermos",
+      "n": 5202,
+      "ha": 122484.15,
+      "provincia": "Llanquihue",
+      "region": "10"
+    },
+    {
+      "cod": "10107",
+      "etiqueta": "Llanquihue",
+      "n": 1516,
+      "ha": 41905.41,
+      "provincia": "Llanquihue",
+      "region": "10"
+    },
+    {
+      "cod": "10108",
+      "etiqueta": "Maullin",
+      "n": 3716,
+      "ha": 86922.92,
+      "provincia": "Llanquihue",
+      "region": "10"
+    },
+    {
+      "cod": "10109",
+      "etiqueta": "Puerto Varas",
+      "n": 8797,
+      "ha": 404499.93,
+      "provincia": "Llanquihue",
+      "region": "10"
+    },
+    {
+      "cod": "10201",
+      "etiqueta": "Castro",
+      "n": 3029,
+      "ha": 46743.75,
+      "provincia": "Chiloé",
+      "region": "10"
+    },
+    {
+      "cod": "10202",
+      "etiqueta": "Ancud",
+      "n": 12982,
+      "ha": 175633.32,
+      "provincia": "Chiloé",
+      "region": "10"
+    },
+    {
+      "cod": "10203",
+      "etiqueta": "Chonchi",
+      "n": 4475,
+      "ha": 135717.19,
+      "provincia": "Chiloé",
+      "region": "10"
+    },
+    {
+      "cod": "10204",
+      "etiqueta": "Curaco de Velez",
+      "n": 647,
+      "ha": 7866.7,
+      "provincia": "Chiloé",
+      "region": "10"
+    },
+    {
+      "cod": "10205",
+      "etiqueta": "Dalcahue",
+      "n": 6855,
+      "ha": 123737.28,
+      "provincia": "Chiloé",
+      "region": "10"
+    },
+    {
+      "cod": "10206",
+      "etiqueta": "Puqueldon",
+      "n": 648,
+      "ha": 9867.3,
+      "provincia": "Chiloé",
+      "region": "10"
+    },
+    {
+      "cod": "10207",
+      "etiqueta": "Queilen",
+      "n": 2162,
+      "ha": 32921.18,
+      "provincia": "Chiloé",
+      "region": "10"
+    },
+    {
+      "cod": "10208",
+      "etiqueta": "Quellon",
+      "n": 7696,
+      "ha": 334080.94,
+      "provincia": "Chiloé",
+      "region": "10"
+    },
+    {
+      "cod": "10209",
+      "etiqueta": "Quemchi",
+      "n": 4330,
+      "ha": 43400.92,
+      "provincia": "Chiloé",
+      "region": "10"
+    },
+    {
+      "cod": "10210",
+      "etiqueta": "Quinchao",
+      "n": 1008,
+      "ha": 15349.03,
+      "provincia": "Chiloé",
+      "region": "10"
+    },
+    {
+      "cod": "10301",
+      "etiqueta": "Osorno",
+      "n": 3802,
+      "ha": 95328.95,
+      "provincia": "Osorno",
+      "region": "10"
+    },
+    {
+      "cod": "10302",
+      "etiqueta": "Puerto Octay",
+      "n": 6605,
+      "ha": 180123.29,
+      "provincia": "Osorno",
+      "region": "10"
+    },
+    {
+      "cod": "10303",
+      "etiqueta": "Purranque",
+      "n": 6714,
+      "ha": 145042.68,
+      "provincia": "Osorno",
+      "region": "10"
+    },
+    {
+      "cod": "10304",
+      "etiqueta": "Puyehue",
+      "n": 4941,
+      "ha": 162464.22,
+      "provincia": "Osorno",
+      "region": "10"
+    },
+    {
+      "cod": "10305",
+      "etiqueta": "Rio Negro",
+      "n": 5836,
+      "ha": 126189.61,
+      "provincia": "Osorno",
+      "region": "10"
+    },
+    {
+      "cod": "10306",
+      "etiqueta": "San Juan de La Costa",
+      "n": 8447,
+      "ha": 152331.97,
+      "provincia": "Osorno",
+      "region": "10"
+    },
+    {
+      "cod": "10307",
+      "etiqueta": "San Pablo",
+      "n": 3314,
+      "ha": 62909.3,
+      "provincia": "Osorno",
+      "region": "10"
+    },
+    {
+      "cod": "10401",
+      "etiqueta": "Chaiten",
+      "n": 8335,
+      "ha": 827938.08,
+      "provincia": "Palena",
+      "region": "10"
+    },
+    {
+      "cod": "10402",
+      "etiqueta": "Futaleufu",
+      "n": 1832,
+      "ha": 123548.08,
+      "provincia": "Palena",
+      "region": "10"
+    },
+    {
+      "cod": "10403",
+      "etiqueta": "Hualaihue",
+      "n": 3606,
+      "ha": 288618.8,
+      "provincia": "Palena",
+      "region": "10"
+    },
+    {
+      "cod": "10404",
+      "etiqueta": "Palena",
+      "n": 3140,
+      "ha": 265444.78,
+      "provincia": "Palena",
+      "region": "10"
+    },
+    {
+      "cod": "11101",
+      "etiqueta": "Coihaique",
+      "n": 39179,
+      "ha": 725141.06,
+      "provincia": "Coihaique",
+      "region": "11"
+    },
+    {
+      "cod": "11102",
+      "etiqueta": "Lago Verde",
+      "n": 21533,
+      "ha": 548087.19,
+      "provincia": "Coihaique",
+      "region": "11"
+    },
+    {
+      "cod": "11201",
+      "etiqueta": "Aisén",
+      "n": 53787,
+      "ha": 2983997.16,
+      "provincia": "Aisén",
+      "region": "11"
+    },
+    {
+      "cod": "11202",
+      "etiqueta": "Cisnes",
+      "n": 37060,
+      "ha": 1545451.26,
+      "provincia": "Aisén",
+      "region": "11"
+    },
+    {
+      "cod": "11203",
+      "etiqueta": "Guaitecas",
+      "n": 2127,
+      "ha": 58490.73,
+      "provincia": "Aisén",
+      "region": "11"
+    },
+    {
+      "cod": "11301",
+      "etiqueta": "Cochrane",
+      "n": 29045,
+      "ha": 863236.45,
+      "provincia": "Capitán Prat",
+      "region": "11"
+    },
+    {
+      "cod": "11302",
+      "etiqueta": "O'Higgins",
+      "n": 27615,
+      "ha": 809999.07,
+      "provincia": "Capitán Prat",
+      "region": "11"
+    },
+    {
+      "cod": "11303",
+      "etiqueta": "Tortel",
+      "n": 89371,
+      "ha": 1958250.41,
+      "provincia": "Capitán Prat",
+      "region": "11"
+    },
+    {
+      "cod": "11401",
+      "etiqueta": "Chile Chico",
+      "n": 18431,
+      "ha": 573260.27,
+      "provincia": "General Carrera",
+      "region": "11"
+    },
+    {
+      "cod": "11402",
+      "etiqueta": "Río Ibañez",
+      "n": 26660,
+      "ha": 601304.19,
+      "provincia": "General Carrera",
+      "region": "11"
+    },
+    {
+      "cod": "12101",
+      "etiqueta": "Punta Arenas",
+      "n": 55262,
+      "ha": 1773569.92,
+      "provincia": "Magallanes",
+      "region": "12"
+    },
+    {
+      "cod": "12102",
+      "etiqueta": "Laguna Blanca",
+      "n": 2869,
+      "ha": 350865.79,
+      "provincia": "Magallanes",
+      "region": "12"
+    },
+    {
+      "cod": "12103",
+      "etiqueta": "Río Verde",
+      "n": 30148,
+      "ha": 913547.23,
+      "provincia": "Magallanes",
+      "region": "12"
+    },
+    {
+      "cod": "12104",
+      "etiqueta": "San Gregorio",
+      "n": 1725,
+      "ha": 691273.97,
+      "provincia": "Magallanes",
+      "region": "12"
+    },
+    {
+      "cod": "12201",
+      "etiqueta": "Cabo de Hornos",
+      "n": 37110,
+      "ha": 1583277.16,
+      "provincia": "Antártica Chilena",
+      "region": "12"
+    },
+    {
+      "cod": "12301",
+      "etiqueta": "Porvenir",
+      "n": 5103,
+      "ha": 722689.36,
+      "provincia": "Tierra del Fuego",
+      "region": "12"
+    },
+    {
+      "cod": "12302",
+      "etiqueta": "Primavera",
+      "n": 1770,
+      "ha": 421740.68,
+      "provincia": "Tierra del Fuego",
+      "region": "12"
+    },
+    {
+      "cod": "12303",
+      "etiqueta": "Timaukel",
+      "n": 20623,
+      "ha": 1091006.38,
+      "provincia": "Tierra del Fuego",
+      "region": "12"
+    },
+    {
+      "cod": "12401",
+      "etiqueta": "Natales",
+      "n": 123204,
+      "ha": 5145261.73,
+      "provincia": "Ultima Esperanza",
+      "region": "12"
+    },
+    {
+      "cod": "12402",
+      "etiqueta": "Torres del Paine",
+      "n": 8711,
+      "ha": 649050.28,
+      "provincia": "Ultima Esperanza",
+      "region": "12"
+    },
+    {
+      "cod": "13101",
+      "etiqueta": "Santiago",
+      "n": 1,
+      "ha": 2310.24,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13102",
+      "etiqueta": "Cerrillos",
+      "n": 1,
+      "ha": 1672.27,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13103",
+      "etiqueta": "Cerro Navia",
+      "n": 15,
+      "ha": 1117.98,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13104",
+      "etiqueta": "Conchalí",
+      "n": 1,
+      "ha": 1093.98,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13105",
+      "etiqueta": "El Bosque",
+      "n": 1,
+      "ha": 1416.95,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13106",
+      "etiqueta": "Estación Central",
+      "n": 1,
+      "ha": 1432.22,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13107",
+      "etiqueta": "Huechuraba",
+      "n": 127,
+      "ha": 4509.8,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13108",
+      "etiqueta": "Independencia",
+      "n": 4,
+      "ha": 748.95,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13109",
+      "etiqueta": "La Cisterna",
+      "n": 1,
+      "ha": 1011.34,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13110",
+      "etiqueta": "La Florida",
+      "n": 179,
+      "ha": 7114.17,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13111",
+      "etiqueta": "La Granja",
+      "n": 1,
+      "ha": 993.33,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13112",
+      "etiqueta": "La Pintana",
+      "n": 9,
+      "ha": 3069.67,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13113",
+      "etiqueta": "La Reina",
+      "n": 36,
+      "ha": 2354.46,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13114",
+      "etiqueta": "Las Condes",
+      "n": 246,
+      "ha": 9856.63,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13115",
+      "etiqueta": "Lo Barnechea",
+      "n": 2914,
+      "ha": 102383.89,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13116",
+      "etiqueta": "Lo Espejo",
+      "n": 1,
+      "ha": 819.29,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13117",
+      "etiqueta": "Lo Prado",
+      "n": 1,
+      "ha": 659.86,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13118",
+      "etiqueta": "Macul",
+      "n": 1,
+      "ha": 1276.49,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13119",
+      "etiqueta": "Maipú",
+      "n": 226,
+      "ha": 13767.9,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13120",
+      "etiqueta": "Ñuñoa",
+      "n": 1,
+      "ha": 1682.9,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13121",
+      "etiqueta": "Pedro Aguirre Cerda",
+      "n": 1,
+      "ha": 864.93,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13122",
+      "etiqueta": "Peñalolén",
+      "n": 166,
+      "ha": 5354.76,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13123",
+      "etiqueta": "Providencia",
+      "n": 36,
+      "ha": 1431.07,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13124",
+      "etiqueta": "Pudahuel",
+      "n": 468,
+      "ha": 19783.13,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13125",
+      "etiqueta": "Quilicura",
+      "n": 43,
+      "ha": 5660.67,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13126",
+      "etiqueta": "Quinta Normal",
+      "n": 5,
+      "ha": 1176.65,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13127",
+      "etiqueta": "Recoleta",
+      "n": 38,
+      "ha": 1572.83,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13128",
+      "etiqueta": "Renca",
+      "n": 29,
+      "ha": 2391.29,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13129",
+      "etiqueta": "San Joaquín",
+      "n": 1,
+      "ha": 984.01,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13130",
+      "etiqueta": "San Miguel",
+      "n": 1,
+      "ha": 956.85,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13131",
+      "etiqueta": "San Ramón",
+      "n": 1,
+      "ha": 629.37,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13132",
+      "etiqueta": "Vitacura",
+      "n": 92,
+      "ha": 2839.47,
+      "provincia": "Santiago",
+      "region": "13"
+    },
+    {
+      "cod": "13201",
+      "etiqueta": "Puente Alto",
+      "n": 244,
+      "ha": 8808.8,
+      "provincia": "Cordillera",
+      "region": "13"
+    },
+    {
+      "cod": "13202",
+      "etiqueta": "Pirque",
+      "n": 1770,
+      "ha": 44473.23,
+      "provincia": "Cordillera",
+      "region": "13"
+    },
+    {
+      "cod": "13203",
+      "etiqueta": "San José de Maipo",
+      "n": 9549,
+      "ha": 498913.18,
+      "provincia": "Cordillera",
+      "region": "13"
+    },
+    {
+      "cod": "13301",
+      "etiqueta": "Colina",
+      "n": 1899,
+      "ha": 97035.43,
+      "provincia": "Chacabuco",
+      "region": "13"
+    },
+    {
+      "cod": "13302",
+      "etiqueta": "Lampa",
+      "n": 1246,
+      "ha": 44899.54,
+      "provincia": "Chacabuco",
+      "region": "13"
+    },
+    {
+      "cod": "13303",
+      "etiqueta": "Tiltil",
+      "n": 2043,
+      "ha": 65316.16,
+      "provincia": "Chacabuco",
+      "region": "13"
+    },
+    {
+      "cod": "13401",
+      "etiqueta": "San Bernardo",
+      "n": 295,
+      "ha": 15372.01,
+      "provincia": "Maipo",
+      "region": "13"
+    },
+    {
+      "cod": "13402",
+      "etiqueta": "Buin",
+      "n": 364,
+      "ha": 21863.41,
+      "provincia": "Maipo",
+      "region": "13"
+    },
+    {
+      "cod": "13403",
+      "etiqueta": "Calera de Tango",
+      "n": 109,
+      "ha": 7299.63,
+      "provincia": "Maipo",
+      "region": "13"
+    },
+    {
+      "cod": "13404",
+      "etiqueta": "Paine",
+      "n": 2345,
+      "ha": 67649.23,
+      "provincia": "Maipo",
+      "region": "13"
+    },
+    {
+      "cod": "13501",
+      "etiqueta": "Melipilla",
+      "n": 6140,
+      "ha": 134161.36,
+      "provincia": "Melipilla",
+      "region": "13"
+    },
+    {
+      "cod": "13502",
+      "etiqueta": "Alhué",
+      "n": 5351,
+      "ha": 84495.34,
+      "provincia": "Melipilla",
+      "region": "13"
+    },
+    {
+      "cod": "13503",
+      "etiqueta": "Curacaví",
+      "n": 3227,
+      "ha": 69498.46,
+      "provincia": "Melipilla",
+      "region": "13"
+    },
+    {
+      "cod": "13504",
+      "etiqueta": "María Pinto",
+      "n": 1774,
+      "ha": 39454.55,
+      "provincia": "Melipilla",
+      "region": "13"
+    },
+    {
+      "cod": "13505",
+      "etiqueta": "San Pedro",
+      "n": 5529,
+      "ha": 79399.56,
+      "provincia": "Melipilla",
+      "region": "13"
+    },
+    {
+      "cod": "13601",
+      "etiqueta": "Talagante",
+      "n": 407,
+      "ha": 12837.19,
+      "provincia": "Talagante",
+      "region": "13"
+    },
+    {
+      "cod": "13602",
+      "etiqueta": "El Monte",
+      "n": 437,
+      "ha": 11537.43,
+      "provincia": "Talagante",
+      "region": "13"
+    },
+    {
+      "cod": "13603",
+      "etiqueta": "Isla de Maipo",
+      "n": 914,
+      "ha": 18700.52,
+      "provincia": "Talagante",
+      "region": "13"
+    },
+    {
+      "cod": "13604",
+      "etiqueta": "Padre Hurtado",
+      "n": 218,
+      "ha": 8078.58,
+      "provincia": "Talagante",
+      "region": "13"
+    },
+    {
+      "cod": "13605",
+      "etiqueta": "Peñaflor",
+      "n": 207,
+      "ha": 6901.01,
+      "provincia": "Talagante",
+      "region": "13"
+    },
+    {
+      "cod": "15101",
+      "etiqueta": "Arica",
+      "n": 815,
+      "ha": 484351.42,
+      "provincia": "Arica",
+      "region": "15"
+    },
+    {
+      "cod": "15102",
+      "etiqueta": "Camarones",
+      "n": 854,
+      "ha": 390270.3,
+      "provincia": "Arica",
+      "region": "15"
+    },
+    {
+      "cod": "15201",
+      "etiqueta": "Putre",
+      "n": 3137,
+      "ha": 591825.65,
+      "provincia": "Parinacota",
+      "region": "15"
+    },
+    {
+      "cod": "15202",
+      "etiqueta": "General Lagos",
+      "n": 1140,
+      "ha": 228032.28,
+      "provincia": "Parinacota",
+      "region": "15"
+    },
+    {
+      "cod": "16101",
+      "etiqueta": "Chillán",
+      "n": 3136,
+      "ha": 47757.47,
+      "provincia": "Diguillín",
+      "region": "16"
+    },
+    {
+      "cod": "16102",
+      "etiqueta": "Bulnes",
+      "n": 2571,
+      "ha": 42639.61,
+      "provincia": "Diguillín",
+      "region": "16"
+    },
+    {
+      "cod": "16103",
+      "etiqueta": "Chillán Viejo",
+      "n": 2461,
+      "ha": 26260.48,
+      "provincia": "Diguillín",
+      "region": "16"
+    },
+    {
+      "cod": "16104",
+      "etiqueta": "El Carmen",
+      "n": 5020,
+      "ha": 66627.36,
+      "provincia": "Diguillín",
+      "region": "16"
+    },
+    {
+      "cod": "16105",
+      "etiqueta": "Pemuco",
+      "n": 4096,
+      "ha": 56306.46,
+      "provincia": "Diguillín",
+      "region": "16"
+    },
+    {
+      "cod": "16106",
+      "etiqueta": "Pinto",
+      "n": 5813,
+      "ha": 110407.51,
+      "provincia": "Diguillín",
+      "region": "16"
+    },
+    {
+      "cod": "16107",
+      "etiqueta": "Quillón",
+      "n": 6645,
+      "ha": 40574.11,
+      "provincia": "Diguillín",
+      "region": "16"
+    },
+    {
+      "cod": "16108",
+      "etiqueta": "San Ignacio",
+      "n": 2554,
+      "ha": 36325.26,
+      "provincia": "Diguillín",
+      "region": "16"
+    },
+    {
+      "cod": "16109",
+      "etiqueta": "Yungay",
+      "n": 4802,
+      "ha": 82604.45,
+      "provincia": "Diguillín",
+      "region": "16"
+    },
+    {
+      "cod": "16201",
+      "etiqueta": "Quirihue",
+      "n": 7467,
+      "ha": 58992.2,
+      "provincia": "Itata",
+      "region": "16"
+    },
+    {
+      "cod": "16202",
+      "etiqueta": "Cobquecura",
+      "n": 7784,
+      "ha": 56914.72,
+      "provincia": "Itata",
+      "region": "16"
+    },
+    {
+      "cod": "16203",
+      "etiqueta": "Coelemu",
+      "n": 4776,
+      "ha": 34135.25,
+      "provincia": "Itata",
+      "region": "16"
+    },
+    {
+      "cod": "16204",
+      "etiqueta": "Ninhue",
+      "n": 2916,
+      "ha": 40292.28,
+      "provincia": "Itata",
+      "region": "16"
+    },
+    {
+      "cod": "16205",
+      "etiqueta": "Portezuelo",
+      "n": 3704,
+      "ha": 28923.94,
+      "provincia": "Itata",
+      "region": "16"
+    },
+    {
+      "cod": "16206",
+      "etiqueta": "Ránquil",
+      "n": 3654,
+      "ha": 24751.03,
+      "provincia": "Itata",
+      "region": "16"
+    },
+    {
+      "cod": "16207",
+      "etiqueta": "Treguaco",
+      "n": 3706,
+      "ha": 31287.12,
+      "provincia": "Itata",
+      "region": "16"
+    },
+    {
+      "cod": "16301",
+      "etiqueta": "San Carlos",
+      "n": 3612,
+      "ha": 87736.4,
+      "provincia": "Punilla",
+      "region": "16"
+    },
+    {
+      "cod": "16302",
+      "etiqueta": "Coihueco",
+      "n": 10183,
+      "ha": 177345.65,
+      "provincia": "Punilla",
+      "region": "16"
+    },
+    {
+      "cod": "16303",
+      "etiqueta": "Ñiquén",
+      "n": 2194,
+      "ha": 49134.52,
+      "provincia": "Punilla",
+      "region": "16"
+    },
+    {
+      "cod": "16304",
+      "etiqueta": "San Fabián",
+      "n": 6276,
+      "ha": 154508.34,
+      "provincia": "Punilla",
+      "region": "16"
+    },
+    {
+      "cod": "16305",
+      "etiqueta": "San Nicolás",
+      "n": 4519,
+      "ha": 56593.75,
+      "provincia": "Punilla",
+      "region": "16"
+    }
+  ],
+  "regiones": [
+    {
+      "cod": "15",
+      "nombre": "Arica y Parinacota",
+      "oficial": "Región de Arica y Parinacota",
+      "romana": "XV",
+      "orden": 1,
+      "anio": "2015",
+      "n": 5946,
+      "ha": 1694479.65
+    },
+    {
+      "cod": "01",
+      "nombre": "Tarapacá",
+      "oficial": "Región de Tarapacá",
+      "romana": "I",
+      "orden": 2,
+      "anio": "2016",
+      "n": 15345,
+      "ha": 4228804.18
+    },
+    {
+      "cod": "02",
+      "nombre": "Antofagasta",
+      "oficial": "Región de Antofagasta",
+      "romana": "II",
+      "orden": 3,
+      "anio": "2018-2019",
+      "n": 16724,
+      "ha": 12605963.98
+    },
+    {
+      "cod": "03",
+      "nombre": "Atacama",
+      "oficial": "Región de Atacama",
+      "romana": "III",
+      "orden": 4,
+      "anio": "2018",
+      "n": 22784,
+      "ha": 7563725.9
+    },
+    {
+      "cod": "04",
+      "nombre": "Coquimbo",
+      "oficial": "Región de Coquimbo",
+      "romana": "IV",
+      "orden": 5,
+      "anio": "2014",
+      "n": 42025,
+      "ha": 4061627.69
+    },
+    {
+      "cod": "05",
+      "nombre": "Valparaíso",
+      "oficial": "Región de Valparaíso",
+      "romana": "V",
+      "orden": 6,
+      "anio": "2019",
+      "n": 65344,
+      "ha": 1597536.35
+    },
+    {
+      "cod": "13",
+      "nombre": "Metropolitana",
+      "oficial": "Región Metropolitana de Santiago",
+      "romana": "RM",
+      "orden": 7,
+      "anio": "2019",
+      "n": 48716,
+      "ha": 1539631.95
+    },
+    {
+      "cod": "06",
+      "nombre": "O'Higgins",
+      "oficial": "Región del Libertador General Bernardo O'Higgins",
+      "romana": "VI",
+      "orden": 8,
+      "anio": "2020",
+      "n": 99286,
+      "ha": 1634462.97
+    },
+    {
+      "cod": "07",
+      "nombre": "Maule",
+      "oficial": "Región del Maule",
+      "romana": "VII",
+      "orden": 9,
+      "anio": "2024",
+      "n": 119016,
+      "ha": 3032453.37
+    },
+    {
+      "cod": "16",
+      "nombre": "Ñuble",
+      "oficial": "Región de Ñuble",
+      "romana": "XVI",
+      "orden": 10,
+      "anio": "2024",
+      "n": 97889,
+      "ha": 1310117.91
+    },
+    {
+      "cod": "08",
+      "nombre": "Biobío",
+      "oficial": "Región del Biobío",
+      "romana": "VIII",
+      "orden": 11,
+      "anio": "2024",
+      "n": 204169,
+      "ha": 2399577.0
+    },
+    {
+      "cod": "09",
+      "nombre": "La Araucanía",
+      "oficial": "Región de La Araucanía",
+      "romana": "IX",
+      "orden": 12,
+      "anio": "2024",
+      "n": 220479,
+      "ha": 3181351.23
+    },
+    {
+      "cod": "14",
+      "nombre": "Los Ríos",
+      "oficial": "Región de Los Ríos",
+      "romana": "XIV",
+      "orden": 13,
+      "anio": "2024",
+      "n": 79727,
+      "ha": 1835307.15
+    },
+    {
+      "cod": "10",
+      "nombre": "Los Lagos",
+      "oficial": "Región de Los Lagos",
+      "romana": "X",
+      "orden": 14,
+      "anio": "2018",
+      "n": 159146,
+      "ha": 4839491.89
+    },
+    {
+      "cod": "11",
+      "nombre": "Aysén",
+      "oficial": "Región de Aysén del General Carlos Ibáñez del Campo",
+      "romana": "XI",
+      "orden": 15,
+      "anio": "2020-2022",
+      "n": 344808,
+      "ha": 10667217.8
+    },
+    {
+      "cod": "12",
+      "nombre": "Magallanes",
+      "oficial": "Región de Magallanes y de la Antártica Chilena",
+      "romana": "XII",
+      "orden": 16,
+      "anio": "2017-2019",
+      "n": 286529,
+      "ha": 13469451.39
+    }
+  ],
+  "snaspe_categoria_corregida": [
+    {
+      "unidad": "Mon. Natural Islotes de Puñihuil",
+      "en_la_capa": {
+        "Monumento Nacional": 6
+      },
+      "usada": "Monumento Natural",
+      "motivo": "la capa de origen trae una categoria que no existe en el SNASPE"
+    },
+    {
+      "unidad": "Monumentro Nacional Lahuen Ñadi",
+      "en_la_capa": {
+        "Monumento Nacional": 20
+      },
+      "usada": "Monumento Natural",
+      "motivo": "la capa de origen trae una categoria que no existe en el SNASPE"
+    },
+    {
+      "unidad": "Pan de Azúcar",
+      "en_la_capa": {
+        "Parque Nacional": 59,
+        "null": 69
+      },
+      "usada": "Parque Nacional",
+      "motivo": "la unidad figura con dos categorias; se usa la mayoritaria"
+    },
+    {
+      "unidad": "Pinguino de Humboldt",
+      "en_la_capa": {
+        "Reserva Natural": 24
+      },
+      "usada": "Reserva Nacional",
+      "motivo": "la capa de origen trae una categoria que no existe en el SNASPE"
+    },
+    {
+      "unidad": "Radal Siete Tazas",
+      "en_la_capa": {
+        "Reserva Nacional": 83,
+        "Parque Nacional": 260
+      },
+      "usada": "Parque Nacional",
+      "motivo": "la unidad figura con dos categorias; se usa la mayoritaria"
+    }
+  ],
+  "codigos_desconocidos": {
+    "subuso": {},
+    "estructura": {
+      "040200": 1
+    }
+  },
   "total": {
     "filas": 1827933,
-    "ha": 75661200.5
+    "ha": 75661200.4
   }
 }
