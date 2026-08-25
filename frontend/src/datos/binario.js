@@ -21,12 +21,12 @@ export async function cargarPuntos(señal) {
   // arrastra consigo la versión equivocada de todo lo demás.
   const man = await pedir(`${DATA}/manifest.json`, señal, { cache: 'no-cache' })
     .then((r) => r.json())
-  if (man.esquema !== 2) {
+  if (man.esquema !== 3) {
     // Ruidoso a proposito: un manifest de otra version abriria vistas tipadas
     // perfectamente validas sobre offsets equivocados, y el mapa saldria
     // PLAUSIBLE, con los puntos desplazados. Es el peor fallo posible.
     throw new Error(
-      `manifest.json declara esquema ${man.esquema} y este visor lee el 2. ` +
+      `manifest.json declara esquema ${man.esquema} y este visor lee el 3. ` +
         'Vuelve a generar los datos con `python ETL/build_bin.py`.',
     )
   }
@@ -93,21 +93,59 @@ export function tablaColor(uso, n, paletaRGB) {
 }
 
 /**
+ * Las columnas por las que se puede filtrar, y como se llama cada una en el
+ * .bin. El orden NO importa aqui; lo que importa es que anadir una dimension
+ * sea anadir una linea, y no tocar el bucle.
+ */
+export const DIMENSIONES = [
+  { col: 'uso', dominio: 'usos' },
+  { col: 'subuso', dominio: 'subusos' },
+  { col: 'estruc', dominio: 'estructuras' },
+  { col: 'tifo', dominio: 'tipos_forestales' },
+  { col: 'stifo', dominio: 'subtipos_forestales' },
+  { col: 'cober', dominio: 'coberturas' },
+  { col: 'altura', dominio: 'alturas' },
+  { col: 'especie', dominio: 'especies' },
+  { col: 'snaspe', dominio: 'snaspe' },
+  { col: 'comuna', dominio: 'comunas' },
+]
+
+/**
  * Canal de filtro, 1 byte por punto: 1 visible, 0 oculto.
  *
- * `ambito` restringe por territorio y `usos` por clase. Un Set vacio significa
- * "todas", no "ninguna": es la diferencia entre no haber filtrado y haber
- * filtrado a cero, y confundirlas deja el mapa en negro sin explicacion.
+ * Recibe {columna: Set de indices} y cruza TODAS las dimensiones activas con Y
+ * logico. Un Set vacio o ausente significa "todas", no "ninguna": es la
+ * diferencia entre no haber filtrado y haber filtrado a cero, y confundirlas
+ * deja el mapa en negro sin explicacion.
+ *
+ * Los Set se convierten a TABLAS DE BYTES antes del bucle. Con diez dimensiones
+ * activas, `Set.has()` dentro del bucle son 18 millones de llamadas por cambio
+ * de filtro; indexar un Uint8Array es una lectura de memoria. La tabla mide 256
+ * o 65.536 bytes segun el ancho de la columna, o sea nada al lado de las 1,8 M
+ * de filas que recorre.
  */
-export function canalFiltro(datos, { usos, comunas }) {
-  const { n, uso, comuna } = datos
+export function canalFiltro(datos, filtros = {}) {
+  const n = datos.n
   const f = new Uint8Array(n)
-  const porUso = usos && usos.size > 0
-  const porComuna = comunas && comunas.size > 0
-  if (!porUso && !porComuna) return f.fill(1)
-  for (let i = 0; i < n; i++) {
-    if (porUso && !usos.has(uso[i])) continue
-    if (porComuna && !comunas.has(comuna[i])) continue
+
+  const activos = []
+  for (const { col } of DIMENSIONES) {
+    const columna = datos[col]
+    const sel = filtros[col]
+    if (!columna || !sel || sel.size === 0) continue
+    // 256 para las columnas de un byte, 65.536 para las de dos: es el rango
+    // completo del tipo, asi que el centinela tambien cabe y queda en 0 (no
+    // seleccionado) sin ningun caso especial.
+    const tabla = new Uint8Array(columna.BYTES_PER_ELEMENT === 1 ? 256 : 65536)
+    for (const v of sel) tabla[v] = 1
+    activos.push([columna, tabla])
+  }
+  if (activos.length === 0) return f.fill(1)
+
+  bucle: for (let i = 0; i < n; i++) {
+    for (let d = 0; d < activos.length; d++) {
+      if (!activos[d][1][activos[d][0][i]]) continue bucle
+    }
     f[i] = 1
   }
   return f

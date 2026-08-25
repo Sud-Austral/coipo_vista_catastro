@@ -10,6 +10,13 @@
   --tinta: #14211a;
   --tinta-2: #4a554e;
   --tinta-3: #6f7a73;
+  /* Medido sobre el asset: 3032/177. El piso de 68 px cruza con la proporcion
+     natural en 1164,83 px de viewport; por debajo la imagen se ancla al piso y
+     desborda por la derecha, y el contenedor la recorta sobre el campo verde
+     uniforme. */
+  --razon-banner: 17.1299;
+  --alto-minimo-banner: 68px;
+  /* Campo principal del asset, medido: #064928. 10,55:1 con blanco. */
   --verde-institucional: #064928;
   --acento: #0a6b3d;
   /* Los dos paneles miden lo mismo a propósito: deja el lienzo útil de los

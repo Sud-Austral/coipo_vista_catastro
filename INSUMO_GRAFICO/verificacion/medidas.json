@@ -1,0 +1,67 @@
+{
+  "ratio": 17.1299,
+  "minHeight": 68,
+  "filas": [
+    {
+      "w": 1920,
+      "esperado": "112.08",
+      "enPagina": "112.08",
+      "pintado": 112,
+      "azul": "42-106",
+      "rojo": "108-179",
+      "columna": 3032,
+      "ok": "OK"
+    },
+    {
+      "w": 1366,
+      "esperado": "79.74",
+      "enPagina": "79.73",
+      "pintado": 80,
+      "azul": "30-75",
+      "rojo": "77-127",
+      "columna": 3032,
+      "ok": "OK"
+    },
+    {
+      "w": 1165,
+      "esperado": "68.01",
+      "enPagina": "68.00",
+      "pintado": 68,
+      "azul": "26-64",
+      "rojo": "66-108",
+      "columna": 3032,
+      "ok": "OK"
+    },
+    {
+      "w": 1110,
+      "esperado": "68.00",
+      "enPagina": "67.98",
+      "pintado": 68,
+      "azul": "26-64",
+      "rojo": "66-108",
+      "columna": 2889,
+      "ok": "OK"
+    },
+    {
+      "w": 768,
+      "esperado": "68.00",
+      "enPagina": "67.98",
+      "pintado": 68,
+      "azul": "26-64",
+      "rojo": "66-108",
+      "columna": 1999,
+      "ok": "OK"
+    },
+    {
+      "w": 390,
+      "esperado": "68.00",
+      "enPagina": "67.98",
+      "pintado": 68,
+      "azul": "26-64",
+      "rojo": "66-108",
+      "columna": 1015,
+      "ok": "OK"
+    }
+  ],
+  "sinImagen": true
+}

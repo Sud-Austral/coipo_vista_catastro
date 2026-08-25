@@ -2,6 +2,19 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { AVISO_PUNTOS, BASEMAPS, COLOR_USO } from '../config'
 import { fmt, ha, haExacta } from '../formato'
 import { flush } from '../urlState'
+import { FILTROS, NINGUNO, cuentaSeleccion } from '../filtros'
+import GrupoFiltro from './GrupoFiltro'
+
+/**
+ * Cómo se llama cada dimensión dentro de `resumen.sinDato`. Son nombres
+ * distintos de los de la columna del .bin, y mapearlos aquí evita repetir el
+ * nombre en cada sitio donde se lee.
+ */
+const SIN_DATO = {
+  subuso: 'subuso', estruc: 'estructura', tifo: 'tipoForestal',
+  stifo: 'subtipoForestal', cober: 'cobertura', altura: 'altura',
+  especie: 'especie', comuna: 'comuna',
+}
 
 /**
  * Panel de control.
@@ -23,9 +36,14 @@ export default function PanelLateral({
   usosActivos,
   onUso,
   onLimpiarUsos,
+  filtros,
+  onFiltro,
+  onLimpiarFiltro,
+  onLimpiarFiltros,
   abierto,
   onCerrar,
   oscuro,
+  onMetodologia,
   children,
 }) {
   const cabecera = useRef(null)
@@ -69,6 +87,7 @@ export default function PanelLateral({
   }, [manifest, ambito.region, ambito.provincia])
 
   const hayAmbito = Boolean(ambito.region)
+  const activas = cuentaSeleccion(filtros)
   const paleta = COLOR_USO[oscuro ? 'oscuro' : 'claro']
 
   const compartir = async () => {
@@ -168,7 +187,10 @@ export default function PanelLateral({
         </button>
         {/* No es opcional: un enlace con ?reg= entrega cifras REGIONALES, y sin
             avisarlo se citan como nacionales. */}
-        <p className="nota">El enlace guarda el ámbito, las clases activas y el mapa base.</p>
+        <p className="nota">
+          El enlace guarda el ámbito, todos los filtros activos y el mapa base. Quien lo abra
+          verá exactamente estas cifras, que no son las nacionales.
+        </p>
         <span className="aviso-copia" aria-live="polite">{aviso}</span>
       </section>
 
@@ -219,6 +241,40 @@ export default function PanelLateral({
         )}
       </section>
 
+      <section className="seccion-filtros">
+        <h2>
+          Filtros
+          {activas > 0 && <span className="cuenta-filtros">{activas}</span>}
+        </h2>
+        <p className="nota">
+          Se cruzan entre sí y con el ámbito: el mapa y todas las cifras del panel de
+          indicadores muestran sólo lo que pasa todos los filtros a la vez.
+        </p>
+        {/* La clase de uso NO se repite aquí. Es la única dimensión con color
+            propio, así que su control es la leyenda: tenerla en dos sitios
+            obligaría a mantener dos estados sincronizados de lo mismo. */}
+        <p className="nota">La clase de uso se filtra desde la leyenda de arriba.</p>
+
+        {FILTROS.filter((d) => d.col !== 'uso').map((def) => (
+          <GrupoFiltro
+            key={def.col}
+            def={def}
+            manifest={manifest}
+            resumen={resumen}
+            seleccion={filtros[def.col] ?? NINGUNO}
+            sinDato={resumen?.sinDato?.[SIN_DATO[def.col]] ?? 0}
+            onAlternar={onFiltro}
+            onLimpiar={onLimpiarFiltro}
+          />
+        ))}
+
+        {activas > 0 && (
+          <button type="button" className="limpiar" onClick={onLimpiarFiltros}>
+            Quitar los {activas} filtros
+          </button>
+        )}
+      </section>
+
       <section>
         <h2>Mapa base</h2>
         <label className="campo">
@@ -239,9 +295,20 @@ export default function PanelLateral({
 
       <footer>
         <p className="procedencia">{AVISO_PUNTOS}</p>
+        {/* Las DOS unidades, porque el banner nombra a las dos: la Unidad de
+            Información y Análisis construye este visor para la Gerencia de
+            Fiscalización. Si la imagen del banner no carga, este pie es la única
+            atribución en texto que queda en la página. */}
         <p className="procedencia">
-          Publica: CONAF · Unidad de Información y Análisis
+          Publica: CONAF · Gerencia de Fiscalización Forestal y Evaluación Ambiental
         </p>
+        <p className="procedencia">Desarrolla: Unidad de Información y Análisis</p>
+        {/* El enlace a la metodología va en el pie Y en el aviso del mapa: es
+            donde alguien lo busca cuando ya tiene una cifra delante y quiere
+            saber qué significa. */}
+        <button type="button" className="enlace-met" onClick={onMetodologia}>
+          Metodología, definiciones y qué no dice este visor
+        </button>
         {manifest && (
           <p className="procedencia">
             Datos <code>{manifest.capas.cbn_puntos.sha256.slice(0, 12)}</code> ·{' '}

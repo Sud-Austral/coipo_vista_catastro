@@ -38,6 +38,17 @@
     "uso:09": 331198.86,
     "total": 75661194.48
   },
+  "plantacion_especies": {
+    "Acacia sp.": 86454.53,
+    "Eucalyptus sp.": 1224405.36,
+    "Otras Especies": 28990.96,
+    "Pinus ponderosa": 25172.1,
+    "Pinus radiata": 1714736.78,
+    "Populus sp.": 10466.57,
+    "Prosopis chilensis": 531.08,
+    "Prosopis tamarugo": 28874.64,
+    "Pseudotsuga menziesii": 23148.14
+  },
   "regiones": [
     {
       "region": "Antofagasta",

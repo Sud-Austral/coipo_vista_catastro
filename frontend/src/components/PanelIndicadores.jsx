@@ -330,6 +330,193 @@ export default function PanelIndicadores({
             ))}
           </Seccion>
 
+          {/* Subtipos: la subdivisión del tipo forestal. Va pegada a S4 porque
+              sin el tipo delante un subtipo no significa nada. */}
+          <Seccion
+            id="s4b"
+            titulo="Subtipos forestales"
+            cifra={resumen.subtiposForestales.length
+              ? ha(resumen.subtiposForestales[0].ha) : '—'}
+            bajada="La subdivisión del tipo forestal, ordenada por superficie."
+            nota={`${resumen.subtiposForestales.length} subtipos con superficie · ${fmt.format(
+              resumen.sinDato?.subtipoForestal ?? 0,
+            )} polígonos sin este dato`}
+            advertencia={{
+              titulo: 'Por qué este vocabulario no es el oficial',
+              cuerpo:
+                'El subtipo forestal se agrupa por el TEXTO de la capa y no por su código, que es ' +
+                'la única dimensión donde se hace así. El motivo está medido: ID_STIF tiene 10 ' +
+                'códigos para 39 subtipos distintos, y usar el par (tipo, subtipo) como clave ' +
+                'empeora la ambigüedad en vez de resolverla. La guía oficial de códigos no nombra ' +
+                'estos subtipos, así que las etiquetas salen del propio dato, normalizadas.',
+            }}
+            tabla={{
+              titulo: 'Superficie por subtipo forestal',
+              cabeceras: ['Subtipo', 'Hectáreas', 'Polígonos'],
+              filas: resumen.subtiposForestales.map((t) => [
+                t.etiqueta, haExacta(t.ha), numero(t.n),
+              ]),
+            }}
+          >
+            {resumen.subtiposForestales.slice(0, 15).map((t) => (
+              <BarraFila
+                key={t.cod}
+                etiqueta={t.etiqueta}
+                valor={t.ha}
+                max={resumen.subtiposForestales[0].ha}
+                texto={ha(t.ha)}
+                titulo={`${t.etiqueta}: ${haExacta(t.ha)} en ${numero(t.n)} polígonos`}
+              />
+            ))}
+            {resumen.subtiposForestales.length > 15 && (
+              <p className="nota">
+                Se dibujan los 15 mayores de {resumen.subtiposForestales.length}. La tabla de datos
+                los lleva todos.
+              </p>
+            )}
+          </Seccion>
+
+          <Seccion
+            id="s4c"
+            titulo="Densidad del dosel"
+            cifra={(() => {
+              const d = resumen.coberturas.find((c) => c.orden === 1)
+              return d ? ha(d.ha) : '—'
+            })()}
+            bajada="Cuánto cubren las copas, de Denso a Escaso. Se lee en orden de densidad, no de superficie."
+            nota={`${fmt.format(resumen.sinDato?.cobertura ?? 0)} polígonos sin este dato`}
+            advertencia={{
+              titulo: 'Qué mide la densidad de copas, y qué no mide',
+              cuerpo:
+                'Es la fracción del suelo que tapan las copas vistas desde arriba. NO es una medida ' +
+                'de salud, de calidad ni de degradación: un bosque escleròfilo abierto puede ser ' +
+                'perfectamente sano, y el Catastro describe sin calificar. «No Aplica» no es una ' +
+                'densidad baja: es el territorio donde la pregunta no tiene sentido, como los ' +
+                'cuerpos de agua o las áreas desprovistas de vegetación.',
+            }}
+            tabla={{
+              titulo: 'Superficie por densidad de copas',
+              cabeceras: ['Densidad', 'Hectáreas', 'Polígonos'],
+              filas: [...resumen.coberturas]
+                .sort((a, b) => (a.orden ?? 99) - (b.orden ?? 99))
+                .map((c) => [c.etiqueta, haExacta(c.ha), numero(c.n)]),
+            }}
+          >
+            {[...resumen.coberturas]
+              .sort((a, b) => (a.orden ?? 99) - (b.orden ?? 99))
+              .map((c) => (
+                <BarraFila
+                  key={c.cod}
+                  etiqueta={c.etiqueta}
+                  valor={c.ha}
+                  max={Math.max(...resumen.coberturas.map((x) => x.ha))}
+                  texto={ha(c.ha)}
+                  titulo={`${c.etiqueta}: ${haExacta(c.ha)} en ${numero(c.n)} polígonos`}
+                />
+              ))}
+          </Seccion>
+
+          <Seccion
+            id="s4d"
+            titulo="Altura del dosel"
+            cifra={(() => {
+              const f = resumen.alturas.filter((a) => a.escala === 'fina')
+              return f.length ? ha(f.reduce((s, a) => s + a.ha, 0)) : '—'
+            })()}
+            bajada="En qué tramo de altura está el dosel. Vienen dos escalas distintas y no se pueden sumar entre sí."
+            nota={`${fmt.format(resumen.sinDato?.altura ?? 0)} polígonos sin este dato`}
+            advertencia={{
+              titulo: 'Por qué estas barras no se comparan entre sí',
+              cuerpo:
+                'El Catastro midió la altura con DOS reglas. La escala fina da tramos en metros ' +
+                '(0-0,5 hasta más de 32) y la gruesa sólo distingue por encima y por debajo de 2 m. ' +
+                'Sus tramos SE SOLAPAN: «menos de 2 m» cubre lo mismo que los tres primeros tramos ' +
+                'finos juntos. Sumar las dos escalas contaría dos veces el mismo rango, así que ' +
+                'aquí van separadas y sin total común.',
+            }}
+            tabla={{
+              titulo: 'Superficie por tramo de altura',
+              cabeceras: ['Escala', 'Tramo (m)', 'Hectáreas', 'Polígonos'],
+              filas: resumen.alturas.map((a) => [
+                a.escala, a.etiqueta, haExacta(a.ha), numero(a.n),
+              ]),
+            }}
+          >
+            {['fina', 'gruesa', 'no_aplica'].map((esc) => {
+              const clases = resumen.alturas
+                .filter((a) => a.escala === esc)
+                .sort((x, y) => (x.orden ?? 99) - (y.orden ?? 99))
+              if (!clases.length) return null
+              const tope = Math.max(...clases.map((x) => x.ha))
+              return (
+                <div key={esc} className="bloque-escala">
+                  <p className="rotulo-escala">
+                    {esc === 'fina'
+                      ? 'Escala en metros'
+                      : esc === 'gruesa'
+                        ? 'Escala gruesa · se solapa con la anterior'
+                        : 'Sin altura aplicable'}
+                  </p>
+                  {clases.map((a) => (
+                    <BarraFila
+                      key={a.cod}
+                      etiqueta={a.etiqueta}
+                      valor={a.ha}
+                      max={tope}
+                      texto={ha(a.ha)}
+                      titulo={`${a.etiqueta} m: ${haExacta(a.ha)} en ${numero(a.n)} polígonos`}
+                    />
+                  ))}
+                </div>
+              )
+            })}
+          </Seccion>
+
+          <Seccion
+            id="s4e"
+            titulo="Especies dominantes"
+            cifra={resumen.especies.length ? ha(resumen.especies[0].ha) : '—'}
+            bajada="La primera especie registrada en cada polígono, la que domina el rodal."
+            nota={`${resumen.especies.length} especies con superficie · ${fmt.format(
+              resumen.sinDato?.especie ?? 0,
+            )} polígonos sin este dato`}
+            advertencia={{
+              titulo: 'Qué cuenta esta lista, y qué deja fuera',
+              cuerpo:
+                'Cada polígono puede registrar hasta SEIS especies y aquí sólo cuenta la primera, ' +
+                'la dominante: la superficie de un polígono se asigna entera a esa especie. No es ' +
+                'una convención de este visor — es la misma que usa la planilla oficial de CONAF, y ' +
+                'reproducirla da 1.714.737,31 ha de Pinus radiata contra las 1.714.736,78 ' +
+                'publicadas. La lista incluye toda la vegetación, no sólo árboles, y no dice nada ' +
+                'del estado de conservación de ninguna especie: el Catastro no registra ese dato.',
+            }}
+            tabla={{
+              titulo: 'Superficie por especie principal',
+              cabeceras: ['Especie', 'Nombre científico', 'Hectáreas', 'Polígonos'],
+              filas: resumen.especies.map((e) => [
+                e.etiqueta, e.cientifico ?? '—', haExacta(e.ha), numero(e.n),
+              ]),
+            }}
+          >
+            {resumen.especies.slice(0, 15).map((e) => (
+              <BarraFila
+                key={e.cod}
+                etiqueta={e.etiqueta}
+                glosa={e.cientifico !== e.etiqueta ? e.cientifico : null}
+                valor={e.ha}
+                max={resumen.especies[0].ha}
+                texto={ha(e.ha)}
+                titulo={`${e.cientifico ?? e.etiqueta}: ${haExacta(e.ha)} en ${numero(e.n)} polígonos`}
+              />
+            ))}
+            {resumen.especies.length > 15 && (
+              <p className="nota">
+                Se dibujan las 15 mayores de {resumen.especies.length}. La tabla de datos las lleva
+                todas.
+              </p>
+            )}
+          </Seccion>
+
           <Seccion
             id="s5"
             titulo="Dónde está"

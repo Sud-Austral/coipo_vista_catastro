@@ -15,6 +15,24 @@
     />
     <title>Catastro de Usos de la Tierra y Recursos Vegetacionales — CONAF</title>
 
+    <!-- Tarjeta al compartir el enlace. La decision de abrir un sitio de 35 MB
+         en un telefono con plan de datos se toma mirando esto.
+         SIN og:image mientras no exista una PNG de 1200x630: declararlo
+         apuntando a un archivo inexistente hace que varios lectores descarten
+         la tarjeta ENTERA, que es peor que no tenerla.
+         og:description repite TEXTUALMENTE la meta description: dos redacciones
+         del mismo texto divergen a la primera edicion. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="CONAF · Gerencia de Fiscalización Forestal y Evaluación Ambiental" />
+    <meta property="og:locale" content="es_CL" />
+    <meta property="og:url" content="https://sud-austral.github.io/coipo_vista_catastro/" />
+    <meta property="og:title" content="Catastro de Usos de la Tierra y Recursos Vegetacionales — CONAF" />
+    <meta
+      property="og:description"
+      content="Visor del Catastro de Usos de la Tierra y Recursos Vegetacionales de CONAF: 1.827.933 polígonos del Catastro de Bosque Nativo por uso de suelo, con superficie y ubicación."
+    />
+    <meta name="twitter:card" content="summary" />
+
     <!-- SIN el atributo crossorigin, y no es un olvido: no lo "arregles".
          Leaflet pide las teselas con <img> y sin crossOrigin, o sea peticiones
          en modo no-CORS. Un preconnect anonimo abre la conexion en OTRO pool de
@@ -32,13 +50,14 @@
          pantalla es blanco puro durante segundos. Se elimina en main.jsx
          antes del primer render. */
       html, body { margin: 0; height: 100%; }
-      #arranque {
-        position: fixed; inset: 0; display: grid; place-content: center;
-        gap: 12px; text-align: center;
-        font: 15px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
-        color: #0f2e1c; background: #f6f8f6;
-      }
-      #arranque .banda { height: 6px; width: 220px; border-radius: 3px; background: #064928; opacity: .18; }
+      /* La banda del cascaron reproduce EXACTAMENTE la geometria del banner
+         (3032/177 con piso de 68 px). Si no coincidiera, al montar la app la
+         cabecera daria un salto y el mapa se recalcularia dos veces. */
+      #arranque { position: fixed; inset: 0; background: #f6f8f6;
+        font: 15px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif; color: #0f2e1c; }
+      #arranque .banda { height: max(68px, calc(100vw / 17.1299)); background: #064928; }
+      #arranque .txt { display: grid; place-content: center;
+        height: calc(100dvh - max(68px, 100vw / 17.1299)); gap: 10px; text-align: center; }
       @media (prefers-color-scheme: dark) {
         #arranque { color: #e7efe9; background: #10161b; }
       }
@@ -48,8 +67,10 @@
     <div id="root"></div>
     <div id="arranque">
       <div class="banda"></div>
-      <p>Cargando el Catastro nacional…</p>
-      <p id="arranque-lento" hidden>Está tardando más de lo normal.</p>
+      <div class="txt">
+        <p>Cargando el Catastro nacional…</p>
+        <p id="arranque-lento" hidden>Está tardando más de lo normal.</p>
+      </div>
     </div>
     <script>
       // setTimeout clasico y no un observer: el unico objetivo es que, si la

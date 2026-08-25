@@ -7,6 +7,7 @@ import {
   BASEMAPS,
   CORTE_KPI,
   CORTE_PANEL,
+  AVISO_PUNTOS,
   LIMITES,
   MAX_KPI,
   MAX_PANEL,
@@ -17,18 +18,22 @@ import {
 } from './config'
 import { canalFiltro, cargarPuntos, tablaColor } from './datos/binario'
 import { ambitoTexto, resumenFiltrado, resumenNacional } from './indicadores'
+import { alternar, filtrosAURL, filtrosDesdeURL } from './filtros'
 import { guardarDisposicion, leerDisposicion } from './preferencias'
 import { escribirURL, leerURL } from './urlState'
 import CapaPuntos from './mapa/CapaPuntos'
 import EtiquetaImagen from './components/EtiquetaImagen'
 import ModalFicha from './components/ModalFicha'
+import Banner from './components/Banner'
+import CartelContexto from './components/CartelContexto'
+import PaginaMetodologia from './components/PaginaMetodologia'
 import PanelIndicadores from './components/PanelIndicadores'
 import PanelLateral from './components/PanelLateral'
 import SeccionDescargas from './components/SeccionDescargas'
 import Tirador from './components/Tirador'
 import { IconoIndicadores } from './components/graficos'
 import { useFechaImagen } from './hooks/useFechaImagen'
-import { fmt, haExacta } from './formato'
+import { haExacta } from './formato'
 
 /**
  * Régimen de disposición, que decide si la X pliega una pista o cierra un cajón:
@@ -52,6 +57,14 @@ const inicial = leerURL()
 const temaOscuro = () =>
   window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
 
+/**
+ * Quien pidió menos movimiento en su sistema lo pidió para todo, no sólo para el
+ * CSS. Las animaciones de Leaflet son JS y no las apaga ninguna media query, así
+ * que hay que consultarlo aquí y pasárselo al mapa.
+ */
+const menosMovimiento = () =>
+  window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
 export default function App() {
   const contenedor = useRef(null)
   const [map, setMap] = useState(null)
@@ -61,8 +74,15 @@ export default function App() {
   const [oscuro, setOscuro] = useState(temaOscuro)
   const [ambito, setAmbito] = useState(inicial.ambito)
   const [usosActivos, setUsosActivos] = useState(() => new Set())
+  // Las OTRAS ocho dimensiones, en un solo objeto {columna: Set de índices}.
+  // Aparte de `usosActivos` porque el uso tiene control propio —la leyenda, que
+  // es la única dimensión con color— y comparten destino pero no origen.
+  const [filtros, setFiltros] = useState(() => ({}))
   const [ficha, setFicha] = useState(null)
   const [simef, setSimef] = useState(null)
+  const [cartel, setCartel] = useState(true)
+  const [metodologia, setMetodologia] = useState(false)
+  const [oficiales, setOficiales] = useState(null)
 
   // SIMEF es OTRA FUENTE y se carga aparte a proposito: si su archivo falta o
   // falla, el resto del visor sigue entero y solo esa seccion lo dice.
@@ -71,6 +91,10 @@ export default function App() {
     fetch(`${DATA}/simef.json`, { signal: ctrl.signal, cache: 'no-cache' })
       .then((r) => (r.ok ? r.json() : null))
       .then(setSimef)
+      .catch(() => {})
+    fetch(`${DATA}/oficiales.json`, { signal: ctrl.signal, cache: 'no-cache' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setOficiales)
       .catch(() => {})
     return () => ctrl.abort()
   }, [])
@@ -96,8 +120,12 @@ export default function App() {
   // ---------- mapa ----------
   useEffect(() => {
     if (!contenedor.current) return
+    const quieto = menosMovimiento()
     const m = L.map(contenedor.current, {
       preferCanvas: true,
+      fadeAnimation: !quieto,
+      markerZoomAnimation: !quieto,
+      inertia: !quieto,
       // UN SOLO renderer de canvas para todas las capas vectoriales de Leaflet.
       // Con un canvas por capa sólo la de encima recibe los clics, y cuál queda
       // encima lo decide el orden en que terminan de descargarse las capas.
@@ -313,6 +341,9 @@ export default function App() {
   // tiene que sobrevivir a un reproceso del ETL. La conversión sólo se puede
   // hacer cuando el manifest ya está, así que va aquí y una sola vez.
   const usosDeLaUrl = useRef(inicial.usos ?? null)
+  // Los filtros temáticos llegan de la URL como CÓDIGOS y sólo se pueden
+  // traducir a índices cuando el manifest ya está cargado, igual que los usos.
+  const filtrosDeLaUrl = useRef(inicial.filtros ?? null)
   useEffect(() => {
     if (!manifest || !usosDeLaUrl.current) return
     const s = new Set()
@@ -324,6 +355,13 @@ export default function App() {
     setUsosActivos(s)
   }, [manifest])
 
+  useEffect(() => {
+    if (!manifest || !filtrosDeLaUrl.current) return
+    const restaurados = filtrosDesdeURL(filtrosDeLaUrl.current, manifest)
+    filtrosDeLaUrl.current = null
+    if (Object.keys(restaurados).length) setFiltros(restaurados)
+  }, [manifest])
+
   // La URL refleja el estado. pushState para lo que se reconoce como «hice
   // algo»; el paneo va con replaceState desde el efecto del mapa.
   useEffect(() => {
@@ -332,13 +370,14 @@ export default function App() {
       {
         ambito,
         usos: [...usosActivos].map((i) => manifest.usos[i]?.cod).filter(Boolean),
+        filtros: filtrosAURL(filtros, manifest),
         base,
         centro: map ? [map.getCenter().lat, map.getCenter().lng] : null,
         zoom: map ? map.getZoom() : null,
       },
       { push: true },
     )
-  }, [manifest, ambito, usosActivos, base]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [manifest, ambito, usosActivos, filtros, base]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // El encuadre se escribe agrupado y SIN entrada de historial.
   useEffect(() => {
@@ -347,13 +386,14 @@ export default function App() {
       escribirURL({
         ambito,
         usos: [...usosActivos].map((i) => manifest.usos[i]?.cod).filter(Boolean),
+        filtros: filtrosAURL(filtros, manifest),
         base,
         centro: [map.getCenter().lat, map.getCenter().lng],
         zoom: map.getZoom(),
       })
     map.on('moveend', al)
     return () => map.off('moveend', al)
-  }, [map, manifest, ambito, usosActivos, base])
+  }, [map, manifest, ambito, usosActivos, filtros, base])
 
   // Índices de comuna que caen dentro del ámbito. Un Set vacío significa «todas»,
   // no «ninguna».
@@ -369,11 +409,23 @@ export default function App() {
     return s
   }, [manifest, ambito])
 
-  const hayFiltro = usosActivos.size > 0 || comunasDelAmbito.size > 0
+  // Las tres fuentes de filtro se juntan en un solo objeto antes de bajar al
+  // canal: el ámbito (territorio), la leyenda (uso) y los grupos temáticos. Se
+  // cruzan con Y lógico, así que el mapa y TODAS las cifras del panel muestran
+  // exactamente lo mismo — que es lo que impide citar una cifra que en pantalla
+  // corresponde a otro recorte.
+  const filtroCompleto = useMemo(() => {
+    const f = { ...filtros }
+    if (usosActivos.size) f.uso = usosActivos
+    if (comunasDelAmbito.size) f.comuna = comunasDelAmbito
+    return f
+  }, [filtros, usosActivos, comunasDelAmbito])
+
+  const hayFiltro = Object.keys(filtroCompleto).length > 0
 
   const filtro = useMemo(
-    () => (datos ? canalFiltro(datos, { usos: usosActivos, comunas: comunasDelAmbito }) : null),
-    [datos, usosActivos, comunasDelAmbito],
+    () => (datos ? canalFiltro(datos, filtroCompleto) : null),
+    [datos, filtroCompleto],
   )
 
   const paleta = useMemo(
@@ -389,10 +441,60 @@ export default function App() {
     [datos, filtro, hayFiltro, nacional],
   )
 
+  // ---------- encuadre por ámbito ----------
+  // Al elegir una región o una comuna el mapa VA ahí. Sin esto, filtrar deja el
+  // encuadre nacional y la región elegida queda como una mancha diminuta: el
+  // panel dice una cosa y el mapa muestra otra.
+  //
+  // El bbox sale del manifest, calculado por el ETL sobre los centroides: en el
+  // cliente habría que recorrer 1,8 M de filas para obtenerlo.
+  //
+  // SE RESPETA EL ENCUADRE DE UNA URL COMPARTIDA. Si alguien abre un enlace con
+  // ?lat=&lon=&z= y además ?reg=, ese enlace eligió deliberadamente un encuadre;
+  // reencuadrar al montar se lo pisaría. Por eso el primer ámbito que viene de
+  // la URL se marca como ya encuadrado.
+  const encuadrado = useRef(inicial.centro ? claveAmbito(inicial.ambito) : null)
+  useEffect(() => {
+    if (!map || !manifest) return
+    const clave = claveAmbito(ambito)
+    if (encuadrado.current === clave) return
+    encuadrado.current = clave
+    const caja = cajaDelAmbito(ambito, manifest)
+    if (!caja) {
+      map.flyTo(VISTA_INICIAL.center, VISTA_INICIAL.zoom, {
+        animate: !menosMovimiento(),
+        duration: 0.6,
+      })
+      return
+    }
+    map.flyToBounds([[caja[1], caja[0]], [caja[3], caja[2]]], {
+      padding: [24, 24],
+      // Sin animación para quien pidió menos movimiento: un vuelo de 600 ms al
+      // cambiar de región es exactamente lo que esa preferencia evita.
+      animate: !menosMovimiento(),
+      duration: 0.6,
+      maxZoom: 11,
+    })
+  }, [map, manifest, ambito])
+
   const fuenteFecha = BASEMAPS[base]?.fecha ?? null
   const fechaEsri = useFechaImagen(map, fuenteFecha?.tipo === 'esri')
   const imagen =
     fuenteFecha?.tipo === 'fijo' ? { estado: 'fijo', texto: fuenteFecha.texto } : fechaEsri
+
+  const alFiltro = useCallback((col, i) => {
+    setFiltros((prev) => alternar(prev, col, i))
+  }, [])
+
+  const limpiarFiltro = useCallback((col) => {
+    setFiltros((prev) => {
+      const s = { ...prev }
+      delete s[col]
+      return s
+    })
+  }, [])
+
+  const limpiarFiltros = useCallback(() => setFiltros({}), [])
 
   const alternarUso = useCallback((i) => {
     setUsosActivos((prev) => {
@@ -411,11 +513,29 @@ export default function App() {
       const uso = m.usos[datos.uso[i]]
       const com = datos.comuna[i] === 65535 ? null : m.comunas[datos.comuna[i]]
       const reg = com ? m.regiones.find((r) => r.cod === com.region) : null
+      // La especie se rotula con las DOS formas cuando las tiene. El nombre
+      // común no identifica: «coihue» son varias especies distintas y
+      // «Nothofagus dombeyi» es una sola. Quien copie esta ficha a un informe
+      // necesita la que se puede citar.
+      const esp = datos.especie[i] === 65535 ? null : m.especies[datos.especie[i]]
+      const alt = datos.altura[i] === 255 ? null : m.alturas[datos.altura[i]]
       const filas = [
         ['Uso de suelo', uso?.etiqueta ?? '—'],
         ['Subuso', et(m.subusos, datos.subuso[i], 255) ?? '—'],
         ['Estructura', et(m.estructuras, datos.estruc[i], 255) ?? 'no aplica'],
         ['Tipo forestal', et(m.tipos_forestales, datos.tifo[i], 255) ?? 'no aplica'],
+        ['Subtipo forestal', et(m.subtipos_forestales, datos.stifo[i], 255) ?? 'no aplica'],
+        ['Densidad de copas', et(m.coberturas, datos.cober[i], 255) ?? 'sin dato'],
+        // El tramo de altura viaja SIEMPRE con su escala: '<2' y '0 - 0.5' se
+        // leen igual de bien y miden con reglas distintas.
+        ['Altura del dosel', alt
+          ? `${alt.etiqueta} m${alt.escala === 'gruesa' ? ' (escala gruesa)' : ''}`
+          : 'sin dato'],
+        ['Especie principal', esp
+          ? (esp.cientifico && esp.cientifico !== esp.etiqueta
+              ? `${esp.etiqueta} · ${esp.cientifico}`
+              : esp.etiqueta)
+          : 'sin dato'],
         ['Área protegida', et(m.snaspe, datos.snaspe[i], 255) ?? 'fuera del SNASPE'],
         ['Comuna', com ? `${com.etiqueta} (${com.provincia})` : 'sin dato'],
         ['Región', reg ? `${reg.nombre} · catastro ${reg.anio}` : '—'],
@@ -466,12 +586,7 @@ export default function App() {
         ...(kpiVisible && { '--pista-kpi': `${anchoKpi}px` }),
       }}
     >
-      <header className="banner">
-        <div className="banner-txt">
-          <h2>Catastro de Usos de la Tierra y Recursos Vegetacionales</h2>
-          <p>CONAF · {datos ? `${fmt.format(datos.n)} polígonos` : 'cargando…'}</p>
-        </div>
-      </header>
+      <Banner />
 
       <button
         ref={btnPanel}
@@ -494,10 +609,15 @@ export default function App() {
         onBase={setBase}
         usosActivos={usosActivos}
         onUso={alternarUso}
+        filtros={filtros}
+        onFiltro={alFiltro}
+        onLimpiarFiltro={limpiarFiltro}
+        onLimpiarFiltros={limpiarFiltros}
         onLimpiarUsos={() => setUsosActivos(new Set())}
         abierto={panelVisible}
         onCerrar={cerrarPanel}
         oscuro={oscuro}
+        onMetodologia={() => setMetodologia(true)}
       >
         <SeccionDescargas
           datos={datos}
@@ -568,7 +688,15 @@ export default function App() {
       {map && datos && paleta && filtro && (
         <CapaPuntos map={map} datos={datos} paleta={paleta} filtro={filtro} onPunto={alPunto} />
       )}
+      {cartel && <CartelContexto texto={AVISO_PUNTOS} onCerrar={() => setCartel(false)} />}
       <EtiquetaImagen map={map} info={imagen} />
+      <PaginaMetodologia
+        abierta={metodologia}
+        onCerrar={() => setMetodologia(false)}
+        manifest={manifest}
+        oficiales={oficiales}
+        simef={simef}
+      />
       <ModalFicha ficha={ficha} onCerrar={() => setFicha(null)} />
 
       {!datos && (
@@ -578,4 +706,35 @@ export default function App() {
       )}
     </div>
   )
+}
+
+
+/** Clave estable del ámbito, para saber si ya se encuadró. */
+function claveAmbito(a) {
+  return `${a?.region ?? ''}|${a?.provincia ?? ''}|${a?.comuna ?? ''}`
+}
+
+/**
+ * El bbox del ámbito más profundo que tenga uno. Una provincia no tiene bbox
+ * propio en el manifest —serían 55 entradas más— así que se compone de sus
+ * comunas, que es exactamente lo mismo.
+ */
+function cajaDelAmbito(a, manifest) {
+  if (!a?.region) return null
+  if (a.comuna) {
+    return manifest.comunas.find((c) => c.cod === a.comuna)?.bbox ?? null
+  }
+  if (a.provincia) {
+    const cajas = manifest.comunas
+      .filter((c) => c.region === a.region && c.provincia === a.provincia && c.bbox)
+      .map((c) => c.bbox)
+    if (!cajas.length) return null
+    return [
+      Math.min(...cajas.map((b) => b[0])),
+      Math.min(...cajas.map((b) => b[1])),
+      Math.max(...cajas.map((b) => b[2])),
+      Math.max(...cajas.map((b) => b[3])),
+    ]
+  }
+  return manifest.regiones.find((r) => r.cod === a.region)?.bbox ?? null
 }

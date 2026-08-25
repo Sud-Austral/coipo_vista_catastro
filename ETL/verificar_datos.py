@@ -18,6 +18,7 @@ import json
 import os
 import re
 import sys
+import unicodedata
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -25,7 +26,7 @@ RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATOS = os.path.join(RAIZ, "frontend", "public", "datos")
 
 FILAS_CBN = 1_827_933
-BYTES_POR_FILA = 19          # 3 f32 + 1 u16 + 5 u8
+BYTES_POR_FILA = 24          # 3 f32 + 2 u16 + 8 u8
 
 # Las cifras oficiales NO se escriben aqui: se leen de oficiales.json, que
 # `ETL/cifras_oficiales.py` parsea de la planilla que CONAF publico dentro de la
@@ -48,6 +49,13 @@ def TOL_TABLA(n):
 TOL_OFICIAL = 15.0
 
 
+def _canon(s):
+    """Compara etiquetas ignorando mayusculas, tildes y espacios de mas."""
+    s = re.sub(r"\s+", " ", str(s or "")).strip().lower()
+    return "".join(ch for ch in unicodedata.normalize("NFD", s)
+                   if unicodedata.category(ch) != "Mn")
+
+
 def sha256(ruta):
     h = hashlib.sha256()
     with open(ruta, "rb") as fh:
@@ -67,8 +75,8 @@ def comprobar(man, crudo, tam, hashes):
     fallos = []
     cap = man["capas"]["cbn_puntos"]
 
-    if man.get("esquema") != 2:
-        fallos.append(f"D1 esquema {man.get('esquema')} != 2")
+    if man.get("esquema") != 3:
+        fallos.append(f"D1 esquema {man.get('esquema')} != 3")
 
     # Ninguna marca de tiempo. Es lo que permite commitear datos: si el manifest
     # llevara fecha, cada regeneracion ensuciaria git aunque los datos fueran
@@ -194,6 +202,85 @@ def comprobar(man, crudo, tam, hashes):
             fallos.append(f"D16 Plantacion {pl['ha']:,.2f} != oficial {oficial_pl:,.2f} "
                           f"(se agrego por texto?)")
 
+    # D17 - el reparto de cobertura por codigo esta respaldado por la guia. El
+    # orden de la guia (Denso..Escaso) tiene que coincidir POSICION A POSICION
+    # con el de los codigos 01..05. Si deja de coincidir, 'Denso' podria estar
+    # rotulando lo que el catastro llama 'Escaso' y nada mas lo delataria.
+    guia = man.get("vocabulario_guia_cobertura")
+    if not guia:
+        fallos.append("D17 el manifest no publica el vocabulario de cobertura de la guia")
+    else:
+        escala = sorted((c for c in man["coberturas"] if c.get("orden")),
+                        key=lambda c: c["orden"])
+        if [c["orden"] for c in escala] != list(range(1, len(escala) + 1)):
+            fallos.append(f"D17 el orden de cobertura tiene huecos o repetidos: "
+                          f"{[c['orden'] for c in escala]}")
+        for i, c in enumerate(escala):
+            if i >= len(guia) or _canon(c["etiqueta"]) != _canon(guia[i]):
+                fallos.append(f"D17 cobertura {c['orden']}: los datos dicen "
+                              f"{c['etiqueta']!r} y la guia {guia[i] if i < len(guia) else None!r}")
+
+    # D18 - la columna de especie, contra la planilla oficial de plantaciones.
+    # Es la UNICA referencia externa que existe para esta dimension, y de paso
+    # comprueba lo que no es obvio: que la estadistica oficial asigna el
+    # poligono entero a su especie principal.
+    if ofi and ofi.get("plantacion_especies"):
+        por_genero, por_especie = {}, {}
+        for e in man["especies"]:
+            if e.get("genero"):
+                por_genero[e["genero"]] = por_genero.get(e["genero"], 0.0) + e["ha"]
+            if e.get("cientifico"):
+                por_especie[e["cientifico"]] = por_especie.get(e["cientifico"], 0.0) + e["ha"]
+        for etiqueta, oficial in ofi["plantacion_especies"].items():
+            if etiqueta.endswith(" sp."):
+                mio = por_genero.get(etiqueta[:-4].strip())
+            else:
+                mio = por_especie.get(etiqueta)
+            if mio is None:
+                continue     # 'Otras Especies' no es una especie: no se contrasta
+            # El margen es amplio a proposito: la cifra propia suma TODOS los
+            # usos y la oficial solo plantaciones, asi que lo que se comprueba
+            # es que la especie exista y su magnitud sea la correcta, no una
+            # igualdad al centimo. Una diferencia del 50% delata un vocabulario
+            # roto; una del 1% es que Pinus radiata tambien crece asilvestrado.
+            if mio + 0.5 < oficial:
+                fallos.append(f"D18 {etiqueta}: el visor tiene {mio:,.2f} ha y la "
+                              f"planilla oficial {oficial:,.2f} (falta superficie)")
+
+    # D19 - las dos escalas de altura. 'fina' y 'gruesa' miden lo mismo con
+    # reglas distintas y sus tramos SE SOLAPAN, asi que cada clase tiene que
+    # declarar a cual pertenece y ordenarse dentro de la suya.
+    escalas = {}
+    for a in man.get("alturas", []):
+        if a.get("escala") not in ("fina", "gruesa", "no_aplica"):
+            fallos.append(f"D19 altura {a['etiqueta']!r} sin escala declarada")
+        escalas.setdefault(a.get("escala"), []).append(a)
+    for nombre, clases in escalas.items():
+        if nombre == "no_aplica":
+            continue
+        ordenes = sorted(c["orden"] for c in clases if c["orden"] is not None)
+        if ordenes != list(range(1, len(clases) + 1)):
+            fallos.append(f"D19 la escala {nombre} no ordena 1..{len(clases)}: {ordenes}")
+
+    # D20 - cada dimension reparte TODAS las filas: las clasificadas mas las del
+    # centinela. Es lo que impide que una categoria se pierda en silencio al
+    # cambiar un vocabulario.
+    sin = cap.get("sin_dato", {})
+    for dim, campo in (("usos", "uso"), ("subusos", "subuso"),
+                       ("estructuras", "estruc"), ("tipos_forestales", "tifo"),
+                       ("coberturas", "cober"), ("alturas", "altura"),
+                       ("subtipos_forestales", "stifo"), ("especies", "especie"),
+                       ("comunas", "comuna")):
+        if dim not in man:
+            fallos.append(f"D20 el manifest no publica la dimension {dim}")
+            continue
+        repartidas = sum(f["n"] for f in man[dim]) + sin.get(campo, 0)
+        desconocidas = sum(man.get("codigos_desconocidos", {})
+                           .get(campo if campo != "estruc" else "estructura", {}).values())
+        if repartidas != man["total"]["filas"]:
+            fallos.append(f"D20 {dim} reparte {repartidas:,} filas de "
+                          f"{man['total']['filas']:,} (desconocidas: {desconocidas:,})")
+
     return fallos
 
 
@@ -245,6 +332,46 @@ def _sub(man, cod, ha):
     return m
 
 
+def _permutar_cobertura(man):
+    """Intercambia las etiquetas de los dos extremos de la escala de densidad.
+
+    Es EL defecto que D17 existe para cazar: el reparto de codigos a etiquetas
+    sale del dato, y si se diera vuelta, 'Denso' rotularia lo que el catastro
+    llama 'Escaso'. Las cifras seguirian cuadrando con el total, los porcentajes
+    seguirian sumando 100 y el mapa se pintaria igual de bonito.
+    """
+    m = copy.deepcopy(man)
+    escala = sorted((c for c in m["coberturas"] if c.get("orden")),
+                    key=lambda c: c["orden"])
+    escala[0]["etiqueta"], escala[-1]["etiqueta"] = escala[-1]["etiqueta"], escala[0]["etiqueta"]
+    return m
+
+
+def _especie_cero(man, cientifico):
+    m = copy.deepcopy(man)
+    for e in m["especies"]:
+        if e.get("cientifico") == cientifico:
+            e["ha"] = 0.0
+    return m
+
+
+def _altura_desordenada(man):
+    m = copy.deepcopy(man)
+    fina = [a for a in m["alturas"] if a.get("escala") == "fina"]
+    fina[0]["orden"] = 99
+    return m
+
+
+def _quitar_clase(man, dim):
+    """Borra la clase mas pequena de una dimension. Sin D20 esto es invisible:
+    el total no cambia, las demas cifras siguen cuadrando entre si, y en
+    pantalla solo falta una fila que nadie echa de menos."""
+    m = copy.deepcopy(man)
+    viva = [f for f in m[dim] if f["n"] > 0]
+    m[dim].remove(min(viva, key=lambda f: f["n"]))
+    return m
+
+
 NEGATIVAS = [
     ("D2 marca de tiempo", "D2",
      lambda m, c, t, h: (m, c + '"generado":"2026-08-20T10:00:00"', t, h)),
@@ -264,6 +391,23 @@ NEGATIVAS = [
      lambda m, c, t, h: (_sub(m, "0403", 0.0), c, t, h)),
     ("D16 Plantacion agregada por texto", "D16",
      lambda m, c, t, h: (_sub(m, "0401", 3_118_188.80), c, t, h)),
+    ("D17 escala de cobertura del reves", "D17",
+     lambda m, c, t, h: (_permutar_cobertura(m), c, t, h)),
+    ("D17 sin el vocabulario de la guia", "D17",
+     lambda m, c, t, h: ({**copy.deepcopy(m), "vocabulario_guia_cobertura": None}, c, t, h)),
+    ("D18 una especie sin superficie", "D18",
+     lambda m, c, t, h: (_especie_cero(m, "Pinus radiata"), c, t, h)),
+    ("D19 escala de altura sin declarar", "D19",
+     lambda m, c, t, h: ({**copy.deepcopy(m),
+                          "alturas": [{**a, "escala": None} for a in m["alturas"]]}, c, t, h)),
+    ("D19 tramos de altura desordenados", "D19",
+     lambda m, c, t, h: (_altura_desordenada(m), c, t, h)),
+    ("D20 una clase de especie perdida", "D20",
+     lambda m, c, t, h: (_quitar_clase(m, "especies"), c, t, h)),
+    ("D20 un subtipo forestal perdido", "D20",
+     lambda m, c, t, h: (_quitar_clase(m, "subtipos_forestales"), c, t, h)),
+    ("D20 una clase de cobertura perdida", "D20",
+     lambda m, c, t, h: (_quitar_clase(m, "coberturas"), c, t, h)),
 ]
 
 

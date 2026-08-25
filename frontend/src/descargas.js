@@ -116,6 +116,13 @@ export function csvCifras(resumen, manifest, ambitoTxt) {
   bloque('Subuso', resumen.subusos, () => [''])
   bloque('Estructura', resumen.estructuras, () => [''])
   bloque('Tipo forestal', resumen.tiposForestales, () => [''])
+  bloque('Subtipo forestal', resumen.subtiposForestales, () => [''])
+  bloque('Densidad de copas', resumen.coberturas, () => [''])
+  // La escala viaja en la columna del año, que es la de contexto: sin ella los
+  // tramos '<2' y '0 - 0.5' se leen como si fueran de la misma regla, y quien
+  // sume la columna de hectáreas contará dos veces el mismo rango.
+  bloque('Altura del dosel', resumen.alturas, (d) => [d.escala ?? ''])
+  bloque('Especie principal', resumen.especies, (d) => [d.cientifico ?? ''])
   bloque('Área protegida', resumen.snaspe, (d) => [d.categoria ?? ''])
   for (const r of resumen.regiones) {
     filas.push(['Región', r.cod, r.nombre, r.anio, r.n, num(r.ha)])
@@ -173,6 +180,15 @@ export function geojsonPuntos(datos, mascara, manifest, ambitoTxt, tope = 200000
         subuso: et(m.subusos, datos.subuso[i], 255),
         estructura: et(m.estructuras, datos.estruc[i], 255),
         tipo_forestal: et(m.tipos_forestales, datos.tifo[i], 255),
+        subtipo_forestal: et(m.subtipos_forestales, datos.stifo[i], 255),
+        densidad_copas: et(m.coberturas, datos.cober[i], 255),
+        altura_dosel: et(m.alturas, datos.altura[i], 255),
+        // La escala acompaña SIEMPRE al tramo: '<2' y '0 - 0.5' miden con
+        // reglas distintas y se solapan.
+        altura_escala: datos.altura[i] === 255 ? null : (m.alturas[datos.altura[i]]?.escala ?? null),
+        especie_principal: et(m.especies, datos.especie[i], 65535),
+        especie_cientifico:
+          datos.especie[i] === 65535 ? null : (m.especies[datos.especie[i]]?.cientifico ?? null),
         area_protegida: et(m.snaspe, datos.snaspe[i], 255),
         comuna: com?.etiqueta ?? null,
         comuna_cod: com?.cod ?? null,

@@ -88,6 +88,51 @@ def numero(v):
         return None
 
 
+def plantacion_por_especie(con):
+    """Superficie nacional de plantacion por especie, de la planilla oficial.
+
+    Es la unica referencia externa que existe para la columna de especie, y
+    permite comprobar algo que no es obvio: que la estadistica oficial asigna el
+    poligono ENTERO a su especie principal. Medido, cuadra -- Pinus radiata
+    1.714.736,78 ha oficiales contra 1.714.737,31 sumando por ESPECI1.
+
+    La planilla mezcla generos ('Eucalyptus sp.') con especies ('Pinus radiata'),
+    asi que la clave se deja tal cual y quien contrasta agrupa por genero cuando
+    la etiqueta acaba en 'sp.'.
+    """
+    filas = con.execute(
+        "SELECT * FROM tab.xls_cifras_oficiales_catastrocon_pl_especies").fetchall()
+    idx = next(i for i, f in enumerate(filas)
+               if any(canon(x) == "region" for x in f if x))
+    cab = [str(x).strip() if x else None for x in filas[idx]]
+
+    # Las columnas de año viven en la misma planilla y son numeros: sin excluirlas
+    # se cuelan como si fueran especies, y 'Año de Publicación 32.353 ha' es
+    # exactamente el tipo de cifra falsa que nadie revisa.
+    def es_especie(h):
+        if not h:
+            return False
+        c = canon(h)
+        # `startswith` y no igualdad: la columna se llama 'Total (nacional ha)',
+        # asi que comparar la cadena entera la deja pasar como si fuera una
+        # especie mas -- y entonces el total del pais aparece en la lista de
+        # especies, tres veces mayor que Pinus radiata.
+        return not (c.startswith("ano de") or c.startswith("total") or c == "region")
+
+    tot = {}
+    for f in filas[idx + 1:]:
+        if not f[0] or canon(str(f[0])).startswith(("total", "% de")):
+            continue
+        for j, h in enumerate(cab):
+            if j == 0 or not es_especie(h):
+                continue
+            v = numero(f[j])
+            if v is not None:
+                # Normaliza el doble espacio de 'Pinus  ponderosa'.
+                tot[re.sub(r"\s+", " ", h)] = tot.get(re.sub(r"\s+", " ", h), 0.0) + v
+    return {k: round(v, 2) for k, v in sorted(tot.items())}
+
+
 def construir():
     con = duckdb.connect(BASE, read_only=True)
     filas = con.execute(f"SELECT * FROM {TABLA}").fetchall()
@@ -176,6 +221,7 @@ def construir():
             "consigo mismo, y un ETL puede ser coherente y estar equivocado."
         ),
         "total_pais": total_pais,
+        "plantacion_especies": plantacion_por_especie(con),
         "regiones": sorted(regiones.values(), key=lambda r: r["region"]),
     }
     os.makedirs(SALIDA, exist_ok=True)

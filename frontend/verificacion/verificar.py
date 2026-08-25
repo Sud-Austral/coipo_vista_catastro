@@ -245,6 +245,108 @@ def main():
             "(performance.getEntriesByType('resource')||[]).length >= 0 ? 0 : 1")
         prueba("V-8 sin errores de consola", errores == 0, "0")
 
+        # --- los filtros temáticos, de punta a punta -----------------------
+        # Esto NO comprueba que los controles existan: comprueba que MUEVEN LA
+        # CIFRA. Una lista de casillas que se dibuja perfecta y no filtra nada
+        # pasa cualquier prueba de presencia y es exactamente el defecto que
+        # importa.
+        print("\n=== filtros temáticos")
+        grupos = cdp.evaluar("document.querySelectorAll('.grupo-filtro').length")
+        prueba("V-17 los grupos de filtro se dibujan", grupos >= 8, f"{grupos}")
+
+        # Cada grupo declara cuántas clases tiene. Si alguno sale con cero, su
+        # dimensión no llegó del manifest y el filtro sería una lista vacía.
+        vacios = cdp.evaluar("""
+            [...document.querySelectorAll('.grupo-filtro')]
+              .filter(g => (parseInt(g.querySelector('.gf-total')?.textContent) || 0) === 0)
+              .map(g => g.querySelector('.gf-titulo')?.textContent).join(', ') || 'ninguno'
+        """)
+        prueba("V-17b ningún grupo llega vacío", vacios == "ninguno", str(vacios))
+
+        antes = cdp.evaluar("document.querySelector('.cifra-num b').textContent")
+        # Se marca la clase de cobertura MAYOR, no la primera: filtrar por una
+        # clase minúscula da una cifra que también baja, pero no distingue
+        # "filtró bien" de "filtró de más".
+        marcado = cdp.evaluar("""
+            (() => {
+              const g = [...document.querySelectorAll('.grupo-filtro')]
+                .find(d => d.querySelector('.gf-titulo')?.textContent === 'Cobertura')
+              if (!g) return null
+              g.open = true
+              const c = g.querySelector('.gf-opcion input')
+              if (!c) return null
+              c.click()
+              return g.querySelector('.gf-etq')?.textContent || 'sin etiqueta'
+            })()
+        """)
+        prueba("V-18 se puede marcar una clase de cobertura",
+               bool(marcado), str(marcado))
+
+        esperar(cdp, "document.querySelector('.cifra-num b').textContent !== %r" % antes,
+                segundos=30)
+        despues = cdp.evaluar("document.querySelector('.cifra-num b').textContent")
+        prueba("V-18b marcar una clase MUEVE la cifra titular",
+               str(antes) != str(despues), f"{antes} → {despues}")
+
+        # La marca en el <summary>: con el grupo plegado, un filtro activo tiene
+        # que seguir viéndose. Si no, el mapa muestra menos de lo que debería y
+        # nada en pantalla lo explica.
+        insignia = cdp.evaluar("""
+            (() => {
+              const g = [...document.querySelectorAll('.grupo-filtro')]
+                .find(d => d.querySelector('.gf-titulo')?.textContent === 'Cobertura')
+              g.open = false
+              const b = g.querySelector('.gf-activas')
+              return b && b.offsetParent !== null ? b.textContent : null
+            })()
+        """)
+        prueba("V-19 el filtro activo se ve con el grupo plegado",
+               insignia is not None, str(insignia))
+
+        # El buscador de especies: 989 clases no caben en una lista, así que si
+        # el buscador no encuentra, la mayoría del vocabulario es inalcanzable.
+        hallazgos = cdp.evaluar("""
+            (() => {
+              const g = [...document.querySelectorAll('.grupo-filtro')]
+                .find(d => d.querySelector('.gf-titulo')?.textContent === 'Especie')
+              if (!g) return -1
+              g.open = true
+              const i = g.querySelector('.gf-buscar input')
+              if (!i) return -2
+              const set = Object.getOwnPropertyDescriptor(
+                window.HTMLInputElement.prototype, 'value').set
+              set.call(i, 'araucaria')
+              i.dispatchEvent(new Event('input', { bubbles: true }))
+              return g.querySelectorAll('.gf-opcion').length
+            })()
+        """)
+        prueba("V-20 el buscador de especies encuentra", hallazgos > 0, f"{hallazgos}")
+
+        # V-21 - el viaje de ida y vuelta por la URL. El panel PROMETE que el
+        # enlace guarda los filtros, y una promesa así incumplida es peor que no
+        # hacerla: quien comparta el enlace creerá que el otro ve su recorte y
+        # el otro verá las cifras nacionales con el mismo aspecto.
+        # Se ESPERA a que aparezca, no se lee y ya: la URL se escribe agrupada
+        # con 250 ms de retraso, así que leerla justo después del clic la
+        # encuentra sin el filtro — y eso es la prueba llegando temprano, no el
+        # código fallando. Ya pasó: costó cinco ejecuciones perseguir el código.
+        llego = esperar(cdp, "window.location.search.includes('cober=')", segundos=15)
+        consulta = cdp.evaluar("window.location.search")
+        prueba("V-21 el filtro viaja en la URL", llego is not None, str(consulta)[:70])
+
+        # Se abre esa misma URL de cero, pasando por about:blank: navegar entre
+        # dos URLs que sólo difieren en la query puede no recargar nada, y
+        # entonces se estaría midiendo la página anterior.
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=f"{url}{consulta}")
+        esperar(cdp, "!!document.querySelector('.cifra-num b')", segundos=60)
+        esperar(cdp, "document.querySelector('.cifra-num b').textContent !== '75,7 M ha'",
+                segundos=60)
+        recuperada = cdp.evaluar("document.querySelector('.cifra-num b').textContent")
+        prueba("V-21b al abrir el enlace se recupera la MISMA cifra",
+               str(recuperada) == str(despues), f"{despues} → {recuperada}")
+
         print("\n" + "=" * 62)
         print(f"  {'TODO EN VERDE' if not fallos else str(len(fallos)) + ' EN ROJO'}")
         print("=" * 62)

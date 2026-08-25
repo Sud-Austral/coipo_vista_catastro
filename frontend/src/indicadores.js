@@ -19,21 +19,6 @@
  * miente en cada porcentaje.
  */
 
-/** Suma por índice en UNA pasada. `mascara` null = todo el país. */
-function acumular(codigos, ha, k, centinela, mascara) {
-  const n = codigos.length
-  const cuenta = new Int32Array(k + 1) // la última casilla es el centinela
-  const suma = new Float64Array(k + 1)
-  for (let i = 0; i < n; i++) {
-    if (mascara && !mascara[i]) continue
-    const c = codigos[i]
-    const j = c === centinela ? k : c
-    cuenta[j] += 1
-    suma[j] += ha[i]
-  }
-  return { cuenta, suma }
-}
-
 function listar(dominio, cuenta, suma, total) {
   return dominio
     .map((d, i) => ({
@@ -66,6 +51,10 @@ export function resumenNacional(manifest) {
     ha: total,
     usos: conPct(manifest.usos),
     subusos: conPct(manifest.subusos),
+    coberturas: conPct(manifest.coberturas),
+    alturas: conPct(manifest.alturas),
+    subtiposForestales: conPct(manifest.subtipos_forestales),
+    especies: conPct(manifest.especies),
     estructuras: conPct(manifest.estructuras),
     tiposForestales: conPct(manifest.tipos_forestales),
     snaspe: conPct(manifest.snaspe),
@@ -79,31 +68,59 @@ export function resumenNacional(manifest) {
  * filas que pasan la máscara.
  *
  * Medido en el spike: una pasada completa sobre 1.827.933 filas tarda 8-14 ms.
- * Con seis dimensiones sigue por debajo del presupuesto de 120 ms, y sólo corre
- * cuando cambia el filtro.
+ * Las diez dimensiones se acumulan DENTRO de esa única pasada, así que el coste
+ * no se multiplica por diez, y sólo corre cuando cambia el filtro.
  */
 export function resumenFiltrado(datos, mascara) {
   if (!datos) return null
   const m = datos.manifest
-  const dim = (codigos, dominio, centinela) => {
-    const { cuenta, suma } = acumular(codigos, datos.ha, dominio.length, centinela, mascara)
-    return { cuenta, suma }
-  }
+  // UNA sola pasada para las diez dimensiones, no diez pasadas de una.
+  //
+  // Con seis dimensiones el patron de "una pasada por dimension" costaba 8-14 ms
+  // cada una y cabia de sobra en el presupuesto. Con diez ya no: son diez
+  // recorridos de 1,8 M de filas, y lo unico que cambia entre ellos es que
+  // columna se lee. Leyendo las diez dentro del mismo bucle, la fila se toca una
+  // vez y su superficie se lee una vez.
+  const espec = [
+    [datos.uso, m.usos, 255],
+    [datos.subuso, m.subusos, 255],
+    [datos.estruc, m.estructuras, 255],
+    [datos.tifo, m.tipos_forestales, 255],
+    [datos.snaspe, m.snaspe, 255],
+    [datos.comuna, m.comunas, 65535],
+    [datos.cober, m.coberturas, 255],
+    [datos.altura, m.alturas, 255],
+    [datos.stifo, m.subtipos_forestales, 255],
+    [datos.especie, m.especies, 65535],
+  ]
+  // La ultima casilla de cada acumulador es la del centinela: las filas sin dato
+  // se CUENTAN aparte en vez de caer en el indice 0, que seria absorberlas en
+  // silencio dentro de la primera categoria.
+  const acc = espec.map(([col, dom, cent]) => ({
+    col,
+    cent,
+    k: dom.length,
+    cuenta: new Int32Array(dom.length + 1),
+    suma: new Float64Array(dom.length + 1),
+  }))
 
+  const ha = datos.ha
   let n = 0
   let total = 0
   for (let i = 0; i < datos.n; i++) {
     if (mascara && !mascara[i]) continue
+    const h = ha[i]
     n += 1
-    total += datos.ha[i]
+    total += h
+    for (let d = 0; d < acc.length; d++) {
+      const a = acc[d]
+      const v = a.col[i]
+      const j = v === a.cent ? a.k : v
+      a.cuenta[j] += 1
+      a.suma[j] += h
+    }
   }
-
-  const u = dim(datos.uso, m.usos, 255)
-  const s = dim(datos.subuso, m.subusos, 255)
-  const e = dim(datos.estruc, m.estructuras, 255)
-  const t = dim(datos.tifo, m.tipos_forestales, 255)
-  const p = dim(datos.snaspe, m.snaspe, 255)
-  const c = dim(datos.comuna, m.comunas, 65535)
+  const [u, s, e, t, p, c, cb, al, sf, ep] = acc
 
   // Las regiones se agregan desde las comunas: el .bin no lleva columna de
   // región, y añadirla sería un byte por punto para un dato que ya se deduce.
@@ -126,6 +143,10 @@ export function resumenFiltrado(datos, mascara) {
     tiposForestales: listar(m.tipos_forestales, t.cuenta, t.suma, total),
     snaspe: listar(m.snaspe, p.cuenta, p.suma, total),
     comunas: listar(m.comunas, c.cuenta, c.suma, total),
+    coberturas: listar(m.coberturas, cb.cuenta, cb.suma, total),
+    alturas: listar(m.alturas, al.cuenta, al.suma, total),
+    subtiposForestales: listar(m.subtipos_forestales, sf.cuenta, sf.suma, total),
+    especies: listar(m.especies, ep.cuenta, ep.suma, total),
     regiones: m.regiones
       .map((r) => ({ ...r, ...(porRegion.get(r.cod) ?? { n: 0, ha: 0 }) }))
       .filter((r) => r.n > 0),
@@ -136,6 +157,10 @@ export function resumenFiltrado(datos, mascara) {
       estructura: e.cuenta[m.estructuras.length],
       tipoForestal: t.cuenta[m.tipos_forestales.length],
       comuna: c.cuenta[m.comunas.length],
+      cobertura: cb.cuenta[m.coberturas.length],
+      altura: al.cuenta[m.alturas.length],
+      subtipoForestal: sf.cuenta[m.subtipos_forestales.length],
+      especie: ep.cuenta[m.especies.length],
     },
   }
 }

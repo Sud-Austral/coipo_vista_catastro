@@ -5,13 +5,24 @@
  * el mapa base», y una interfaz que promete eso y no lo cumple es peor que una
  * que no lo promete.
  *
- * Esquema: ?reg=&prov=&com=&usos=&base=&lat=&lon=&z=
- * `usos` va como lista de códigos separados por coma —«04,03»— y no de índices:
- * un índice depende del orden del manifest, y un enlace guardado en un correo
- * tiene que sobrevivir a un reproceso del ETL.
+ * Esquema: ?reg=&prov=&com=&usos=&base=&lat=&lon=&z= más un parámetro por cada
+ * dimensión temática (?cober=01,02&especie=…&altura=…).
+ *
+ * TODO va como lista de CÓDIGOS separados por coma —«04,03»— y nunca de
+ * índices: un índice depende del orden del vocabulario del manifest, y un
+ * enlace guardado en un correo tiene que sobrevivir a un reproceso del ETL que
+ * añada una clase y desplace las demás.
  */
 
-const RESERVADAS = ['reg', 'prov', 'com', 'usos', 'base', 'lat', 'lon', 'z']
+import { FILTROS } from './filtros'
+
+// Un parámetro por dimensión, con el mismo nombre que su columna en el .bin.
+// Sale de FILTROS para que añadir una dimensión no exija acordarse de tocar
+// también la URL — que es justo lo que se olvida.
+const PARAMS_FILTRO = FILTROS.filter((d) => d.col !== 'uso').map((d) => d.col)
+
+const RESERVADAS = ['reg', 'prov', 'com', 'usos', 'base', 'lat', 'lon', 'z',
+                    ...PARAMS_FILTRO]
 
 export function leerURL() {
   const q = new URLSearchParams(window.location.search)
@@ -22,6 +33,12 @@ export function leerURL() {
   const usos = q.get('usos')
   // '' significa «ninguna clase», que no es lo mismo que ausente («todas»).
   if (usos !== null) estado.usos = usos ? usos.split(',') : []
+  const filtros = {}
+  for (const col of PARAMS_FILTRO) {
+    const v = q.get(col)
+    if (v) filtros[col] = v.split(',')
+  }
+  if (Object.keys(filtros).length) estado.filtros = filtros
   if (q.get('base')) estado.base = q.get('base')
   const lat = parseFloat(q.get('lat'))
   const lon = parseFloat(q.get('lon'))
@@ -53,12 +70,16 @@ function aplicar() {
   clearTimeout(pendiente)
   pendiente = null
   if (!ultimo) return
-  const { ambito, usos, base, centro, zoom } = ultimo
+  const { ambito, usos, filtros, base, centro, zoom } = ultimo
   const q = new URLSearchParams()
   if (ambito?.region) q.set('reg', ambito.region)
   if (ambito?.provincia) q.set('prov', ambito.provincia)
   if (ambito?.comuna) q.set('com', ambito.comuna)
   if (usos && usos.length) q.set('usos', usos.join(','))
+  for (const col of PARAMS_FILTRO) {
+    const cods = filtros?.[col]
+    if (cods && cods.length) q.set(col, cods.join(','))
+  }
   if (base && base !== 'Claro') q.set('base', base)
   if (centro) {
     // 4 decimales ≈ 11 m. Más precisión sólo alarga el enlace.

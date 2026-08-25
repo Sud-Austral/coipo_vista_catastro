@@ -10,8 +10,11 @@
    coincida con el número de pistas que resuelve el CSS.
    =========================================================================== */
 
+/* El alto del banner NO es una constante: es la proporcion del asset con un
+   piso. Todo lo que se ancla debajo (tiradores, botones de reapertura, cajones)
+   usa esta misma expresion, o se despega de la banda en cuanto cambia el ancho. */
 :root {
-  --alto-banner: 56px;
+  --alto-banner: max(var(--alto-minimo-banner), calc(100vw / var(--razon-banner)));
 }
 
 .app {
@@ -38,16 +41,29 @@
 
 .banner {
   grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  height: var(--alto-banner);
-  padding: 0 16px;
+  /* Por debajo del cruce la imagen es mas ancha que el contenedor y hay que
+     recortarla AQUI, de forma local y explicita: si alguien quita el
+     overflow:hidden del body para arreglar otra cosa, sin esto la imagen se
+     saldria por la derecha en moviles. */
+  overflow: hidden;
   background: var(--verde-institucional);
+  line-height: 0;
+  /* Si la imagen falla, el texto alternativo hereda --tinta, que sobre este
+     verde no se leeria. */
   color: #fff;
 }
-.banner-txt h2 { font-size: 15px; font-weight: 600; letter-spacing: 0.01em; }
-.banner-txt p { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+.banner img {
+  display: block;
+  /* Por encima de 1164,83 px manda el 100 % (proporcion natural); por debajo se
+     ancla al piso y desborda por la derecha, sobre el campo verde uniforme. */
+  width: max(100%, calc(var(--alto-minimo-banner) * var(--razon-banner)));
+  /* height:auto + los width/height del <img> => el navegador reserva el alto
+     ANTES de decodificar. De eso depende que Leaflet mida bien el mapa. */
+  height: auto;
+  /* Defensivo: un reset con `img { max-width: 100% }` anularia el piso en
+     silencio y dejaria la marca en 22 px de alto a 390 px de viewport. */
+  max-width: none;
+}
 
 .panel,
 .panel-kpi {
@@ -512,3 +528,180 @@
 }
 .fila-descarga button:disabled { opacity: 0.45; cursor: not-allowed; }
 .aviso-error { color: var(--deforestacion); }
+
+/* ---------- cartel de contexto ----------
+   Sobre el mapa, siguiendo las pistas de la rejilla igual que el tirador: no es
+   un item de la rejilla porque una cuarta pista obligaría a reescribir las tres
+   media queries. */
+.cartel {
+  position: fixed; z-index: 900;
+  top: calc(var(--alto-banner) + 10px);
+  left: calc(var(--pista-panel, var(--ancho-panel)) + 56px);
+  right: calc(var(--pista-kpi, var(--ancho-kpi)) + 10px);
+  max-width: 44ch;
+  padding: 10px 12px;
+  background: var(--superficie); border: 1px solid var(--borde);
+  border-left: 3px solid var(--acento);
+  border-radius: 6px; box-shadow: var(--sombra);
+  font-size: 12px; line-height: 1.45;
+}
+.cartel button {
+  margin-top: 8px; padding: 4px 10px; font-size: 11.5px;
+  border: 1px solid var(--borde); border-radius: 5px;
+  background: var(--superficie-2); cursor: pointer;
+}
+@media (max-width: 1200px) { .cartel { right: 10px; } }
+@media (max-width: 900px)  { .cartel { left: 56px; right: 10px; } }
+
+/* ---------- página de metodología ---------- */
+.metodologia {
+  border: 0; border-radius: 10px; padding: 0;
+  width: min(78ch, calc(100vw - 32px)); max-height: 86dvh;
+  background: var(--superficie); color: var(--tinta); box-shadow: var(--sombra);
+}
+.metodologia::backdrop { background: rgb(0 0 0 / 0.45); }
+.met-caja { padding: 20px 24px 28px; }
+.met-caja > header {
+  position: sticky; top: 0; z-index: 1; margin: -20px -24px 12px;
+  padding: 16px 24px; background: var(--superficie);
+  border-bottom: 1px solid var(--borde);
+}
+/* La X del diálogo necesita su propia regla: la de los paneles está acotada a
+   .panel/.panel-kpi, así que aquí quedaba en flujo y caía debajo del título. */
+.met-caja > header .cerrar {
+  position: absolute; top: 12px; right: 16px;
+  width: 30px; height: 30px; font-size: 22px; line-height: 1;
+  background: none; border: 0; border-radius: 6px;
+  color: var(--tinta-2); cursor: pointer;
+}
+.met-caja > header .cerrar:hover { background: var(--superficie-2); }
+.met-caja h2 { padding-right: 34px; }
+.met-caja h2 { font-size: 18px; }
+.met-caja h3 {
+  font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--tinta-3); margin: 22px 0 8px;
+}
+.met-caja p { font-size: 13px; line-height: 1.55; margin-bottom: 10px; }
+.met-caja code { font-size: 11.5px; word-break: break-all; }
+.met-lista { font-size: 13px; line-height: 1.55; padding-left: 18px; }
+.met-lista li { margin-bottom: 8px; }
+/* Lo que falta por validar se marca, no se disimula: una ficha técnica
+   incompleta que no dice que lo está se lee como completa. */
+.pendiente {
+  background: var(--superficie-2); border-left: 3px solid var(--sustitucion);
+  padding: 10px 12px; border-radius: 4px;
+}
+.cita { background: var(--superficie-2); padding: 10px 12px; border-radius: 4px; font-style: italic; }
+.met-tabla { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 8px 0 12px; }
+.met-tabla th, .met-tabla td { text-align: left; padding: 5px 8px 5px 0; border-bottom: 1px solid var(--borde); }
+.met-tabla thead th { color: var(--tinta-3); font-weight: 500; }
+.enlace-met {
+  margin-top: 10px; padding: 0; border: 0; background: none;
+  color: var(--acento); font-size: 11.5px; text-align: left;
+  text-decoration: underline; cursor: pointer;
+}
+
+/* ---------------------------------------------------------------------------
+   Filtros temáticos.
+
+   Nueve dimensiones, hasta 989 clases en una de ellas. Todo el diseño de aquí
+   abajo sale de dos restricciones: la columna mide 320 px y una clase activa
+   NUNCA puede quedar invisible.
+   --------------------------------------------------------------------------- */
+
+.visualmente-oculto {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+.seccion-filtros h2 { display: flex; align-items: center; gap: 8px; }
+
+/* La cuenta de filtros activos, en la cabecera de la sección: es lo que se ve
+   con todos los grupos plegados. */
+.cuenta-filtros,
+.gf-activas {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; padding: 0 5px;
+  border-radius: 9px; background: var(--acento); color: #fff;
+  font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums;
+}
+
+.grupo-filtro { border-top: 1px solid var(--borde); }
+.grupo-filtro > summary {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 2px; cursor: pointer; list-style: none;
+  font-size: 13px; font-weight: 600; color: var(--tinta);
+}
+.grupo-filtro > summary::-webkit-details-marker { display: none; }
+.grupo-filtro > summary::before {
+  content: '▸'; color: var(--tinta-3); font-size: 10px;
+  transition: transform 0.12s ease;
+}
+.grupo-filtro[open] > summary::before { transform: rotate(90deg); }
+.grupo-filtro > summary:focus-visible {
+  outline: 2px solid var(--acento); outline-offset: 2px; border-radius: 4px;
+}
+.gf-titulo { flex: 1; }
+/* El total de clases, apagado: informa del tamaño de la lista sin competir con
+   la cuenta de activas, que es la que cambia el mapa. */
+.gf-total {
+  font-size: 11px; color: var(--tinta-3); font-variant-numeric: tabular-nums;
+}
+
+.gf-buscar input {
+  width: 100%; margin: 6px 0 4px; padding: 5px 8px;
+  border: 1px solid var(--borde); border-radius: 6px;
+  font: inherit; font-size: 12px; background: var(--superficie);
+  color: var(--tinta);
+}
+.gf-buscar input:focus-visible { outline: 2px solid var(--acento); outline-offset: -1px; }
+
+/* Techo de altura con scroll propio: sin esto, 989 especies empujan el resto
+   del panel —incluido el pie con la procedencia— fuera de cualquier pantalla. */
+.gf-lista {
+  list-style: none; margin: 2px 0 4px; padding: 0;
+  max-height: 260px; overflow-y: auto; overscroll-behavior: contain;
+}
+
+.gf-opcion {
+  display: grid; grid-template-columns: auto 1fr auto;
+  align-items: baseline; gap: 8px;
+  padding: 3px 2px; border-radius: 4px;
+  font-size: 12.5px; cursor: pointer;
+}
+.gf-opcion:hover { background: var(--superficie-2); }
+.gf-opcion input { margin: 0; accent-color: var(--acento); align-self: center; }
+/* Una clase que el filtro dejó en cero se atenúa pero NO se quita: si la lista
+   se encogiera al filtrar, la clase que alguien busca parecería no existir. */
+.gf-opcion.vacia { color: var(--tinta-3); }
+.gf-etq { min-width: 0; overflow-wrap: anywhere; }
+.gf-sub {
+  display: block; font-size: 11px; font-style: italic; color: var(--tinta-3);
+}
+.gf-legal { font-style: normal; color: var(--acento); }
+.gf-cifra {
+  font-variant-numeric: tabular-nums; font-size: 11.5px; color: var(--tinta-2);
+  white-space: nowrap;
+}
+
+/* Separador entre la escala fina y la gruesa de altura. Es un cambio de regla
+   de medida, no una decoración: sus tramos se solapan. */
+.gf-escala {
+  margin: 8px 0 2px; padding-top: 6px; border-top: 1px dashed var(--borde);
+  font-size: 10.5px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--tinta-3);
+}
+.gf-lista > li:first-child .gf-escala { margin-top: 2px; padding-top: 0; border-top: 0; }
+
+.nota-voc { font-style: italic; }
+
+/* Bloques de escala dentro de la sección de altura. El rótulo NO es decorativo:
+   marca un cambio de regla de medida cuyos tramos se solapan con los del bloque
+   anterior, así que las barras de arriba y las de abajo no se comparan. */
+.bloque-escala + .bloque-escala { margin-top: 12px; }
+.rotulo-escala {
+  margin: 0 0 4px; padding-top: 8px; border-top: 1px dashed var(--borde);
+  font-size: 10.5px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--tinta-3);
+}
+.bloque-escala:first-child .rotulo-escala { padding-top: 0; border-top: 0; }
