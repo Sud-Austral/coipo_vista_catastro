@@ -281,6 +281,33 @@ def comprobar(man, crudo, tam, hashes):
             fallos.append(f"D20 {dim} reparte {repartidas:,} filas de "
                           f"{man['total']['filas']:,} (desconocidas: {desconocidas:,})")
 
+    # D21 - «no aplica» se dice de UNA sola forma, y solo donde toca.
+    #
+    # Tipo y subtipo forestal traian el mismo concepto por dos vias: el
+    # centinela y la clase '00'. Medido por subclase antes de fundirlos, ni un
+    # solo poligono de bosque nativo --al que el tipo forestal SI le aplica--
+    # estaba en el centinela, y a plantacion y mixto la fuente les ponia el
+    # codigo en el 0,3 % de los casos y nada en el 99,7 %. Se fundieron.
+    #
+    # La segunda mitad de esta asercion es la que importa mas: cobertura y
+    # altura NO se pueden fundir, y si alguien lo hace tiene que ponerse roja.
+    # El centinela de cobertura son las 11.261 filas de triplete roto de
+    # DECISIONES.md E, y el de altura mezcla 293.181 bosques SIN MEDIR con el
+    # «no aplica» de los cuerpos de agua. Fundir cualquiera de los dos borra la
+    # diferencia entre «no sabemos» y «no aplica».
+    for dim, campo in (("tipos_forestales", "tifo"), ("subtipos_forestales", "stifo")):
+        if sin.get(campo, 0) != 0:
+            fallos.append(f"D21 {dim} conserva {sin[campo]:,} filas en el centinela: "
+                          "«no aplica» vuelve a decirse de dos formas")
+        na = [f for f in man.get(dim, []) if _canon(f["etiqueta"]) == "no aplica"]
+        if len(na) != 1 or na[0]["n"] == 0:
+            fallos.append(f"D21 {dim} no tiene una unica clase «No Aplica» con filas: "
+                          f"{[(f['cod'], f['n']) for f in na]}")
+    for campo, minimo in (("cober", 11_000), ("altura", 700_000)):
+        if sin.get(campo, 0) < minimo:
+            fallos.append(f"D21 {campo} ha perdido su centinela ({sin.get(campo, 0):,} < "
+                          f"{minimo:,}): «no sabemos» y «no aplica» son cosas distintas")
+
     return fallos
 
 
@@ -372,6 +399,23 @@ def _quitar_clase(man, dim):
     return m
 
 
+def _sin_dato(man, campo, valor):
+    """Devuelve el centinela de una columna a otro valor, para D21."""
+    m = copy.deepcopy(man)
+    m["capas"]["cbn_puntos"].setdefault("sin_dato", {})[campo] = valor
+    return m
+
+
+def _sin_clase_na(man, dim):
+    """Borra la clase «No Aplica» de una dimension. Es el otro lado de D21: si
+    el centinela se funde en una clase que luego desaparece, esas filas dejan de
+    estar en ninguna parte y D20 tampoco lo ve, porque la suma se descuadra
+    igual que con cualquier otra clase perdida."""
+    m = copy.deepcopy(man)
+    m[dim] = [f for f in m[dim] if _canon(f["etiqueta"]) != "no aplica"]
+    return m
+
+
 NEGATIVAS = [
     ("D2 marca de tiempo", "D2",
      lambda m, c, t, h: (m, c + '"generado":"2026-08-20T10:00:00"', t, h)),
@@ -408,6 +452,14 @@ NEGATIVAS = [
      lambda m, c, t, h: (_quitar_clase(m, "subtipos_forestales"), c, t, h)),
     ("D20 una clase de cobertura perdida", "D20",
      lambda m, c, t, h: (_quitar_clase(m, "coberturas"), c, t, h)),
+    ("D21 tipo forestal vuelve a tener centinela", "D21",
+     lambda m, c, t, h: (_sin_dato(m, "tifo", 1_114_688), c, t, h)),
+    ("D21 subtipo sin su clase «No Aplica»", "D21",
+     lambda m, c, t, h: (_sin_clase_na(m, "subtipos_forestales"), c, t, h)),
+    ("D21 cobertura pierde su centinela", "D21",
+     lambda m, c, t, h: (_sin_dato(m, "cober", 0), c, t, h)),
+    ("D21 altura pierde su centinela", "D21",
+     lambda m, c, t, h: (_sin_dato(m, "altura", 0), c, t, h)),
 ]
 
 

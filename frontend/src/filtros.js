@@ -40,6 +40,10 @@ export const FILTROS = [
     resumen: 'subusos',
     titulo: 'Subclase',
     corto: 'Subclase',
+    buscador: true,
+    // Seis de las 43 subclases se llaman «Sin Información» —una por clase de
+    // uso, códigos 0199 a 0899— y sin el uso al lado son indistinguibles.
+    contexto: 'uso',
     nota: 'Dentro de Bosques distingue nativo, plantación y mixto.',
   },
   {
@@ -48,6 +52,11 @@ export const FILTROS = [
     resumen: 'estructuras',
     titulo: 'Estructura',
     corto: 'Estructura',
+    buscador: true,
+    // Aquí es mucho peor: de las 58 estructuras, «No Aplica» son 38 —una por
+    // subclase sin estructura propia— y «Sin Información» otras 3. Sin la
+    // subclase al lado, dos docenas de filas idénticas seguidas.
+    contexto: 'subuso',
   },
   {
     col: 'tifo',
@@ -112,14 +121,30 @@ export const TOPE_LISTA = 40
  * Opciones de una dimensión, listas para dibujar.
  *
  * DOS FUENTES a propósito: el DOMINIO sale del manifest (todas las clases que
- * existen) y las CIFRAS del resumen vigente (las que quedan tras filtrar). Una
- * clase que el filtro ha dejado en cero NO desaparece: se dibuja apagada y con
- * un cero. Quitarla haría que la lista se encogiera al filtrar y que la clase
- * que alguien busca pareciera no existir nunca.
+ * existen) y las CIFRAS del marginal vigente (las que quedan tras cruzar LAS
+ * DEMÁS dimensiones — ver `resumenYMarginales`).
+ *
+ * UNA CLASE SIN COINCIDENCIAS SE OCULTA, y esto invierte lo que se decidía
+ * antes aquí. El argumento de entonces era que si la lista se encoge al
+ * filtrar, la clase que alguien busca parece no existir; pero ese argumento
+ * nació de un defecto: las cifras salían del recorte COMPLETO, incluido el
+ * filtro de la propia dimensión, así que marcar una clase vaciaba a todas sus
+ * hermanas y ocultarlas habría dejado la lista con una sola fila. Con el
+ * marginal eso ya no pasa: lo que cae a cero es lo que de verdad no tiene
+ * intersección, y arrastrarlo por la lista es ruido.
+ *
+ * Se devuelve `sinCoincidencias` para que el pie lo diga en vez de que la lista
+ * encoja en silencio, y lo MARCADO nunca se oculta: una clase activa invisible
+ * dejaría el mapa filtrado por algo que no se ve en ninguna parte.
  */
-export function opciones(def, manifest, resumen, seleccion, busqueda) {
+export function opciones(def, manifest, cifras, seleccion, busqueda) {
   const dominio = manifest?.[def.clave] ?? []
-  const vivas = new Map((resumen?.[def.resumen] ?? []).map((f) => [f.cod, f]))
+  const vivas = new Map((cifras?.[def.resumen] ?? []).map((f) => [f.cod, f]))
+  // El padre de cada clase, para las dimensiones cuyas etiquetas se repiten.
+  const padres = def.contexto
+    ? new Map((manifest?.[def.contexto === 'uso' ? 'usos' : 'subusos'] ?? [])
+        .map((p) => [p.cod, p.etiqueta]))
+    : null
 
   let filas = dominio.map((d, i) => {
     const viva = vivas.get(d.cod)
@@ -129,14 +154,19 @@ export function opciones(def, manifest, resumen, seleccion, busqueda) {
       n: viva?.n ?? 0,
       ha: viva?.ha ?? 0,
       pct: viva?.pct ?? null,
+      contexto: padres ? (padres.get(d[def.contexto]) ?? null) : null,
       marcada: seleccion.has(i),
     }
   })
 
+  const conDatos = filas.filter((f) => f.n > 0 || f.marcada)
+  const sinCoincidencias = filas.length - conDatos.length
+  filas = conDatos
+
   const q = (busqueda ?? '').trim().toLowerCase()
   if (q) {
     const coincide = (f) =>
-      [f.etiqueta, f.cientifico, f.comun, f.categoria]
+      [f.etiqueta, f.cientifico, f.comun, f.categoria, f.contexto]
         .filter(Boolean)
         .some((t) => String(t).toLowerCase().includes(q))
     // Lo marcado NUNCA se esconde: si una búsqueda ocultara una clase activa,
@@ -167,7 +197,12 @@ export function opciones(def, manifest, resumen, seleccion, busqueda) {
   const visibles = recortable ? filas.slice(0, TOPE_LISTA) : filas
   // Lo marcado se ve siempre, aunque caiga fuera del tope.
   const faltan = filas.filter((f) => f.marcada && !visibles.includes(f))
-  return { filas: [...visibles, ...faltan], total, recortadas: total - visibles.length - faltan.length }
+  return {
+    filas: [...visibles, ...faltan],
+    total,
+    recortadas: total - visibles.length - faltan.length,
+    sinCoincidencias,
+  }
 }
 
 /** Alterna una clase dentro de una dimensión y devuelve el objeto de filtros. */

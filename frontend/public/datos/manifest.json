@@ -6,7 +6,7 @@
       "archivo": "cbn_puntos.bin",
       "filas": 1827933,
       "bytes": 43870392,
-      "sha256": "6dd96399387aa2ce3869a10b6b4f86f05b11a24a8fe3d9fc23b837055018b507",
+      "sha256": "6f0274c867af77229c050a6b759ab6b3dab353579cda740cc00969a54a74bd11",
       "campos": {
         "lon": {
           "tipo": "f32",
@@ -78,12 +78,12 @@
         "comuna": 79731,
         "subuso": 0,
         "estruc": 11262,
-        "tifo": 1114688,
+        "tifo": 0,
         "snaspe": 1431130,
         "cober": 11261,
         "altura": 779738,
         "especie": 284279,
-        "stifo": 1119886
+        "stifo": 0
       },
       "bbox": [
         -75.7205581665039,
@@ -931,8 +931,8 @@
     {
       "cod": "00",
       "etiqueta": "No Aplica",
-      "n": 63848,
-      "ha": 10923358.94,
+      "n": 1178536,
+      "ha": 60124871.4,
       "legal": null
     },
     {
@@ -2004,8 +2004,8 @@
     {
       "cod": "no aplica",
       "etiqueta": "No Aplica",
-      "n": 119459,
-      "ha": 10992775.77,
+      "n": 1239345,
+      "ha": 61841555.61,
       "tipo_forestal": null
     },
     {

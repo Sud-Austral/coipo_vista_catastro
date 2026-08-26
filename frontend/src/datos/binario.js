@@ -93,62 +93,20 @@ export function tablaColor(uso, n, paletaRGB) {
 }
 
 /**
- * Las columnas por las que se puede filtrar, y como se llama cada una en el
- * .bin. El orden NO importa aqui; lo que importa es que anadir una dimension
- * sea anadir una linea, y no tocar el bucle.
- */
-export const DIMENSIONES = [
-  { col: 'uso', dominio: 'usos' },
-  { col: 'subuso', dominio: 'subusos' },
-  { col: 'estruc', dominio: 'estructuras' },
-  { col: 'tifo', dominio: 'tipos_forestales' },
-  { col: 'stifo', dominio: 'subtipos_forestales' },
-  { col: 'cober', dominio: 'coberturas' },
-  { col: 'altura', dominio: 'alturas' },
-  { col: 'especie', dominio: 'especies' },
-  { col: 'snaspe', dominio: 'snaspe' },
-  { col: 'comuna', dominio: 'comunas' },
-]
-
-/**
- * Canal de filtro, 1 byte por punto: 1 visible, 0 oculto.
+ * La mascara de "todo pasa", para cuando no hay ningun filtro.
  *
- * Recibe {columna: Set de indices} y cruza TODAS las dimensiones activas con Y
- * logico. Un Set vacio o ausente significa "todas", no "ninguna": es la
- * diferencia entre no haber filtrado y haber filtrado a cero, y confundirlas
- * deja el mapa en negro sin explicacion.
+ * Un memset, sin recorrer nada. El cruce de verdad vive en `resumenYMarginales`
+ * (indicadores.js), que produce la mascara Y las cifras en la MISMA pasada: dos
+ * recorridos de 1,8 M de filas por cada clic de casilla era el precio de tener
+ * el filtrado y la agregacion en dos sitios distintos.
  *
- * Los Set se convierten a TABLAS DE BYTES antes del bucle. Con diez dimensiones
- * activas, `Set.has()` dentro del bucle son 18 millones de llamadas por cambio
- * de filtro; indexar un Uint8Array es una lectura de memoria. La tabla mide 256
- * o 65.536 bytes segun el ancho de la columna, o sea nada al lado de las 1,8 M
- * de filas que recorre.
+ * El vocabulario de las dimensiones tambien vive alli, y no aqui: indicadores.js
+ * declara en su cabecera que se puede contrastar con `node` sin montar nada, y
+ * este modulo importa `config.js`, que usa `import.meta.env`. Importarlo desde
+ * la aritmetica romperia esa propiedad en silencio.
  */
-export function canalFiltro(datos, filtros = {}) {
-  const n = datos.n
-  const f = new Uint8Array(n)
-
-  const activos = []
-  for (const { col } of DIMENSIONES) {
-    const columna = datos[col]
-    const sel = filtros[col]
-    if (!columna || !sel || sel.size === 0) continue
-    // 256 para las columnas de un byte, 65.536 para las de dos: es el rango
-    // completo del tipo, asi que el centinela tambien cabe y queda en 0 (no
-    // seleccionado) sin ningun caso especial.
-    const tabla = new Uint8Array(columna.BYTES_PER_ELEMENT === 1 ? 256 : 65536)
-    for (const v of sel) tabla[v] = 1
-    activos.push([columna, tabla])
-  }
-  if (activos.length === 0) return f.fill(1)
-
-  bucle: for (let i = 0; i < n; i++) {
-    for (let d = 0; d < activos.length; d++) {
-      if (!activos[d][1][activos[d][0][i]]) continue bucle
-    }
-    f[i] = 1
-  }
-  return f
+export function mascaraTodo(n) {
+  return new Uint8Array(n).fill(1)
 }
 
 async function pedir(url, señal, opciones = {}) {

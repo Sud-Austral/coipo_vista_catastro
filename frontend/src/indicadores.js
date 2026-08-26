@@ -19,6 +19,47 @@
  * miente en cada porcentaje.
  */
 
+/**
+ * Las diez dimensiones filtrables, con sus tres nombres.
+ *
+ * Cada una se llama de tres formas distintas y hay que seguirlas las tres:
+ * `col` en el .bin y en la URL, `dominio` en el manifest, `resumen` dentro del
+ * objeto de resumen. Tenerlas juntas es lo que permite que añadir una dimensión
+ * sea añadir una línea y no tocar ningún bucle.
+ *
+ * `centinela` es el valor que significa «sin dato» en esa columna. Va aquí
+ * porque el acumulador le reserva una casilla propia: las filas sin dato se
+ * cuentan aparte en vez de caer en el índice 0, que sería absorberlas en
+ * silencio dentro de la primera categoría.
+ */
+export const DIMENSIONES = [
+  { col: 'uso', dominio: 'usos', resumen: 'usos', centinela: 255 },
+  { col: 'subuso', dominio: 'subusos', resumen: 'subusos', centinela: 255 },
+  { col: 'estruc', dominio: 'estructuras', resumen: 'estructuras', centinela: 255 },
+  { col: 'tifo', dominio: 'tipos_forestales', resumen: 'tiposForestales', centinela: 255 },
+  { col: 'stifo', dominio: 'subtipos_forestales', resumen: 'subtiposForestales', centinela: 255 },
+  { col: 'cober', dominio: 'coberturas', resumen: 'coberturas', centinela: 255 },
+  { col: 'altura', dominio: 'alturas', resumen: 'alturas', centinela: 255 },
+  { col: 'especie', dominio: 'especies', resumen: 'especies', centinela: 65535 },
+  { col: 'snaspe', dominio: 'snaspe', resumen: 'snaspe', centinela: 255 },
+  { col: 'comuna', dominio: 'comunas', resumen: 'comunas', centinela: 65535 },
+]
+
+/**
+ * Tabla de pertenencia de un Set de índices, para consultarla dentro del bucle.
+ *
+ * Con diez dimensiones activas, `Set.has()` dentro del bucle son 18 millones de
+ * llamadas por cambio de filtro; indexar un Uint8Array es una lectura de
+ * memoria. La tabla mide 256 o 65.536 bytes según el ancho de la columna —el
+ * rango completo del tipo, así que el centinela también cabe y queda en 0 sin
+ * ningún caso especial—, o sea nada al lado de las 1,8 M de filas que recorre.
+ */
+function tablaPertenencia(columna, sel) {
+  const t = new Uint8Array(columna.BYTES_PER_ELEMENT === 1 ? 256 : 65536)
+  for (const v of sel) t[v] = 1
+  return t
+}
+
 function listar(dominio, cuenta, suma, total) {
   return dominio
     .map((d, i) => ({
@@ -60,109 +101,262 @@ export function resumenNacional(manifest) {
     snaspe: conPct(manifest.snaspe),
     comunas: conPct(manifest.comunas),
     regiones: manifest.regiones.filter((r) => r.n > 0),
+    // El manifest YA trae las filas sin dato por dimensión y aquí no se leían,
+    // así que sin ningún filtro activo el panel decía que no había ninguna. Son
+    // 1.114.688 polígonos sin tipo forestal y 1.431.130 fuera del SNASPE: justo
+    // el aviso sin el cual los porcentajes de la dimensión parecen cubrir todo
+    // el territorio.
+    sinDato: sinDatoDelManifest(manifest),
   }
 }
 
 /**
- * Resumen del ámbito filtrado: una sola pasada por cada dimensión sobre las
- * filas que pasan la máscara.
- *
- * Medido en el spike: una pasada completa sobre 1.827.933 filas tarda 8-14 ms.
- * Las diez dimensiones se acumulan DENTRO de esa única pasada, así que el coste
- * no se multiplica por diez, y sólo corre cuando cambia el filtro.
+ * Cómo se llama cada dimensión dentro de `sinDato`. Son nombres distintos de
+ * los de la columna del .bin porque el panel de indicadores los fijó primero.
+ * SNASPE no está, y su ausencia es deliberada: su centinela no significa «no
+ * sabemos», significa «fuera del SNASPE». Publicarlo como «1.431.130 polígonos
+ * sin este dato» convertiría el 78 % del país en un agujero de información
+ * cuando es una respuesta.
  */
-export function resumenFiltrado(datos, mascara) {
+const SIN_DATO_POR_COL = {
+  subuso: 'subuso',
+  estruc: 'estructura',
+  tifo: 'tipoForestal',
+  comuna: 'comuna',
+  cober: 'cobertura',
+  altura: 'altura',
+  stifo: 'subtipoForestal',
+  especie: 'especie',
+}
+
+/**
+ * Las filas sin dato por dimensión, con los nombres que espera el panel.
+ *
+ * `cuenta` elige de qué acumulador se lee: el global para el resumen y el
+ * marginal para las listas de filtro, que cuentan sobre conjuntos distintos.
+ */
+function sinDatoDe(por, cuenta) {
+  const out = {}
+  for (const [col, nombre] of Object.entries(SIN_DATO_POR_COL)) {
+    out[nombre] = cuenta(por[col])[por[col].k]
+  }
+  return out
+}
+
+/** Lo mismo, del manifest: ahí `sin_dato` va con los nombres de la columna. */
+function sinDatoDelManifest(manifest) {
+  const s = manifest.capas?.cbn_puntos?.sin_dato ?? {}
+  const out = {}
+  for (const [col, nombre] of Object.entries(SIN_DATO_POR_COL)) {
+    out[nombre] = s[col] ?? 0
+  }
+  return out
+}
+
+/**
+ * El cruce entero en UNA pasada: la máscara del mapa, el resumen del recorte y
+ * los MARGINALES que alimentan la cascada de los filtros.
+ *
+ * ── Por qué hace falta el marginal ───────────────────────────────────────────
+ * La lista de clases de la dimensión D no se puede contar sobre el recorte
+ * completo, porque ese recorte YA aplica el filtro de D. Al marcar «Denso» en
+ * Cobertura, las otras cinco coberturas caían a cero — no porque su
+ * intersección con el resto fuera vacía, sino porque estaban compitiendo
+ * consigo mismas. Con eso, marcar una segunda clase de la misma dimensión era
+ * imposible: la lista se había quedado con una fila.
+ *
+ * Lo que necesita cada lista es el marginal LEAVE-ONE-OUT: contar sobre las
+ * filas que pasan todas las dimensiones MENOS la suya.
+ *
+ * ── Cómo se calcula sin diez pasadas ────────────────────────────────────────
+ * Diez marginales parecen diez recorridos. No lo son, si en vez de preguntar
+ * «¿pasa?» se cuenta CUÁNTAS dimensiones falla cada fila:
+ *
+ *   0 fallos  la fila pasa todo. Pasa también «todo menos D» para CUALQUIER D,
+ *             así que entra en la máscara, en el total y en las diez.
+ *   1 fallo   la fila pasa «todo menos D» sólo para la D que falla. Entra sólo
+ *             ahí, y no en el mapa ni en el total.
+ *   2 o más   no entra en ninguna parte, y se corta el bucle interno.
+ *
+ * Y como «pasa todo menos D» = «pasa todo» ∪ «falla exactamente D», y los dos
+ * conjuntos son disjuntos, basta con acumular los del segundo grupo APARTE y
+ * sumarlos al final sobre las pocas casillas de cada dominio. El camino
+ * caliente sigue costando lo mismo que antes.
+ *
+ * ── Lo que cuesta, medido, no supuesto ─────────────────────────────────────
+ * Esto SUSTITUYE a `canalFiltro` + `resumenFiltrado`, que eran dos recorridos
+ * completos por clic de casilla. Juntarlos en uno NO lo hace más barato: sale
+ * ENTRE UN 8 Y UN 43 % MÁS CARO, porque calcula diez marginales que antes no
+ * existían. Medido sobre las 1.827.933 filas reales, alternando las dos
+ * implementaciones, mediana de 15:
+ *
+ *      caso                        antes    ahora
+ *      1 dim · uso Bosques          66 ms    71 ms
+ *      1 dim · cobertura Denso      33 ms    33 ms
+ *      2 dims · uso + cobertura     32 ms    39 ms
+ *      ámbito · una región          29 ms    32 ms
+ *      ámbito + 3 temáticos         16 ms    24 ms
+ *
+ * El peor caso queda en 78 ms contra el techo de 120 ms que fijó el spike. Se
+ * paga por tener listas que no mienten; si algún día no cupiera, lo que sobra
+ * es el marginal, no la máscara.
+ *
+ * Sólo se llama cuando hay algún filtro. Sin filtros el resumen sale del
+ * manifest y no se recorre nada.
+ */
+export function resumenYMarginales(datos, filtros = {}) {
   if (!datos) return null
   const m = datos.manifest
-  // UNA sola pasada para las diez dimensiones, no diez pasadas de una.
-  //
-  // Con seis dimensiones el patron de "una pasada por dimension" costaba 8-14 ms
-  // cada una y cabia de sobra en el presupuesto. Con diez ya no: son diez
-  // recorridos de 1,8 M de filas, y lo unico que cambia entre ellos es que
-  // columna se lee. Leyendo las diez dentro del mismo bucle, la fila se toca una
-  // vez y su superficie se lee una vez.
-  const espec = [
-    [datos.uso, m.usos, 255],
-    [datos.subuso, m.subusos, 255],
-    [datos.estruc, m.estructuras, 255],
-    [datos.tifo, m.tipos_forestales, 255],
-    [datos.snaspe, m.snaspe, 255],
-    [datos.comuna, m.comunas, 65535],
-    [datos.cober, m.coberturas, 255],
-    [datos.altura, m.alturas, 255],
-    [datos.stifo, m.subtipos_forestales, 255],
-    [datos.especie, m.especies, 65535],
-  ]
-  // La ultima casilla de cada acumulador es la del centinela: las filas sin dato
-  // se CUENTAN aparte en vez de caer en el indice 0, que seria absorberlas en
-  // silencio dentro de la primera categoria.
-  const acc = espec.map(([col, dom, cent]) => ({
-    col,
-    cent,
-    k: dom.length,
-    cuenta: new Int32Array(dom.length + 1),
-    suma: new Float64Array(dom.length + 1),
-  }))
+  const n = datos.n
+
+  const dims = DIMENSIONES.map((d) => {
+    const dom = m[d.dominio] ?? []
+    return {
+      col: d.col,
+      resumen: d.resumen,
+      dom,
+      columna: datos[d.col],
+      cent: d.centinela,
+      k: dom.length,
+      // La última casilla es la del centinela: las filas sin dato se cuentan
+      // aparte en vez de caer en el índice 0, que sería absorberlas en silencio
+      // dentro de la primera categoría.
+      cuenta: new Int32Array(dom.length + 1),
+      suma: new Float64Array(dom.length + 1),
+      // Lo que le falta a esta dimensión para su marginal: las filas que fallan
+      // ELLA y sólo ella.
+      xCuenta: new Int32Array(dom.length + 1),
+      xSuma: new Float64Array(dom.length + 1),
+      xN: 0,
+      xHa: 0,
+      tabla: null,
+    }
+  })
+
+  const activos = []
+  for (const d of dims) {
+    const sel = filtros[d.col]
+    // Un Set vacío o ausente significa «todas», no «ninguna»: la diferencia
+    // entre no haber filtrado y haber filtrado a cero.
+    if (!d.columna || !sel || sel.size === 0) continue
+    d.tabla = tablaPertenencia(d.columna, sel)
+    activos.push(d)
+  }
 
   const ha = datos.ha
-  let n = 0
-  let total = 0
-  for (let i = 0; i < datos.n; i++) {
-    if (mascara && !mascara[i]) continue
+  const mascara = new Uint8Array(n)
+  const na = activos.length
+  const nd = dims.length
+  let nTotal = 0
+  let haTotal = 0
+
+  // CON UNA SOLA DIMENSIÓN ACTIVA no hay nada que acumular aparte: su marginal
+  // —«todo menos ella»— es el país entero, y eso ya está contado en el manifest.
+  // Sin el atajo hay que acumular también las 1,15 M de filas que fallan el
+  // filtro. Medido con el MISMO conjunto de filas, forzando dos dimensiones
+  // activas de las que una no descarta nada: 71 ms con atajo, 78 ms sin él.
+  const soloUna = na === 1
+
+  for (let i = 0; i < n; i++) {
+    let fallos = 0
+    let cual = -1
+    for (let d = 0; d < na; d++) {
+      const a = activos[d]
+      if (!a.tabla[a.columna[i]]) {
+        fallos += 1
+        if (fallos > 1) break
+        cual = d
+      }
+    }
+    if (fallos > 1) continue
     const h = ha[i]
-    n += 1
-    total += h
-    for (let d = 0; d < acc.length; d++) {
-      const a = acc[d]
-      const v = a.col[i]
+    if (fallos === 0) {
+      mascara[i] = 1
+      nTotal += 1
+      haTotal += h
+      for (let d = 0; d < nd; d++) {
+        const a = dims[d]
+        const v = a.columna[i]
+        const j = v === a.cent ? a.k : v
+        a.cuenta[j] += 1
+        a.suma[j] += h
+      }
+    } else if (!soloUna) {
+      const a = activos[cual]
+      const v = a.columna[i]
       const j = v === a.cent ? a.k : v
-      a.cuenta[j] += 1
-      a.suma[j] += h
+      a.xCuenta[j] += 1
+      a.xSuma[j] += h
+      a.xN += 1
+      a.xHa += h
     }
   }
-  const [u, s, e, t, p, c, cb, al, sf, ep] = acc
+
+  const por = Object.fromEntries(dims.map((d) => [d.col, d]))
+  const c = por.comuna
 
   // Las regiones se agregan desde las comunas: el .bin no lleva columna de
   // región, y añadirla sería un byte por punto para un dato que ya se deduce.
-  const porRegion = new Map()
-  m.comunas.forEach((com, i) => {
-    if (!c.cuenta[i]) return
-    const r = porRegion.get(com.region) ?? { n: 0, ha: 0 }
-    r.n += c.cuenta[i]
-    r.ha += c.suma[i]
-    porRegion.set(com.region, r)
-  })
+  const regionesDe = (cuenta, suma) => {
+    const acc = new Map()
+    m.comunas.forEach((com, i) => {
+      if (!cuenta[i]) return
+      const r = acc.get(com.region) ?? { n: 0, ha: 0 }
+      r.n += cuenta[i]
+      r.ha += suma[i]
+      acc.set(com.region, r)
+    })
+    return m.regiones
+      .map((r) => ({ ...r, ...(acc.get(r.cod) ?? { n: 0, ha: 0 }) }))
+      .filter((r) => r.n > 0)
+  }
 
-  return {
+  const resumen = {
     fuente: 'filtrado',
-    n,
-    ha: total,
-    usos: listar(m.usos, u.cuenta, u.suma, total),
-    subusos: listar(m.subusos, s.cuenta, s.suma, total),
-    estructuras: listar(m.estructuras, e.cuenta, e.suma, total),
-    tiposForestales: listar(m.tipos_forestales, t.cuenta, t.suma, total),
-    snaspe: listar(m.snaspe, p.cuenta, p.suma, total),
-    comunas: listar(m.comunas, c.cuenta, c.suma, total),
-    coberturas: listar(m.coberturas, cb.cuenta, cb.suma, total),
-    alturas: listar(m.alturas, al.cuenta, al.suma, total),
-    subtiposForestales: listar(m.subtipos_forestales, sf.cuenta, sf.suma, total),
-    especies: listar(m.especies, ep.cuenta, ep.suma, total),
-    regiones: m.regiones
-      .map((r) => ({ ...r, ...(porRegion.get(r.cod) ?? { n: 0, ha: 0 }) }))
-      .filter((r) => r.n > 0),
+    n: nTotal,
+    ha: haTotal,
+    regiones: regionesDe(c.cuenta, c.suma),
     // Las filas que no se pudieron clasificar en cada dimensión. Se publican:
     // «sin dato» y «con un valor que la guía no nombra» no son cero.
-    sinDato: {
-      subuso: s.cuenta[m.subusos.length],
-      estructura: e.cuenta[m.estructuras.length],
-      tipoForestal: t.cuenta[m.tipos_forestales.length],
-      comuna: c.cuenta[m.comunas.length],
-      cobertura: cb.cuenta[m.coberturas.length],
-      altura: al.cuenta[m.alturas.length],
-      subtipoForestal: sf.cuenta[m.subtipos_forestales.length],
-      especie: ep.cuenta[m.especies.length],
-    },
+    sinDato: sinDatoDe(por, (d) => d.cuenta),
   }
+  for (const d of dims) {
+    resumen[d.resumen] = listar(d.dom, d.cuenta, d.suma, haTotal)
+  }
+
+  // El marginal: lo global MÁS lo que sólo falla en esta dimensión. Se suma
+  // sobre las casillas del dominio (de 6 a 989), no sobre las filas.
+  const marginales = { fuente: 'marginal', n: nTotal, ha: haTotal }
+  const nacionales = soloUna ? sinDatoDelManifest(m) : null
+  for (const d of dims) {
+    if (soloUna && d === activos[0]) {
+      // Su marginal es el país. Se toma del manifest en vez de contarlo.
+      d.mCuenta = null
+      marginales[d.resumen] = d.dom
+        .filter((x) => x.n > 0)
+        .map((x) => ({ ...x, pct: m.total.ha > 0 ? (100 * x.ha) / m.total.ha : null }))
+        .sort((a, b) => b.ha - a.ha)
+      if (d.col === 'comuna') marginales.regiones = m.regiones.filter((r) => r.n > 0)
+      continue
+    }
+    d.mCuenta = new Int32Array(d.k + 1)
+    d.mSuma = new Float64Array(d.k + 1)
+    for (let j = 0; j <= d.k; j++) {
+      d.mCuenta[j] = d.cuenta[j] + d.xCuenta[j]
+      d.mSuma[j] = d.suma[j] + d.xSuma[j]
+    }
+    marginales[d.resumen] = listar(d.dom, d.mCuenta, d.mSuma, haTotal + d.xHa)
+    if (d.col === 'comuna') marginales.regiones = regionesDe(d.mCuenta, d.mSuma)
+  }
+  marginales.sinDato = sinDatoDe(por, (d) => d.mCuenta ?? d.cuenta)
+  // La dimensión que se saltó el conteo toma su «sin dato» del manifest, por la
+  // misma razón: su marginal es el país.
+  if (soloUna) {
+    const salvo = SIN_DATO_POR_COL[activos[0].col]
+    if (salvo) marginales.sinDato[salvo] = nacionales[salvo]
+  }
+
+  return { mascara, resumen, marginales }
 }
 
 /** Los tres subusos de Bosques, con su denominador propio. */

@@ -16,11 +16,13 @@ tipo. Romper ese orden lanza RangeError al construir la vista tipada.
     offset 16N   uso     Uint8Array[N]     indice en manifest.usos
     offset 17N   subuso  Uint8Array[N]     indice en manifest.subusos, 255 = sin dato
     offset 18N   estruc  Uint8Array[N]     indice en manifest.estructuras, 255 = sin dato
-    offset 19N   tifo    Uint8Array[N]     indice en manifest.tipos_forestales, 255 = no aplica
+    offset 19N   tifo    Uint8Array[N]     indice en manifest.tipos_forestales (sin centinela:
+                                           «no aplica» es la clase '00')
     offset 20N   snaspe  Uint8Array[N]     indice en manifest.snaspe, 255 = fuera del SNASPE
     offset 21N   cober   Uint8Array[N]     indice en manifest.coberturas, 255 = sin dato
     offset 22N   altura  Uint8Array[N]     indice en manifest.alturas, 255 = sin dato
-    offset 23N   stifo   Uint8Array[N]     indice en manifest.subtipos_forestales, 255 = sin dato
+    offset 23N   stifo   Uint8Array[N]     indice en manifest.subtipos_forestales (sin
+                                           centinela: «no aplica» es una clase)
                                            total = 24 bytes por fila
 
 LAS ETIQUETAS SALEN DEL CODIGO, NUNCA DEL TEXTO. Medido sobre las 1.827.933
@@ -546,6 +548,54 @@ def construir():
     c_alt, sin_alt, dsc_alt = codificar(t, "c_alt", idx_alt, SIN_U8, "altura", False)
     c_esp, sin_esp, dsc_esp = codificar(t, "c_esp", idx_esp, SIN_U16, "especie", False)
     c_stf, sin_stf, dsc_stf = codificar(t, "c_stf", idx_stf, SIN_U8, "subtipo forestal", False)
+
+    # --- «No aplica» deja de decirse de dos formas -------------------------
+    #
+    # En tipo forestal y subtipo forestal, la fuente escribe la MISMA cosa de
+    # dos maneras: el codigo '00' / 'no aplica', o ninguna. Y no a partes
+    # iguales -- medido sobre las 1.827.933 filas, contando el centinela y la
+    # clase '00' por subclase:
+    #
+    #                   tifo centinela | tifo '00'      stifo cent | stifo '00'
+    #   Bosque Nativo             0    |       0                 2 |    60.808
+    #   Plantacion          262.602    |     787           262.603 |       786
+    #   Bosque Mixto         30.624    |      46            30.624 |        46
+    #
+    # Ni un solo poligono al que el tipo forestal SI le aplique --el bosque
+    # nativo-- esta en el centinela; y a plantacion y mixto, donde no aplica,
+    # la fuente les pone el codigo '00' en el 0,3 % de los casos y nada en el
+    # 99,7 %. O sea que ahi el centinela NO significa "no sabemos": significa
+    # "no aplica", que es lo que ya decia el contrato de este mismo archivo
+    # para tifo. Fundirlos no pierde ninguna distincion, y a cambio saca 1,1
+    # millones de poligonos de una nota al pie que no se puede filtrar y los
+    # pone en su clase, que si se puede.
+    #
+    # NO SE HACE CON COBERTURA NI CON ALTURA, y no es por prudencia:
+    #
+    #   - cobertura: su centinela son 11.261 filas, y 11.261 de ellas tienen
+    #     TAMBIEN el centinela en estructura. Son las filas de triplete roto de
+    #     DECISIONES.md seccion E: "no sabemos", que no es "no aplica".
+    #   - altura: su centinela mezcla las dos cosas. 293.181 poligonos de
+    #     Bosques no tienen altura de dosel, y un bosque SI tiene altura: eso
+    #     es dato que falta. Separarlo del "no aplica" de los cuerpos de agua
+    #     exigiria deducirlo del contexto, que es justo lo que este ETL no
+    #     hace.
+    # El indice destino se busca en el ORDEN del dominio, que es lo que acaba en
+    # el manifest, y no en el diccionario de traduccion: el de subtipo va del
+    # texto CRUDO al indice --hay varias grafias por clase-- asi que 'no aplica'
+    # no es una de sus claves.
+    fundidas = {}
+    for nombre, col, orden, clave in (("tipo forestal", c_tif, ord_tif, "00"),
+                                      ("subtipo forestal", c_stf, ord_stf, "no aplica")):
+        if clave not in orden:
+            raise SystemExit(f"{nombre}: no existe la clase «{clave}» para fundir el centinela")
+        sin_valor = col == SIN_U8
+        fundidas[nombre] = int(sin_valor.sum())
+        col[sin_valor] = orden.index(clave)
+    sin_tif = int((c_tif == SIN_U8).sum())
+    sin_stf = int((c_stf == SIN_U8).sum())
+    print(f"  «no aplica» unificado: {fundidas['tipo forestal']:,} filas de tipo forestal y "
+          f"{fundidas['subtipo forestal']:,} de subtipo dejan el centinela por su clase")
     t = None   # se libera la tabla de Arrow antes de agregar
 
     # ---- escritura del .bin --------------------------------------------------

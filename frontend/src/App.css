@@ -234,6 +234,12 @@
 .clase:hover { background: var(--superficie-2); }
 .clase.apagada { opacity: 0.42; }
 .clase.apagada .cifra { text-decoration: line-through; }
+/* Sin polígonos en el recorte. La clase SIGUE en la leyenda —es el mapa de la
+   simbología y no puede encoger al filtrar— pero se atenúa para que no se lea
+   como una serie presente en el mapa. Un punto menos de opacidad que .apagada,
+   que significa otra cosa: apagada es «la has excluido tú». */
+.clase.vacia .nombre, .clase.vacia .cifra { color: var(--tinta-3); }
+.clase.vacia .chip { opacity: 0.3; }
 .chip { width: 12px; height: 12px; border-radius: 3px; }
 .clase .nombre { font-size: 12px; }
 .clase .cifra { font-size: 11.5px; color: var(--tinta-3); font-variant-numeric: tabular-nums; }

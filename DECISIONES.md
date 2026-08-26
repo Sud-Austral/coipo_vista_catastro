@@ -102,6 +102,49 @@ descartan: la decisión del usuario es no podar nada.
 
 ---
 
+## F. «No aplica» se decía de dos formas, y sólo en dos de las cuatro dimensiones era lo mismo
+
+Cuatro columnas traían el mismo concepto por dos vías a la vez: el **centinela** (255, la fila
+no trae código) y una **clase «No Aplica»** del vocabulario. La una salía como fila de la lista
+de filtros, con su superficie; la otra, como nota al pie no filtrable. Para tipo forestal eso
+eran 1.114.688 polígonos por un lado y 63.848 por el otro, diciendo lo mismo.
+
+**No son cuatro casos iguales.** Medido sobre las 1.827.933 filas, cruzando el centinela y la
+clase contra la subclase de cada polígono:
+
+| | centinela | clase «No Aplica» | |
+|---|---:|---:|---|
+| `tifo` · Bosque Nativo | **0** | **0** | los 649.397 tienen tipo forestal |
+| `tifo` · Plantación | 262.602 | 787 | |
+| `tifo` · Bosque Mixto | 30.624 | 46 | |
+| `stifo` · Plantación | 262.603 | 786 | |
+| `cober` | 11.261 | 783.698 | y 11.261 de ellas tienen **también** el centinela en `estruc` |
+| `altura` · Bosques | 293.181 | 12 | |
+
+**Decisión, dimensión por dimensión.**
+
+- **`tifo` y `stifo`: se funden.** Ni un solo polígono al que el tipo forestal *sí* le aplica
+  —el bosque nativo— está en el centinela. Y a plantación y bosque mixto, donde no aplica, la
+  fuente les pone el código `00` en el 0,3 % de los casos y nada en el 99,7 %: es la misma
+  cosa escrita de dos maneras, no dos cosas. El propio contrato de `build_bin.py` ya declaraba
+  `tifo … 255 = no aplica`. Fundirlos no pierde ninguna distinción y saca 1,1 M de polígonos
+  de una nota al pie que no se podía filtrar.
+- **`cober`: no se toca.** Su centinela son 11.261 filas, y 11.261 de ellas llevan también el
+  centinela en `estruc`: son las filas de triplete roto de la sección E. Ahí «no sabemos» y
+  «no aplica» son cosas distintas, y fundirlas borraría la única marca de que a esas filas les
+  falta el dato.
+- **`altura`: no se toca.** Su centinela mezcla las dos cosas. 293.181 polígonos de Bosques no
+  traen altura de dosel, y un bosque **sí** tiene altura: eso es dato que falta, no una
+  pregunta sin sentido. Separarlo del «no aplica» de los cuerpos de agua exigiría deducirlo
+  del contexto, que es justo lo que este ETL no hace.
+
+**Vigilado por `D21`**, en los dos sentidos: exige que `tifo` y `stifo` tengan el centinela a
+cero y una única clase «No Aplica» con filas, y que `cober` y `altura` **conserven** el suyo.
+Las cuatro pruebas negativas se han visto en rojo.
+
+Efecto en las cifras: ninguno. El total nacional sigue en 75.661.200,40 ha y el bosque nativo
+en 15.536.329,01 ha. Lo que cambia es dónde se leen 1,1 M de polígonos.
+
 ## Fallos propios cometidos al establecer todo esto
 
 Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse.

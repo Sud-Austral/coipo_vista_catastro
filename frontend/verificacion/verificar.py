@@ -88,6 +88,56 @@ MAR = (-30.0, -76.0)
 
 FICHA_ABIERTA = "!!document.querySelector('dialog.ficha[open]')"
 
+# Techo de la pasada del cruce. El spike se fijo 120 ms para el filtrado; esta
+# pasada hace ademas los diez marginales y midio 78 ms en el peor caso sobre las
+# 1.827.933 filas reales (node, mediana de 15). 200 ms deja aire para una
+# maquina mas lenta sin dejar pasar una regresion de orden de magnitud.
+TECHO_CRUCE_MS = 200
+
+# Lee un grupo de filtro por su titulo. Devuelve lo que se VE: las filas con su
+# etiqueta, sus subtitulos y su cifra, los pies, y si tiene buscador.
+_GRUPO = """
+(() => {
+  const g = [...document.querySelectorAll('.grupo-filtro')]
+    .find(d => d.querySelector('.gf-titulo')?.textContent === %s)
+  if (!g) return null
+  g.open = true
+  return {
+    total: g.querySelector('.gf-total')?.textContent,
+    buscador: !!g.querySelector('.gf-buscar input'),
+    filas: [...g.querySelectorAll('.gf-opcion')].map(l => ({
+      etq: l.querySelector('.gf-etq')?.childNodes[0]?.textContent?.trim(),
+      sub: [...l.querySelectorAll('.gf-sub')].map(e => e.textContent),
+      cifra: l.querySelector('.gf-cifra')?.textContent,
+      marcada: !!l.querySelector('input')?.checked,
+    })),
+    pies: [...g.querySelectorAll('.nota')].map(p => p.textContent.trim()),
+  }
+})()
+"""
+
+
+def grupo_filtro(cdp, titulo):
+    return json.loads(cdp.evaluar("JSON.stringify(%s)" % (_GRUPO % json.dumps(titulo))))
+
+
+def marcar_clase(cdp, titulo, etiqueta):
+    """Marca una clase POR SU ETIQUETA, no por su posicion: el orden de la lista
+    depende de la superficie y cambia con el recorte."""
+    return cdp.evaluar("""
+      (() => {
+        const g = [...document.querySelectorAll('.grupo-filtro')]
+          .find(d => d.querySelector('.gf-titulo')?.textContent === %s)
+        if (!g) return 'sin grupo'
+        g.open = true
+        const l = [...g.querySelectorAll('.gf-opcion')]
+          .find(x => x.querySelector('.gf-etq').childNodes[0].textContent.trim() === %s)
+        if (!l) return 'sin clase'
+        l.querySelector('input').click()
+        return 'ok'
+      })()
+    """ % (json.dumps(titulo), json.dumps(etiqueta)))
+
 
 def leer_fila(k=FILA_PRUEBA):
     """Una fila del .bin COMPILADO, leida con los offsets que declara su manifest."""
@@ -639,6 +689,124 @@ def main():
                f"opacity={visible}")
         if visible == "1":
             capturar(cdp, os.path.join(AQUI, "captura-mira.png"))
+
+        # --- los filtros en cascada -----------------------------------------
+        # Las listas de filtro cuentan sobre el MARGINAL: cada dimensión ignora
+        # su propio filtro y aplica los demás. Sin eso, marcar una clase dejaba
+        # a todas sus hermanas en cero —no por falta de intersección, sino por
+        # competir consigo mismas— y era imposible marcar una segunda.
+        print("\n=== los filtros en cascada")
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=url)
+        esperar(cdp, "!!document.querySelector('.leyenda li')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+
+        # V-30: el vocabulario que no existe no se lista. Seis subclases de la
+        # guía —una por clase de uso— se llaman «Sin Información» y no tienen un
+        # solo polígono; se listaban tres, indistinguibles y con un guion.
+        sub = grupo_filtro(cdp, "Subclase")
+        sin_info = [f for f in sub["filas"] if f["etq"] == "Sin Información"]
+        prueba("V-30 las clases sin un solo polígono no se listan",
+               len(sin_info) == 0 and all(f["cifra"] != "—" for f in sub["filas"]),
+               f"{len(sub['filas'])} filas · {len(sin_info)} «Sin Información»")
+        prueba("V-30b y se declara cuántas se han quitado",
+               any("no tienen ningún polígono" in p for p in sub["pies"]),
+               next((p for p in sub["pies"] if "polígono" in p), "sin pie"))
+
+        # V-31: «No Aplica» sale 38 veces en Estructura. Sin el subtítulo con su
+        # subclase son dos docenas de filas idénticas seguidas.
+        est = grupo_filtro(cdp, "Estructura")
+        repes = [f for f in est["filas"] if f["etq"] == "No Aplica"]
+        prueba("V-31 las etiquetas repetidas llevan su clase padre",
+               len(repes) > 1 and all(f["sub"] for f in repes),
+               f"{len(repes)} «No Aplica», {sum(1 for f in repes if not f['sub'])} sin subtítulo")
+
+        # V-32: el pie no puede remitir a un buscador que no existe.
+        prueba("V-32 los grupos que se recortan tienen buscador",
+               all(g["buscador"] for g in (sub, est)),
+               f"Subclase={sub['buscador']} · Estructura={est['buscador']}")
+
+        # V-33 es LA aserción del artefacto. Antes las otras cinco coberturas
+        # caían a «—» al marcar una.
+        antes_cob = grupo_filtro(cdp, "Cobertura")
+        marcar_clase(cdp, "Cobertura", "Denso")
+        esperar(cdp, "document.querySelector('.cifra-num b').textContent !== '75,7 M ha'",
+                segundos=30)
+        despues_cob = grupo_filtro(cdp, "Cobertura")
+        vacias = [f for f in despues_cob["filas"] if f["cifra"] == "—"]
+        marcada = [f for f in despues_cob["filas"] if f["marcada"]]
+        prueba("V-33 marcar una clase NO vacía a sus hermanas",
+               len(despues_cob["filas"]) == len(antes_cob["filas"]) and len(vacias) == 0,
+               f"{len(antes_cob['filas'])} → {len(despues_cob['filas'])} filas, {len(vacias)} en «—»")
+        prueba("V-33b y la marcada sigue visible y marcada", len(marcada) == 1,
+               f"{len(marcada)} marcadas")
+
+        # V-34: la leyenda es la excepción — las nueve clases SIEMPRE. Es uno de
+        # los cuatro mecanismos sin los cuales «se rompe la accesibilidad del
+        # mapa», y antes las clases a cero desaparecían de ella.
+        prueba("V-34 la leyenda mantiene las nueve clases con filtro activo",
+               cdp.evaluar("document.querySelectorAll('.leyenda li').length") == 9,
+               f"{cdp.evaluar('document.querySelectorAll(\".leyenda li\").length')} clases")
+
+        # V-35: el coste de la pasada, medido en el navegador y no supuesto.
+        coste = cdp.evaluar(
+            "Math.max(...performance.getEntriesByName('cruce').map(e => e.duration))")
+        prueba("V-35 la pasada del cruce cabe en el presupuesto",
+               coste is not None and coste < TECHO_CRUCE_MS,
+               f"{coste:.0f} ms de {TECHO_CRUCE_MS} ms" if coste else "sin medición")
+
+        # --- la cascada de verdad: un ámbito que deja fuera dimensiones enteras
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=f"{url}?reg=15")   # Arica y Parinacota
+        esperar(cdp, "!!document.querySelector('.leyenda li')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+
+        tifo = grupo_filtro(cdp, "Tipo forestal")
+        prueba("V-36 la cascada quita las clases sin intersección",
+               0 < len(tifo["filas"]) < 13
+               and any("no coinciden" in p for p in tifo["pies"]),
+               f"{len(tifo['filas'])} de 13 · "
+               + next((p for p in tifo["pies"] if "no coinciden" in p), "SIN PIE"))
+        # Se deja mirable: los grupos abiertos y el panel desplazado a ellos.
+        cdp.evaluar("""
+          (() => {
+            const abrir = ['Subclase', 'Estructura', 'Tipo forestal']
+            for (const g of document.querySelectorAll('.grupo-filtro')) {
+              g.open = abrir.includes(g.querySelector('.gf-titulo')?.textContent)
+            }
+            document.querySelector('.seccion-filtros').scrollIntoView({ block: 'start' })
+          })()
+        """)
+        time.sleep(0.4)
+        capturar(cdp, os.path.join(AQUI, "captura-cascada.png"))
+
+        # V-37: el territorio también. Con «Denso» marcado hay dos regiones que
+        # no tienen ni un polígono de dosel denso.
+        regs_todas = cdp.evaluar("document.querySelectorAll('.panel select')[0].options.length")
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=url)
+        esperar(cdp, "!!document.querySelector('.leyenda li')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+        antes_regs = cdp.evaluar("document.querySelectorAll('.panel select')[0].options.length")
+        marcar_clase(cdp, "Cobertura", "Denso")
+        esperar(cdp, "document.querySelector('.cifra-num b').textContent !== '75,7 M ha'",
+                segundos=30)
+        despues_regs = cdp.evaluar("document.querySelectorAll('.panel select')[0].options.length")
+        prueba("V-37 el ámbito territorial también va en cascada",
+               despues_regs < antes_regs,
+               f"{antes_regs - 1} → {despues_regs - 1} regiones ofrecidas")
+
+        # V-38: la ida y vuelta. Lo que se oculta tiene que volver.
+        cdp.evaluar("[...document.querySelectorAll('.limpiar')]"
+                    ".find(b => /Quitar/.test(b.textContent))?.click()")
+        esperar(cdp, "document.querySelector('.cifra-num b').textContent === '75,7 M ha'",
+                segundos=30)
+        vuelta = cdp.evaluar("document.querySelectorAll('.panel select')[0].options.length")
+        prueba("V-38 al limpiar el filtro vuelve todo", vuelta == antes_regs,
+               f"{despues_regs - 1} → {vuelta - 1} regiones · {regs_todas - 1} en Arica")
 
         print("\n" + "=" * 62)
         print(f"  {'TODO EN VERDE' if not fallos else str(len(fallos)) + ' EN ROJO'}")

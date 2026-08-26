@@ -28,7 +28,7 @@ const SIN_DATO = {
  */
 export default function PanelLateral({
   manifest,
-  resumen,
+  marginales,
   ambito,
   onAmbito,
   base,
@@ -64,29 +64,49 @@ export default function PanelLateral({
     return () => clearTimeout(t)
   }, [aviso])
 
-  const regiones = manifest?.regiones ?? []
+  // El territorio TAMBIÉN va en cascada: sólo se ofrece lo que tiene algo bajo
+  // los filtros temáticos activos. Las cifras salen del marginal de la columna
+  // `comuna`, que por construcción ignora el filtro del propio ámbito — si no,
+  // elegir una región dejaría el desplegable con esa única región dentro.
+  //
+  // LO ELEGIDO NO SE OCULTA NUNCA, aunque su marginal caiga a cero: un <select>
+  // cuyo `value` no está entre sus opciones se dibuja vacío y deja el mapa
+  // recortado por un ámbito que no se ve en ninguna parte.
+  const comunasVivas = useMemo(() => marginales?.comunas ?? [], [marginales])
 
-  // Las provincias y comunas salen de las comunas del manifest, filtradas por
-  // lo que ya se eligió. Las regiones van en orden geográfico norte-sur, que es
-  // como se piensa Chile; provincias y comunas, alfabético.
+  const regiones = useMemo(() => {
+    const todas = manifest?.regiones ?? []
+    const vivas = new Set((marginales?.regiones ?? []).map((r) => r.cod))
+    return todas.filter((r) => vivas.has(r.cod) || r.cod === ambito.region)
+  }, [manifest, marginales, ambito.region])
+
+  // Las regiones van en orden geográfico norte-sur, que es como se piensa
+  // Chile; provincias y comunas, alfabético.
   const provincias = useMemo(() => {
-    if (!ambito.region || !manifest) return []
-    const set = new Map()
-    for (const c of manifest.comunas) {
-      if (c.region === ambito.region && c.n > 0) set.set(c.provincia, true)
-    }
-    return [...set.keys()].sort((a, b) => a.localeCompare(b, 'es'))
-  }, [manifest, ambito.region])
+    if (!ambito.region) return []
+    const set = new Set(
+      comunasVivas.filter((c) => c.region === ambito.region).map((c) => c.provincia),
+    )
+    if (ambito.provincia) set.add(ambito.provincia)
+    return [...set].sort((a, b) => a.localeCompare(b, 'es'))
+  }, [comunasVivas, ambito.region, ambito.provincia])
 
   const comunas = useMemo(() => {
     if (!ambito.region || !manifest) return []
-    return manifest.comunas
-      .filter((c) => c.region === ambito.region && c.n > 0)
+    const vivas = comunasVivas
+      .filter((c) => c.region === ambito.region)
       .filter((c) => !ambito.provincia || c.provincia === ambito.provincia)
-      .sort((a, b) => a.etiqueta.localeCompare(b.etiqueta, 'es'))
-  }, [manifest, ambito.region, ambito.provincia])
+    if (ambito.comuna && !vivas.some((c) => c.cod === ambito.comuna)) {
+      const elegida = manifest.comunas.find((c) => c.cod === ambito.comuna)
+      if (elegida) vivas.push({ ...elegida, n: 0 })
+    }
+    return vivas.sort((a, b) => a.etiqueta.localeCompare(b.etiqueta, 'es'))
+  }, [manifest, comunasVivas, ambito.region, ambito.provincia, ambito.comuna])
 
   const hayAmbito = Boolean(ambito.region)
+  // Con las cifras nacionales no hay nada que aclarar; con un recorte activo,
+  // las listas cuentan sobre conjuntos distintos del mapa y hay que decirlo.
+  const hayRecorte = Boolean(marginales) && marginales.fuente !== 'manifest'
   const activas = cuentaSeleccion(filtros)
   const paleta = COLOR_USO[oscuro ? 'oscuro' : 'claro']
 
@@ -213,22 +233,33 @@ export default function PanelLateral({
           El tamaño del punto <strong>crece con</strong> la superficie del polígono, con un mínimo
           y un máximo para que siga siendo visible y se pueda pulsar. No es proporcional.
         </p>
+        {/* LAS NUEVE CLASES, SIEMPRE, y es la excepción deliberada a la regla
+            de ocultar lo que queda a cero. config.js declara la leyenda uno de
+            los cuatro mecanismos sin los cuales «se rompe la accesibilidad del
+            mapa»: con nueve colores simultáneos el color solo no basta, y la
+            leyenda es lo que los nombra. Una leyenda que encoge al filtrar deja
+            de ser el mapa de la simbología.
+
+            Las cifras salen del MARGINAL. Iterando el resumen —que es lo que se
+            hacía— pulsar una clase borraba las otras ocho de la lista, así que
+            no había forma de añadir una segunda sin quitar la primera. */}
         <ul className="leyenda">
-          {(resumen?.usos ?? []).map((u) => {
-            const i = manifest.usos.findIndex((x) => x.cod === u.cod)
+          {(manifest?.usos ?? []).map((u, i) => {
+            const cifra = (marginales?.usos ?? []).find((x) => x.cod === u.cod)
             const activa = usosActivos.size === 0 || usosActivos.has(i)
+            const vacia = !cifra || cifra.n === 0
             return (
               <li key={u.cod}>
                 <button
                   type="button"
-                  className={activa ? 'clase' : 'clase apagada'}
+                  className={`clase${activa ? '' : ' apagada'}${vacia ? ' vacia' : ''}`}
                   aria-pressed={usosActivos.has(i)}
                   onClick={() => onUso(i)}
-                  title={`${u.etiqueta}: ${haExacta(u.ha)}`}
+                  title={`${u.etiqueta}: ${vacia ? 'sin polígonos en este recorte' : haExacta(cifra.ha)}`}
                 >
                   <span className="chip" style={{ background: paleta[u.cod] }} />
                   <span className="nombre">{u.etiqueta}</span>
-                  <span className="cifra">{ha(u.ha)}</span>
+                  <span className="cifra">{vacia ? '—' : ha(cifra.ha)}</span>
                 </button>
               </li>
             )
@@ -250,6 +281,18 @@ export default function PanelLateral({
           Se cruzan entre sí y con el ámbito: el mapa y todas las cifras del panel de
           indicadores muestran sólo lo que pasa todos los filtros a la vez.
         </p>
+        {/* QUÉ MIDEN LAS CIFRAS DE ESTAS LISTAS, que ya no es lo mismo que el
+            mapa. Cada lista cuenta ignorando SU PROPIO filtro y aplicando los
+            demás, que es lo único que permite marcar una segunda clase de la
+            misma dimensión: contando con su propio filtro puesto, las hermanas
+            de la clase marcada valen cero por construcción. Decirlo aquí evita
+            que alguien reste dos cifras que no son del mismo conjunto. */}
+        {hayRecorte && (
+          <p className="nota">
+            Dentro de cada lista, la cifra es lo que quedaría <strong>al elegir esa clase</strong>,
+            cruzada con los demás filtros. Por eso pueden sumar más que el total del mapa.
+          </p>
+        )}
         {/* La clase de uso NO se repite aquí. Es la única dimensión con color
             propio, así que su control es la leyenda: tenerla en dos sitios
             obligaría a mantener dos estados sincronizados de lo mismo. */}
@@ -260,9 +303,11 @@ export default function PanelLateral({
             key={def.col}
             def={def}
             manifest={manifest}
-            resumen={resumen}
+            // El MARGINAL, no el resumen: la lista de una dimensión no se puede
+            // contar sobre un recorte que ya aplica su propio filtro.
+            cifras={marginales}
             seleccion={filtros[def.col] ?? NINGUNO}
-            sinDato={resumen?.sinDato?.[SIN_DATO[def.col]] ?? 0}
+            sinDato={marginales?.sinDato?.[SIN_DATO[def.col]] ?? 0}
             onAlternar={onFiltro}
             onLimpiar={onLimpiarFiltro}
           />

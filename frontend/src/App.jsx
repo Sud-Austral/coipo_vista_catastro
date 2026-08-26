@@ -17,8 +17,8 @@ import {
   VISTA_INICIAL,
   paletaRGB,
 } from './config'
-import { canalFiltro, cargarPuntos, tablaColor } from './datos/binario'
-import { ambitoTexto, resumenFiltrado, resumenNacional } from './indicadores'
+import { cargarPuntos, mascaraTodo, tablaColor } from './datos/binario'
+import { ambitoTexto, resumenNacional, resumenYMarginales } from './indicadores'
 import { alternar, filtrosAURL, filtrosDesdeURL } from './filtros'
 import { guardarDisposicion, leerDisposicion } from './preferencias'
 import { escribirURL, leerURL } from './urlState'
@@ -428,9 +428,30 @@ export default function App() {
 
   const hayFiltro = Object.keys(filtroCompleto).length > 0
 
+  // UNA sola pasada por cambio de filtro, no dos. Antes el canal del mapa y las
+  // cifras del panel se calculaban por separado, y cada clic de casilla costaba
+  // dos recorridos completos de 1,8 M de filas.
+  //
+  // Devuelve además los MARGINALES: para cada dimensión, sus clases contadas
+  // sobre las filas que pasan todas las DEMÁS. Es lo que hace que las listas de
+  // filtro estén en cascada y que marcar una clase no vacíe a sus hermanas.
+  const cruce = useMemo(() => {
+    if (!datos || !hayFiltro) return null
+    // performance.measure y no un console.log: queda en el timeline del
+    // navegador, lo lee la verificación sin tocar nada, y es la única forma de
+    // que el techo de coste sea una aserción y no una creencia. La cifra que el
+    // repo se creía —«8-14 ms»— venía de otra función, con una dimensión y un
+    // .bin de cuatro columnas.
+    performance.mark('cruce-ini')
+    const r = resumenYMarginales(datos, filtroCompleto)
+    performance.mark('cruce-fin')
+    performance.measure('cruce', 'cruce-ini', 'cruce-fin')
+    return r
+  }, [datos, filtroCompleto, hayFiltro])
+
   const filtro = useMemo(
-    () => (datos ? canalFiltro(datos, filtroCompleto) : null),
-    [datos, filtroCompleto],
+    () => (datos ? (cruce?.mascara ?? mascaraTodo(datos.n)) : null),
+    [datos, cruce],
   )
 
   const paleta = useMemo(
@@ -438,13 +459,13 @@ export default function App() {
     [datos, oscuro],
   )
 
-  // El resumen nacional sale del manifest y el filtrado de una pasada sobre el
+  // El resumen nacional sale del manifest y el filtrado de la pasada sobre el
   // .bin. Los dos tienen la MISMA forma, así que el panel tiene un solo camino.
+  // Sin ningún filtro, el marginal de cada dimensión ES el nacional: no hay
+  // nada de lo que dejar fuera.
   const nacional = useMemo(() => resumenNacional(manifest), [manifest])
-  const resumen = useMemo(
-    () => (hayFiltro ? resumenFiltrado(datos, filtro) : nacional),
-    [datos, filtro, hayFiltro, nacional],
-  )
+  const resumen = cruce?.resumen ?? nacional
+  const marginales = cruce?.marginales ?? nacional
 
   // ---------- encuadre por ámbito ----------
   // Al elegir una región o una comuna el mapa VA ahí. Sin esto, filtrar deja el
@@ -619,7 +640,7 @@ export default function App() {
 
       <PanelLateral
         manifest={manifest}
-        resumen={resumen}
+        marginales={marginales}
         ambito={ambito}
         onAmbito={setAmbito}
         base={base}
