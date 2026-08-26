@@ -35,7 +35,11 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 DIST = os.path.join(RAIZ, "frontend", "dist")
 BASE = "/coipo_vista_catastro/"
-TILES = ("cartocdn.com", "openstreetmap.org", "arcgisonline.com", "eox.at")
+# arcgisonline.com sirve CINCO de los siete mapas base desde la migracion de
+# agosto de 2026; cartocdn.com salio de BASEMAPS y sale tambien de aqui, porque
+# una lista con hosts fantasma deja de ser legible y a la proxima nadie sabra si
+# sigue por necesidad o por olvido.
+TILES = ("openstreetmap.org", "arcgisonline.com", "eox.at")
 
 # Los tres regímenes, con un ancho a cada lado de los cortes (1200 y 900).
 REGIMENES = [

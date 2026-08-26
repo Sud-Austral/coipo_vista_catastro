@@ -51,27 +51,220 @@ export const MIN_MAPA = 520
  */
 export const DIACRITICOS = new RegExp('[̀-ͯ]', 'g')
 
+/* ---------------------------------------------------------------------------
+   MAPAS BASE
+
+   Cinco de los siete fondos salen de server.arcgisonline.com, el mismo host que
+   ya servia Satelital. Se migraron desde basemaps.cartocdn.com en agosto de
+   2026, cuando CARTO cerro el acceso anonimo y empezo a estampar
+   "API KEY REQUIRED" DENTRO del PNG. El CDN seguia devolviendo 200 image/png,
+   asi que ningun control por codigo HTTP lo habria detectado: el fallo estaba en
+   los pixeles. Si algun dia Esri hace lo mismo el sintoma sera identico, y la
+   comprobacion tambien -- descargar una tesela con curl y MIRARLA.
+
+   PATRON DE URL: ArcGIS pide {z}/{y}/{x}, o sea FILA antes que COLUMNA, al reves
+   del {z}/{x}/{y} de OSM. Copiar la plantilla de Calles a una capa de Esri
+   devuelve teselas de otro sitio, con 200 y sin ningun error visible.
+
+   EL maxZoom DECLARADO MIENTE. El tileInfo de cada servicio publica LODs que
+   Esri no tiene cacheados; medido sobre once puntos de Chile, mintio en CINCO de
+   los siete servicios probados. Pasado el cache real el servidor responde 200
+   con una tesela gris que dice "Map data not yet available" -- la misma, byte a
+   byte, en Arica, Valdivia, Patagonia y Nueva York. Por eso cada capa declara su
+   maxNativeZoom MEDIDO y no el que anuncia el servicio. La autoridad es el
+   endpoint /tilemap, nunca el tileInfo.
+
+   NINGUN HOST LLEVA {s}, pero por razones distintas segun el host. El reparto
+   por subdominios (a/b/c/d) era una tecnica de HTTP/1.1 para saltarse el limite
+   de ~6 conexiones por host, irrelevante cuando el host habla HTTP/2. En Esri no
+   se puede aplicar de todos modos: no publica subdominios repartidos, asi que no
+   hay {s} que poner. NO se afirma aqui que arcgisonline sirva sobre HTTP/2 --no
+   se pudo verificar con las herramientas de este entorno-- y si resultara ser
+   HTTP/1.1 habria una regresion de concurrencia frente a CARTO que conviene
+   medir antes de darla por inexistente.
+
+   LICENCIA. Las capas de arcgisonline.com estan bajo el Esri Master License
+   Agreement (https://www.esri.com/en-us/legal/terms/master-agreement). El
+   resumen oficial de condiciones (tou_summary.pdf, abr-2025) PROHIBE de forma
+   expresa cosechar teselas de forma sistematica, redistribuirlas y auto-alojar
+   contenido de Esri: eso cierra de antemano la salida que alguien propondra en
+   cuanto Esri anuncie un apagon ("nos espejamos las teselas y ya"). Tiene ademas
+   una clausula de sabor no comercial, de la misma familia que la CC BY-NC-SA de
+   EOX que se documenta mas abajo. El encaje es el mismo que ya se declaro para
+   EOX --CONAF es un organismo del Estado sin fines de lucro y este visor entrega
+   informacion publica de forma gratuita-- y lo decide CONAF, no este codigo.
+
+   Y EL ACCESO SIN CLAVE ES TOLERADO, NO DECLARADO. Hoy funciona (200, CORS
+   abierto, sin token), pero no existe ningun documento de Esri que lo reconozca
+   como derecho: su resumen de condiciones encabeza los permisos con "IF YOU HAVE
+   AN ARCGIS ONLINE SUBSCRIPTION YOU MAY", y Esri ha pedido explicitamente a los
+   proyectos de codigo abierto que migren al servicio nuevo de basemaps, que si
+   exige clave. O sea, la misma situacion que acaba de estallar con CARTO. La
+   diferencia es que aqui las fechas ya estan publicadas, y estan anotadas capa
+   por capa mas abajo.
+
+   ATRIBUCION: Esri exige DOS, la suya y la de los proveedores de datos, y pide
+   "Powered by Esri" en toda aplicacion que use sus servicios. Por eso todas las
+   cadenas de abajo la llevan delante.
+
+   CONCENTRACION DE PROVEEDOR: cinco capas dependen ahora de un solo host. Es lo
+   que abarata el preconnect, y tambien lo que haria caer cinco fondos a la vez.
+   Calles (OSM) se queda justamente por eso: es la unica reserva que no es Esri.
+   --------------------------------------------------------------------------- */
 export const BASEMAPS = {
   // Fondo neutro y claro: es el unico que deja leer 1,83 millones de puntos
-  // superpuestos sin que el mapa base compita con el dato.
+  // superpuestos sin que el mapa base compita con el dato. Medido sobre las
+  // teselas de Valdivia, la saturacion va entre 0 y 5 sobre 255 y no hay un solo
+  // pixel verde, que es lo que importa en un catastro vegetacional donde las dos
+  // clases mas abundantes son verdes.
   //
-  // Host SIN {s}: el reparto por subdominios (a/b/c/d) era una tecnica de
-  // HTTP/1.1 para saltarse el limite de 6 conexiones por host. Sobre HTTP/2 una
-  // sola conexion multiplexa todas las teselas, asi que los tres apretones de
-  // mano extra son perdida pura.
+  // NO TRAE TOPONIMOS, y es una decision tomada, no un descuido: Esri los sirve
+  // en una capa aparte (Canvas/World_Light_Gray_Reference) y superponerla
+  // costaria dos peticiones de tesela por celda. El CARTO que habia antes si los
+  // traia incrustados, asi que esto es una perdida asumida; quien necesite
+  // nombres tiene Calles y Topografico a un clic. Los nombres de calle si
+  // aparecen, pero recien en z16.
+  //
+  // LA CLAVE 'Claro' NO SE RENOMBRA: urlState.js la usa como centinela del valor
+  // por defecto (linea 83), de modo que cambiarla invalidaria en silencio todos
+  // los enlaces ya compartidos. Si alguna vez hay que mostrar otro texto en el
+  // desplegable, se anade un campo de etiqueta; no se toca la clave.
   //
   // ACOPLADO a dos sitios: al <link rel="preconnect"> de index.html (que
   // precalienta este host exacto) y al patron con comodin que bloquea la red en
   // los scripts de verificacion. No lo reescribas con hosts literales.
+  //
+  // VENCE EN DICIEMBRE DE 2029, y no es una suposicion: el item publica
+  // contentStatus 'deprecated', la categoria /Status/Retiring y la etiqueta
+  // 'retiring-2029-12', y su descripcion abre con un Retirement Notice que dice
+  // que esta en mature support desde julio de 2021 --o sea que sus datos no se
+  // actualizan desde entonces. Se anota aqui porque el fallo que trajo hasta
+  // aqui fue exactamente no tener escrito en ningun sitio que un servicio
+  // gratuito puede acabarse. AGRAVANTE: el reemplazo que Esri recomienda es la
+  // version VECTORIAL en basemaps.arcgis.com, que EXIGE token, asi que la via de
+  // migracion oficial esta cerrada para un sitio estatico sin secretos.
   Claro: {
-    url: 'https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    attribution: '&copy; OpenStreetMap &middot; &copy; CARTO',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    attribution:
+      'Powered by Esri &middot; Esri, HERE, Garmin, &copy; OpenStreetMap contributors, and the GIS user community',
     maxZoom: 19,
+    // 16 y no los 23 que declara el servicio. El corte es MUNDIAL, no un hueco
+    // chileno: se verifico con /tilemap y comparando md5 de teselas z17 en siete
+    // ciudades, incluida Nueva York. Sin esta linea el visor habria cambiado la
+    // marca de agua de CARTO por un cartel gris en ingles, que es peor.
+    maxNativeZoom: 16,
   },
+  // El unico fondo oscuro y sin croma: gris plano #474749 en tierra y #232227 en
+  // mar, con R=G y B solo +2. Cubre un hueco real del producto, porque el visor
+  // ya sirve tema oscuro (COLOR_USO.oscuro) y los demas fondos son claros o
+  // texturados.
+  //
+  // ENTRA COMO OPCION Y JAMAS COMO FONDO POR DEFECTO, y la razon esta medida: la
+  // paleta se elige hoy por el TEMA y no por el mapa base, asi que esta capa
+  // abre combinaciones que el validador nunca vio. Contra #474749, con la paleta
+  // oscura, quedan bajo 3:1 cinco clases -- 04 Bosques 1,87:1 (la mas numerosa
+  // del Catastro), 08 Cuerpos de Agua 2,10:1, 01 Urbanas 2,35:1, 05 Humedales
+  // 2,77:1 y 06 Desprovistas 2,90:1-- y en tema claro sobre fondo oscuro el
+  // violeta #4a3aa7 cae a ~1,09:1, o sea practicamente invisible.
+  //
+  // Se sostiene SOLO por la razon que ya explica el bloque de SIMBOLOGIA: el
+  // color nunca es aqui la unica codificacion. Leyenda siempre visible, aislar
+  // la clase al pulsarla, tooltip que la nombra y tabla de superficie. Si
+  // alguna de esas cuatro cosas desapareciera, esta capa tendria que salir con
+  // ellas o revalidarse la paleta contra este gris concreto.
+  //
+  // VENCE EN DICIEMBRE DE 2029, igual que Claro y por lo mismo: el item publica
+  // contentStatus 'deprecated' y la etiqueta 'retiring-2029-12'. Las dos capas
+  // Canvas caen el mismo mes, asi que la revision de esa fecha se hace una vez
+  // para las dos.
+  Oscuro: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    attribution:
+      'Powered by Esri &middot; Esri, HERE, Garmin, &copy; OpenStreetMap contributors, and the GIS user community',
+    maxZoom: 19,
+    // Mismo servicio Canvas que Claro y por tanto el mismo techo real de z16.
+    maxNativeZoom: 16,
+    nota:
+      'Fondo oscuro para contrastar las clases claras. Con la paleta oscura, cinco de las nueve ' +
+      'clases quedan bajo 3:1 sobre este gris: guíate por la leyenda, el aislado por clase y la ' +
+      'tabla de superficie, no sólo por el color.',
+  },
+  // Relieve, sin etiquetas, sin calles y sin rellenos politicos. Responde lo
+  // unico que ninguna otra linea del menu responde: que FORMA tiene el terreno
+  // bajo los puntos --cordillera, valle central, fiordos--, que en un catastro
+  // de usos de la tierra es contexto y no adorno. Satelital y Sentinel-2
+  // muestran cobertura, pero el relieve les queda enmascarado por la vegetacion
+  // y por la sombra de la escena.
+  //
+  // ES Elevation/World_Hillshade Y NO World_Shaded_Relief, que es lo que uno
+  // encuentra primero buscando "relieve" y seria la eleccion equivocada por dos
+  // razones medidas. (1) SOPORTE: World_Shaded_Relief devuelve contentStatus
+  // 'deprecated' con la etiqueta retiring-2028-03 y su aviso dice ademas "A
+  // replacement item has not been identified at this time"; World_Hillshade
+  // devuelve 'public_authoritative' y General Availability, sin aviso de retiro.
+  // (2) CROMA: sobre la misma tesela de Valdivia z11, Shaded_Relief mide
+  // saturacion media 25,9 y su color dominante es un azul de agua #9ebcd8 --que
+  // es justo el que compite con 07 Nieves y 08 Cuerpos de Agua--, mientras que
+  // Hillshade mide 3,3 y su dominante es un blanco #fafafa. Es el fondo mas
+  // neutro de todos los medidos, incluido el CARTO que se sustituye.
+  //
+  // COSTES ASUMIDOS, para que nadie los redescubra. (1) NO DIBUJA LA COSTA: al
+  // ser relieve puro, mar y tierra llana salen del mismo blanco, asi que se
+  // pierde la silueta de Chile. Quien la necesite tiene Claro, que si la trae.
+  // (2) El cache real se agota en z13 en zona rural --Valdivia, Patagonia y
+  // Altiplano dan el cartel gris desde z14-- aunque en ciudad llega a z16 o mas.
+  // Se fija 13 porque el dato del Catastro vive sobre todo en zona rural, que es
+  // donde el techo es mas bajo.
+  Relieve: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}',
+    attribution: 'Powered by Esri &middot; Esri, Vantor, Airbus DS, USGS, NGA, NASA, CGIAR, NCEAS, NLS, OS, NMA',
+    maxZoom: 19,
+    maxNativeZoom: 13,
+    nota:
+      'Relieve puro, sin nombres, sin caminos y sin costa: mar y llanura salen del mismo blanco. ' +
+      'El detalle se agota en el zoom 13 fuera de las ciudades. Para auditar un polígono, usa Satelital.',
+  },
+  // La unica reserva que no es Esri. Se queda por eso tanto como por lo que
+  // muestra: si arcgisonline cambiara de politica, las otras cinco caen juntas.
   Calles: {
     url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     attribution: '&copy; OpenStreetMap',
     maxZoom: 19,
+  },
+  // Capa de CONSULTA, elegida a proposito, nunca fondo por defecto. Aporta lo
+  // unico que no da ninguna otra: ALTITUD. Curvas de nivel con la cota rotulada
+  // --se leyo "4300 m" sobre el Altiplano a z16-- mas hidrografia con nombre.
+  // En un catastro de usos de la tierra la altura es el discriminante de las
+  // Nieves y Glaciares, del limite arboreo y de las praderas altoandinas.
+  //
+  // EL CARGO EN SU CONTRA, medido y aceptado: dibuja la vegetacion como RELLENO
+  // verde de superficie, y las dos clases mas abundantes del Catastro son
+  // verdes. El 41,7 % de los pixeles de la tesela z11 de Valdivia queda a menos
+  // de 0,25 en OKLab de alguna clase. Por eso es capa de consulta y no telon, y
+  // por eso vale aqui la misma salvedad que en Oscuro: se sostiene porque el
+  // color no es la unica codificacion del visor.
+  //
+  // Segundo coste: sobre campo abierto la capa se queda EN BLANCO LISO mucho
+  // antes de agotarse el cache -- 5 de 8 teselas forestales del centro-sur ya
+  // estan en blanco a z17. No lo arregla bajar maxNativeZoom, porque ese blanco
+  // es un render legitimo y no una tesela que falte: estirar la de z16 daria
+  // blanco borroso, y ademas emborronaria Santiago, Valdivia, Iquique y Punta
+  // Arenas, donde SI hay pixel nativo verificado hasta z19.
+  'Topográfico': {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+    // ACORTADA: el copyrightText literal lista diecisiete proveedores en 268
+    // caracteres, inviable en la barra de Leaflet. Se conservan los que aportan
+    // a Chile y se quitan los regionales de otros continentes (Esri Japan, METI,
+    // Kadaster NL, Ordnance Survey, Esri China...). Si CONAF exige la cadena
+    // integra, va entera y se acepta que ocupe dos lineas.
+    attribution:
+      'Powered by Esri &middot; Esri, HERE, Garmin, Intermap, USGS, FAO, NPS, NRCAN, IGN &middot; &copy; OpenStreetMap contributors',
+    // 19 CLAVADO: el servicio declara 23 y desde z20 devuelve el cartel gris.
+    // Sin maxNativeZoom A PROPOSITO -- ver el segundo coste, arriba.
+    maxZoom: 19,
+    nota:
+      'Curvas de nivel con altitud y toponimia, útil para situar un polígono. Dibuja la vegetación ' +
+      'en verde, así que compite con las clases Bosques y Praderas: es capa de consulta, no telón.',
   },
   // Permite contrastar la clase catastral con lo que se ve en la imagen: es la
   // forma mas directa de auditar un poligono sin salir del visor.
@@ -80,9 +273,22 @@ export const BASEMAPS = {
   // del mapa no tenga que conocer cada proveedor: 'esri' se consulta al vuelo
   // por punto y zoom (ver src/hooks/useFechaImagen.js), 'fijo' es una fecha
   // conocida de antemano, y sin `fecha` no se muestra nada.
+  //
+  // LA UNICA CAPA ESRI QUE NO ESTA DEPRECADA, y conviene que este dicho y no
+  // supuesto: World_Imagery publica contentStatus 'public_authoritative' y
+  // categoria General Availability, sin aviso de retiro, mientras que las Canvas
+  // y las heredadas de topografico y calles retiran en 2029-12. Que el proyecto
+  // ya usara este host NO significa que las capas nuevas hereden sus
+  // condiciones: heredan el host, no el estado de soporte. (Ojo: 'World Imagery
+  // (Clarity)' es otro item y ese si retira en marzo de 2028.)
+  //
+  // 'Vantor' y no 'Maxar': Maxar Intelligence se renombro Vantor en octubre de
+  // 2025 y el propio servicio ya publica 'Source: Esri, Vantor, Earthstar
+  // Geographics, and the GIS User Community'. Se comprueba en el copyrightText
+  // de MapServer?f=json, que es la fuente y no la memoria de nadie.
   Satelital: {
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    attribution: 'Esri, Maxar, Earthstar Geographics',
+    attribution: 'Powered by Esri &middot; Esri, Vantor, Earthstar Geographics',
     maxZoom: 18,
     fecha: { tipo: 'esri' },
   },
@@ -116,6 +322,12 @@ export const BASEMAPS = {
     // es que no hay uno. La capa no declara dimension TIME ni trae campo de
     // fecha, asi que no existe forma de saber la fecha de un pixel.
     fecha: { tipo: 'fijo', texto: 'Compuesto de todo 2025 · sin fecha única' },
+    // Estaba escrita a mano en PanelLateral.jsx, condicionada por el literal
+    // 'Sentinel-2'. Vive aqui, junto a la licencia que la motiva, porque la nota
+    // y la clausula que la obliga no pueden acabar en archivos distintos.
+    nota:
+      'Compuesto anual sin nubes a 10 m, no la última pasada del satélite. Licencia ' +
+      'CC BY-NC-SA 4.0 (no comercial).',
   },
 }
 

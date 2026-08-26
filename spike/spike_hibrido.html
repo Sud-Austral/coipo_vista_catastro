@@ -84,8 +84,15 @@ const t0 = performance.now();
     zoomControl: true,
   });
   if (CON_BASE) {
-    L.tileLayer('https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-      {attribution:'&copy; OpenStreetMap &middot; &copy; CARTO', maxZoom:19}).addTo(map);
+    // Migrado de CARTO a Esri en agosto de 2026 por la misma razon que
+    // BASEMAPS.Claro en frontend/src/config.js: CARTO empezo a estampar
+    // 'API KEY REQUIRED' dentro del PNG, y este spike EXISTE para mirar si la
+    // nube de deck.gl calza con la costa del mapa base. Con la marca de agua
+    // encima la herramienta dejaba de servir para lo unico que hace.
+    // OJO: el patron de Esri es {z}/{y}/{x}, fila antes que columna.
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+      {attribution:'Powered by Esri &middot; Esri, HERE, Garmin, &copy; OpenStreetMap contributors',
+       maxZoom:19, maxNativeZoom:16}).addTo(map);
   }
 
   // Lienzo de deck dentro del overlayPane, para que Leaflet lo mueva con el mapa.

@@ -391,8 +391,13 @@ blando: ~1 GB/repo.
 
 - Armazón Leaflet: `preferCanvas`, un solo renderer `L.canvas({padding:0.5, tolerance:8})`,
   `maxBounds` Chile con viscosity, controles con títulos en español, escala métrica.
-- Los 4 mapas base de la referencia (Claro/Calles/Satelital/Sentinel-2) con las mismas
-  decisiones documentadas (CARTO sin `{s}` por HTTP/2, licencia EOX, `maxNativeZoom` 14).
+- Los 7 mapas base (Claro/Oscuro/Relieve/Calles/Topográfico/Satelital/Sentinel-2) con las
+  decisiones documentadas capa por capa. Cinco salen de Esri (`server.arcgisonline.com`)
+  desde agosto de 2026, cuando CARTO empezó a estampar «API KEY REQUIRED» dentro del PNG;
+  el patrón de Esri es `{z}/{y}/{x}` —fila antes que columna— y cada capa lleva su
+  `maxNativeZoom` **medido**, porque el `tileInfo` declara niveles que no tiene cacheados
+  (Claro y Oscuro 16, Relieve 13, Sentinel-2 14). Licencias y fechas de retiro anotadas en
+  `config.js`: las dos capas Canvas vencen en 12/2029.
 - `EtiquetaImagen` + `useFechaImagen` portados y al día (identify de Esri con debounce y
   AbortController, fecha fija para Sentinel-2, parseo sin retroceso de día UTC−4/−3).
 - `ModalFicha`: `<dialog>` nativo, cierre por backdrop/Escape, chip de color, deep links a

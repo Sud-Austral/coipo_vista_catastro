@@ -11,3 +11,14 @@ spike/captura-*.png
 
 node_modules/
 dist/
+
+# Salidas de los notebooks de analisis: se regeneran con leer_bin.py y pesan
+# ~31 MB cada una. El .bin versionado ya es la fuente.
+notebooks/*.parquet
+
+# Bytecode. OJO: ETL/__pycache__/build_bin.cpython-313.pyc y
+# spike/__pycache__/medir.cpython-313.pyc quedaron VERSIONADOS antes de esta
+# regla; esto solo evita que se sumen mas. Sacar los dos ya trackeados es
+# `git rm --cached`, y no se hace aqui porque cambia el historial de archivos
+# que alguien pudo haber puesto a proposito.
+__pycache__/
