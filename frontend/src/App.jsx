@@ -5,6 +5,7 @@ import {
   DATA,
   ANCHO_PANEL,
   BASEMAPS,
+  COLOR_USO,
   CORTE_KPI,
   CORTE_PANEL,
   AVISO_PUNTOS,
@@ -79,6 +80,10 @@ export default function App() {
   // es la única dimensión con color— y comparten destino pero no origen.
   const [filtros, setFiltros] = useState(() => ({}))
   const [ficha, setFicha] = useState(null)
+  // Aviso hablado para la ruta de teclado. Lleva CONTADOR porque una región
+  // aria-live no vuelve a anunciar un texto idéntico: dos Enter seguidos en
+  // vacío serían mudos, que se lee igual que «el teclado no hace nada».
+  const [aviso, setAviso] = useState(null)
   const [simef, setSimef] = useState(null)
   const [cartel, setCartel] = useState(true)
   const [metodologia, setMetodologia] = useState(false)
@@ -544,12 +549,24 @@ export default function App() {
       setFicha({
         capa: 'Catastro de Bosque Nativo',
         titulo: uso?.etiqueta ?? 'Sin clasificar',
+        // El mismo color con el que ese punto está pintado en el mapa. Es lo
+        // que ata la ficha a la mancha que el usuario acaba de pulsar; sin él
+        // ModalFicha deja el chip sin pintar y la ficha podría ser de cualquier
+        // clase.
+        color: COLOR_USO[oscuro ? 'oscuro' : 'claro'][uso?.cod],
         coord: [datos.lat[i].toFixed(6), datos.lon[i].toFixed(6)],
         filas,
       })
     },
-    [datos],
+    [datos, oscuro],
   )
+
+  // Enter sobre el mapa sin ninguna figura bajo la mira. No hay nada visible
+  // que enseñar --el mapa no ha cambiado-- así que el único acuse posible es el
+  // hablado.
+  const alFallo = useCallback(() => {
+    setAviso((a) => ({ n: (a?.n ?? 0) + 1, texto: 'No hay ninguna figura bajo la mira.' }))
+  }, [])
 
   if (error) {
     return (
@@ -686,8 +703,22 @@ export default function App() {
       </button>
 
       {map && datos && paleta && filtro && (
-        <CapaPuntos map={map} datos={datos} paleta={paleta} filtro={filtro} onPunto={alPunto} />
+        <CapaPuntos
+          map={map}
+          datos={datos}
+          paleta={paleta}
+          filtro={filtro}
+          onPunto={alPunto}
+          onFallo={alFallo}
+        />
       )}
+
+      {/* El <p> es ESTABLE y sólo cambia su texto: remontar la región en cada
+          aviso hace que el lector se pierda el primero. El espacio duro alterna
+          para que dos avisos idénticos seguidos sigan siendo dos anuncios. */}
+      <p className="aviso-mapa visualmente-oculto" role="status" aria-live="polite">
+        {aviso ? aviso.texto + ' '.repeat(aviso.n % 2) : ''}
+      </p>
       {cartel && <CartelContexto texto={AVISO_PUNTOS} onCerrar={() => setCartel(false)} />}
       <EtiquetaImagen map={map} info={imagen} />
       <PaginaMetodologia

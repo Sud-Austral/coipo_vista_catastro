@@ -74,6 +74,89 @@ def esperar(cdp, expr, segundos=120):
     return None
 
 
+# Anchos y dtypes del .bin columnar. MISMO contrato que frontend/src/datos/
+# binario.js: los offsets los declara el manifest y aqui solo se abren vistas.
+ANCHO_BIN = {"f32": 4, "u16": 2, "u8": 1}
+NP_BIN = {"f32": "<f4", "u16": "<u2", "u8": "u1"}
+# Una fila cualquiera del Catastro. El VALOR no importa --lo que se espera se
+# lee del propio .bin, asi que sobrevive a un reproceso del ETL--; solo importa
+# que sea una fila que exista.
+FILA_PRUEBA = 900_000
+# Un punto en el Pacifico, dentro de LIMITES y sin un solo poligono del
+# Catastro: el control negativo.
+MAR = (-30.0, -76.0)
+
+FICHA_ABIERTA = "!!document.querySelector('dialog.ficha[open]')"
+
+
+def leer_fila(k=FILA_PRUEBA):
+    """Una fila del .bin COMPILADO, leida con los offsets que declara su manifest."""
+    man = json.load(open(os.path.join(DIST, "datos", "manifest.json"), encoding="utf-8"))
+    capa = man["capas"]["cbn_puntos"]
+    v = {}
+    with open(os.path.join(DIST, "datos", capa["archivo"]), "rb") as fh:
+        for nombre, c in capa["campos"].items():
+            fh.seek(c["offset"] + ANCHO_BIN[c["tipo"]] * k)
+            v[nombre] = np.frombuffer(fh.read(ANCHO_BIN[c["tipo"]]), dtype=NP_BIN[c["tipo"]])[0]
+    return man, v
+
+
+def clic(cdp, x, y):
+    cdp.enviar("Input.dispatchMouseEvent", type="mousePressed", x=x, y=y,
+               button="left", clickCount=1, buttons=1)
+    cdp.enviar("Input.dispatchMouseEvent", type="mouseReleased", x=x, y=y,
+               button="left", clickCount=1, buttons=0)
+
+
+def pulsar_enter(cdp):
+    """Un pulsado FIEL: keyDown --Chrome genera el keypress si nadie lo impide--
+    y keyUp. Mandar ademas un 'char' a mano no simula un teclado, simula dos
+    pulsados, y activaria el boton que la ficha acaba de enfocar."""
+    cdp.enviar("Input.dispatchKeyEvent", type="keyDown", key="Enter", code="Enter",
+               text="\r", unmodifiedText="\r", windowsVirtualKeyCode=13, nativeVirtualKeyCode=13)
+    time.sleep(0.2)
+    cdp.enviar("Input.dispatchKeyEvent", type="keyUp", key="Enter", code="Enter",
+               windowsVirtualKeyCode=13, nativeVirtualKeyCode=13)
+
+
+def enfocar_mapa(cdp, segundos=6):
+    """Deja el foco EN el contenedor del mapa y comprueba que se queda.
+
+    Cerrar un <dialog> devuelve el foco al elemento anterior de forma asincrona,
+    asi que pedirlo y pulsar Enter acto seguido es una carrera: se vio a V-26
+    caerse sola por esto en una tanda que no tocaba nada del teclado. Se
+    reintenta y se confirma dos veces separadas, o el diagnostico siguiente
+    seria un defecto que no existe."""
+    en_el_mapa = "document.activeElement === document.querySelector('.leaflet-container')"
+    t0 = time.time()
+    while time.time() - t0 < segundos:
+        cdp.evaluar("document.querySelector('.leaflet-container').focus()")
+        if cdp.evaluar(en_el_mapa):
+            time.sleep(0.15)
+            if cdp.evaluar(en_el_mapa):
+                return True
+        time.sleep(0.2)
+    return False
+
+
+def coord_de_la_ficha(cdp):
+    """La coordenada que la ficha ofrece abrir en Google Maps, [lat, lon]."""
+    return cdp.evaluar("""
+        (() => {
+          const a = document.querySelector('.ficha-acciones a')
+          if (!a) return null
+          const m = /query=(-?[\\d.]+)%2C(-?[\\d.]+)/.exec(a.getAttribute('href'))
+          return m ? [parseFloat(m[1]), parseFloat(m[2])] : null
+        })()
+    """)
+
+
+def centro_del_mapa(cdp):
+    r = json.loads(cdp.evaluar(
+        "JSON.stringify(document.querySelector('.mapa').getBoundingClientRect())"))
+    return r["x"] + r["width"] / 2, r["y"] + r["height"] / 2
+
+
 def capturar(cdp, ruta):
     png = cdp.enviar("Page.captureScreenshot", format="png")["data"]
     with open(ruta, "wb") as fh:
@@ -346,6 +429,216 @@ def main():
         recuperada = cdp.evaluar("document.querySelector('.cifra-num b').textContent")
         prueba("V-21b al abrir el enlace se recupera la MISMA cifra",
                str(recuperada) == str(despues), f"{despues} → {recuperada}")
+
+        # --- la ficha del punto, de punta a punta ---------------------------
+        # Esto NO comprueba que el <dialog> exista --existe siempre, montado y
+        # cerrado-- sino que un CLIC REAL lo abre CON EL PUNTO DE DEBAJO.
+        #
+        # El defecto que caza ya se publicó: `.deck-overlay` lleva
+        # pointer-events:none para que Leaflet conserve el arrastre,
+        # `pointer-events` SE HEREDA, y con el onClick de la capa deck.gl no
+        # recibía nunca el evento. La ficha entera —12 atributos, chip de color,
+        # enlaces a Maps y Earth— estuvo escrita, compilada y publicada sin que
+        # se pudiera abrir, y ninguna aserción lo miraba.
+        print("\n=== la ficha del punto")
+        man_bin, fila = leer_fila()
+        lat_p, lon_p = float(fila["lat"]), float(fila["lon"])
+        uso_p = man_bin["usos"][int(fila["uso"])]["etiqueta"]
+
+        # El punto se encuadra EN EL CENTRO con ?lat=&lon=&z=, que es estado que
+        # la app ya lee. Así la prueba no depende de cazar un píxel pintado ni de
+        # una coordenada escrita a mano que un reproceso del ETL invalidaría: lo
+        # que se espera sale del propio .bin compilado.
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=f"{url}?lat={lat_p:.6f}&lon={lon_p:.6f}&z=15")
+        esperar(cdp, "!!document.querySelector('.app')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+
+        cx, cy = centro_del_mapa(cdp)
+        # Se reintenta el clic hasta que la ficha aparezca: lo que se espera es
+        # la CONDICIÓN, no un reloj, y el primer fotograma de deck.gl puede no
+        # haber salido todavía.
+        t0 = time.time()
+        while time.time() - t0 < 20 and not cdp.evaluar(FICHA_ABIERTA):
+            clic(cdp, cx, cy)
+            time.sleep(0.5)
+        abierta = cdp.evaluar(FICHA_ABIERTA)
+        prueba("V-22 un clic en un punto abre la ficha", abierta,
+               f"{time.time() - t0:.1f} s")
+
+        if abierta:
+            coord = coord_de_la_ficha(cdp)
+            # LA ASERCIÓN QUE IMPORTA. Abrir la ficha de OTRO punto —por un
+            # desfase de índice o por casar mal el espacio de coordenadas de
+            # Leaflet con el del lienzo de deck— pasaría V-22 tan campante.
+            # 0,001° son ~110 m: holgado frente a los ~21 m que abarca la
+            # tolerancia de picking a este zoom, y cinco órdenes de magnitud más
+            # estrecho que «algún sitio de Chile».
+            cerca = (coord is not None
+                     and abs(coord[0] - lat_p) < 0.001 and abs(coord[1] - lon_p) < 0.001)
+            prueba("V-23 la ficha es la del punto pulsado", cerca,
+                   f"{coord} vs [{lat_p:.5f}, {lon_p:.5f}] · {uso_p}")
+            n_filas = cdp.evaluar("document.querySelectorAll('.ficha tbody tr').length")
+            con_texto = cdp.evaluar(
+                "!!document.querySelector('.ficha tbody tr td').textContent.trim()")
+            # Que se abra un diálogo EN BLANCO no es que funcione.
+            prueba("V-23b la ficha trae sus 12 filas con contenido",
+                   n_filas == 12 and con_texto, f"{n_filas} filas")
+            capturar(cdp, os.path.join(AQUI, "captura-ficha.png"))
+            cdp.evaluar("document.querySelector('dialog.ficha[open]').close()")
+            esperar(cdp, f"!({FICHA_ABIERTA})", segundos=10)
+
+        # V-22b: LA TOLERANCIA DE PICKING, que es media reparación. Con el punto
+        # centrado al píxel, un pick de radio 0 acierta igual y V-22 pasa —medido
+        # reintroduciendo el defecto—, así que sin esta aserción quedaría sin
+        # cubrir justo el segundo síntoma: puntos de ~1 px que hay que acertar al
+        # píxel, indistinguible desde fuera de no tener ficha.
+        #
+        # El desplazamiento se calcula con la MISMA fórmula que
+        # radiosDesdeSuperficie: hay que caer fuera del disco dibujado —o no se
+        # estaría midiendo la tolerancia— y dentro de los 6 px de tolerancia.
+        r_dibujado = min(12.0, max(0.9, 0.65 * float(fila["ha"]) ** 0.5))
+        desvio = r_dibujado + 2.5
+        if desvio > 5.5:
+            print(f"    V-22b NO APLICA: el punto se dibuja con r={r_dibujado:.1f} px "
+                  "y no queda hueco entre su borde y la tolerancia")
+        else:
+            t0 = time.time()
+            while time.time() - t0 < 12 and not cdp.evaluar(FICHA_ABIERTA):
+                clic(cdp, cx + desvio, cy)
+                time.sleep(0.5)
+            junto = cdp.evaluar(FICHA_ABIERTA)
+            prueba("V-22b un clic JUNTO al punto también lo abre", junto,
+                   f"a {desvio:.1f} px de un disco de r={r_dibujado:.1f} px")
+            if junto:
+                cdp.evaluar("document.querySelector('dialog.ficha[open]').close()")
+                esperar(cdp, f"!({FICHA_ABIERTA})", segundos=10)
+
+        # V-26: la misma ficha SIN RATÓN. Los 1,8 M de puntos viven en un lienzo
+        # y no son nodos tabulables, así que sin esta ruta la ficha es
+        # inalcanzable con teclado por muy bien que funcione el clic.
+        con_foco = enfocar_mapa(cdp)
+        pulsar_enter(cdp)
+        abierta_tec = esperar(cdp, FICHA_ABIERTA, segundos=10)
+        prueba("V-26 Enter sobre el mapa abre la ficha", abierta_tec,
+               f"ruta de teclado · foco en el mapa: {con_foco}")
+        if abierta_tec:
+            coord_t = coord_de_la_ficha(cdp)
+            # Y sigue abierta al terminar el pulsado. La ficha se abre en el
+            # keydown y su <dialog> se lleva el foco al botón de cerrar, así que
+            # sin preventDefault el keypress DEL MISMO Enter activa ese botón:
+            # medido, la ficha se abría y se cerraba dentro del mismo pulsado y
+            # desde fuera parecía que la tecla no hacía nada.
+            prueba("V-26b Enter abre la MISMA ficha que el clic",
+                   coord_t is not None and abs(coord_t[0] - lat_p) < 0.001
+                   and abs(coord_t[1] - lon_p) < 0.001, str(coord_t))
+            cdp.evaluar("document.querySelector('dialog.ficha[open]').close()")
+            esperar(cdp, f"!({FICHA_ABIERTA})", segundos=10)
+
+        # V-27: la guarda del target. Los botones de zoom viven DENTRO del
+        # contenedor y disableClickPropagation no detiene keydown.
+        cdp.evaluar("document.querySelector('.leaflet-control-zoom-in').focus()")
+        esperar(cdp, "document.activeElement.classList.contains('leaflet-control-zoom-in')",
+                segundos=5)
+        pulsar_enter(cdp)
+        time.sleep(0.8)
+        prueba("V-27 Enter en «Acercar» NO abre ficha", not cdp.evaluar(FICHA_ABIERTA),
+               "la guarda del target")
+
+        # --- controles negativos: el mar ------------------------------------
+        # Sin esto, un pickObject que devolviera siempre el índice 0 pasaría
+        # todo lo de arriba.
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=f"{url}?lat={MAR[0]}&lon={MAR[1]}&z=10")
+        esperar(cdp, "!!document.querySelector('.app')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+        cx, cy = centro_del_mapa(cdp)
+        clic(cdp, cx, cy)
+        time.sleep(1.0)
+        prueba("V-24 un clic en el mar NO abre ficha", not cdp.evaluar(FICHA_ABIERTA),
+               f"{MAR[0]}, {MAR[1]}")
+
+        enfocar_mapa(cdp)
+        pulsar_enter(cdp)
+        time.sleep(1.0)
+        aviso = cdp.evaluar("document.querySelector('.aviso-mapa').textContent.trim()")
+        # El mapa no cambia al fallar, así que el único acuse posible es el
+        # hablado. Sin él, con teclado no hay forma de distinguir «aquí no hay
+        # nada» de «esto no funciona».
+        prueba("V-25 Enter en vacío no abre ficha y lo anuncia",
+               not cdp.evaluar(FICHA_ABIERTA) and bool(aviso), repr(aviso))
+
+        # V-29: la regresión que este cambio podía introducir. Si el lienzo de
+        # deck se comiera los eventos, el mapa dejaría de arrastrarse.
+        antes_t = cdp.evaluar("document.querySelector('.leaflet-map-pane').style.transform")
+        cdp.enviar("Input.dispatchMouseEvent", type="mousePressed", x=cx, y=cy,
+                   button="left", clickCount=1, buttons=1)
+        for dx in (20, 60, 120):
+            cdp.enviar("Input.dispatchMouseEvent", type="mouseMoved", x=cx + dx, y=cy,
+                       button="left", buttons=1)
+        cdp.enviar("Input.dispatchMouseEvent", type="mouseReleased", x=cx + 120, y=cy,
+                   button="left", clickCount=1, buttons=0)
+        time.sleep(1.0)
+        despues_t = cdp.evaluar("document.querySelector('.leaflet-map-pane').style.transform")
+        # OJO CON LO QUE ESTA ASERCIÓN NO DICE. Medido reintroduciendo
+        # `pointer-events: auto` en `.deck-overlay`: el arrastre SIGUE
+        # funcionando, porque el mousedown burbujea del lienzo al contenedor y
+        # ahí es donde escucha Leaflet. Lo que ese defecto rompe es el FOCO por
+        # ratón —deck.gl llama a preventDefault—, y quien lo caza es V-28b.
+        # Ésta cubre otra cosa: que nadie enrute el arrastre por deck.
+        prueba("V-29 el arrastre del mapa sigue vivo", antes_t != despues_t,
+               f"{antes_t} → {despues_t}")
+
+        # --- la mira, sobre una carga LIMPIA --------------------------------
+        # Va aparte y con recarga a propósito. :focus-visible es una HEURÍSTICA
+        # con memoria: una vez que ha habido teclado, Chrome marca también los
+        # focos posteriores, así que medirla después de las pruebas de Enter da
+        # opacity 1 tras un clic de ratón —medido, y se puso roja sola con el
+        # CSS correcto—. Una aserción que se cae por el historial de la prueba
+        # y no por el defecto acaba desactivada.
+        print("\n=== la mira del recorrido por teclado")
+        opac = "getComputedStyle(document.querySelector('.mira')).opacity"
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=f"{url}?lat={MAR[0]}&lon={MAR[1]}&z=10")
+        esperar(cdp, "!!document.querySelector('.app')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+
+        existe = cdp.evaluar("!!document.querySelector('.mira')")
+        prueba("V-28 la mira existe y nace oculta",
+               existe and cdp.evaluar(opac) == "0",
+               f"existe={existe} · opacity={cdp.evaluar(opac) if existe else '—'}")
+
+        # Sobre el mar, para que el clic no abra ninguna ficha.
+        cx, cy = centro_del_mapa(cdp)
+        clic(cdp, cx, cy)
+        time.sleep(0.5)
+        enfocado_raton = cdp.evaluar(
+            "document.activeElement === document.querySelector('.leaflet-container')")
+        # Ésta es la mitad que distingue :focus-visible de :focus. Leaflet enfoca
+        # el contenedor en cada mousedown, así que con :focus la mira saldría
+        # tras CUALQUIER clic y dejaría de significar «aquí va a picar Enter».
+        # Exige además que el clic SÍ enfoque: si no lo hiciera, no estaría
+        # midiendo nada —y es justo lo que rompe `pointer-events: auto`—.
+        prueba("V-28b el foco por ratón no saca la mira",
+               enfocado_raton and cdp.evaluar(opac) == "0",
+               f"enfocado={enfocado_raton} · opacity={cdp.evaluar(opac)}")
+
+        cdp.evaluar("document.activeElement.blur()")
+        for _ in range(60):
+            for t in ("rawKeyDown", "keyUp"):
+                cdp.enviar("Input.dispatchKeyEvent", type=t, key="Tab", code="Tab",
+                           windowsVirtualKeyCode=9, nativeVirtualKeyCode=9)
+            if cdp.evaluar(
+                    "document.activeElement === document.querySelector('.leaflet-container')"):
+                break
+        visible = cdp.evaluar(opac)
+        prueba("V-28c tabulando hasta el mapa, la mira aparece", visible == "1",
+               f"opacity={visible}")
+        if visible == "1":
+            capturar(cdp, os.path.join(AQUI, "captura-mira.png"))
 
         print("\n" + "=" * 62)
         print(f"  {'TODO EN VERDE' if not fallos else str(len(fallos)) + ' EN ROJO'}")

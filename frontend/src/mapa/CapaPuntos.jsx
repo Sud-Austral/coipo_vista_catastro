@@ -47,7 +47,7 @@ function radiosDesdeSuperficie(ha, n) {
   return r
 }
 
-export default function CapaPuntos({ map, datos, paleta, filtro, onPunto }) {
+export default function CapaPuntos({ map, datos, paleta, filtro, onPunto, onFallo }) {
   const radio = useMemo(() => radiosDesdeSuperficie(datos.ha, datos.n), [datos])
 
   const deckRef = useRef(null)
@@ -123,6 +123,106 @@ export default function CapaPuntos({ map, datos, paleta, filtro, onPunto }) {
     }
   }, [map, datos])
 
+  // --- la mira del recorrido por teclado -----------------------------------
+  // Va en el CONTENEDOR del mapa y no como control de Leaflet --que es lo que
+  // hace EtiquetaImagen-- porque los controles se anclan a las esquinas y esto
+  // tiene que quedar en el centro exacto, que es donde pica Enter.
+  //
+  // Solo se ve cuando se esta navegando CON EL TECLADO, y el modo se lleva a
+  // mano en vez de con :focus-visible. Se probo con :focus-visible y sale mal:
+  // el manejador de teclado de Leaflet enfoca el contenedor POR SCRIPT en cada
+  // mousedown, y la especificacion manda que un foco programatico herede
+  // focus-visible cuando no habia elemento enfocado antes. O sea que, recien
+  // cargada la pagina, el primer clic de raton ya sacaba la mira. Medido: la
+  // asercion se puso roja con el CSS "correcto".
+  //
+  // Con dos escuchas en captura el modo es determinista y ademas se comporta
+  // mejor: tras un clic la mira desaparece, y vuelve en cuanto se toca una
+  // flecha, que es justo cuando hace falta.
+  useEffect(() => {
+    if (!map) return
+    const cont = map.getContainer()
+    const mira = L.DomUtil.create('div', 'mira', cont)
+    mira.setAttribute('aria-hidden', 'true')
+    const teclado = () => cont.classList.add('teclado')
+    const raton = () => cont.classList.remove('teclado')
+    document.addEventListener('keydown', teclado, true)
+    document.addEventListener('pointerdown', raton, true)
+    return () => {
+      document.removeEventListener('keydown', teclado, true)
+      document.removeEventListener('pointerdown', raton, true)
+      mira.remove()
+    }
+  }, [map])
+
+  // --- seleccion: del evento de Leaflet al picking de deck.gl --------------
+  //
+  // EL onClick DE LA CAPA NO SIRVE AQUI, y no hay que "restaurarlo": el
+  // contenedor lleva pointer-events:none para que el arrastre y el zoom sigan
+  // siendo de Leaflet, `pointer-events` SE HEREDA, y deck.gl engancha sus
+  // escuchas al propio lienzo (eventRoot = props.parent?.querySelector(
+  // '.deck-events-root') || canvas, y aqui no se pasa `parent`). O sea: el
+  // lienzo no es blanco de ningun evento de puntero y ese onClick no se dispara
+  // jamas. Se publico asi, con la ficha entera escrita e inalcanzable.
+  //
+  // Enrutar por Leaflet ademas sale MEJOR que el onClick de deck: Leaflet
+  // suprime el click cuando el mapa se arrastro (_fireDOMEvent ->
+  // _draggableMoved), asi que soltar el raton al final de un paneo no abre
+  // ninguna ficha. deck.gl no distingue las dos cosas.
+  useEffect(() => {
+    if (!map) return
+
+    // El radio es tolerancia de PICKING, no de dibujo. Con radiusMinPixels 0,6
+    // el punto mide ~1 px y sin tolerancia habria que acertarle al pixel: el
+    // sintoma seria identico al de no tener ficha. Es el equivalente al
+    // tolerance:8 que el visor de prevencion le pone a su renderer de Leaflet.
+    const picar = (x, y, radius) =>
+      deckRef.current?.pickObject({ x, y, radius, layerIds: ['catastro-puntos'] })
+
+    const alClic = (e) => {
+      // containerPoint YA es el pixel CSS del lienzo: el contenedor se coloca en
+      // containerPointToLayerPoint([0,0]) y mide getSize(), asi que las dos
+      // esquinas superiores izquierdas coinciden y no hay nada que convertir.
+      const info = picar(e.containerPoint.x, e.containerPoint.y, 6)
+      // Con datos binarios deck.gl devuelve info.index y `info.object` es
+      // undefined: la ficha se arma desde el indice, no desde el objeto.
+      if (info && info.index >= 0) onPunto?.(info.index)
+    }
+
+    // Los 1,8 M de puntos viven en un lienzo, asi que no son nodos tabulables y
+    // sin esto la ficha es inalcanzable sin raton. Las flechas ya desplazan el
+    // mapa --manejador de teclado de Leaflet-- bajo la mira fija, y Enter pica
+    // en el centro.
+    const alTecla = (e) => {
+      const ev = e.originalEvent
+      if (ev.key !== 'Enter') return
+      // OBLIGATORIO: los botones de zoom viven DENTRO del contenedor y
+      // disableClickPropagation detiene click y mousedown, no keydown. Sin esta
+      // guarda, pulsar Enter sobre «Acercar» abriria ademas una ficha.
+      if (ev.target !== map.getContainer()) return
+      // TAMBIEN OBLIGATORIO, y no es una precaucion: la ficha se abre en el
+      // keydown y su <dialog> se lleva el foco al boton de cerrar, asi que el
+      // keypress DEL MISMO PULSADO cae sobre ese boton y lo activa. Medido: la
+      // ficha se abria y se cerraba dentro del mismo Enter --abre, click en
+      // BUTTON, cierra-- y desde fuera parecia que la tecla no hacia nada.
+      // preventDefault en el keydown es lo que impide que ese keypress exista.
+      ev.preventDefault()
+      const s = map.getSize()
+      // Radio mayor que el del raton: no hay puntero fino que ajustar, y el
+      // paso de las flechas de Leaflet es de 80 px.
+      const info = picar(s.x / 2, s.y / 2, 12)
+      if (info && info.index >= 0) onPunto?.(info.index)
+      else onFallo?.()
+    }
+
+    map.on('click', alClic)
+    map.on('keydown', alTecla)
+    return () => {
+      map.off('click', alClic)
+      map.off('keydown', alTecla)
+    }
+  }, [map, onPunto, onFallo])
+
   // --- capa: se reconstruye al cambiar filtro o paleta ---------------------
   useEffect(() => {
     const deckgl = deckRef.current
@@ -164,15 +264,14 @@ export default function CapaPuntos({ map, datos, paleta, filtro, onPunto }) {
       // vez de 4: 1,8 MB por cambio de filtro en lugar de 7,3 MB.
       extensions: [new DataFilterExtension({ filterSize: 1 })],
       filterRange: [0.5, 1.5],
-      onClick: (info) => {
-        // Con datos binarios deck.gl devuelve info.index y `info.object` es
-        // undefined: la ficha se arma desde el indice, no desde el objeto.
-        if (info && info.index >= 0 && onPunto) onPunto(info.index)
-      },
+      // Sin onClick: no llegaria nunca. La seleccion la enruta el efecto de
+      // arriba desde los eventos de Leaflet. `pickable: true` SI hace falta,
+      // porque es lo que hace que la capa se dibuje en el bufer de picking que
+      // lee pickObject.
       updateTriggers: { getFilterValue: filtro, getFillColor: paleta, getRadius: radio },
     })
     deckgl.setProps({ layers: [capa] })
-  }, [datos, paleta, filtro, radio, onPunto])
+  }, [datos, paleta, filtro, radio])
 
   return null
 }

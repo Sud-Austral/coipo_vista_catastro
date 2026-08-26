@@ -347,6 +347,37 @@
    y el zoom los sigue manejando Leaflet. */
 .deck-overlay { position: absolute; left: 0; top: 0; pointer-events: none; }
 
+/* ---------- mira del recorrido por teclado ----------
+   Los 1,8 M de puntos viven en un lienzo y no son tabulables, así que la única
+   forma de alcanzarlos sin ratón es mover el mapa bajo un punto fijo. Ésta es
+   ese punto: marca DÓNDE va a picar Enter.
+
+   La clase .teclado la pone y la quita CapaPuntos según el último modo de
+   interacción, y NO se usa :focus-visible: Leaflet enfoca el contenedor por
+   script en cada mousedown, y un foco programático hereda focus-visible cuando
+   no había elemento enfocado antes, así que recién cargada la página el primer
+   clic de ratón ya sacaba la mira. Está medido y hay aserción (V-28b).
+
+   El anillo va en blanco con dos sombras negras --una fuera y otra dentro--
+   porque tiene que leerse igual sobre el mapa claro, sobre el satelital y sobre
+   una mancha de puntos: un solo color no sirve para los cuatro mapas base. */
+.mira {
+  position: absolute; left: 50%; top: 50%; width: 26px; height: 26px;
+  margin: -13px 0 0 -13px; z-index: 650; pointer-events: none; opacity: 0;
+  border: 2px solid #fff; border-radius: 50%;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.8), inset 0 0 0 1px rgb(0 0 0 / 0.8);
+}
+.mira::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 4px; height: 4px;
+  margin: -2px 0 0 -2px; border-radius: 50%; background: #fff;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.8);
+}
+.leaflet-container.teclado:focus .mira { opacity: 1; }
+/* El contenedor lleva tabindex=0 puesto por Leaflet, así que recibe el anillo
+   de foco del navegador sobre TODO el mapa. La mira ya dice dónde está el foco
+   y con más claridad. */
+.leaflet-container:focus, .leaflet-container:focus-visible { outline: none; }
+
 /* ---------- estados ---------- */
 .descargando {
   position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
