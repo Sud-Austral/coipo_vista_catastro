@@ -118,7 +118,7 @@ export function resumenNacional(manifest) {
  * sin este dato» convertiría el 78 % del país en un agujero de información
  * cuando es una respuesta.
  */
-const SIN_DATO_POR_COL = {
+export const SIN_DATO_POR_COL = {
   subuso: 'subuso',
   estruc: 'estructura',
   tifo: 'tipoForestal',

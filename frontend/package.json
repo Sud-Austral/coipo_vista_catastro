@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
+    "verify:cascada": "node verificacion/marginales.mjs --negativas",
     "verify:base": "node scripts/verify-base.mjs"
   },
   "dependencies": {

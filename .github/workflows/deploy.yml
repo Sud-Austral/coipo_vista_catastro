@@ -61,6 +61,15 @@ jobs:
         working-directory: frontend
       - run: npm run lint
         working-directory: frontend
+
+      # LA CASCADA DE LOS FILTROS, contrastada contra un oraculo independiente
+      # sobre las 1.827.933 filas commiteadas. Va ANTES del build a proposito:
+      # es aritmetica, tarda segundos y no necesita navegador, asi que si el
+      # cruce esta roto no tiene sentido seguir. Es lo unico de la interfaz que
+      # el CI puede correr -- frontend/verificacion/verificar.py necesita Chrome.
+      - run: node verificacion/marginales.mjs --negativas
+        working-directory: frontend
+
       - run: npm run build
         working-directory: frontend
 
