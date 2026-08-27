@@ -66,6 +66,22 @@ const temaOscuro = () =>
 const menosMovimiento = () =>
   window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+/**
+ * Tope de acercamiento del encuadre automatico. 123 clases del vocabulario
+ * devuelven un solo punto y su caja tiene area cero: sin tope el mapa se iria al
+ * zoom maximo de la capa sobre un centroide suelto, y los fondos se quedan sin
+ * tesela nativa entre z13 y z16.
+ */
+const MAX_ZOOM_ENCUADRE = 11
+/** Margen del encuadre, en pixeles. */
+const PADDING_ENCUADRE = [24, 24]
+/**
+ * Cuanto se puede desplazar el centro sin que valga la pena volar. Son los
+ * mismos 24 px del margen a proposito: por debajo del margen que el encuadre
+ * deja, el encuadre no esta afirmando nada.
+ */
+const HOLGURA_ENCUADRE = 24
+
 export default function App() {
   const contenedor = useRef(null)
   const [map, setMap] = useState(null)
@@ -364,8 +380,18 @@ export default function App() {
     if (!manifest || !filtrosDeLaUrl.current) return
     const restaurados = filtrosDesdeURL(filtrosDeLaUrl.current, manifest)
     filtrosDeLaUrl.current = null
-    if (Object.keys(restaurados).length) setFiltros(restaurados)
+    // INCONDICIONAL, y la guarda que habia aqui era un cepo: si un enlace traia
+    // codigos que un reproceso del ETL ya borro, `restaurados` sale vacio, no
+    // habia setState, no habia re-render, y `restaurando` se quedaba clavado en
+    // el true del ultimo commit. El encuadre no volvia a mirar nunca.
+    setFiltros(restaurados)
   }, [manifest])
+
+  // Cierto mientras queden codigos de la URL por traducir a indices. Se lee EN
+  // EL RENDER, no se cuentan commits: predecir cuantos van a llegar y que llegue
+  // uno menos deja un credito sin gastar que se come el primer filtro que haga
+  // el usuario.
+  const restaurando = Boolean(usosDeLaUrl.current || filtrosDeLaUrl.current)
 
   // La URL refleja el estado. pushState para lo que se reconoce como «hice
   // algo»; el paneo va con replaceState desde el efecto del mapa.
@@ -467,41 +493,112 @@ export default function App() {
   const resumen = cruce?.resumen ?? nacional
   const marginales = cruce?.marginales ?? nacional
 
-  // ---------- encuadre por ámbito ----------
-  // Al elegir una región o una comuna el mapa VA ahí. Sin esto, filtrar deja el
-  // encuadre nacional y la región elegida queda como una mancha diminuta: el
-  // panel dice una cosa y el mapa muestra otra.
+  // ---------- encuadre ----------
+  // El mapa VA a lo que se acaba de filtrar, sea un territorio, una clase o un
+  // cruce de las dos. Sin esto el panel dice una cosa y el mapa muestra otra.
   //
-  // El bbox sale del manifest, calculado por el ETL sobre los centroides: en el
-  // cliente habría que recorrer 1,8 M de filas para obtenerlo.
+  // UN SOLO EFECTO, y por construcción y no por convención: `comunasDelAmbito`
+  // es una de las entradas de `filtroCompleto`, así que elegir una región cambia
+  // el ámbito Y el filtro en el MISMO commit. Con dos efectos habría dos vuelos
+  // en el mismo flush, Leaflet abortaría el primero al arrancar el segundo, y
+  // cuál gana lo decidiría el orden de declaración en este archivo.
   //
-  // SE RESPETA EL ENCUADRE DE UNA URL COMPARTIDA. Si alguien abre un enlace con
-  // ?lat=&lon=&z= y además ?reg=, ese enlace eligió deliberadamente un encuadre;
-  // reencuadrar al montar se lo pisaría. Por eso el primer ámbito que viene de
-  // la URL se marca como ya encuadrado.
-  const encuadrado = useRef(inicial.centro ? claveAmbito(inicial.ambito) : null)
+  // El destino se decide POR PRIORIDAD y en un solo sitio, para que no haya dos
+  // fuentes que arbitrar.
+  const destino = useMemo(() => {
+    if (!manifest) return null
+    const cajaAmbito = cajaDelAmbito(ambito, manifest)
+
+    // LOS RÍOS. La región 14 declara 79.727 filas y CERO comunas en el manifest
+    // —sus filas llevan el centinela en la columna comuna, y de hecho el
+    // `sin_dato.comuna` nacional son 79.731—, así que `comunasDelAmbito` sale
+    // vacío y el cruce NO se entera de que hay un ámbito elegido. Sin esta rama,
+    // marcar cualquier casilla con Los Ríos puesto mandaría el mapa a la caja
+    // NACIONAL de esa casilla mientras el panel rotula «Los Ríos».
+    const ambitoSinFiltrar = Boolean(ambito.region) && comunasDelAmbito.size === 0
+    if (ambitoSinFiltrar && cajaAmbito) return cajaAmbito
+
+    // Lo que de verdad pasó el filtro. Sale del cruce, que ya recorrió las filas.
+    if (cruce?.caja) return cruce.caja
+    // El filtro no dejó ni un punto, pero hay territorio: se queda en él en vez
+    // de saltar al país. No es un caso raro: 834 de las 2.979 combinaciones de
+    // uso × comuna devuelven cero filas.
+    if (cajaAmbito) return cajaAmbito
+    // Filtro sin puntos y sin territorio: NO se mueve nada. Irse al país entero
+    // por un recorte vacío sería lo contrario de lo que el usuario pidió.
+    if (hayFiltro) return null
+    // Nada elegido: la vista inicial, igual que «volver a Chile».
+    return 'inicial'
+  }, [manifest, ambito, comunasDelAmbito, cruce, hayFiltro])
+
+  // El objetivo del vuelo EN CURSO. A mitad de un flyTo Leaflet va actualizando
+  // centro y zoom fotograma a fotograma, así que un segundo filtro dentro de los
+  // 600 ms leería una vista interpolada que no es de nadie y decidiría mal si
+  // hace falta moverse. Se limpia en moveend, que dispara tanto al aterrizar
+  // como cuando el usuario arrastra y cancela el vuelo.
+  const vuelo = useRef(null)
   useEffect(() => {
-    if (!map || !manifest) return
-    const clave = claveAmbito(ambito)
-    if (encuadrado.current === clave) return
-    encuadrado.current = clave
-    const caja = cajaDelAmbito(ambito, manifest)
-    if (!caja) {
-      map.flyTo(VISTA_INICIAL.center, VISTA_INICIAL.zoom, {
-        animate: !menosMovimiento(),
-        duration: 0.6,
-      })
+    if (!map) return
+    const al = () => { vuelo.current = null }
+    map.on('moveend', al)
+    return () => { map.off('moveend', al) }
+  }, [map])
+
+  // Un enlace con ?lat=&lon= eligió deliberadamente un encuadre y manda sobre el
+  // automático. El centinela se gasta en la PRIMERA evaluación con el estado ya
+  // completo —de ahí la guarda de `restaurando`— y no vuelve a estorbar.
+  const encuadreDeLaURL = useRef(Boolean(inicial.centro))
+  useEffect(() => {
+    if (!map || !manifest || restaurando) return
+    if (encuadreDeLaURL.current) {
+      encuadreDeLaURL.current = false
       return
     }
-    map.flyToBounds([[caja[1], caja[0]], [caja[3], caja[2]]], {
-      padding: [24, 24],
-      // Sin animación para quien pidió menos movimiento: un vuelo de 600 ms al
-      // cambiar de región es exactamente lo que esa preferencia evita.
-      animate: !menosMovimiento(),
-      duration: 0.6,
-      maxZoom: 11,
-    })
-  }, [map, manifest, ambito])
+    if (!destino) return
+
+    let centro
+    let zoom
+    if (destino === 'inicial') {
+      centro = L.latLng(VISTA_INICIAL.center)
+      zoom = VISTA_INICIAL.zoom
+    } else {
+      const caja = L.latLngBounds(
+        [destino[1], destino[0]],
+        [destino[3], destino[2]],
+      )
+      // El tope de zoom es obligatorio, no estético: 123 clases del vocabulario
+      // devuelven UNA sola fila —107 especies, 15 comunas entre ellas Santiago, y
+      // el MN Isla Cachagua— y su caja tiene área cero. Sin tope getBoundsZoom
+      // devuelve el máximo de la capa, y los fondos tienen maxNativeZoom entre 13
+      // y 16: el usuario aterrizaría en una tesela estirada sobre un punto suelto.
+      zoom = Math.min(MAX_ZOOM_ENCUADRE, map.getBoundsZoom(caja, false, PADDING_ENCUADRE))
+      centro = caja.getCenter()
+    }
+
+    // NO SE VUELA SI EL VUELO NO MUEVE NADA. Se compara el objetivo COMPLETO
+    // —centro y zoom, ya capado— contra dónde va a estar el mapa, y no un
+    // solapamiento de rectángulos, que dejaría quieto medio salto entre comunas
+    // vecinas. El umbral son los mismos 24 px que el encuadre deja de margen: un
+    // desplazamiento menor que ese margen está por debajo de la precisión que el
+    // propio encuadre afirma tener.
+    //
+    // Sin esto, 8 de los 9 usos encuadran a algo casi idéntico al bbox nacional
+    // —medido: Bosques da [-75,71 -55,97 -66,43 -17,65] contra el nacional
+    // [-75,72 -56,52 -66,42 -17,50]— y marcar la leyenda clase a clase costaría
+    // nueve vuelos de 600 ms para no moverse del sitio.
+    const donde = vuelo.current ?? { centro: map.getCenter(), zoom: map.getZoom() }
+    if (
+      donde.zoom === zoom &&
+      map.project(donde.centro, zoom).distanceTo(map.project(centro, zoom)) < HOLGURA_ENCUADRE
+    ) {
+      return
+    }
+
+    vuelo.current = { centro, zoom }
+    // Sin animación para quien pidió menos movimiento: un vuelo de 600 ms en
+    // cada clic de casilla es exactamente lo que esa preferencia evita.
+    map.flyTo(centro, zoom, { animate: !menosMovimiento(), duration: 0.6 })
+  }, [map, manifest, destino, restaurando])
 
   const fuenteFecha = BASEMAPS[base]?.fecha ?? null
   const fechaEsri = useFechaImagen(map, fuenteFecha?.tipo === 'esri')
@@ -760,11 +857,6 @@ export default function App() {
   )
 }
 
-
-/** Clave estable del ámbito, para saber si ya se encuadró. */
-function claveAmbito(a) {
-  return `${a?.region ?? ''}|${a?.provincia ?? ''}|${a?.comuna ?? ''}`
-}
 
 /**
  * El bbox del ámbito más profundo que tenga uno. Una provincia no tiene bbox

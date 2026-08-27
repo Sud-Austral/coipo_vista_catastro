@@ -812,6 +812,83 @@ def main():
         prueba("V-38 al limpiar el filtro vuelve todo", vuelta == antes_regs,
                f"{despues_regs - 1} → {vuelta - 1} regiones · {regs_todas - 1} en Arica")
 
+        # --- el encuadre sobre lo filtrado ----------------------------------
+        # El defecto que esto cierra: filtrar y quedarse en la vista nacional. El
+        # panel decia «Palma Chilena» y el mapa seguia ensenando Chile entero,
+        # con los 760 puntos de ese tipo forestal como una mota en la zona
+        # central.
+        #
+        # Se observa por la URL y no por el objeto de Leaflet: la app ya escribe
+        # lat/lon/z en cada moveend, asi que esperar a que cambien es esperar a
+        # que el vuelo TERMINE, y no dormir un numero magico de segundos.
+        #
+        # SE FILTRA POR TIPO FORESTAL a proposito. Son 13 clases, por debajo del
+        # TOPE_LISTA de 40, asi que la lista sale entera y marcar_clase encuentra
+        # la etiqueta. Con la Unidad del SNASPE --94 unidades, lista recortada y
+        # con buscador-- el clic no llega y la prueba mediria otra cosa.
+        print("")
+        print("=== el encuadre sobre lo filtrado")
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=url)
+        esperar(cdp, "!!document.querySelector('.leyenda li')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+
+        def vista():
+            """[lat, lon, z] tal como la propia app los publica en la URL."""
+            v = {}
+            for par in str(cdp.evaluar("window.location.search") or "").lstrip("?").split("&"):
+                k, _, x = par.partition("=")
+                v[k] = x
+            try:
+                return [float(v["lat"]), float(v["lon"]), int(v["z"])]
+            except (KeyError, ValueError):
+                return None
+
+        # La Palma Chilena vive entre -35,186 y -32,164, y la vista inicial esta
+        # en -38 con z=4: si el mapa aterriza ahi arriba no es por azar.
+        marcado = marcar_clase(cdp, "Tipo forestal", "Palma Chilena")
+        llego = esperar(cdp, "/[?&]z=([7-9]|1[0-9])(&|$)/.test(window.location.search)",
+                        segundos=30)
+        v = vista()
+        prueba("V-39 filtrar por una clase encuadra el mapa sobre ella",
+               marcado == "ok" and llego is not None and bool(v)
+               and -35.3 < v[0] < -32.0 and v[2] >= 7,
+               f"{v} · la Palma Chilena va de -35,186 a -32,164")
+
+        # V-40: la vuelta. Quitar el ultimo filtro devuelve la vista inicial, que
+        # es justo lo que promete el boton de limpiar.
+        cdp.evaluar("[...document.querySelectorAll('.limpiar')]"
+                    ".find(b => /Quitar/.test(b.textContent))?.click()")
+        volvio = esperar(cdp, "/[?&]z=4(&|$)/.test(window.location.search)", segundos=30)
+        v2 = vista()
+        prueba("V-40 al quitar el filtro el mapa vuelve a Chile",
+               volvio is not None and bool(v2) and v2[2] == 4, f"{v2}")
+
+        # V-41: un cruce SIN NINGUN PUNTO no salta al pais; se queda en el
+        # territorio elegido. Va por URL y no por clics, y eso es un hallazgo y
+        # no un atajo: la cascada de V-36 esconde las clases sin interseccion,
+        # asi que un cruce vacio es INALCANZABLE pulsando. Por enlace si llega, y
+        # sin la guarda el mapa se iria a la caja nacional de la Araucaria --que
+        # vive entre -39,7 y -37,4-- con el panel rotulando «Magallanes».
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=f"{url}?reg=12&tifo=03")
+        esperar(cdp, "!!document.querySelector('.leyenda li')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+        # Se espera a que la LATITUD entre en Magallanes, no a que exista `z=`:
+        # la app escribe lat/lon/z en el primer moveend, que es el que Leaflet
+        # dispara al acotar la vista inicial contra maxBounds. Esperar `z=` leia
+        # la URL de ANTES del vuelo y medía el estado equivocado.
+        esperar(cdp,
+                "parseFloat(new URLSearchParams(location.search).get('lat')) < -48",
+                segundos=30)
+        v3 = vista()
+        prueba("V-41 un cruce sin ningun punto se queda en el ámbito",
+               bool(v3) and v3[0] < -48.0,
+               f"{v3} · Magallanes va de -56,52 a -48,60; la Araucaria de -39,7 a -37,4")
+
+
         print("\n" + "=" * 62)
         print(f"  {'TODO EN VERDE' if not fallos else str(len(fallos)) + ' EN ROJO'}")
         print("=" * 62)

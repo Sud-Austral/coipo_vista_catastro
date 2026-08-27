@@ -250,6 +250,23 @@ export function resumenYMarginales(datos, filtros = {}) {
   let nTotal = 0
   let haTotal = 0
 
+  // La CAJA de lo que pasa el filtro, para que el mapa pueda encuadrarlo. Sale
+  // de este bucle y no de una pasada aparte: medido sobre el .bin real, anadir
+  // el min/max aqui cuesta 5,4 ms con Bosques (943 k filas) y 8,7 ms con todo el
+  // pais, mientras que recorrer despues la mascara ya calculada cuesta 7,8 y 9,4
+  // -- porque esa segunda pasada paga su propio recorrido entero de 1,83 M de
+  // posiciones, y aqui la fila ya esta en la mano.
+  //
+  // El bbox del RECORTE no lo puede precalcular el ETL: son todas las
+  // combinaciones de diez dimensiones. El del AMBITO si, y sigue viniendo del
+  // manifest (ver cajaDelAmbito en App.jsx).
+  const lonc = datos.lon
+  const latc = datos.lat
+  let x0 = Infinity
+  let y0 = Infinity
+  let x1 = -Infinity
+  let y1 = -Infinity
+
   // CON UNA SOLA DIMENSIÓN ACTIVA no hay nada que acumular aparte: su marginal
   // —«todo menos ella»— es el país entero, y eso ya está contado en el manifest.
   // Sin el atajo hay que acumular también las 1,15 M de filas que fallan el
@@ -274,6 +291,12 @@ export function resumenYMarginales(datos, filtros = {}) {
       mascara[i] = 1
       nTotal += 1
       haTotal += h
+      const x = lonc[i]
+      const y = latc[i]
+      if (x < x0) x0 = x
+      if (x > x1) x1 = x
+      if (y < y0) y0 = y
+      if (y > y1) y1 = y
       for (let d = 0; d < nd; d++) {
         const a = dims[d]
         const v = a.columna[i]
@@ -356,7 +379,15 @@ export function resumenYMarginales(datos, filtros = {}) {
     if (salvo) marginales.sinDato[salvo] = nacionales[salvo]
   }
 
-  return { mascara, resumen, marginales }
+  // null y no una caja degenerada cuando el recorte esta vacio, que NO es un
+  // caso raro: 834 de las 2.979 combinaciones de uso x comuna no devuelven ni
+  // una fila (el 28 %), y 16 clases del vocabulario no tienen ninguna. La guarda
+  // atrapa ademas el caso de lon/lat corruptos: con NaN todas las comparaciones
+  // son falsas, los acumuladores se quedan en Infinity y esto devuelve null en
+  // vez de unos bounds que Leaflet aceptaria para irse a ninguna parte.
+  const caja = x0 <= x1 && y0 <= y1 ? [x0, y0, x1, y1] : null
+
+  return { mascara, resumen, marginales, caja }
 }
 
 /** Los tres subusos de Bosques, con su denominador propio. */
