@@ -3,7 +3,7 @@ import { AVISO_PUNTOS, BASEMAPS, COLOR_USO } from '../config'
 import { fmt, ha, haExacta } from '../formato'
 import { flush } from '../urlState'
 import { FILTROS, NINGUNO, cuentaSeleccion } from '../filtros'
-import GrupoFiltro from './GrupoFiltro'
+import { BotonFiltro, ModalFiltro } from './GrupoFiltro'
 
 /**
  * Cómo se llama cada dimensión dentro de `resumen.sinDato`. Son nombres
@@ -49,6 +49,31 @@ export default function PanelLateral({
   const cabecera = useRef(null)
   const montado = useRef(false)
   const [aviso, setAviso] = useState('')
+  // La dimensión cuyo modal está abierto, o null. UNO solo: montar los ocho
+  // <dialog> a la vez sería montar ocho listas, y la de especies tiene 989
+  // clases.
+  const [abierta, setAbierta] = useState(null)
+  // A qué botón devolver el foco al cerrar el modal. Un <dialog> lo devuelve
+  // solo, pero éste se DESMONTA al cerrarse y entonces el foco cae al body: el
+  // siguiente Tab reempieza desde el principio del panel. Medido: tras cerrar
+  // el modal de Especie, el foco acababa en el botón de Subclase.
+  //
+  // No se puede pedir el foco dentro del propio manejador, porque el botón aún
+  // está debajo de un diálogo modal —y por tanto inerte— cuando corre. Se
+  // apunta a quién enfocar y se hace en un efecto, igual que App.jsx con los
+  // botones de reapertura de los paneles.
+  const aEnfocar = useRef(null)
+  useEffect(() => {
+    if (abierta !== null || !aEnfocar.current) return
+    const col = aEnfocar.current
+    aEnfocar.current = null
+    document.querySelector(`.grupo-filtro[data-col="${col}"]`)?.focus()
+  }, [abierta])
+
+  const cerrarFiltro = () => {
+    aEnfocar.current = abierta
+    setAbierta(null)
+  }
 
   useEffect(() => {
     if (!montado.current) {
@@ -109,6 +134,10 @@ export default function PanelLateral({
   const hayRecorte = Boolean(marginales) && marginales.fuente !== 'manifest'
   const activas = cuentaSeleccion(filtros)
   const paleta = COLOR_USO[oscuro ? 'oscuro' : 'claro']
+  // La clase de uso NO entra en la botonera: su control es la leyenda, que es
+  // la única dimensión con color propio.
+  const tematicos = FILTROS.filter((d) => d.col !== 'uso')
+  const defAbierta = tematicos.find((d) => d.col === abierta) ?? null
 
   const compartir = async () => {
     // flush PRIMERO: la URL se escribe con 250 ms de retraso, así que sin esto
@@ -201,24 +230,6 @@ export default function PanelLateral({
       </section>
 
       <section>
-        <h2>Compartir</h2>
-        <button type="button" className="compartir" onClick={compartir}>
-          Compartir esta vista
-        </button>
-        {/* No es opcional: un enlace con ?reg= entrega cifras REGIONALES, y sin
-            avisarlo se citan como nacionales. */}
-        <p className="nota">
-          El enlace guarda el ámbito, todos los filtros activos y el mapa base. Quien lo abra
-          verá exactamente estas cifras, que no son las nacionales.
-        </p>
-        <span className="aviso-copia" aria-live="polite">{aviso}</span>
-      </section>
-
-      {/* La sección de descargas llega como children y no como diez props más:
-          este panel sigue sin saber nada de exportar. */}
-      {children}
-
-      <section>
         <h2>Clases de uso</h2>
         <p className="nota">
           Pulsa una clase para aislarla en el mapa. El color no es la única marca: el nombre y la
@@ -298,20 +309,23 @@ export default function PanelLateral({
             obligaría a mantener dos estados sincronizados de lo mismo. */}
         <p className="nota">La clase de uso se filtra desde la leyenda de arriba.</p>
 
-        {FILTROS.filter((d) => d.col !== 'uso').map((def) => (
-          <GrupoFiltro
-            key={def.col}
-            def={def}
-            manifest={manifest}
-            // El MARGINAL, no el resumen: la lista de una dimensión no se puede
-            // contar sobre un recorte que ya aplica su propio filtro.
-            cifras={marginales}
-            seleccion={filtros[def.col] ?? NINGUNO}
-            sinDato={marginales?.sinDato?.[SIN_DATO[def.col]] ?? 0}
-            onAlternar={onFiltro}
-            onLimpiar={onLimpiarFiltro}
-          />
-        ))}
+        {/* La botonera. Dos columnas: las ocho dimensiones caben en cuatro
+            filas, y el estado de todas se lee de una vez en vez de tener que
+            desplegarlas una a una. */}
+        <div className="filtro-botonera">
+          {tematicos.map((def) => (
+            <BotonFiltro
+              key={def.col}
+              def={def}
+              manifest={manifest}
+              // El MARGINAL, no el resumen: la lista de una dimensión no se
+              // puede contar sobre un recorte que ya aplica su propio filtro.
+              cifras={marginales}
+              seleccion={filtros[def.col] ?? NINGUNO}
+              onAbrir={setAbierta}
+            />
+          ))}
+        </div>
 
         {activas > 0 && (
           <button type="button" className="limpiar" onClick={onLimpiarFiltros}>
@@ -338,6 +352,29 @@ export default function PanelLateral({
         {BASEMAPS[base]?.nota && <p className="nota">{BASEMAPS[base].nota}</p>}
       </section>
 
+      {/* COMPARTIR Y DESCARGAR VAN AL FONDO, y el orden del panel no es
+          decorativo: primero se acota el ámbito, luego se lee la leyenda, luego
+          se filtra y se configura el fondo, y sólo al final se saca algo fuera.
+          Estaban en tercer y cuarto lugar, por delante de la leyenda y de los
+          filtros, que es a lo que se entra. */}
+      <section>
+        <h2>Compartir</h2>
+        <button type="button" className="compartir" onClick={compartir}>
+          Compartir esta vista
+        </button>
+        {/* No es opcional: un enlace con ?reg= entrega cifras REGIONALES, y sin
+            avisarlo se citan como nacionales. */}
+        <p className="nota">
+          El enlace guarda el ámbito, todos los filtros activos y el mapa base. Quien lo abra
+          verá exactamente estas cifras, que no son las nacionales.
+        </p>
+        <span className="aviso-copia" aria-live="polite">{aviso}</span>
+      </section>
+
+      {/* La sección de descargas llega como children y no como diez props más:
+          este panel sigue sin saber nada de exportar. */}
+      {children}
+
       <footer>
         <p className="procedencia">{AVISO_PUNTOS}</p>
         {/* Las DOS unidades, porque el banner nombra a las dos: la Unidad de
@@ -361,6 +398,24 @@ export default function PanelLateral({
           </p>
         )}
       </footer>
+
+      {/* UN SOLO modal, con la dimensión que toque, y montado sólo cuando hay
+          una abierta. Se monta con `key` para que cada dimensión estrene su
+          estado: sin ella, React reutilizaría la instancia y el buscador y el
+          scroll de una lista aparecerían dentro de la siguiente. */}
+      {defAbierta && (
+        <ModalFiltro
+          key={defAbierta.col}
+          def={defAbierta}
+          manifest={manifest}
+          cifras={marginales}
+          seleccion={filtros[defAbierta.col] ?? NINGUNO}
+          sinDato={marginales?.sinDato?.[SIN_DATO[defAbierta.col]] ?? 0}
+          onAlternar={onFiltro}
+          onLimpiar={onLimpiarFiltro}
+          onCerrar={cerrarFiltro}
+        />
+      )}
     </aside>
   )
 }

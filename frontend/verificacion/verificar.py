@@ -103,49 +103,87 @@ FICHA_ABIERTA = "!!document.querySelector('dialog.ficha[open]')"
 # y con mediana de nueve. Este solo caza que la pasada se dispare aqui tambien.
 TECHO_CRUCE_MS = 400
 
-# Lee un grupo de filtro por su titulo. Devuelve lo que se VE: las filas con su
-# etiqueta, sus subtitulos y su cifra, los pies, y si tiene buscador.
-_GRUPO = """
+MODAL_FILTRO = "!!document.querySelector('dialog.modal-filtro[open]')"
+
+
+def abrir_grupo(cdp, titulo):
+    """Pulsa el boton de una dimension y espera a que su modal este montado.
+
+    Los filtros dejaron de ser ocho <details> desplegables: ahora cada dimension
+    es un boton que abre un <dialog>. El boton conserva la clase `.grupo-filtro`
+    y sus `.gf-titulo` / `.gf-total` / `.gf-activas`, y la lista del modal
+    conserva `.gf-opcion` y compania, asi que el cambio se absorbe AQUI y en
+    `marcar_clase`, y ninguna asercion tuvo que reescribirse."""
+    r = cdp.evaluar("""
+      (() => {
+        const b = [...document.querySelectorAll('.grupo-filtro')]
+          .find(d => d.querySelector('.gf-titulo')?.textContent === %s)
+        if (!b) return 'sin grupo'
+        b.click()
+        return 'ok'
+      })()
+    """ % json.dumps(titulo))
+    if r != "ok":
+        return r
+    return "ok" if esperar(cdp, MODAL_FILTRO, segundos=10) else "no abrio"
+
+
+def cerrar_grupo(cdp):
+    cdp.evaluar("document.querySelector('.modal-filtro .mf-listo')?.click()")
+    esperar(cdp, f"!({MODAL_FILTRO})", segundos=10)
+
+
+# Lo que se VE de una dimension: el boton (total y cuenta de activas) y, dentro
+# del modal, las filas con su etiqueta, sus subtitulos y su cifra, mas los pies.
+_LEER = """
 (() => {
-  const g = [...document.querySelectorAll('.grupo-filtro')]
+  const b = [...document.querySelectorAll('.grupo-filtro')]
     .find(d => d.querySelector('.gf-titulo')?.textContent === %s)
-  if (!g) return null
-  g.open = true
+  const m = document.querySelector('dialog.modal-filtro[open]')
+  if (!b || !m) return null
   return {
-    total: g.querySelector('.gf-total')?.textContent,
-    buscador: !!g.querySelector('.gf-buscar input'),
-    filas: [...g.querySelectorAll('.gf-opcion')].map(l => ({
+    total: b.querySelector('.gf-total')?.textContent,
+    activas: b.querySelector('.gf-activas')?.textContent ?? null,
+    buscador: !!m.querySelector('.gf-buscar input'),
+    filas: [...m.querySelectorAll('.gf-opcion')].map(l => ({
       etq: l.querySelector('.gf-etq')?.childNodes[0]?.textContent?.trim(),
       sub: [...l.querySelectorAll('.gf-sub')].map(e => e.textContent),
       cifra: l.querySelector('.gf-cifra')?.textContent,
       marcada: !!l.querySelector('input')?.checked,
     })),
-    pies: [...g.querySelectorAll('.nota')].map(p => p.textContent.trim()),
+    pies: [...m.querySelectorAll('.nota')].map(p => p.textContent.trim()),
   }
 })()
 """
 
 
 def grupo_filtro(cdp, titulo):
-    return json.loads(cdp.evaluar("JSON.stringify(%s)" % (_GRUPO % json.dumps(titulo))))
+    """Abre la dimension, la lee y la vuelve a cerrar."""
+    if abrir_grupo(cdp, titulo) != "ok":
+        return None
+    datos = json.loads(cdp.evaluar("JSON.stringify(%s)" % (_LEER % json.dumps(titulo))))
+    cerrar_grupo(cdp)
+    return datos
 
 
-def marcar_clase(cdp, titulo, etiqueta):
+def marcar_clase(cdp, titulo, etiqueta, dejar_abierto=False):
     """Marca una clase POR SU ETIQUETA, no por su posicion: el orden de la lista
     depende de la superficie y cambia con el recorte."""
-    return cdp.evaluar("""
+    if abrir_grupo(cdp, titulo) != "ok":
+        return "sin grupo"
+    r = cdp.evaluar("""
       (() => {
-        const g = [...document.querySelectorAll('.grupo-filtro')]
-          .find(d => d.querySelector('.gf-titulo')?.textContent === %s)
-        if (!g) return 'sin grupo'
-        g.open = true
-        const l = [...g.querySelectorAll('.gf-opcion')]
+        const m = document.querySelector('dialog.modal-filtro[open]')
+        const l = [...m.querySelectorAll('.gf-opcion')]
           .find(x => x.querySelector('.gf-etq').childNodes[0].textContent.trim() === %s)
         if (!l) return 'sin clase'
         l.querySelector('input').click()
         return 'ok'
       })()
-    """ % (json.dumps(titulo), json.dumps(etiqueta)))
+    """ % json.dumps(etiqueta))
+    if not dejar_abierto:
+        cerrar_grupo(cdp)
+    return r
 
 
 def leer_fila(k=FILA_PRUEBA):
@@ -409,20 +447,20 @@ def main():
         # Se marca la clase de cobertura MAYOR, no la primera: filtrar por una
         # clase minúscula da una cifra que también baja, pero no distingue
         # "filtró bien" de "filtró de más".
+        abrir_grupo(cdp, "Cobertura")
         marcado = cdp.evaluar("""
             (() => {
-              const g = [...document.querySelectorAll('.grupo-filtro')]
-                .find(d => d.querySelector('.gf-titulo')?.textContent === 'Cobertura')
-              if (!g) return null
-              g.open = true
-              const c = g.querySelector('.gf-opcion input')
+              const m = document.querySelector('dialog.modal-filtro[open]')
+              if (!m) return null
+              const c = m.querySelector('.gf-opcion input')
               if (!c) return null
               c.click()
-              return g.querySelector('.gf-etq')?.textContent || 'sin etiqueta'
+              return m.querySelector('.gf-etq')?.textContent || 'sin etiqueta'
             })()
         """)
         prueba("V-18 se puede marcar una clase de cobertura",
                bool(marcado), str(marcado))
+        cerrar_grupo(cdp)
 
         esperar(cdp, "document.querySelector('.cifra-num b').textContent !== %r" % antes,
                 segundos=30)
@@ -430,39 +468,40 @@ def main():
         prueba("V-18b marcar una clase MUEVE la cifra titular",
                str(antes) != str(despues), f"{antes} → {despues}")
 
-        # La marca en el <summary>: con el grupo plegado, un filtro activo tiene
-        # que seguir viéndose. Si no, el mapa muestra menos de lo que debería y
-        # nada en pantalla lo explica.
+        # La marca en el BOTÓN: un filtro activo tiene que verse sin abrir nada.
+        # Si no, el mapa muestra menos de lo que debería y nada en pantalla lo
+        # explica. Antes esto exigía plegar el <details> a mano; en la botonera
+        # el contador vive en el botón y está siempre a la vista, así que la
+        # aserción pasó a comprobar lo mismo con menos ceremonia.
         insignia = cdp.evaluar("""
             (() => {
-              const g = [...document.querySelectorAll('.grupo-filtro')]
+              const b = [...document.querySelectorAll('.grupo-filtro')]
                 .find(d => d.querySelector('.gf-titulo')?.textContent === 'Cobertura')
-              g.open = false
-              const b = g.querySelector('.gf-activas')
-              return b && b.offsetParent !== null ? b.textContent : null
+              const c = b?.querySelector('.gf-activas')
+              return c && c.offsetParent !== null ? c.textContent : null
             })()
         """)
-        prueba("V-19 el filtro activo se ve con el grupo plegado",
+        prueba("V-19 el filtro activo se ve en el botón, sin abrirlo",
                insignia is not None, str(insignia))
 
         # El buscador de especies: 989 clases no caben en una lista, así que si
         # el buscador no encuentra, la mayoría del vocabulario es inalcanzable.
+        abrir_grupo(cdp, "Especie")
         hallazgos = cdp.evaluar("""
             (() => {
-              const g = [...document.querySelectorAll('.grupo-filtro')]
-                .find(d => d.querySelector('.gf-titulo')?.textContent === 'Especie')
-              if (!g) return -1
-              g.open = true
-              const i = g.querySelector('.gf-buscar input')
+              const m = document.querySelector('dialog.modal-filtro[open]')
+              if (!m) return -1
+              const i = m.querySelector('.gf-buscar input')
               if (!i) return -2
               const set = Object.getOwnPropertyDescriptor(
                 window.HTMLInputElement.prototype, 'value').set
               set.call(i, 'araucaria')
               i.dispatchEvent(new Event('input', { bubbles: true }))
-              return g.querySelectorAll('.gf-opcion').length
+              return m.querySelectorAll('.gf-opcion').length
             })()
         """)
         prueba("V-20 el buscador de especies encuentra", hallazgos > 0, f"{hallazgos}")
+        cerrar_grupo(cdp)
 
         # V-21 - el viaje de ida y vuelta por la URL. El panel PROMETE que el
         # enlace guarda los filtros, y una promesa así incumplida es peor que no
@@ -790,16 +829,9 @@ def main():
                and any("no coinciden" in p for p in tifo["pies"]),
                f"{len(tifo['filas'])} de 13 · "
                + next((p for p in tifo["pies"] if "no coinciden" in p), "SIN PIE"))
-        # Se deja mirable: los grupos abiertos y el panel desplazado a ellos.
-        cdp.evaluar("""
-          (() => {
-            const abrir = ['Subclase', 'Estructura', 'Tipo forestal']
-            for (const g of document.querySelectorAll('.grupo-filtro')) {
-              g.open = abrir.includes(g.querySelector('.gf-titulo')?.textContent)
-            }
-            document.querySelector('.seccion-filtros').scrollIntoView({ block: 'start' })
-          })()
-        """)
+        # Se deja mirable. Ya no hay grupos que desplegar: la botonera enseña de
+        # una vez cuántas clases le quedan a cada dimensión.
+        cdp.evaluar("document.querySelector('.seccion-filtros').scrollIntoView({ block: 'center' })")
         time.sleep(0.4)
         capturar(cdp, os.path.join(AQUI, "captura-cascada.png"))
 
@@ -938,6 +970,77 @@ def main():
                bool(v3) and v3[0] < -48.0,
                f"{v3} · Magallanes va de -56,52 a -48,60; la Araucaria de -39,7 a -37,4")
 
+
+        # --- la botonera y su modal ------------------------------------------
+        # Los ocho filtros dejaron de ser <details> apilados: cada dimensión es
+        # un botón que abre un <dialog>. Lo que se comprueba aquí es la
+        # MECÁNICA; que las listas de dentro sigan bien ya lo cubren V-30…V-38,
+        # que pasan por los mismos botones.
+        print("\n=== la botonera de filtros")
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=url)
+        esperar(cdp, "!!document.querySelector('.leyenda li')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+
+        n_botones = cdp.evaluar("document.querySelectorAll('button.grupo-filtro').length")
+        quedan = cdp.evaluar("document.querySelectorAll('details.grupo-filtro').length")
+        prueba("V-45 ocho botones de filtro y ningún desplegable",
+               n_botones == 8 and quedan == 0, f"{n_botones} botones · {quedan} <details>")
+
+        # V-46: pulsar abre SU modal, no el de otra dimensión. Con un solo
+        # <dialog> reutilizado, una `key` mal puesta lo llenaría con la lista
+        # anterior y nadie lo notaría hasta filtrar por lo que no era.
+        abrir_grupo(cdp, "Cobertura")
+        titulo = cdp.evaluar("document.querySelector('#mf-titulo')?.textContent")
+        prueba("V-46 el botón abre el modal de SU dimensión",
+               titulo == "Cobertura de copas", str(titulo))
+
+        # V-47: se aplica al instante, sin botón «Aplicar». Si el modal se
+        # cerrara al marcar, no se podría elegir una segunda clase.
+        antes_c = cdp.evaluar("document.querySelector('.cifra-num b').textContent")
+        cdp.evaluar("document.querySelector('.modal-filtro .gf-opcion input').click()")
+        esperar(cdp, "document.querySelector('.cifra-num b').textContent !== %r" % antes_c,
+                segundos=30)
+        sigue = cdp.evaluar(MODAL_FILTRO)
+        prueba("V-47 marcar aplica al instante y NO cierra el modal",
+               sigue and cdp.evaluar("document.querySelector('.cifra-num b').textContent") != antes_c,
+               f"{antes_c} → {cdp.evaluar('document.querySelector(\".cifra-num b\").textContent')}")
+        capturar(cdp, os.path.join(AQUI, "captura-modal-filtro.png"))
+
+        # V-48: Escape cierra Y el foco vuelve al botón que abrió. El <dialog>
+        # lo devuelve solo, pero éste se DESMONTA al cerrarse: medido, sin
+        # devolverlo a mano el foco caía al body y acababa en otro botón.
+        for t in ("rawKeyDown", "keyUp"):
+            cdp.enviar("Input.dispatchKeyEvent", type=t, key="Escape", code="Escape",
+                       windowsVirtualKeyCode=27, nativeVirtualKeyCode=27)
+        esperar(cdp, f"!({MODAL_FILTRO})", segundos=10)
+        foco = cdp.evaluar(
+            "document.activeElement?.querySelector?.('.gf-titulo')?.textContent ?? null")
+        prueba("V-48 Escape cierra y el foco vuelve a su botón",
+               not cdp.evaluar(MODAL_FILTRO) and foco == "Cobertura", str(foco))
+
+        # V-49: el botón cuenta lo elegido sin abrir nada.
+        badge = cdp.evaluar("""
+          (() => {
+            const b = [...document.querySelectorAll('.grupo-filtro')]
+              .find(d => d.querySelector('.gf-titulo')?.textContent === 'Cobertura')
+            return b.classList.contains('con-filtro') + '|' +
+                   (b.querySelector('.gf-activas')?.textContent ?? 'sin badge')
+          })()
+        """)
+        prueba("V-49 el botón se marca y cuenta lo elegido", badge == "true|1", str(badge))
+
+        capturar(cdp, os.path.join(AQUI, "captura-botonera.png"))
+
+        # V-50: el orden del panel. Compartir y Descargar son lo último antes
+        # del pie: primero se acota, luego se lee, luego se filtra, y sólo al
+        # final se saca algo fuera.
+        secciones = json.loads(cdp.evaluar(
+            "JSON.stringify([...document.querySelectorAll('.panel > section h2')]"
+            ".map(h => h.textContent.trim()))"))
+        prueba("V-50 Compartir y Descargar van al fondo",
+               secciones[-2:] == ["Compartir", "Descargar"], " · ".join(secciones))
 
         print("\n" + "=" * 62)
         print(f"  {'TODO EN VERDE' if not fallos else str(len(fallos)) + ' EN ROJO'}")

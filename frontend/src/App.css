@@ -504,6 +504,11 @@
 @media (pointer: coarse) {
   .clase, .fila-kpi.pulsable { padding-top: 8px; padding-bottom: 8px; }
   .seccion > summary { padding-top: 14px; padding-bottom: 14px; }
+  /* 44 px de blanco táctil, igual que la × de la ficha. Los botones de filtro
+     miden 12,5 px de texto: sin esto son un objetivo de dedo de 36 px. */
+  .grupo-filtro { min-height: 44px; }
+  .gf-opcion { padding-top: 8px; padding-bottom: 8px; }
+  .mf-listo { min-height: 44px; }
 }
 
 /* ---------- barra apilada (SIMEF) ---------- */
@@ -663,22 +668,41 @@
   font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums;
 }
 
-.grupo-filtro { border-top: 1px solid var(--borde); }
-.grupo-filtro > summary {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 2px; cursor: pointer; list-style: none;
-  font-size: 13px; font-weight: 600; color: var(--tinta);
+/* ---------- la botonera de filtros ----------
+   DOS COLUMNAS. Las ocho dimensiones caben en cuatro filas de ~40 px; como
+   ocho <details> desplegados pasaban de dos mil píxeles de columna dentro de
+   una tira de 320 px que ya scrollea, y comparar dos obligaba a plegar una
+   para abrir la otra. */
+.filtro-botonera {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px;
 }
-.grupo-filtro > summary::-webkit-details-marker { display: none; }
-.grupo-filtro > summary::before {
-  content: '▸'; color: var(--tinta-3); font-size: 10px;
-  transition: transform 0.12s ease;
+
+.grupo-filtro {
+  display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 6px;
+  width: 100%; padding: 9px 10px; text-align: left; cursor: pointer;
+  border: 1px solid var(--borde); border-radius: 7px;
+  background: var(--superficie-2); color: var(--tinta);
+  font: inherit; font-size: 12.5px;
 }
-.grupo-filtro[open] > summary::before { transform: rotate(90deg); }
-.grupo-filtro > summary:focus-visible {
-  outline: 2px solid var(--acento); outline-offset: 2px; border-radius: 4px;
+.grupo-filtro:hover { border-color: var(--tinta-3); }
+.grupo-filtro:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
+
+/* CON FILTRO ACTIVO se tiene que ver sin abrir nada. Un filtro que no se ve
+   hace que el mapa muestre menos de lo que debería sin nada en pantalla que lo
+   explique, y ésa es la forma más fácil de citar una cifra equivocada.
+   color-mix y no un token nuevo: el tinte sale del propio acento, así que sigue
+   al tema sin duplicar la paleta. */
+.grupo-filtro.con-filtro {
+  border-color: var(--acento);
+  background: color-mix(in oklab, var(--acento) 12%, var(--superficie-2));
 }
-.gf-titulo { flex: 1; }
+
+/* SIN CLASES QUE ELEGIR se atenúa, pero NO se deshabilita: deshabilitarlo
+   escondería el motivo, y abriéndolo se lee por qué está vacío. */
+.grupo-filtro.vacio { opacity: 0.55; }
+.grupo-filtro.vacio .gf-total { text-decoration: line-through; }
+
+.gf-titulo { min-width: 0; overflow-wrap: anywhere; }
 /* El total de clases, apagado: informa del tamaño de la lista sin competir con
    la cuenta de activas, que es la que cambia el mapa. */
 .gf-total {
@@ -731,6 +755,76 @@
 .gf-lista > li:first-child .gf-escala { margin-top: 2px; padding-top: 0; border-top: 0; }
 
 .nota-voc { font-style: italic; }
+
+/* ---------- el modal de un filtro ----------
+   Comparte la piel de .ficha —mismo radio, misma sombra, mismo ::backdrop—
+   porque es el mismo objeto para quien lo usa: algo que se abre encima, se lee
+   y se cierra con Escape.
+
+   MÁS ANCHO QUE EL PANEL, y ésa es media razón para haberlo sacado de la tira
+   de 320 px: «Terreno sobre Límite Altitudinal de la Vegetación» se partía en
+   tres líneas dentro del desplegable. */
+.modal-filtro {
+  /* CON BORDE, al revés que .ficha. Ésta es grande y de la misma superficie que
+     el panel que tiene detrás: sin una línea que la recorte, el diálogo y el
+     panel se leen como un solo plano. La ficha es pequeña y no lo necesita. */
+  border: 1px solid var(--borde); border-radius: 10px; padding: 0;
+  width: min(560px, calc(100vw - 32px));
+  max-height: min(80dvh, 720px);
+  background: var(--superficie); color: var(--tinta);
+  box-shadow: var(--sombra);
+  overflow: hidden;   /* el scroll lo lleva .mf-cuerpo, no el diálogo */
+}
+/* Más opaco que el de la ficha (0,35): en tema oscuro, con un diálogo de 560 px
+   encima de un panel de la misma superficie, a 0,35 el panel se seguía leyendo
+   entero y el modal no separaba nada. */
+.modal-filtro::backdrop { background: rgb(0 0 0 / 0.55); }
+
+/* El <dialog> vive dentro de <aside class="panel">, así que hereda su `h2`:
+   12 px, VERSALITAS y color apagado. Eso es el rótulo de una sección del panel,
+   no el título de un diálogo — «Especie principal» salía como «ESPECIE
+   PRINCIPAL» en letra pequeña. */
+.modal-filtro h2 {
+  font-size: 17px; text-transform: none; letter-spacing: normal;
+  color: var(--tinta); margin-bottom: 0;
+}
+
+/* Rejilla de tres filas: cabecera y pie FIJOS, cuerpo con el scroll. Con 989
+   especies, un pie que se va con el scroll deja «Quitar el filtro» fuera de
+   alcance justo cuando hace falta. */
+.mf-caja {
+  display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
+  max-height: min(80dvh, 720px);
+}
+.mf-cabecera {
+  position: relative; padding: 14px 16px 10px 16px;
+  border-bottom: 1px solid var(--borde);
+}
+.mf-cabecera h2 { font-size: 17px; padding-right: 32px; }
+.mf-cuenta { margin-top: 2px; font-size: 12px; color: var(--tinta-2); }
+.mf-cabecera .ficha-cerrar { top: 10px; right: 10px; }
+
+.mf-cuerpo { overflow-y: auto; padding: 12px 16px; }
+/* Dentro del modal la lista manda: el techo de 260 px existía para que 989
+   especies no empujaran el pie del panel fuera de la pantalla, y aquí el que
+   scrollea es el cuerpo. */
+.mf-cuerpo .gf-lista { max-height: none; overflow: visible; }
+
+.mf-pie {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 16px; border-top: 1px solid var(--borde);
+  background: var(--superficie);
+}
+/* Que no se estire: `.limpiar` es ancho completo dentro del panel, y aquí
+   comparte fila con «Listo». Estirado ocupaba el pie entero y competía con la
+   acción principal. */
+.mf-pie .limpiar { margin: 0; width: auto; flex: 0 1 auto; }
+.mf-listo {
+  padding: 7px 16px; border: 1px solid var(--acento); border-radius: 6px;
+  background: var(--acento); color: #fff;
+  font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+}
+.mf-listo:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
 
 /* Bloques de escala dentro de la sección de altura. El rótulo NO es decorativo:
    marca un cambio de regla de medida cuyos tramos se solapan con los del bloque
