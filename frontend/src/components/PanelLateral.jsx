@@ -330,12 +330,12 @@ export default function PanelLateral({
             ))}
           </select>
         </label>
-        {base === 'Sentinel-2' && (
-          <p className="nota">
-            Compuesto anual sin nubes a 10 m, no la última pasada del satélite. Licencia
-            CC BY-NC-SA 4.0 (no comercial).
-          </p>
-        )}
+        {/* La nota sale de config.js y no de una comparación con el literal del
+            nombre: cada capa declara la suya junto a su URL, que es donde vive
+            el motivo. Condicionarla aquí por `base === 'Sentinel-2'` obligaba a
+            tocar este archivo cada vez que una capa nueva necesita advertencia,
+            y a que el panel supiera cosas del proveedor que no le tocan. */}
+        {BASEMAPS[base]?.nota && <p className="nota">{BASEMAPS[base].nota}</p>}
       </section>
 
       <footer>

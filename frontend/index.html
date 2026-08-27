@@ -38,9 +38,12 @@
          en modo no-CORS. Un preconnect anonimo abre la conexion en OTRO pool de
          sockets, no se reutiliza para esas peticiones y obliga al navegador a
          abrir una segunda: el apreton se pagaria dos veces en vez de cero.
-         El host esta acoplado a BASEMAPS.Claro en src/config.js. -->
-    <link rel="preconnect" href="https://basemaps.cartocdn.com" />
-    <link rel="dns-prefetch" href="https://basemaps.cartocdn.com" />
+         El host esta acoplado a BASEMAPS.Claro en src/config.js: era
+         basemaps.cartocdn.com hasta que CARTO cerro el acceso anonimo en agosto
+         de 2026, y ahora precalienta el host de Esri, del que salen CINCO de los
+         siete mapas base (Claro, Oscuro, Relieve, Topografico y Satelital). -->
+    <link rel="preconnect" href="https://server.arcgisonline.com" />
+    <link rel="dns-prefetch" href="https://server.arcgisonline.com" />
 
     <link rel="canonical" href="https://sud-austral.github.io/coipo_vista_catastro/" />
 

@@ -14,6 +14,7 @@
  * añada una clase y desplace las demás.
  */
 
+import { BASEMAPS } from './config'
 import { FILTROS } from './filtros'
 
 // Un parámetro por dimensión, con el mismo nombre que su columna en el .bin.
@@ -39,7 +40,13 @@ export function leerURL() {
     if (v) filtros[col] = v.split(',')
   }
   if (Object.keys(filtros).length) estado.filtros = filtros
-  if (q.get('base')) estado.base = q.get('base')
+  // Se valida contra el vocabulario real, no se acepta cualquier cadena. El mapa
+  // ya toleraba una clave desconocida --App.jsx cae a BASEMAPS.Claro-- pero el
+  // <select> del panel se quedaba en blanco, porque su `value` no casaba con
+  // ninguna <option>. Un enlace viejo con ?base=… de una capa retirada tiene que
+  // abrir en el fondo por defecto, no en un desplegable vacio.
+  const base = q.get('base')
+  if (base && Object.hasOwn(BASEMAPS, base)) estado.base = base
   const lat = parseFloat(q.get('lat'))
   const lon = parseFloat(q.get('lon'))
   const z = parseInt(q.get('z'), 10)
