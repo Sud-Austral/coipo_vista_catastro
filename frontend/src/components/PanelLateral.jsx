@@ -183,32 +183,6 @@ export default function PanelLateral({
         </div>
       </section>
 
-      <section>
-        <h2>Simbología</h2>
-        {/* LA LEYENDA YA NO ESTÁ EN EL PANEL, y hay que decir qué se perdió con
-            ella: era uno de los mecanismos que hacían que el color no fuera la
-            única codificación. Los nombres y las superficies siguen, pero
-            dentro del modal de Uso, o sea a un clic. La tira de color del botón
-            no es un sustituto: ordena los tonos, no los nombra.
-            config.js documenta cuáles de aquellos mecanismos quedan vivos. */}
-        <p className="nota">
-          Los nueve colores del mapa se nombran en <strong>Uso</strong>, con su superficie al
-          lado. El color no es la única marca, pero sí la única que está a la vista sin abrirlo.
-        </p>
-        {/* AHORA SÍ ES PROPORCIONAL, y por eso este texto cambió. El radio pasó
-            de píxeles a METROS —el del círculo de igual área que el polígono—,
-            así que el disco ocupa el terreno que el dato declara y crece con el
-            zoom. Antes decía «no es proporcional», que era cierto y ahora sería
-            falso: el rigor de esta línea es lo que la hace útil, en los dos
-            sentidos. */}
-        <p className="nota">
-          El tamaño del punto es <strong>proporcional a la superficie</strong> del polígono: el
-          disco cubre la misma área que él, así que crece al acercarse. Se acota por abajo para
-          que no desaparezca a escala de país, y por arriba para que un polígono enorme no tape
-          a sus vecinos.
-        </p>
-      </section>
-
       <section className="seccion-filtros">
         <h2>
           Filtros
@@ -298,6 +272,38 @@ export default function PanelLateral({
       {/* La sección de descargas llega como children y no como diez props más:
           este panel sigue sin saber nada de exportar. */}
       {children}
+
+      {/* SIMBOLOGÍA VA LA ÚLTIMA, y es deliberado: no es un control, es la
+          glosa de cómo leer el mapa. Estaba en segundo lugar —donde había
+          estado la leyenda, que sí era un control— y se comía la parte alta del
+          panel empujando los filtros hacia abajo. Se lee una vez y se vuelve a
+          ella cuando surge la duda, así que su sitio es el pie. */}
+      <section>
+        <h2>Simbología</h2>
+        {/* LA LEYENDA YA NO ESTÁ EN EL PANEL, y hay que decir qué se perdió con
+            ella: era uno de los mecanismos que hacían que el color no fuera la
+            única codificación. Los nombres y las superficies siguen, pero
+            dentro del modal de Uso, o sea a un clic. La tira de color del botón
+            no es un sustituto: ordena los tonos, no los nombra.
+            config.js documenta cuáles de aquellos mecanismos quedan vivos. */}
+        <p className="nota">
+          Los nueve colores del mapa se nombran en <strong>Uso</strong>, con su superficie al
+          lado. El color no es la única marca, pero sí la única que está a la vista sin abrirlo.
+        </p>
+        {/* AHORA SÍ ES PROPORCIONAL, y por eso este texto cambió. El radio pasó
+            de píxeles a METROS —el del círculo de igual área que el polígono—,
+            así que el disco ocupa el terreno que el dato declara y crece con el
+            zoom. Antes decía «no es proporcional», que era cierto y ahora sería
+            falso: el rigor de esta línea es lo que la hace útil, en los dos
+            sentidos. */}
+        <p className="nota">
+          El tamaño del punto es <strong>proporcional a la superficie</strong> del polígono: el
+          disco cubre la misma área que él, así que crece al acercarse. Se acota por abajo para
+          que no desaparezca a escala de país, y por arriba para que un polígono enorme no tape
+          a sus vecinos.
+        </p>
+      </section>
+
 
       <footer>
         <p className="procedencia">{AVISO_PUNTOS}</p>

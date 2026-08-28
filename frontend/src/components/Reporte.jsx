@@ -86,6 +86,54 @@ function rangoDeAnios(manifest) {
   return min === max ? String(min) : `${min} y ${max}`
 }
 
+/**
+ * Una tabla de cifras: primera columna de texto, el resto números a la derecha.
+ *
+ * Existe porque el documento pasó de tres tablas a nueve al doblar su extensión,
+ * y nueve copias del mismo <thead>/<tbody> se desincronizan en la primera
+ * corrección de estilo. Las celdas aceptan nodos, así que el chip de color del
+ * anexo entra sin un caso especial.
+ */
+function Tabla({ cabeceras, filas, pie }) {
+  return (
+    <table className="rep-tabla">
+      <thead>
+        <tr>
+          {cabeceras.map((c, i) => (
+            <th key={c} className={i ? 'num' : undefined}>{c}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {filas.map((f, k) => (
+          <tr key={k}>
+            {f.map((c, i) => (
+              <td key={i} className={i ? 'num' : undefined}>{c}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+      {pie && (
+        <tfoot>
+          <tr>
+            {pie.map((c, i) => (
+              <td key={i} className={i ? 'num' : undefined}>{c}</td>
+            ))}
+          </tr>
+        </tfoot>
+      )}
+    </table>
+  )
+}
+
+/** Las N mayores de una lista, con el resto agregado en una fila «otras». */
+function conResto(lista, tope) {
+  const cabeza = lista.slice(0, tope)
+  const cola = lista.slice(tope)
+  const resto = cola.reduce((a, x) => ({ n: a.n + x.n, ha: a.ha + x.ha }), { n: 0, ha: 0 })
+  return { cabeza, cuantas: cola.length, resto }
+}
+
 /** Las clases elegidas de cada dimensión, en texto. */
 function filtrosEnTexto(filtros, usosActivos, manifest) {
   if (!manifest) return []
@@ -147,6 +195,34 @@ export default function Reporte({
   const snaspe = resumenSnaspe(resumen)
   const estructuras = estructurasBosqueNativo(resumen)
   const activos = filtrosEnTexto(filtros, usosActivos, manifest)
+  const nombreDeUso = new Map((manifest.usos ?? []).map((u) => [u.cod, u.etiqueta]))
+
+  // El desglose territorial cambia de unidad según el ámbito: con una región
+  // elegida son sus comunas, y sin ámbito son las regiones. Listar 346 comunas
+  // en un reporte nacional serían ocho páginas de tabla que nadie lee.
+  const territorial = (() => {
+    if (ambito?.region) {
+      const { cabeza, cuantas, resto } = conResto(resumen.comunas ?? [], 20)
+      return {
+        titulo: 'Comuna',
+        glosa: 'Superficie catastrada por comuna dentro del ámbito, de mayor a menor.',
+        filas: [
+          ...cabeza.map((c) => [c.etiqueta, ha(c.ha), pct(c.ha, resumen.ha), fmt.format(c.n)]),
+          ...(cuantas > 0
+            ? [[`Otras ${fmt.format(cuantas)} comunas`, ha(resto.ha),
+                pct(resto.ha, resumen.ha), fmt.format(resto.n)]]
+            : []),
+        ],
+      }
+    }
+    return {
+      titulo: 'Región',
+      glosa: 'Superficie catastrada por región, de norte a sur, con el año de su catastro.',
+      filas: (resumen.regiones ?? []).map((r) => [
+        `${r.nombre} · ${r.anio}`, ha(r.ha), pct(r.ha, resumen.ha), fmt.format(r.n),
+      ]),
+    }
+  })()
   const generado = new Date().toLocaleDateString('es-CL', {
     day: '2-digit', month: 'long', year: 'numeric',
   })
@@ -316,9 +392,25 @@ export default function Reporte({
               </tbody>
             </table>
 
+            {resumen.tiposForestales?.length > 0 && (
+              <>
+                <h3>3.1 Tipo forestal</h3>
+                <p>
+                  Sólo aplica al bosque nativo. El resto del territorio no tiene tipo forestal, y
+                  eso no es lo mismo que tener cero.
+                </p>
+                <Tabla
+                  cabeceras={['Tipo forestal', 'Superficie', '% del ámbito', 'Polígonos']}
+                  filas={resumen.tiposForestales.map((t) => [
+                    t.etiqueta, ha(t.ha), pct(t.ha, resumen.ha), fmt.format(t.n),
+                  ])}
+                />
+              </>
+            )}
+
             {estructuras && estructuras.filas.length > 0 && (
               <>
-                <h3>3.1 Estructura del bosque nativo</h3>
+                <h3>3.2 Estructura del bosque nativo</h3>
                 <table className="rep-tabla">
                   <thead>
                     <tr>
@@ -351,28 +443,155 @@ export default function Reporte({
               Servicio de Biodiversidad y Áreas Protegidas de la Ley 21.600 está en
               implementación y no cambia estas cifras.
             </p>
-            <table className="rep-tabla">
-              <thead>
-                <tr>
-                  <th>Categoría</th>
-                  <th className="num">Unidades</th>
-                  <th className="num">Superficie</th>
-                  <th className="num">% del ámbito</th>
-                </tr>
-              </thead>
-              <tbody>
-                {snaspe.categorias.map((c) => (
-                  <tr key={c.categoria}>
-                    <td>{c.categoria}</td>
-                    <td className="num">{fmt.format(c.unidades)}</td>
-                    <td className="num">{ha(c.ha)}</td>
-                    <td className="num">{pct(c.ha, resumen.ha)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <Tabla
+              cabeceras={['Categoría', 'Unidades', 'Superficie', '% del ámbito']}
+              filas={snaspe.categorias.map((c) => [
+                c.categoria, fmt.format(c.unidades), ha(c.ha), pct(c.ha, resumen.ha),
+              ])}
+            />
+
+            {snaspe.mayores.length > 0 && (
+              <>
+                <h3>4.1 Unidades de mayor superficie</h3>
+                <Tabla
+                  cabeceras={['Unidad', 'Categoría', 'Superficie', '% del ámbito']}
+                  filas={snaspe.mayores.map((u) => [
+                    u.etiqueta, u.categoria ?? '—', ha(u.ha), pct(u.ha, resumen.ha),
+                  ])}
+                />
+              </>
+            )}
           </section>
         )}
+
+        {(resumen.coberturas?.length > 0 || resumen.alturas?.length > 0) && (
+          <section className="rep-seccion">
+            <h2>5. Estructura del dosel</h2>
+            {resumen.coberturas?.length > 0 && (
+              <>
+                <h3>5.1 Cobertura de copas</h3>
+                <p>
+                  Densidad del dosel, de Denso a Escaso. «No Aplica» es el territorio donde la
+                  pregunta no tiene sentido —cuerpos de agua, glaciares, suelo desnudo—, y no es
+                  lo mismo que cobertura cero.
+                </p>
+                <Tabla
+                  cabeceras={['Cobertura', 'Superficie', '% del ámbito', 'Polígonos']}
+                  filas={[...resumen.coberturas]
+                    .sort((a, b) => (a.orden ?? 99) - (b.orden ?? 99))
+                    .map((c) => [c.etiqueta, ha(c.ha), pct(c.ha, resumen.ha), fmt.format(c.n)])}
+                />
+              </>
+            )}
+            {resumen.alturas?.length > 0 && (
+              <>
+                <h3>5.2 Altura del dosel</h3>
+                {/* LA ADVERTENCIA VA ANTES DE LA TABLA, no en una nota al pie.
+                    Son dos sistemas de medida cuyos tramos se solapan: sumarlos
+                    da un número que no significa nada, y en papel no hay un
+                    control al lado que lo explique. */}
+                <p>
+                  <strong>Vienen dos escalas distintas y sus tramos se solapan.</strong> La fina
+                  mide en metros; la gruesa sólo distingue por encima y por debajo de 2 m. Las
+                  filas de una escala <strong>no se suman con las de la otra</strong>, y por eso
+                  esta tabla no lleva total.
+                </p>
+                <Tabla
+                  cabeceras={['Tramo', 'Escala', 'Superficie', '% del ámbito', 'Polígonos']}
+                  filas={[...resumen.alturas]
+                    .sort((a, b) =>
+                      ({ fina: 0, gruesa: 1, no_aplica: 2 }[a.escala] ?? 3)
+                      - ({ fina: 0, gruesa: 1, no_aplica: 2 }[b.escala] ?? 3)
+                      || (a.orden ?? 99) - (b.orden ?? 99))
+                    .map((x) => [
+                      x.etiqueta,
+                      x.escala === 'fina' ? 'en metros'
+                        : x.escala === 'gruesa' ? 'gruesa' : 'no aplica',
+                      ha(x.ha), pct(x.ha, resumen.ha), fmt.format(x.n),
+                    ])}
+                />
+              </>
+            )}
+          </section>
+        )}
+
+        {resumen.especies?.length > 0 && (
+          <section className="rep-seccion">
+            <h2>6. Especies principales</h2>
+            {/* LA PRIMERA, NO LA ÚNICA. Cada polígono registra hasta seis
+                especies y aquí sólo pesa la dominante: sin decirlo, esta tabla
+                se lee como el inventario de especies del territorio, que no es.
+                Va en el cuerpo y no en una nota porque cambia lo que la cifra
+                significa. */}
+            <p>
+              Es la especie <strong>dominante</strong> de cada polígono, no la única: el Catastro
+              registra hasta seis por polígono y las otras cinco no aparecen en esta cuenta.
+              Incluye toda la vegetación, no sólo árboles.
+            </p>
+            {(() => {
+              const { cabeza, cuantas, resto } = conResto(resumen.especies, 15)
+              return (
+                <Tabla
+                  cabeceras={['Especie', 'Superficie', '% del ámbito', 'Polígonos']}
+                  filas={[
+                    ...cabeza.map((e) => [
+                      e.cientifico && e.cientifico !== e.etiqueta
+                        ? <>{e.etiqueta} <em>({e.cientifico})</em></>
+                        : e.etiqueta,
+                      ha(e.ha), pct(e.ha, resumen.ha), fmt.format(e.n),
+                    ]),
+                    ...(cuantas > 0
+                      ? [[`Otras ${fmt.format(cuantas)} especies`, ha(resto.ha),
+                          pct(resto.ha, resumen.ha), fmt.format(resto.n)]]
+                      : []),
+                  ]}
+                />
+              )
+            })()}
+          </section>
+        )}
+
+        {territorial.filas.length > 0 && (
+          <section className="rep-seccion">
+            <h2>7. Distribución territorial</h2>
+            <p>{territorial.glosa}</p>
+            <Tabla
+              cabeceras={[territorial.titulo, 'Superficie', '% del ámbito', 'Polígonos']}
+              filas={territorial.filas}
+            />
+          </section>
+        )}
+
+        <section className="rep-seccion">
+          <h2>8. Cobertura del dato</h2>
+          {/* LA SECCIÓN QUE NADIE PIDE Y HACE FALTA. «Sin dato» no es «cero»: si
+              un tercio de los polígonos no trae altura, los porcentajes de la
+              sección 5 no cubren el territorio y quien los cite sin esto está
+              citando otra cosa. En pantalla esto sale al pie de cada filtro; en
+              papel, si no está aquí, no está. */}
+          <p>
+            Cuántos polígonos del ámbito <strong>no traen</strong> cada dato. No se reparten entre
+            las clases ni cuentan como cero: quedan fuera de los porcentajes de las secciones
+            anteriores.
+          </p>
+          <Tabla
+            cabeceras={['Dimensión', 'Polígonos sin dato', '% del ámbito']}
+            filas={[
+              ['Subclase de uso', 'subuso'],
+              ['Estructura', 'estructura'],
+              ['Tipo forestal', 'tipoForestal'],
+              ['Subtipo forestal', 'subtipoForestal'],
+              ['Cobertura de copas', 'cobertura'],
+              ['Altura del dosel', 'altura'],
+              ['Especie principal', 'especie'],
+              ['Comuna', 'comuna'],
+            ].map(([nombre, clave]) => {
+              const v = resumen.sinDato?.[clave] ?? 0
+              return [nombre, fmt.format(v),
+                      resumen.n > 0 ? `${fmt1.format((100 * v) / resumen.n)} %` : '—']
+            })}
+          />
+        </section>
 
         <section className="rep-seccion">
           <h2>Anexo A. Clases de uso de la tierra</h2>
@@ -415,6 +634,63 @@ export default function Reporte({
               </tr>
             </tfoot>
           </table>
+        </section>
+
+        {resumen.subusos?.length > 0 && (
+          <section className="rep-seccion">
+            <h2>Anexo B. Subclases de uso</h2>
+            <p>
+              El desglose fino de las nueve clases. Dentro de Bosques distingue nativo, plantación
+              y mixto; en el resto separa lo que el Catastro subdivide.
+            </p>
+            <Tabla
+              cabeceras={['Subclase', 'Clase de uso', 'Superficie', '% del ámbito', 'Polígonos']}
+              filas={resumen.subusos.map((x) => [
+                x.etiqueta,
+                nombreDeUso.get(x.uso) ?? '—',
+                ha(x.ha), pct(x.ha, resumen.ha), fmt.format(x.n),
+              ])}
+            />
+          </section>
+        )}
+
+        {/* ANEXO C: LO QUE ESTE DOCUMENTO NO DICE. Va dentro del PDF y no en una
+            página web que hay que ir a buscar, porque el PDF es lo que viaja: se
+            reenvía, se imprime y se cita meses después, y para entonces el visor
+            que lo generó ya no está delante. */}
+        <section className="rep-seccion">
+          <h2>Anexo C. Qué no dice este reporte</h2>
+          <h3>Un punto no es una parcela</h3>
+          <p>
+            Cada registro del Catastro es un <strong>polígono</strong>, y en el visor se dibuja
+            como el centroide de ese polígono. No es una parcela, ni un predio, ni un árbol. El
+            centroide de un polígono muy irregular puede caer fuera de él: en uno con forma de
+            herradura, el punto marcado está en el hueco.
+          </p>
+          <h3>El Catastro no registra propiedad</h3>
+          <p>
+            Ningún polígono corresponde a un propietario ni a un rol de avalúo. Este documento no
+            sirve para acreditar tenencia, deslindes ni derechos sobre la tierra.
+          </p>
+          <h3>Las cifras no son de una sola fecha</h3>
+          <p>
+            Cada región se levantó en un año distinto{rangoAnios ? `, entre ${rangoAnios}` : ''}.
+            Un total que agregue varias regiones suma superficies medidas con años de diferencia,
+            así que no describe un instante sino una acumulación.
+          </p>
+          <h3>Las superficies se redondean al presentarlas</h3>
+          <p>
+            En las tablas, por encima del millón de hectáreas se muestra un decimal. Los valores
+            completos están en el Anexo A y en las descargas en CSV del visor, que es lo que hay
+            que usar para cualquier cálculo.
+          </p>
+          <h3>Definición de bosque</h3>
+          <p>
+            «Bosque» aquí es la clase de uso 04 del Catastro. Antes de comparar esta cifra con
+            FRA, con el catastro anterior o con la de otro país hay que verificar que las
+            definiciones coincidan: los umbrales de superficie, ancho y cobertura de copas no son
+            los mismos en todas las fuentes.
+          </p>
         </section>
 
         <footer className="rep-pie">

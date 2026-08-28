@@ -292,6 +292,24 @@ def sonda_tolerancia(cdp, url):
     return pasa, f"{desvio:.1f} px al {nombre} · devolvio {coord}"
 
 
+def sonda_ancho(cdp, url):
+    ir(cdp, url)
+    panel = cdp.evaluar("document.querySelector('.panel').getBoundingClientRect().width")
+    V.abrir_grupo(cdp, "Especie")
+    modal = cdp.evaluar(
+        "document.querySelector('dialog.modal-filtro[open]').getBoundingClientRect().width")
+    V.cerrar_grupo(cdp)
+    return abs(modal - panel) <= 1, f"panel {panel:.0f} px · modal {modal:.0f} px"
+
+
+def sonda_orden(cdp, url):
+    ir(cdp, url)
+    sec = json.loads(cdp.evaluar(
+        "JSON.stringify([...document.querySelectorAll('.panel > section h2')]"
+        ".map(h => h.textContent.trim()))"))
+    return sec[-3:] == ["Compartir", "Descargar", "Simbología"], " · ".join(sec)
+
+
 def sonda_reporte(cdp, url):
     ir(cdp, url + "?reg=10")
     titular = cdp.evaluar("document.querySelector('.cifra-num b').textContent")
@@ -301,9 +319,13 @@ def sonda_reporte(cdp, url):
     texto = str(cdp.evaluar("document.querySelector('.reporte-doc')?.innerText") or "")
     secciones = json.loads(cdp.evaluar(
         "JSON.stringify([...document.querySelectorAll('.reporte-doc h2')].map(h => h.textContent))"))
-    pasa = (abrio is not None and len(texto) > 1500 and len(secciones) >= 4
-            and "Los Lagos" in texto and str(titular) in texto)
-    return pasa, f"{len(texto)} caracteres · {len(secciones)} secciones"
+    tablas = json.loads(cdp.evaluar(
+        "JSON.stringify([...document.querySelectorAll('.reporte-doc table')]"
+        ".map(t => t.querySelectorAll('tbody tr').length))"))
+    pasa = (abrio is not None and len(texto) > 6000 and len(secciones) >= 10
+            and "Los Lagos" in texto and str(titular) in texto
+            and len(tablas) >= 9 and all(t > 0 for t in tablas))
+    return pasa, f"{len(texto)} caracteres · {len(secciones)} secciones · {len(tablas)} tablas"
 
 
 def sonda_impresion(cdp, url):
@@ -389,6 +411,30 @@ MUTACIONES = [
      sonda_tolerancia,
      [(CAPA, "      const info = picar(e.containerPoint.x, e.containerPoint.y, 6)",
              "      const info = picar(e.containerPoint.x, e.containerPoint.y, 0)")]),
+
+    ("V-58 · el modal vuelve a ser mas ancho que el panel",
+     sonda_ancho,
+     [(CSS, "  width: min(max(var(--pista-panel, var(--ancho-panel)), 320px), calc(100vw - 32px));",
+            "  width: min(560px, calc(100vw - 32px));"),
+      (os.path.join(FRONTEND, "src", "config.js"),
+       "export const ANCHO_PANEL = MAX_PANEL", "export const ANCHO_PANEL = 320")]),
+
+    # `hidden` NO valia como mutacion: el elemento sigue en el DOM y
+    # querySelectorAll lo encuentra igual, asi que la sonda no notaba nada. El
+    # fallo era del mutador, no de la asercion. Se reordena de verdad: Descargar
+    # sube por delante de Compartir, que es la regresion que V-50 vigila.
+    ("V-50 · Descargar se cuela por delante de Compartir",
+     sonda_orden,
+     [(os.path.join(JSX, "PanelLateral.jsx"), "      {children}\n", ""),
+      (os.path.join(JSX, "PanelLateral.jsx"),
+       "      <section>\n        <h2>Compartir</h2>",
+       "      {children}\n      <section>\n        <h2>Compartir</h2>")]),
+
+    ("V-57c · una tabla del reporte se queda sin filas",
+     sonda_reporte,
+     [(os.path.join(JSX, "Reporte.jsx"),
+       "filas={[...resumen.coberturas]",
+       "filas={[] || [...resumen.coberturas]")]),
 
     ("V-57 · el reporte deja de nombrar el ambito que imprime",
      sonda_reporte,

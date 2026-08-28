@@ -23,7 +23,10 @@
      gráficos en exactamente 288 px (320 − 2 × 16 de padding) tanto anclado como
      en cajón, así los SVG se dibujan 1:1 y los filetes de 1 px no se emborronan
      con un factor de escala fraccionario. */
-  --ancho-panel: 320px;
+  /* ACOPLADO a ANCHO_PANEL de config.js: el valor vive en los dos sitios
+     porque el CSS no puede leer la constante y JS la necesita para acotar
+     el tirador. Si cambia uno, cambia el otro. */
+  --ancho-panel: 560px;
   --ancho-kpi: 320px;
   /* Plantación y bosque mixto NO son clases de uso: son subusos de Bosques, y
      su color sale de la misma familia del verde de bosque para que se lean como

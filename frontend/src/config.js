@@ -30,7 +30,16 @@ export const CORTE_PANEL = 900
 
 export const MIN_PANEL = 280
 export const MAX_PANEL = 560
-export const ANCHO_PANEL = 320
+// EL ANCHO DE PARTIDA ES EL DEL MODAL, no 320. Con el panel a 320 y el modal a
+// 560, abrir un filtro parecia que el panel se ensanchaba de golpe y volvia a
+// encogerse al cerrar: un salto de 240 px en el borde que el ojo sigue. Ahora
+// arrancan iguales --y el modal sigue al panel si el tirador lo cambia, ver
+// `.modal-filtro` en App.css--, asi que abrir un filtro no mueve nada.
+//
+// Sale gratis en anchura de mapa solo por encima de ~1400 px; por debajo,
+// `maxPanel` lo recorta solo para respetar MIN_MAPA, y el modal se recorta con
+// el. El tirador sigue mandando y la anchura elegida se recuerda.
+export const ANCHO_PANEL = MAX_PANEL
 export const ANCHO_KPI = 320
 export const MAX_KPI = 560
 

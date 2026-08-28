@@ -790,7 +790,14 @@
      el panel que tiene detrás: sin una línea que la recorte, el diálogo y el
      panel se leen como un solo plano. La ficha es pequeña y no lo necesita. */
   border: 1px solid var(--borde); border-radius: 10px; padding: 0;
-  width: min(560px, calc(100vw - 32px));
+  /* EXACTAMENTE EL ANCHO DEL PANEL, no un 560 fijo. Es lo que hace que abrir
+     un filtro no mueva el borde: el modal se dibuja encima del panel, del mismo
+     ancho, y lo que cambia es el contenido y no la geometría. Si el tirador
+     estrecha el panel, el modal lo sigue.
+
+     El suelo de 320 px es por el caso raro: con el panel plegado, `--pista-panel`
+     vale 0 y sin el `max` el diálogo saldría de ancho cero. */
+  width: min(max(var(--pista-panel, var(--ancho-panel)), 320px), calc(100vw - 32px));
   background: var(--superficie); color: var(--tinta);
   box-shadow: var(--sombra);
   overflow: hidden;   /* el scroll lo lleva .mf-cuerpo, no el diálogo */

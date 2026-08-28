@@ -15,18 +15,23 @@
 // tiene que recolocarlo cada vez. Recordar la geometria de una ventana no es
 // saber nada de nadie.
 //
-// La frontera no se defiende sola. La asercion B17 comprueba que la clave
-// contenga EXACTAMENTE estos cuatro campos, para que nadie le cuelgue mas
-// adelante un filtro, una marca de tiempo o un contador de visitas sin darse
-// cuenta. Si añades un campo LEGITIMO de geometria, actualiza B17 en el mismo
-// commit: que la asercion falle es el mecanismo, no un estorbo.
+// La frontera la defiende `guardarDisposicion`, que construye el objeto campo a
+// campo en vez de volcar lo que llegue. NO hay ninguna asercion que la vigile:
+// este comentario citaba «la asercion B17», que existe en otro repo y aqui
+// nunca existio --lo tenia anotado mejoras.md y aqui estaba dando por hecha una
+// proteccion inexistente. Si añades un campo, que sea de geometria y nada mas.
 //
 // Ver tambien el comentario del cartel de contexto en App.jsx: aquel aviso
 // SIGUE sin recordarse, y esa decision no cambia.
 
 import { ANCHO_KPI, ANCHO_PANEL, MAX_KPI, MAX_PANEL, MIN_PANEL } from './config'
 
-const CLAVE = 'coipo.disposicion'
+// LA CLAVE LLEVA VERSION, y se sube al cambiar un valor por omision que se ve.
+// El ancho de partida paso de 320 a 560 para que abrir un filtro no ensanche el
+// panel; sin subirla, quien ya hubiera visitado el visor seguiria viendo 320 --su
+// ancho guardado-- y el cambio seria invisible justo para quien mas lo usa.
+// Subirla olvida tambien si tenia las barras plegadas: es el precio, y es una vez.
+const CLAVE = 'coipo.disposicion.2'
 
 export const POR_OMISION = { ancho: ANCHO_PANEL, anchoKpi: ANCHO_KPI, panel: true, kpi: true }
 

@@ -1398,14 +1398,31 @@ def main():
 
         capturar(cdp, os.path.join(AQUI, "captura-botonera.png"))
 
-        # V-50: el orden del panel. Compartir y Descargar son lo último antes
-        # del pie: primero se acota, luego se lee, luego se filtra, y sólo al
-        # final se saca algo fuera.
+        # V-50: el orden del panel, que no es decorativo. Primero se acota el
+        # ámbito, luego se filtra y se elige el fondo, después se saca algo fuera
+        # —Compartir y Descargar— y al final la Simbología, que no es un control
+        # sino la glosa de cómo leer el mapa: se lee una vez.
         secciones = json.loads(cdp.evaluar(
             "JSON.stringify([...document.querySelectorAll('.panel > section h2')]"
             ".map(h => h.textContent.trim()))"))
-        prueba("V-50 Compartir y Descargar van al fondo",
-               secciones[-2:] == ["Compartir", "Descargar"], " · ".join(secciones))
+        prueba("V-50 el panel cierra con Compartir, Descargar y Simbología",
+               secciones[-3:] == ["Compartir", "Descargar", "Simbología"],
+               " · ".join(secciones))
+
+        # V-58: EL MODAL MIDE LO MISMO QUE EL PANEL. Es lo único que distingue
+        # «se abre encima» de «el panel se ensancha»: con el panel a 320 y el
+        # modal a 560, abrir un filtro movía el borde 240 px y volvía a moverlo
+        # al cerrar. Se compara el ancho de los dos, no contra un número: así
+        # sigue valiendo si el tirador cambia el panel.
+        ancho_panel = cdp.evaluar(
+            "document.querySelector('.panel').getBoundingClientRect().width")
+        abrir_grupo(cdp, "Especie")
+        ancho_modal = cdp.evaluar(
+            "document.querySelector('dialog.modal-filtro[open]').getBoundingClientRect().width")
+        cerrar_grupo(cdp)
+        prueba("V-58 abrir un filtro no ensancha el panel",
+               abs(ancho_modal - ancho_panel) <= 1,
+               f"panel {ancho_panel:.0f} px · modal {ancho_modal:.0f} px")
 
         # --- los tres controles que se convirtieron, y el modal anclado ------
         print("")
@@ -1592,11 +1609,26 @@ def main():
         secciones_rep = json.loads(cdp.evaluar(
             "JSON.stringify([...document.querySelectorAll('.reporte-doc h2')]"
             ".map(h => h.textContent))"))
+        # Los umbrales suben con el documento: pasó de dos páginas a seis al
+        # añadir estructura del dosel, especies, distribución territorial,
+        # cobertura del dato y los anexos B y C. Un mínimo de 1.500 caracteres
+        # dejaría pasar que la mitad del reporte desapareciera.
         prueba("V-57 el reporte abre con texto real y las cifras del ámbito",
-               abrio is not None and len(texto) > 1500 and len(secciones_rep) >= 4
+               abrio is not None and len(texto) > 6000 and len(secciones_rep) >= 10
                and "Los Lagos" in texto and str(titular_panel) in texto,
                f"{len(texto)} caracteres · {len(secciones_rep)} secciones · "
                f"titular {titular_panel!r}")
+
+        # V-57c: LAS TABLAS TRAEN FILAS. Un documento largo cuyas tablas salen
+        # vacías tiene el mismo aspecto en la lista de secciones que uno lleno, y
+        # cada sección nueva depende de un campo distinto del resumen: si uno
+        # dejara de calcularse, su tabla se quedaría en el <thead>.
+        tablas = json.loads(cdp.evaluar(
+            "JSON.stringify([...document.querySelectorAll('.reporte-doc table')]"
+            ".map(t => t.querySelectorAll('tbody tr').length))"))
+        prueba("V-57c ninguna tabla del reporte sale vacía",
+               len(tablas) >= 9 and all(t > 0 for t in tablas),
+               f"{len(tablas)} tablas · filas {tablas}")
 
         # V-57b: LO QUE SE IMPRIME. Un reporte que en pantalla se ve perfecto y
         # sale con el mapa detrás —o con la barra de botones dentro— no sirve, y
