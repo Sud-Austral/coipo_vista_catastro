@@ -79,9 +79,13 @@ export default function PaginaMetodologia({ abierta, onCerrar, manifest, oficial
           <h3>Qué es un punto en este mapa</h3>
           <p>
             Cada punto es el <strong>centroide</strong> del polígono que el Catastro dibujó, no
-            una parcela, ni un predio, ni un árbol. La superficie real del polígono va en el
-            atributo, no en el tamaño del punto: el tamaño <em>crece con</em> la superficie pero
-            está acotado por arriba y por abajo, así que no es proporcional.
+            una parcela, ni un predio, ni un árbol. Su tamaño sí es{' '}
+            <em>proporcional a la superficie</em>: el disco cubre la misma área que el polígono,
+            centrada en ese centroide. Lo que no reproduce es su <em>forma</em> — una faja
+            estrecha de diez kilómetros y un cuadrado compacto de la misma superficie se dibujan
+            igual. Y el disco está acotado por abajo para que no desaparezca a escala de país, y
+            por arriba para que uno enorme no tape a sus vecinos: en esos dos extremos deja de
+            ser proporcional, y la cifra exacta está siempre en el atributo.
           </p>
           <p>
             El centroide de un polígono muy irregular <strong>puede caer fuera de él</strong>.

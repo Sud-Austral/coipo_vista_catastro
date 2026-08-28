@@ -34,15 +34,32 @@ import { DataFilterExtension } from '@deck.gl/extensions'
  * visor de referencia.
  */
 /**
- * Radio en pixeles a partir de la superficie, con raiz cuadrada y acotado.
+ * Radio EN METROS: el del circulo que tiene la misma area que el poligono.
+ *
+ * ha -> m2 son 10.000, y de area a radio, r = raiz(area/PI). Con eso el disco
+ * que se pinta ocupa exactamente el terreno que el poligono declara, y el
+ * tamano pasa a ser PROPORCIONAL de verdad, no "crece con".
+ *
+ * ANTES ESTABA EN PIXELES, y ese era el defecto: un punto media lo mismo a z=4
+ * que a z=18, asi que al acercarse no crecia y el mapa quedaba en viruela.
+ * Medido sobre las 1.827.933 filas con la formula vieja
+ * --min(12, max(0,9, 0,65*raiz(ha)))--: la mediana daba 1,09 px y el 40,85 %
+ * de los puntos estaba clavado en el suelo de 0,9 px. Cuatro de cada diez no
+ * codificaban nada, a ningun zoom.
+ *
+ * En metros, ese poligono mediano de 2,83 ha mide 95 m de radio: 0,2 px a z8,
+ * 12 px a z14 y unos 200 px a z18. Deja de ser viruela en cuanto te acercas, y
+ * a nivel pais sigue siendo un punto porque lo acota radiusMinPixels.
+ *
  * Se calcula UNA vez por conjunto de datos, no por fotograma: es un atributo
- * binario mas, del mismo tamano que el canal de filtro.
+ * binario mas, del mismo tamano que el canal de filtro. Que crezca con el zoom
+ * ya no cuesta nada aqui -- lo hace la GPU al proyectar.
  */
 function radiosDesdeSuperficie(ha, n) {
   const r = new Float32Array(n)
+  const K = Math.sqrt(10000 / Math.PI)   // ha -> radio equivalente en metros
   for (let i = 0; i < n; i++) {
-    // 1,1 px para el poligono mediano (2,83 ha) y ~12 px para los mayores.
-    r[i] = Math.min(12, Math.max(0.9, 0.65 * Math.sqrt(ha[i])))
+    r[i] = K * Math.sqrt(ha[i])
   }
   return r
 }
@@ -172,10 +189,12 @@ export default function CapaPuntos({ map, datos, paleta, filtro, onPunto, onFall
   useEffect(() => {
     if (!map) return
 
-    // El radio es tolerancia de PICKING, no de dibujo. Con radiusMinPixels 0,6
-    // el punto mide ~1 px y sin tolerancia habria que acertarle al pixel: el
-    // sintoma seria identico al de no tener ficha. Es el equivalente al
-    // tolerance:8 que el visor de prevencion le pone a su renderer de Leaflet.
+    // El radio es tolerancia de PICKING, no de dibujo: se SUMA al disco. Hace
+    // falta a escala de pais, donde el suelo de radiusMinPixels deja los puntos
+    // en 1,2 px y sin holgura habria que acertarle al pixel -- el sintoma seria
+    // identico al de no tener ficha. Al acercarse el disco ya es grande y la
+    // tolerancia deja de notarse, que es lo que se quiere: no roba clics a un
+    // vecino porque el vecino tambien ha crecido.
     const picar = (x, y, radius) =>
       deckRef.current?.pickObject({ x, y, radius, layerIds: ['catastro-puntos'] })
 
@@ -243,21 +262,47 @@ export default function CapaPuntos({ map, datos, paleta, filtro, onPunto, onFall
           // verificacion caza midiendo el porcentaje de pixeles casi-blancos.
           getFillColor: { value: paleta, size: 4, normalized: true },
           getFilterValue: { value: filtro, size: 1 },
+          // EL RADIO VA AQUI DENTRO, y no como prop de la capa. Estaba fuera,
+          // junto a radiusUnits, y deck.gl lo IGNORABA en silencio: como prop,
+          // un accessor admite una funcion o un numero, y un {value, size} no
+          // es ninguna de las dos, asi que caia a su radio por defecto de 1 m.
+          //
+          // Consecuencia: el tamano por superficie NUNCA se aplico. Los
+          // 1.827.933 puntos se pintaban todos del mismo tamano minimo, a
+          // cualquier zoom -- que es exactamente la "viruela" que se reporto.
+          // Medido con el punto de la fila 900.000 (7,64 ha, 156 m de radio
+          // equivalente): a z16 el disco media 2 px, que es el suelo de
+          // radiusMinPixels, cuando le tocaban 175. Con un radio CONSTANTE en
+          // la misma prop salian 138 px, y esa fue la prueba que lo separo.
+          getRadius: { value: radio, size: 1 },
         },
       },
-      radiusUnits: 'pixels',
-      // El radio CRECE con la superficie del poligono, y no es proporcional:
-      // va acotado por arriba y por abajo. Decir "proporcional" seria falso --
-      // el rango real va de 0,1 ha a 1.295.122 ha, o sea 13 millones a 1, y ni
-      // siquiera en raiz cuadrada cabe en unos pocos pixeles.
+      // METROS, no pixeles: el disco ocupa el terreno que el poligono declara,
+      // asi que el tamano es PROPORCIONAL al area y crece con el zoom. Con
+      // 'pixels' un punto medía lo mismo a z=4 que a z=18 -- la viruela.
+      radiusUnits: 'meters',
+      // LOS DOS TOPES AHORA HACEN FALTA DE VERDAD, y cada uno tapa un extremo
+      // de un rango de 13 millones a uno (0 ha a 1.295.122 ha):
       //
-      // Raiz cuadrada y no lineal: el area del disco es lo que el ojo compara,
-      // asi que el RADIO tiene que ir con la raiz para que el AREA vaya con el
-      // dato. Con radio lineal, un poligono diez veces mayor se dibuja cien
-      // veces mas grande.
-      getRadius: { value: radio, size: 1 },
-      radiusMinPixels: 0.6,
-      radiusMaxPixels: 12,
+      // - SUELO. A escala de pais el poligono mediano mide 0,2 px y el 25 % de
+      //   ellos esta por debajo de 1 ha: sin suelo, tres cuartas partes del
+      //   Catastro desaparecen al alejarse. Antes este numero era LETRA MUERTA
+      //   --valia 0,6 y la formula ya no bajaba de 0,9--, asi que nunca se
+      //   habia calibrado.
+      // - TECHO. Los 418 poligonos de mas de 10.000 ha llegarian a 136.444 px
+      //   de radio a z18; el mayor mide 64 km de radio equivalente. Sin techo,
+      //   uno solo tapa la pantalla y esconde a todos sus vecinos.
+      //
+      // El techo es generoso a proposito (no los 12 px de antes): recortar a
+      // z16 un poligono de 500 ha, que ahi ocupa de verdad media pantalla,
+      // volveria a mentir sobre su tamano justo cuando se puede comprobar.
+      // SEMITRANSPARENTES, y esto es consecuencia de lo anterior: con discos de
+      // 1 px daba igual, pero al ocupar su area real se solapan y tapan el mapa
+      // base. Con alfa se ve el fondo debajo, y donde dos poligonos se cruzan
+      // el color se acumula -- que es informacion, no suciedad.
+      opacity: 0.55,
+      radiusMinPixels: 1.2,
+      radiusMaxPixels: 120,
       stroked: false,
       pickable: true,
       // uint8 medido identico a float32 en render, y ocupa 1 byte por punto en
@@ -268,7 +313,7 @@ export default function CapaPuntos({ map, datos, paleta, filtro, onPunto, onFall
       // arriba desde los eventos de Leaflet. `pickable: true` SI hace falta,
       // porque es lo que hace que la capa se dibuje en el bufer de picking que
       // lee pickObject.
-      updateTriggers: { getFilterValue: filtro, getFillColor: paleta, getRadius: radio },
+      updateTriggers: { getFilterValue: filtro, getFillColor: paleta },
     })
     deckgl.setProps({ layers: [capa] })
   }, [datos, paleta, filtro, radio])

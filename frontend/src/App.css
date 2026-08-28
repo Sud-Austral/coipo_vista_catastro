@@ -224,31 +224,12 @@
 .composicion span { display: block; height: 100%; box-shadow: 2px 0 0 var(--superficie); }
 .composicion span:last-child { box-shadow: none; }
 
-/* ---------- leyenda del panel de control ---------- */
-.leyenda { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 1px; }
-.clase {
-  width: 100%; display: grid; grid-template-columns: 12px 1fr auto;
-  align-items: center; gap: 8px; padding: 5px 6px;
-  border: 0; border-radius: 5px; background: none; cursor: pointer; text-align: left;
-}
-.clase:hover { background: var(--superficie-2); }
-.clase.apagada { opacity: 0.42; }
-.clase.apagada .cifra { text-decoration: line-through; }
-/* Sin polígonos en el recorte. La clase SIGUE en la leyenda —es el mapa de la
-   simbología y no puede encoger al filtrar— pero se atenúa para que no se lea
-   como una serie presente en el mapa. Un punto menos de opacidad que .apagada,
-   que significa otra cosa: apagada es «la has excluido tú». */
-.clase.vacia .nombre, .clase.vacia .cifra { color: var(--tinta-3); }
-.clase.vacia .chip { opacity: 0.3; }
-.chip { width: 12px; height: 12px; border-radius: 3px; }
-.clase .nombre { font-size: 12px; }
-.clase .cifra { font-size: 11.5px; color: var(--tinta-3); font-variant-numeric: tabular-nums; }
+/* ---------- el chip de color ----------
+   Sobrevive a la leyenda, que salio del panel. Lo usan ahora la ficha del
+   punto, la tira del boton de Uso y las filas de su modal: el color sigue
+   necesitando una muestra donde se le pueda poner nombre al lado. */
+.chip { width: 12px; height: 12px; border-radius: 3px; flex: 0 0 auto; }
 
-.campo { display: grid; gap: 4px; margin-top: 8px; font-size: 12px; }
-.campo select {
-  padding: 6px 8px; border: 1px solid var(--borde); border-radius: 6px;
-  background: var(--superficie); max-width: 100%;
-}
 .limpiar, .compartir {
   margin-top: 10px; padding: 6px 10px; width: 100%;
   border: 1px solid var(--borde); border-radius: 6px;
@@ -677,8 +658,13 @@
   display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px;
 }
 
+/* FLEX Y NO REJILLA. Los once botones no llevan las mismas piezas --Uso suma
+   una tira de nueve chips, Territorio y Mapa base una linea de valor-- y una
+   rejilla de tres columnas fijas mandaba la cuarta pieza a una segunda fila
+   partiendo el boton por la mitad. Con flex cada pieza ocupa lo suyo y solo
+   `.gf-valor` fuerza salto, que es justo lo que se quiere. */
 .grupo-filtro {
-  display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 6px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
   width: 100%; padding: 9px 10px; text-align: left; cursor: pointer;
   border: 1px solid var(--borde); border-radius: 7px;
   background: var(--superficie-2); color: var(--tinta);
@@ -702,7 +688,25 @@
 .grupo-filtro.vacio { opacity: 0.55; }
 .grupo-filtro.vacio .gf-total { text-decoration: line-through; }
 
-.gf-titulo { min-width: 0; overflow-wrap: anywhere; }
+/* UNA SOLA COLUMNA para Territorio y Mapa base. No es capricho: su valor es
+   texto libre --«Los Lagos > Chiloe > Ancud», «Sentinel-2»-- y en media columna
+   de 320 px se parte en tres lineas. Reusan `.filtro-botonera` para no tener
+   dos formas de colocar botones identicos. */
+.filtro-botonera.una { grid-template-columns: 1fr; }
+
+.gf-titulo { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+/* LO ELEGIDO, en el propio boton. Es la razon de ser de estos dos controles:
+   antes el ambito y el fondo se leian abriendo un <select>, y un ambito que no
+   se ve es la forma mas facil de citar una cifra regional como nacional. */
+.gf-valor {
+  flex: 1 0 100%; margin-top: 2px;
+  font-size: 11.5px; font-weight: 600; color: var(--acento);
+  overflow-wrap: anywhere;
+}
+/* La tira de color del boton de Uso. MITIGACION de haber quitado la leyenda:
+   ordena los nueve tonos a la vista, aunque no los nombre. */
+.gf-chips { display: flex; gap: 2px; }
+.gf-chips .chip { width: 7px; height: 12px; border-radius: 2px; }
 /* El total de clases, apagado: informa del tamaño de la lista sin competir con
    la cuenta de activas, que es la que cambia el mapa. */
 .gf-total {
@@ -731,6 +735,11 @@
   font-size: 12.5px; cursor: pointer;
 }
 .gf-opcion:hover { background: var(--superficie-2); }
+/* Cuatro columnas en vez de tres: casilla, chip, etiqueta y cifra. La clase la
+   pone el componente y no un :has(), para que la rejilla no dependa de si el
+   navegador resuelve el selector. */
+.gf-opcion.con-chip { grid-template-columns: auto auto 1fr auto; }
+.gf-opcion .chip { align-self: center; }
 .gf-opcion input { margin: 0; accent-color: var(--acento); align-self: center; }
 /* Una clase que el filtro dejó en cero se atenúa pero NO se quita: si la lista
    se encogiera al filtrar, la clase que alguien busca parecería no existir. */
@@ -756,6 +765,18 @@
 
 .nota-voc { font-style: italic; }
 
+/* ---------- los niveles del modal de Territorio ----------
+   Region, provincia y comuna a la vez y encadenados. Cada nivel lleva su propia
+   lista con scroll: las 346 comunas no pueden empujar a las 16 regiones fuera
+   de la pantalla, que es lo que pasaria con una sola lista larga. */
+.mf-nivel { margin-top: 10px; }
+.mf-nivel h3 {
+  margin: 0; font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--tinta-3);
+}
+.mf-nivel + .mf-nivel { padding-top: 8px; border-top: 1px solid var(--borde); }
+.mf-cuerpo .mf-nivel .gf-lista { max-height: 240px; overflow-y: auto; }
+
 /* ---------- el modal de un filtro ----------
    Comparte la piel de .ficha —mismo radio, misma sombra, mismo ::backdrop—
    porque es el mismo objeto para quien lo usa: algo que se abre encima, se lee
@@ -770,15 +791,48 @@
      panel se leen como un solo plano. La ficha es pequeña y no lo necesita. */
   border: 1px solid var(--borde); border-radius: 10px; padding: 0;
   width: min(560px, calc(100vw - 32px));
-  max-height: min(80dvh, 720px);
   background: var(--superficie); color: var(--tinta);
   box-shadow: var(--sombra);
   overflow: hidden;   /* el scroll lo lleva .mf-cuerpo, no el diálogo */
+
+  /* ANCLADO A LA IZQUIERDA, no centrado. Por defecto la hoja del navegador le
+     pone a `dialog:modal` un `inset: 0; margin: auto` que lo clava en el centro
+     de la pantalla, o sea encima del mapa — que es justo lo que no se quiere:
+     el mapa se actualiza al marcar y hay que poder verlo.
+
+     `margin: 0` está de más y se deja dicho, porque aquí se afirmó lo
+     contrario: «con el margin:auto del navegador cualquier left se ignora».
+     Se midió quitándolo y el diálogo NO se movió — con `left: 0`, `right: auto`
+     y un ancho fijo el reparto no está sobredeterminado, así que `margin-left:
+     auto` resuelve a cero solo. Lo que de verdad ancla es el par
+     `position: fixed` + `inset`. Se conserva porque hace explícito que este
+     diálogo no se coloca solo, no porque haga falta.
+
+     El anclaje es el mismo que ya usa el cajón del panel: bajo el banner y
+     pegado al borde. `inset` + `height: auto` fijan el alto, así que el
+     `max-height` que había aquí sobra — lo lleva `.mf-caja`, que es quien
+     reparte cabecera, cuerpo y pie. */
+  position: fixed;
+  inset: var(--alto-banner) auto 0 0;
+  margin: 0;
+  /* `height: auto` NO sobra, y esto se midió: la hoja del navegador le da a
+     `dialog` un `height: fit-content`, que NO es `auto`, así que el `inset` de
+     arriba no estiraba nada y la caja se quedaba del alto de su contenido — el
+     modal de Territorio recién abierto medía 471 px de los 915 disponibles y el
+     pie con «Listo» quedaba flotando a media pantalla. Con `auto`, el par
+     top/bottom sí resuelve la altura. */
+  height: auto;
 }
-/* Más opaco que el de la ficha (0,35): en tema oscuro, con un diálogo de 560 px
-   encima de un panel de la misma superficie, a 0,35 el panel se seguía leyendo
-   entero y el modal no separaba nada. */
-.modal-filtro::backdrop { background: rgb(0 0 0 / 0.55); }
+
+/* EL VELO SE QUITA, y ésta es la mitad que de verdad destapa el mapa: el
+   ::backdrop cubre TODA la pantalla, no el elemento, así que anclar el diálogo
+   a la izquierda sin tocarlo dejaba el mapa igual de tapado por un velo del
+   55 %. Sin él, el mapa se ve entero y se ve cambiar mientras se elige.
+
+   Lo que separa el diálogo del fondo pasa a ser su borde y su sombra, que para
+   eso están. Y sigue siendo showModal(): el fondo continúa inerte y Escape,
+   el foco atrapado y la top layer siguen saliendo gratis. */
+.modal-filtro::backdrop { background: transparent; }
 
 /* El <dialog> vive dentro de <aside class="panel">, así que hereda su `h2`:
    12 px, VERSALITAS y color apagado. Eso es el rótulo de una sección del panel,
@@ -794,7 +848,10 @@
    alcance justo cuando hace falta. */
 .mf-caja {
   display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
-  max-height: min(80dvh, 720px);
+  /* El alto lo fija el `inset` del diálogo, de banner a suelo. Repetir aquí un
+     `min(80dvh, 720px)` hacía que dos techos distintos pelearan por el mismo
+     elemento. */
+  height: 100%;
 }
 .mf-cabecera {
   position: relative; padding: 14px 16px 10px 16px;
@@ -836,3 +893,144 @@
   letter-spacing: 0.04em; color: var(--tinta-3);
 }
 .bloque-escala:first-child .rotulo-escala { padding-top: 0; border-top: 0; }
+
+/* ---------- el reporte imprimible ----------
+   Capa fija dentro de `.app` y NO un <dialog>: la impresión tiene que poder
+   aislar este subárbol con `@media print`, y el contenido de la top layer se
+   imprime por reglas propias que no siguen la cascada normal.
+
+   El documento se maqueta en COLUMNA DE PAPEL —ancho de línea de lectura, no de
+   pantalla— para que lo que se ve sea lo que sale impreso. */
+.reporte-vista {
+  position: fixed; inset: 0; z-index: 900;
+  display: flex; flex-direction: column;
+  background: var(--superficie-2);
+}
+
+/* La barra es el MANDO, no el documento: no se imprime. */
+.reporte-barra {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 16px; flex: 0 0 auto;
+  background: var(--verde-institucional, #064928); color: #fff;
+}
+.rep-titulo-barra { font-size: 13px; font-weight: 600; }
+.rep-cerrar, .rep-imprimir {
+  padding: 7px 14px; border-radius: 6px; font: inherit; font-size: 12.5px;
+  font-weight: 600; cursor: pointer;
+}
+.rep-cerrar { border: 1px solid rgba(255, 255, 255, 0.5); background: none; color: #fff; }
+.rep-imprimir { border: 1px solid #fff; background: #fff; color: var(--verde-institucional, #064928); }
+.rep-cerrar:focus-visible, .rep-imprimir:focus-visible {
+  outline: 2px solid #fff; outline-offset: 2px;
+}
+
+.reporte-doc {
+  --rep-linea: var(--borde);
+  flex: 1 1 auto; overflow-y: auto;
+  width: min(190mm, 100%); margin: 0 auto; padding: 24px 20px 60px;
+  background: var(--superficie); color: var(--tinta);
+  font-size: 13px; line-height: 1.55;
+}
+.reporte-doc h1 { font-size: 22px; line-height: 1.25; margin: 6px 0 2px; }
+.reporte-doc h2 {
+  font-size: 15px; margin: 26px 0 8px; padding-bottom: 4px;
+  border-bottom: 2px solid var(--acento); text-transform: none; letter-spacing: normal;
+  color: var(--tinta);
+}
+.reporte-doc h3 { font-size: 13px; margin: 16px 0 6px; }
+.reporte-doc p { margin: 8px 0; }
+
+.rep-portada { padding-bottom: 12px; border-bottom: 1px solid var(--borde); }
+.rep-institucion { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--tinta-2); }
+.rep-subtitulo { font-size: 14px; color: var(--tinta-2); margin-top: 0; }
+/* La ficha del documento: ámbito, año, emisión y cobertura. Es lo que hace que
+   dos reportes con el mismo título no se confundan a los diez minutos. */
+.rep-ficha {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px; margin: 14px 0 0;
+}
+.rep-ficha dt { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--tinta-3); }
+.rep-ficha dd { margin: 2px 0 0; font-size: 13px; font-weight: 600; }
+
+.rep-kpis {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px; margin: 12px 0;
+}
+.rep-kpi {
+  display: grid; gap: 2px; padding: 10px 12px;
+  border: 1px solid var(--borde); border-radius: 8px; background: var(--superficie-2);
+}
+.rep-kpi-cifra { font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.rep-kpi-etq { font-size: 11.5px; color: var(--tinta-2); }
+.rep-kpi-detalle { font-size: 10.5px; color: var(--tinta-3); font-variant-numeric: tabular-nums; }
+
+.rep-donut-fila { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+.rep-donut { width: 150px; height: 150px; flex: 0 0 auto; }
+.rep-leyenda { list-style: none; margin: 0; padding: 0; flex: 1 1 260px; }
+.rep-leyenda li {
+  display: grid; grid-template-columns: 12px 1fr auto; align-items: center;
+  gap: 8px; padding: 2px 0; font-size: 12px;
+}
+.rep-leyenda-cifra { font-variant-numeric: tabular-nums; color: var(--tinta-2); }
+
+.rep-tabla { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+.rep-tabla th, .rep-tabla td {
+  padding: 5px 8px; border-bottom: 1px solid var(--borde); text-align: left;
+  vertical-align: top;
+}
+.rep-tabla th { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--tinta-2); }
+.rep-tabla .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rep-tabla tfoot td { font-weight: 700; border-top: 2px solid var(--tinta-3); border-bottom: 0; }
+.rep-tabla td .chip { display: inline-block; margin-right: 6px; vertical-align: -1px; }
+
+.rep-pie {
+  margin-top: 28px; padding-top: 12px; border-top: 1px solid var(--borde);
+  font-size: 11px; color: var(--tinta-2);
+}
+
+/* ---------- impresión ----------
+   Se imprime EL DOCUMENTO Y NADA MÁS. `.app` es una rejilla de tres columnas
+   con alto de viewport: sin devolverla a flujo normal, el reporte saldría
+   recortado a la altura de una pantalla.
+
+   `print-color-adjust` NO es cosmético aquí: sin él Chrome descarta los fondos
+   al imprimir, y los nueve chips de color —que son la simbología del mapa— y
+   los tramos del donut saldrían en blanco. Es exactamente el modo de fallo que
+   dejó el reporte de referencia en cincuenta páginas vacías. */
+@media print {
+  /* LA PALETA SE FUERZA A CLARA, y esto se vio antes de creerselo: en tema
+     oscuro el documento salia con `--tinta-2` y `--tinta-3` --grises CLAROS--
+     sobre papel blanco, asi que los titulos de seccion, las cabeceras de tabla
+     y el pie entero quedaban practicamente invisibles, y las tarjetas de KPI
+     salian como cajas negras. Pintar solo `.reporte-doc` de blanco no bastaba:
+     el color de cada pieza viene de un token, no del contenedor.
+     Se redefinen en `.reporte-vista` para no tocar el tema del resto del visor. */
+  .reporte-vista {
+    --superficie: #fff;
+    --superficie-2: #f4f6f4;
+    --tinta: #111;
+    --tinta-2: #444;
+    --tinta-3: #666;
+    --borde: #c8ccc8;
+  }
+  .app > *:not(.reporte-vista) { display: none !important; }
+  .app { display: block; height: auto; min-height: 0; }
+  .reporte-barra { display: none !important; }
+  /* El fondo del PAPEL, no solo el de la capa: sin esto el tema oscuro dejaba
+     una banda negra arriba --lo que asoma del <body> por encima del documento--
+     en la primera pagina de cada impresion. */
+  html, body, #root { background: #fff; }
+  .reporte-vista { position: static; display: block; background: #fff; }
+  .reporte-doc {
+    width: auto; max-width: none; overflow: visible; padding: 0;
+    background: #fff; color: #111; font-size: 10.5pt;
+  }
+  .rep-kpi, .rep-tabla, .rep-donut-fila, .rep-pie { break-inside: avoid; }
+  .reporte-doc h2 { break-after: avoid; }
+  .reporte-doc table { break-inside: auto; }
+  .rep-tabla thead { display: table-header-group; }
+  .chip, .rep-donut circle, .rep-kpi {
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  @page { size: A4; margin: 18mm 16mm 20mm; }
+}

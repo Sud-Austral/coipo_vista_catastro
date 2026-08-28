@@ -13,7 +13,9 @@ const TOPE_GEOJSON = 200000
  * NUNCA SE CALLA POR QUÉ UN BOTÓN NO FUNCIONA. Un botón gris y mudo se
  * convierte en un ticket de soporte; el motivo va escrito al lado.
  */
-export default function SeccionDescargas({ datos, filtro, resumen, manifest, ambitoTxt, nFiltrado }) {
+export default function SeccionDescargas({
+  datos, filtro, resumen, manifest, ambitoTxt, nFiltrado, onReporte,
+}) {
   const [estado, setEstado] = useState('')
   const [error, setError] = useState('')
 
@@ -113,6 +115,17 @@ export default function SeccionDescargas({ datos, filtro, resumen, manifest, amb
       <p className="nota">
         Todo lo que se descarga respeta el ámbito activo: <strong>{ambitoTxt}</strong>.
       </p>
+
+      {/* EL REPORTE VA EL PRIMERO de la sección, y no al final con los CSV: es
+          lo que se lleva a una reunión. Los otros dos botones sacan datos para
+          seguir trabajando; éste saca un documento para leer.
+
+          No se deshabilita por «los datos aún se descargan» de la misma forma
+          que los demás: el reporte se arma del RESUMEN, que ya existe desde el
+          manifest antes de que baje el .bin. */}
+      <button type="button" className="compartir" onClick={onReporte} disabled={!resumen || !manifest}>
+        Reporte del ámbito (PDF)
+      </button>
 
       <button type="button" className="limpiar" onClick={bajarCifras} disabled={!listo}>
         Cifras del ámbito (CSV)

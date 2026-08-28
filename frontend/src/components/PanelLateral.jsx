@@ -1,9 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AVISO_PUNTOS, BASEMAPS, COLOR_USO } from '../config'
-import { fmt, ha, haExacta } from '../formato'
+import { fmt } from '../formato'
+import { ambitoTexto } from '../indicadores'
 import { flush } from '../urlState'
 import { FILTROS, NINGUNO, cuentaSeleccion } from '../filtros'
-import { BotonFiltro, ModalFiltro } from './GrupoFiltro'
+import { BotonControl, BotonFiltro, ModalFiltro } from './GrupoFiltro'
+import { ModalMapaBase, ModalTerritorio } from './ControlesPanel'
+import { useTerritorio } from '../territorio'
 
 /**
  * Cómo se llama cada dimensión dentro de `resumen.sinDato`. Son nombres
@@ -19,9 +22,15 @@ const SIN_DATO = {
 /**
  * Panel de control.
  *
+ * TODO CONTROL ES UN BOTÓN QUE ABRE UN MODAL. Antes había tres formas distintas
+ * de elegir en el mismo panel —<select> para el territorio y el fondo, una lista
+ * de botones para la leyenda, y botonera para las ocho dimensiones—, y las tres
+ * respondían a la misma pregunta: qué se está mirando. Ahora son once botones
+ * iguales, y lo elegido se lee en el propio botón sin abrir nada.
+ *
  * Orden de las secciones, y no es casual: ÁMBITO primero. Es lo primero que
- * busca cualquiera que abre el visor —«¿y mi región?»—, y ponerlo debajo de la
- * leyenda lo deja media pantalla más abajo en un panel de 320 px que ya scrollea.
+ * busca cualquiera que abre el visor —«¿y mi región?»—, y lo que se saca fuera
+ * (compartir, descargar) va al fondo, que es cuando se hace.
  *
  * NADA está hardcodeado: las regiones, provincias, comunas y clases salen del
  * manifest con sus cifras. Si el ETL cambia el vocabulario, esto cambia solo.
@@ -49,8 +58,8 @@ export default function PanelLateral({
   const cabecera = useRef(null)
   const montado = useRef(false)
   const [aviso, setAviso] = useState('')
-  // La dimensión cuyo modal está abierto, o null. UNO solo: montar los ocho
-  // <dialog> a la vez sería montar ocho listas, y la de especies tiene 989
+  // El control cuyo modal está abierto, o null. UNO solo: montar los once
+  // <dialog> a la vez sería montar once listas, y la de especies tiene 989
   // clases.
   const [abierta, setAbierta] = useState(null)
   // A qué botón devolver el foco al cerrar el modal. Un <dialog> lo devuelve
@@ -62,6 +71,9 @@ export default function PanelLateral({
   // está debajo de un diálogo modal —y por tanto inerte— cuando corre. Se
   // apunta a quién enfocar y se hace en un efecto, igual que App.jsx con los
   // botones de reapertura de los paneles.
+  //
+  // Vale para los ONCE porque todos llevan `data-col`, incluidos Territorio y
+  // Mapa base: por eso el reenfoque no tuvo que generalizarse a mano.
   const aEnfocar = useRef(null)
   useEffect(() => {
     if (abierta !== null || !aEnfocar.current) return
@@ -89,55 +101,32 @@ export default function PanelLateral({
     return () => clearTimeout(t)
   }, [aviso])
 
-  // El territorio TAMBIÉN va en cascada: sólo se ofrece lo que tiene algo bajo
-  // los filtros temáticos activos. Las cifras salen del marginal de la columna
-  // `comuna`, que por construcción ignora el filtro del propio ámbito — si no,
-  // elegir una región dejaría el desplegable con esa única región dentro.
-  //
-  // LO ELEGIDO NO SE OCULTA NUNCA, aunque su marginal caiga a cero: un <select>
-  // cuyo `value` no está entre sus opciones se dibuja vacío y deja el mapa
-  // recortado por un ámbito que no se ve en ninguna parte.
-  const comunasVivas = useMemo(() => marginales?.comunas ?? [], [marginales])
-
-  const regiones = useMemo(() => {
-    const todas = manifest?.regiones ?? []
-    const vivas = new Set((marginales?.regiones ?? []).map((r) => r.cod))
-    return todas.filter((r) => vivas.has(r.cod) || r.cod === ambito.region)
-  }, [manifest, marginales, ambito.region])
-
-  // Las regiones van en orden geográfico norte-sur, que es como se piensa
-  // Chile; provincias y comunas, alfabético.
-  const provincias = useMemo(() => {
-    if (!ambito.region) return []
-    const set = new Set(
-      comunasVivas.filter((c) => c.region === ambito.region).map((c) => c.provincia),
-    )
-    if (ambito.provincia) set.add(ambito.provincia)
-    return [...set].sort((a, b) => a.localeCompare(b, 'es'))
-  }, [comunasVivas, ambito.region, ambito.provincia])
-
-  const comunas = useMemo(() => {
-    if (!ambito.region || !manifest) return []
-    const vivas = comunasVivas
-      .filter((c) => c.region === ambito.region)
-      .filter((c) => !ambito.provincia || c.provincia === ambito.provincia)
-    if (ambito.comuna && !vivas.some((c) => c.cod === ambito.comuna)) {
-      const elegida = manifest.comunas.find((c) => c.cod === ambito.comuna)
-      if (elegida) vivas.push({ ...elegida, n: 0 })
-    }
-    return vivas.sort((a, b) => a.etiqueta.localeCompare(b.etiqueta, 'es'))
-  }, [manifest, comunasVivas, ambito.region, ambito.provincia, ambito.comuna])
+  // Sólo para rotular el botón: las tres listas las arma el modal con el mismo
+  // hook, así que el botón y el modal cuentan lo mismo por construcción.
+  const { regiones } = useTerritorio(manifest, marginales, ambito)
 
   const hayAmbito = Boolean(ambito.region)
   // Con las cifras nacionales no hay nada que aclarar; con un recorte activo,
   // las listas cuentan sobre conjuntos distintos del mapa y hay que decirlo.
   const hayRecorte = Boolean(marginales) && marginales.fuente !== 'manifest'
-  const activas = cuentaSeleccion(filtros)
+  const activas = cuentaSeleccion(filtros) + (usosActivos.size > 0 ? 1 : 0)
   const paleta = COLOR_USO[oscuro ? 'oscuro' : 'claro']
-  // La clase de uso NO entra en la botonera: su control es la leyenda, que es
-  // la única dimensión con color propio.
-  const tematicos = FILTROS.filter((d) => d.col !== 'uso')
-  const defAbierta = tematicos.find((d) => d.col === abierta) ?? null
+  const chipsUso = (manifest?.usos ?? []).map((u) => paleta[u.cod])
+  const defAbierta = FILTROS.find((d) => d.col === abierta) ?? null
+
+  // El uso vive en un estado propio de App —tiene control aparte desde que era
+  // la leyenda— pero se dibuja como una dimensión más. La adaptación es esto y
+  // nada más: unificar los dos estados en App sería tocar el canal de filtrado,
+  // que está medido, para ahorrar tres líneas aquí.
+  const esUso = (col) => col === 'uso'
+  const seleccionDe = (col) => (esUso(col) ? usosActivos : (filtros[col] ?? NINGUNO))
+  const alternar = (col, i) => (esUso(col) ? onUso(i) : onFiltro(col, i))
+  const limpiar = (col) => (esUso(col) ? onLimpiarUsos() : onLimpiarFiltro(col))
+
+  const limpiarTodo = () => {
+    onLimpiarFiltros()
+    onLimpiarUsos()
+  }
 
   const compartir = async () => {
     // flush PRIMERO: la URL se escribe con 250 ms de retraso, así que sin esto
@@ -174,113 +163,50 @@ export default function PanelLateral({
 
       <section>
         <h2>Ámbito</h2>
-        <label className="campo">
-          <span>Región</span>
-          <select
-            value={ambito.region ?? ''}
-            onChange={(e) => onAmbito({ region: e.target.value || null, provincia: null, comuna: null })}
-          >
-            <option value="">Todo Chile</option>
-            {regiones.map((r) => (
-              <option key={r.cod} value={r.cod}>
-                {r.nombre} · {r.anio}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        {hayAmbito && provincias.length > 0 && (
-          <label className="campo">
-            <span>Provincia</span>
-            <select
-              value={ambito.provincia ?? ''}
-              onChange={(e) => onAmbito({ ...ambito, provincia: e.target.value || null, comuna: null })}
-            >
-              <option value="">Todas</option>
-              {provincias.map((p) => (
-                <option key={p} value={p}>{p}</option>
-              ))}
-            </select>
-          </label>
-        )}
-
-        {hayAmbito && comunas.length > 0 && (
-          <label className="campo">
-            <span>Comuna</span>
-            <select
-              value={ambito.comuna ?? ''}
-              onChange={(e) => onAmbito({ ...ambito, comuna: e.target.value || null })}
-            >
-              <option value="">Todas</option>
-              {comunas.map((c) => (
-                <option key={c.cod} value={c.cod}>
-                  {c.etiqueta} ({fmt.format(c.n)})
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-
-        {hayAmbito && (
-          <button type="button" className="limpiar"
-                  onClick={() => onAmbito({ region: null, provincia: null, comuna: null })}>
-            Volver a todo Chile
-          </button>
-        )}
+        {/* UN botón para los tres niveles. Rotula el ámbito completo —«Los Lagos
+            › Chiloé › Ancud»— porque es lo que decide de qué territorio son
+            todas las cifras del visor, y eso no puede vivir sólo dentro de un
+            modal cerrado. */}
+        <div className="filtro-botonera una">
+          <BotonControl
+            col="territorio"
+            corto="Territorio"
+            valor={manifest ? ambitoTexto(ambito, manifest) : 'todo Chile'}
+            total={regiones.length}
+            onAbrir={setAbierta}
+            titulo={
+              hayAmbito && manifest
+                ? `Ámbito actual: ${ambitoTexto(ambito, manifest)}`
+                : `Todo Chile · ${regiones.length} regiones`
+            }
+          />
+        </div>
       </section>
 
       <section>
-        <h2>Clases de uso</h2>
+        <h2>Simbología</h2>
+        {/* LA LEYENDA YA NO ESTÁ EN EL PANEL, y hay que decir qué se perdió con
+            ella: era uno de los mecanismos que hacían que el color no fuera la
+            única codificación. Los nombres y las superficies siguen, pero
+            dentro del modal de Uso, o sea a un clic. La tira de color del botón
+            no es un sustituto: ordena los tonos, no los nombra.
+            config.js documenta cuáles de aquellos mecanismos quedan vivos. */}
         <p className="nota">
-          Pulsa una clase para aislarla en el mapa. El color no es la única marca: el nombre y la
-          superficie van escritos al lado.
+          Los nueve colores del mapa se nombran en <strong>Uso</strong>, con su superficie al
+          lado. El color no es la única marca, pero sí la única que está a la vista sin abrirlo.
         </p>
-        {/* «CRECE CON», nunca «es proporcional a». Con el radio acotado por
-            arriba y por abajo no hay proporcionalidad, y el rango real del dato
-            va de 0,1 ha a 1.295.122 ha: ninguna escala proporcional cabe en unos
-            pocos píxeles. Decirlo mal en la única línea permanente sería el
-            rigor fallando dentro del mecanismo que existe para protegerlo. */}
+        {/* AHORA SÍ ES PROPORCIONAL, y por eso este texto cambió. El radio pasó
+            de píxeles a METROS —el del círculo de igual área que el polígono—,
+            así que el disco ocupa el terreno que el dato declara y crece con el
+            zoom. Antes decía «no es proporcional», que era cierto y ahora sería
+            falso: el rigor de esta línea es lo que la hace útil, en los dos
+            sentidos. */}
         <p className="nota">
-          El tamaño del punto <strong>crece con</strong> la superficie del polígono, con un mínimo
-          y un máximo para que siga siendo visible y se pueda pulsar. No es proporcional.
+          El tamaño del punto es <strong>proporcional a la superficie</strong> del polígono: el
+          disco cubre la misma área que él, así que crece al acercarse. Se acota por abajo para
+          que no desaparezca a escala de país, y por arriba para que un polígono enorme no tape
+          a sus vecinos.
         </p>
-        {/* LAS NUEVE CLASES, SIEMPRE, y es la excepción deliberada a la regla
-            de ocultar lo que queda a cero. config.js declara la leyenda uno de
-            los cuatro mecanismos sin los cuales «se rompe la accesibilidad del
-            mapa»: con nueve colores simultáneos el color solo no basta, y la
-            leyenda es lo que los nombra. Una leyenda que encoge al filtrar deja
-            de ser el mapa de la simbología.
-
-            Las cifras salen del MARGINAL. Iterando el resumen —que es lo que se
-            hacía— pulsar una clase borraba las otras ocho de la lista, así que
-            no había forma de añadir una segunda sin quitar la primera. */}
-        <ul className="leyenda">
-          {(manifest?.usos ?? []).map((u, i) => {
-            const cifra = (marginales?.usos ?? []).find((x) => x.cod === u.cod)
-            const activa = usosActivos.size === 0 || usosActivos.has(i)
-            const vacia = !cifra || cifra.n === 0
-            return (
-              <li key={u.cod}>
-                <button
-                  type="button"
-                  className={`clase${activa ? '' : ' apagada'}${vacia ? ' vacia' : ''}`}
-                  aria-pressed={usosActivos.has(i)}
-                  onClick={() => onUso(i)}
-                  title={`${u.etiqueta}: ${vacia ? 'sin polígonos en este recorte' : haExacta(cifra.ha)}`}
-                >
-                  <span className="chip" style={{ background: paleta[u.cod] }} />
-                  <span className="nombre">{u.etiqueta}</span>
-                  <span className="cifra">{vacia ? '—' : ha(cifra.ha)}</span>
-                </button>
-              </li>
-            )
-          })}
-        </ul>
-        {usosActivos.size > 0 && (
-          <button type="button" className="limpiar" onClick={onLimpiarUsos}>
-            Ver todas las clases
-          </button>
-        )}
       </section>
 
       <section className="seccion-filtros">
@@ -304,16 +230,13 @@ export default function PanelLateral({
             cruzada con los demás filtros. Por eso pueden sumar más que el total del mapa.
           </p>
         )}
-        {/* La clase de uso NO se repite aquí. Es la única dimensión con color
-            propio, así que su control es la leyenda: tenerla en dos sitios
-            obligaría a mantener dos estados sincronizados de lo mismo. */}
-        <p className="nota">La clase de uso se filtra desde la leyenda de arriba.</p>
 
-        {/* La botonera. Dos columnas: las ocho dimensiones caben en cuatro
+        {/* La botonera. Dos columnas: las nueve dimensiones caben en cinco
             filas, y el estado de todas se lee de una vez en vez de tener que
-            desplegarlas una a una. */}
+            desplegarlas una a una. Uso va la PRIMERA porque es la dimensión que
+            pinta el mapa. */}
         <div className="filtro-botonera">
-          {tematicos.map((def) => (
+          {FILTROS.map((def) => (
             <BotonFiltro
               key={def.col}
               def={def}
@@ -321,14 +244,15 @@ export default function PanelLateral({
               // El MARGINAL, no el resumen: la lista de una dimensión no se
               // puede contar sobre un recorte que ya aplica su propio filtro.
               cifras={marginales}
-              seleccion={filtros[def.col] ?? NINGUNO}
+              seleccion={seleccionDe(def.col)}
+              chips={esUso(def.col) ? chipsUso : null}
               onAbrir={setAbierta}
             />
           ))}
         </div>
 
         {activas > 0 && (
-          <button type="button" className="limpiar" onClick={onLimpiarFiltros}>
+          <button type="button" className="limpiar" onClick={limpiarTodo}>
             Quitar los {activas} filtros
           </button>
         )}
@@ -336,27 +260,27 @@ export default function PanelLateral({
 
       <section>
         <h2>Mapa base</h2>
-        <label className="campo">
-          <span>Imagen de fondo</span>
-          <select value={base} onChange={(e) => onBase(e.target.value)}>
-            {Object.keys(BASEMAPS).map((k) => (
-              <option key={k} value={k}>{k}</option>
-            ))}
-          </select>
-        </label>
-        {/* La nota sale de config.js y no de una comparación con el literal del
-            nombre: cada capa declara la suya junto a su URL, que es donde vive
-            el motivo. Condicionarla aquí por `base === 'Sentinel-2'` obligaba a
-            tocar este archivo cada vez que una capa nueva necesita advertencia,
-            y a que el panel supiera cosas del proveedor que no le tocan. */}
+        <div className="filtro-botonera una">
+          <BotonControl
+            col="base"
+            corto="Imagen de fondo"
+            valor={base}
+            total={Object.keys(BASEMAPS).length}
+            onAbrir={setAbierta}
+            titulo={`Fondo actual: ${base}`}
+          />
+        </div>
+        {/* La advertencia del fondo ACTIVO se queda fuera del modal además de
+            dentro: es lo único que explica un mapa con huecos sin tener que
+            abrir nada. La nota sale de config.js y no de una comparación con el
+            literal del nombre: cada capa declara la suya junto a su URL, que es
+            donde vive el motivo. */}
         {BASEMAPS[base]?.nota && <p className="nota">{BASEMAPS[base].nota}</p>}
       </section>
 
       {/* COMPARTIR Y DESCARGAR VAN AL FONDO, y el orden del panel no es
-          decorativo: primero se acota el ámbito, luego se lee la leyenda, luego
-          se filtra y se configura el fondo, y sólo al final se saca algo fuera.
-          Estaban en tercer y cuarto lugar, por delante de la leyenda y de los
-          filtros, que es a lo que se entra. */}
+          decorativo: primero se acota el ámbito, luego se filtra y se configura
+          el fondo, y sólo al final se saca algo fuera. */}
       <section>
         <h2>Compartir</h2>
         <button type="button" className="compartir" onClick={compartir}>
@@ -399,22 +323,35 @@ export default function PanelLateral({
         )}
       </footer>
 
-      {/* UN SOLO modal, con la dimensión que toque, y montado sólo cuando hay
-          una abierta. Se monta con `key` para que cada dimensión estrene su
-          estado: sin ella, React reutilizaría la instancia y el buscador y el
-          scroll de una lista aparecerían dentro de la siguiente. */}
+      {/* UN SOLO modal a la vez, y montado sólo cuando hay uno abierto. Se monta
+          con `key` para que cada control estrene su estado: sin ella, React
+          reutilizaría la instancia y el buscador y el scroll de una lista
+          aparecerían dentro de la siguiente. */}
       {defAbierta && (
         <ModalFiltro
           key={defAbierta.col}
           def={defAbierta}
           manifest={manifest}
           cifras={marginales}
-          seleccion={filtros[defAbierta.col] ?? NINGUNO}
+          seleccion={seleccionDe(defAbierta.col)}
           sinDato={marginales?.sinDato?.[SIN_DATO[defAbierta.col]] ?? 0}
-          onAlternar={onFiltro}
-          onLimpiar={onLimpiarFiltro}
+          paleta={esUso(defAbierta.col) ? paleta : null}
+          onAlternar={alternar}
+          onLimpiar={limpiar}
           onCerrar={cerrarFiltro}
         />
+      )}
+      {abierta === 'territorio' && (
+        <ModalTerritorio
+          manifest={manifest}
+          marginales={marginales}
+          ambito={ambito}
+          onAmbito={onAmbito}
+          onCerrar={cerrarFiltro}
+        />
+      )}
+      {abierta === 'base' && (
+        <ModalMapaBase base={base} onBase={onBase} onCerrar={cerrarFiltro} />
       )}
     </aside>
   )

@@ -18,9 +18,11 @@
  * temas y en el mapa.
  *
  * Y EL COLOR NUNCA ES LA ÚNICA CODIFICACIÓN: `BarraFila` escribe siempre el
- * número. Sobre el mapa, además, la leyenda y el aislar-al-pulsar hacen el resto
- * del trabajo (ver el bloque SIMBOLOGÍA de config.js: con nueve clases
- * simultáneas ninguna paleta pasa las puertas de todos los pares).
+ * número. Sobre el mapa el peso lo lleva el aislar-al-marcar, y los nombres de
+ * las nueve clases están en el modal de Uso — ya no en una leyenda siempre
+ * visible en el panel (ver el bloque SIMBOLOGÍA de config.js, que lleva la
+ * cuenta de qué mecanismos quedan: con nueve clases simultáneas ninguna paleta
+ * pasa las puertas de todos los pares).
  */
 
 const W = 288 // 320 del panel menos 2 × 16 de padding

@@ -168,10 +168,12 @@ export const BASEMAPS = {
   // violeta #4a3aa7 cae a ~1,09:1, o sea practicamente invisible.
   //
   // Se sostiene SOLO por la razon que ya explica el bloque de SIMBOLOGIA: el
-  // color nunca es aqui la unica codificacion. Leyenda siempre visible, aislar
-  // la clase al pulsarla, tooltip que la nombra y tabla de superficie. Si
-  // alguna de esas cuatro cosas desapareciera, esta capa tendria que salir con
-  // ellas o revalidarse la paleta contra este gris concreto.
+  // color nunca es aqui la unica codificacion. Aislar la clase al marcarla,
+  // tabla de superficie, la ficha del punto y los nombres en el modal de Uso.
+  // ESA LISTA ENCOGIO --eran cuatro mecanismos con la leyenda siempre visible,
+  // y la leyenda ya no esta en el panel--, asi que esta capa queda apoyada en
+  // un margen mas estrecho que cuando se admitio. Si cae otro de los que
+  // quedan, sale con el o se revalida la paleta contra este gris concreto.
   //
   // VENCE EN DICIEMBRE DE 2029, igual que Claro y por lo mismo: el item publica
   // contentStatus 'deprecated' y la etiqueta 'retiring-2029-12'. Las dos capas
@@ -356,14 +358,24 @@ export const BASEMAPS = {
    PARES -- cualquier clase puede quedar junto a cualquier otra-- y ahi ni
    siquiera las ocho ranuras ya validadas de la guia pasan (CVD ΔE 3,2 medido).
    Con nueve clases simultaneas el color SOLO no basta, y no es opinable.
-   Por eso el color NUNCA es la unica codificacion aqui:
-     - la leyenda esta siempre visible,
-     - al pulsar una clase el mapa la AISLA (una sola serie: trivialmente
-       distinguible),
-     - el tooltip nombra la clase al pasar por encima,
-     - y existe la tabla de superficie por uso con las mismas cifras.
-   Quitar cualquiera de esas cuatro cosas rompe la accesibilidad del mapa, no
-   solo su comodidad.
+   Por eso el color NUNCA es la unica codificacion aqui. ESTE BLOQUE DECIA
+   CUATRO MECANISMOS Y ERA FALSO: el tooltip al pasar por encima nunca llego a
+   implementarse --se prometia una capacidad inexistente-- y la leyenda salio
+   del panel al pasar todos los controles a botonera. Lo que hay HOY, contado
+   como esta:
+     - al marcar una clase el mapa la AISLA (una sola serie: trivialmente
+       distinguible). Este es el mecanismo fuerte y el unico que actua sobre el
+       propio mapa;
+     - la tabla de superficie por uso, con las mismas cifras y siempre a la
+       vista en el panel de indicadores;
+     - la ficha del punto nombra su clase en texto al pulsarlo;
+     - los nombres de los nueve colores, con su superficie, en el modal de Uso.
+       ESTE ESTA A UN CLIC, no a la vista: es lo que se perdio al quitar la
+       leyenda del panel, y la tira de chips del boton no lo sustituye porque
+       ordena los tonos sin nombrarlos.
+   El saldo real es que la lectura del mapa SIN interactuar depende mas del
+   color que antes. Quitar el aislar-al-marcar o la tabla de superficie si
+   rompe la accesibilidad; lo que ya se quito la empeoro.
    --------------------------------------------------------------------------- */
 export const COLOR_USO = {
   claro: {

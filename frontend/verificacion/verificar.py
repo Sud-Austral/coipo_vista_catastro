@@ -15,7 +15,9 @@ import base64
 import functools
 import http.server
 import json
+import math
 import os
+import re
 import shutil
 import socketserver
 import sys
@@ -102,6 +104,11 @@ FICHA_ABIERTA = "!!document.querySelector('dialog.ficha[open]')"
 # EL GATE DE COSTE DE VERDAD esta en marginales.mjs, que corre en Node, en el CI
 # y con mediana de nueve. Este solo caza que la pasada se dispare aqui tambien.
 TECHO_CRUCE_MS = 400
+
+# Techo del PRIMER PINTADO con los discos ya grandes, contado desde que los datos
+# estan en memoria. Resolucion: una captura de pantalla, ~150 ms. Es una red de
+# seguridad contra una regresion de orden de magnitud, no un gate fino.
+TECHO_PINTADO_MS = 6000
 
 MODAL_FILTRO = "!!document.querySelector('dialog.modal-filtro[open]')"
 
@@ -236,6 +243,240 @@ def enfocar_mapa(cdp, segundos=6):
     return False
 
 
+def metros_por_pixel(lat, z):
+    """Web Mercator, teselas de 256 px --las de Leaflet--. deck.gl trabaja con
+    zoom-1 porque las suyas son de 512, pero la ESCALA EN PANTALLA es la misma,
+    que es lo que aqui se mide."""
+    return 156543.03392 * math.cos(math.radians(lat)) / (2 ** z)
+
+
+def puntos_bajo_el_clic(lat0, lon0, z, tol_px=6.0):
+    """Toda fila del .bin cuyo disco DIBUJADO cubre el pixel pulsado.
+
+    EL ORACULO DEL PICKING, calculado aparte del visor y sobre las 1.827.933
+    filas. Hace falta desde que el radio pasa a metros: los discos se solapan, y
+    exigir que gane siempre el punto centrado seria exigir un orden de dibujado
+    que deck.gl no promete --se vio a V-23 pasar con un vecino a 70 m--. Lo que
+    si se puede exigir, y es lo que de verdad importa, es que la ficha sea de un
+    punto que ESTA debajo del cursor.
+
+    Devuelve (indices, lat, lon, ha) para poder contar cuantos candidatos habia:
+    si sale uno solo, la asercion vuelve a ser tan estrecha como la vieja.
+    """
+    man = json.load(open(os.path.join(DIST, "datos", "manifest.json"), encoding="utf-8"))
+    capa = man["capas"]["cbn_puntos"]
+    n = capa["filas"]
+    col = {}
+    with open(os.path.join(DIST, "datos", capa["archivo"]), "rb") as fh:
+        for nombre in ("lat", "lon", "ha"):
+            c = capa["campos"][nombre]
+            fh.seek(c["offset"])
+            col[nombre] = np.frombuffer(fh.read(ANCHO_BIN[c["tipo"]] * n),
+                                        dtype=NP_BIN[c["tipo"]]).astype(np.float64)
+
+    mpp = metros_por_pixel(lat0, z)
+    # Equirectangular local: a estas distancias el error frente a la geodesica
+    # esta muy por debajo del pixel, y lo que se compara son pixeles.
+    dx = (col["lon"] - lon0) * math.cos(math.radians(lat0)) * 111320.0
+    dy = (col["lat"] - lat0) * 110540.0
+    dist_px = np.hypot(dx, dy) / mpp
+    # Los MISMOS topes que CapaPuntos: radio de area equivalente, con suelo y
+    # techo en pixeles. Copiarlos aqui es deliberado --es un oraculo, no puede
+    # importar el codigo que juzga--, y por eso mutaciones.py los toca.
+    r_px = np.clip(np.sqrt(col["ha"] * 10000.0 / math.pi) / mpp, 1.2, 120.0)
+    idx = np.nonzero(dist_px <= r_px + tol_px)[0]
+    return idx, col["lat"], col["lon"], col["ha"]
+
+
+def regiones_ofrecidas(cdp):
+    """Cuántas regiones ofrece el control de Territorio, leídas de su botón.
+
+    Antes esto era `.panel select[0].options.length`. Al pasar el ámbito a
+    botón + modal no queda ningún <select> que contar, y V-37/V-38 —la cascada
+    territorial, que es de lo que más se fía este visor— se habrían caído por el
+    control, no por la cascada. El botón publica la misma cuenta que lista el
+    modal, y V-42 comprueba justo eso para que este atajo no mida un adorno.
+    """
+    v = cdp.evaluar(
+        "document.querySelector('.grupo-filtro[data-col=\"territorio\"] .gf-total')?.textContent")
+    try:
+        return int(str(v))
+    except (TypeError, ValueError):
+        return -1
+
+
+def diametro_del_disco(cdp, cx, cy, ruta):
+    """El alto, en píxeles, del disco que está bajo (cx, cy).
+
+    POR DIFERENCIA CONTRA EL MISMO ENCUADRE SIN LA CAPA, y esto se aprendió
+    fallando. La primera versión deducía el fondo por color modal de la zona del
+    mapa, como hace `pintados()`; a z13 sobre un ámbito denso los discos cubren
+    más de media pantalla, así que el color más repetido ES EL DE LOS DISCOS y
+    el centro salía «igual que el fondo»: midió 0 px sobre un disco de 199. La
+    captura lo enseñó de un vistazo. Ocultando `.deck-overlay` se tiene el fondo
+    EXACTO —el mapa base está bloqueado, así que nada más cambia entre las dos
+    fotos— y la diferencia es justo lo que pinta deck.gl.
+
+    UNA COLUMNA, no un área. Contar el área parecía lo natural y se probó: con
+    discos que se solapan el conteo se fragmentaba y daba números que no eran el
+    diámetro de nada — llegó a hacer creer que el radio no se aplicaba en
+    absoluto. Recorrer la columna del centro mide el disco encuadrado, que es lo
+    que se quiere; de que no se le pegue un vecino se encarga `punto_aislado`.
+    """
+    cdp.evaluar("document.querySelector('.deck-overlay').style.visibility = 'hidden'")
+    time.sleep(0.5)
+    sin_puntos = capturar(cdp, ruta.replace(".png", "-sin-capa.png"))
+    cdp.evaluar("document.querySelector('.deck-overlay').style.visibility = ''")
+    time.sleep(0.7)
+    con_puntos = capturar(cdp, ruta)
+    if sin_puntos.shape != con_puntos.shape:
+        return 0
+    dif = np.abs(con_puntos - sin_puntos).sum(axis=2)
+    m = dif[:, int(cx)] > 25
+    y = int(cy)
+    if not m[y]:
+        return 0
+    a = b = y
+    while a > 0 and m[a - 1]:
+        a -= 1
+    while b < len(m) - 1 and m[b + 1]:
+        b += 1
+    return b - a + 1
+
+
+def punto_aislado(z_lejos=11, z_cerca=13, tope=6000):
+    """Una fila del .bin cuyo disco se puede MEDIR sin que otro se le pegue.
+
+    HACE FALTA UN PUNTO SOLO para poder medir un diámetro, y la primera versión
+    de esto pedía «ningún vecino a menos de 3 km». No encontró ni uno, y con
+    razón: 1,83 M de puntos sobre 75,7 M ha son unos 24 puntos por cada 1.000 ha,
+    o sea ~68 dentro de un círculo de 3 km. El criterio era imposible de
+    satisfacer y dejaba V-54 sin medir — en verde no, pero tampoco midiendo.
+
+    El criterio bueno es el de la MEDICIÓN, no el de la vista: `alto_de_la_mancha`
+    recorre la columna de píxeles del centro, así que sólo estorba un vecino
+    cuyo disco cruce esa columna dentro del tramo que ocupa el nuestro. En
+    metros —y por tanto igual a cualquier zoom— eso es |dx| < r_vecino y
+    |dy| < r_propio + r_vecino, con margen.
+
+    Los vecinos cuentan con su radio EFECTIVO: por debajo de `radiusMinPixels`
+    deck.gl los dibuja al tamaño del suelo, así que un polígono de 0,1 ha pinta
+    igual que uno de 40 y se le pega al nuestro lo mismo. 100 m cubre el suelo de
+    1,2 px hasta z11 en toda la latitud del país.
+
+    Se exige además que el disco quepa entre los dos topes en los dos zooms que
+    se van a medir: por debajo del suelo, o por encima del techo, la razón entre
+    los dos zooms deja de ser 4 y la medición ya no diría nada del radio.
+    """
+    man = json.load(open(os.path.join(DIST, "datos", "manifest.json"), encoding="utf-8"))
+    capa = man["capas"]["cbn_puntos"]
+    n = capa["filas"]
+    col = {}
+    with open(os.path.join(DIST, "datos", capa["archivo"]), "rb") as fh:
+        for nombre in ("lat", "lon", "ha"):
+            c = capa["campos"][nombre]
+            fh.seek(c["offset"])
+            col[nombre] = np.frombuffer(fh.read(ANCHO_BIN[c["tipo"]] * n),
+                                        dtype=NP_BIN[c["tipo"]]).astype(np.float64)
+    lat, lon, hax = col["lat"], col["lon"], col["ha"]
+    r_m = np.sqrt(hax * 10000.0 / math.pi)
+    PISO_VECINO_M = 100.0
+    r_ef = np.maximum(r_m, PISO_VECINO_M)
+
+    # Con margen dentro de radiusMinPixels (1,2) y radiusMaxPixels (120): pegado
+    # a un tope, lo que se mediría sería el tope y no el radio.
+    px_lejos = r_m / (156543.03392 * np.cos(np.radians(lat)) / (2 ** z_lejos))
+    px_cerca = r_m / (156543.03392 * np.cos(np.radians(lat)) / (2 ** z_cerca))
+    elegibles = np.nonzero((px_lejos > 4.0) & (px_cerca < 100.0))[0]
+    # De mayor a menor: cuanto más grande el disco, menos pesa el antialiasing.
+    elegibles = elegibles[np.argsort(-r_m[elegibles])][:tope]
+
+    for i in elegibles:
+        # LA HOLGURA SE PIDE EN PÍXELES DEL ZOOM MÁS ALEJADO, no en metros. Con
+        # 150 m de margen —lo que pedía la primera versión— a z11 el hueco entre
+        # dos discos son 2 px, que el antialiasing cierra: la columna se leía
+        # como una sola mancha continua y midió 1.000 px, o sea la pantalla
+        # entera. En píxeles el margen significa lo mismo a cualquier escala.
+        mpp = 156543.03392 * math.cos(math.radians(lat[i])) / (2 ** z_lejos)
+        holgura_x = 10.0 * mpp
+        holgura_y = 25.0 * mpp
+        dlat = (r_m[i] + 3.0 * mpp * 25.0 + 3000.0) / 110540.0
+        cerca = np.nonzero(np.abs(lat - lat[i]) < dlat)[0]
+        cerca = cerca[cerca != i]
+        dx = np.abs(lon[cerca] - lon[i]) * math.cos(math.radians(lat[i])) * 111320.0
+        dy = np.abs(lat[cerca] - lat[i]) * 110540.0
+        choca = ((dx < r_ef[cerca] + holgura_x)
+                 & (dy < r_m[i] + r_ef[cerca] + holgura_y))
+        if not choca.any():
+            return float(lat[i]), float(lon[i]), float(hax[i])
+    return None
+
+
+def punto_con_hueco(z, tope=400):
+    """Un punto pequeño y con sitio libre alrededor, para medir la tolerancia.
+
+    LA FILA 900.000 NO SIRVE PARA ESTO, y se descubrió con `mutaciones-visor.py`:
+    a z10, con el suelo de `radiusMinPixels` en 1,2 px, cualquier polígono pinta
+    un disco de 136 m de radio, y alrededor de ese punto los cuatro rumbos a 3,9
+    px están tapados por vecinos. Con el radio de picking puesto a CERO la ficha
+    seguía abriéndose —la de otro polígono— y V-22b pasaba en verde sin haber
+    ejercitado la tolerancia ni una vez.
+
+    Aquí se busca un punto que cumpla las dos condiciones que hacen medible la
+    tolerancia: su disco tiene que ser PEQUEÑO —para que quede hueco entre su
+    borde y los 6 px de tolerancia— y a su alrededor no puede haber ningún otro
+    disco al que el clic desplazado pueda aterrizar.
+
+    Devuelve (lat, lon, ha, rumbo) con el rumbo ya comprobado contra el oráculo.
+    """
+    man = json.load(open(os.path.join(DIST, "datos", "manifest.json"), encoding="utf-8"))
+    capa = man["capas"]["cbn_puntos"]
+    n = capa["filas"]
+    col = {}
+    with open(os.path.join(DIST, "datos", capa["archivo"]), "rb") as fh:
+        for nombre in ("lat", "lon", "ha"):
+            c = capa["campos"][nombre]
+            fh.seek(c["offset"])
+            col[nombre] = np.frombuffer(fh.read(ANCHO_BIN[c["tipo"]] * n),
+                                        dtype=NP_BIN[c["tipo"]]).astype(np.float64)
+    lat, lon, hax = col["lat"], col["lon"], col["ha"]
+    mpp = 156543.03392 * np.cos(np.radians(lat)) / (2 ** z)
+    r_px = np.clip(np.sqrt(hax * 10000.0 / math.pi) / mpp, 1.2, 120.0)
+
+    # Rejilla de 0,01° (~1,1 km): un punto cuya celda y las ocho de alrededor no
+    # tengan a nadie más está a más de un kilómetro del vecino, y a z10 eso son
+    # nueve píxeles largos — de sobra para los 3,9 que se van a desplazar.
+    ilat = np.round(lat * 100).astype(np.int64)
+    ilon = np.round(lon * 100).astype(np.int64)
+    clave = ilat * 100000 + ilon
+    unicas, cuentas = np.unique(clave, return_counts=True)
+    pobladas = set(unicas[cuentas > 0].tolist())
+    solitarias = set(unicas[cuentas == 1].tolist())
+
+    # Discos pequeños: el desvío tiene que caber bajo los 6 px de tolerancia.
+    elegibles = np.nonzero(r_px < 3.0)[0]
+    vistos = 0
+    for i in elegibles:
+        k = int(clave[i])
+        if k not in solitarias:
+            continue
+        vecindario = [(k + dl * 100000 + dn) for dl in (-1, 0, 1) for dn in (-1, 0, 1)
+                      if not (dl == 0 and dn == 0)]
+        if any(v in pobladas for v in vecindario):
+            continue
+        desvio = float(r_px[i]) + 2.5
+        for nombre, (sx, sy) in (("este", (1, 0)), ("oeste", (-1, 0)),
+                                 ("sur", (0, 1)), ("norte", (0, -1))):
+            lat_c = lat[i] - sy * desvio * mpp[i] / 110540.0
+            lon_c = lon[i] + sx * desvio * mpp[i] / (math.cos(math.radians(lat[i])) * 111320.0)
+            if len(puntos_bajo_el_clic(lat_c, lon_c, z, tol_px=0)[0]) == 0:
+                return float(lat[i]), float(lon[i]), float(hax[i]), (nombre, sx, sy)
+        vistos += 1
+        if vistos >= tope:
+            break
+    return None
+
+
 def coord_de_la_ficha(cdp):
     """La coordenada que la ficha ofrece abrir en Google Maps, [lat, lon]."""
     return cdp.evaluar("""
@@ -323,8 +564,14 @@ def main():
             cdp.enviar("Emulation.setDeviceMetricsOverride", width=ancho, height=alto,
                        deviceScaleFactor=1, mobile=False)
             cdp.enviar("Page.reload", ignoreCache=False)
+            # LA BOTONERA es ahora la señal de que la app montó con datos.
+            # Era `.leyenda li === 9`, y la leyenda salió del panel al pasar
+            # todos los controles a botón: el gate habría dado «LA APP NO MONTÓ»
+            # en los tres anchos, o sea toda la verificación en rojo por un
+            # selector obsoleto. Once y no «alguno»: la cuenta es lo que caza
+            # que un control se quede por el camino.
             ms = esperar(cdp, "!!(document.querySelector('.app') && "
-                              "document.querySelectorAll('.leyenda li').length === 9)")
+                              "document.querySelectorAll('.grupo-filtro').length === 11)")
             if ms is None:
                 fallos.append(f"la app no montó a {ancho} px")
                 print("    LA APP NO MONTÓ")
@@ -432,7 +679,7 @@ def main():
         # importa.
         print("\n=== filtros temáticos")
         grupos = cdp.evaluar("document.querySelectorAll('.grupo-filtro').length")
-        prueba("V-17 los grupos de filtro se dibujan", grupos >= 8, f"{grupos}")
+        prueba("V-17 los once controles se dibujan", grupos == 11, f"{grupos}")
 
         # Cada grupo declara cuántas clases tiene. Si alguno sale con cero, su
         # dimensión no llegó del manifest y el filtro sería una lista vacía.
@@ -567,51 +814,117 @@ def main():
 
         if abierta:
             coord = coord_de_la_ficha(cdp)
-            # LA ASERCIÓN QUE IMPORTA. Abrir la ficha de OTRO punto —por un
-            # desfase de índice o por casar mal el espacio de coordenadas de
-            # Leaflet con el del lienzo de deck— pasaría V-22 tan campante.
-            # 0,001° son ~110 m: holgado frente a los ~21 m que abarca la
-            # tolerancia de picking a este zoom, y cinco órdenes de magnitud más
-            # estrecho que «algún sitio de Chile».
-            cerca = (coord is not None
-                     and abs(coord[0] - lat_p) < 0.001 and abs(coord[1] - lon_p) < 0.001)
-            prueba("V-23 la ficha es la del punto pulsado", cerca,
-                   f"{coord} vs [{lat_p:.5f}, {lon_p:.5f}] · {uso_p}")
+            # LA ASERCIÓN QUE IMPORTA, contra un oráculo. Abrir la ficha de
+            # OTRO punto —por un desfase de índice o por casar mal el espacio de
+            # coordenadas de Leaflet con el del lienzo de deck— pasaría V-22 tan
+            # campante. La versión anterior lo comprobaba con un cerco de
+            # 0,001° (~110 m) alrededor del punto encuadrado, y con los discos
+            # en metros eso dejó de ser estrecho: pasó devolviendo un VECINO a
+            # 70 m, que es exactamente el fallo que debía cazar.
+            #
+            # Ahora se calcula fuera del visor qué puntos cubren de verdad el
+            # píxel pulsado y se exige que la ficha sea de uno de ellos.
+            cand, c_lat, c_lon, _ = puntos_bajo_el_clic(lat_p, lon_p, 15)
+            if coord is None:
+                cerca, detalle = False, "la ficha no trae coordenada"
+            else:
+                cerca = bool(np.any((np.abs(c_lat[cand] - coord[0]) < 1e-5)
+                                    & (np.abs(c_lon[cand] - coord[1]) < 1e-5)))
+                d_m = math.hypot((coord[1] - lon_p) * math.cos(math.radians(lat_p)) * 111320.0,
+                                 (coord[0] - lat_p) * 110540.0)
+                detalle = (f"{len(cand)} discos cubren el píxel; el devuelto está "
+                           f"a {d_m:.0f} m del centro · {uso_p}")
+            prueba("V-23 la ficha es de un punto que cubre el píxel pulsado",
+                   cerca, detalle)
             n_filas = cdp.evaluar("document.querySelectorAll('.ficha tbody tr').length")
             con_texto = cdp.evaluar(
                 "!!document.querySelector('.ficha tbody tr td').textContent.trim()")
             # Que se abra un diálogo EN BLANCO no es que funcione.
             prueba("V-23b la ficha trae sus 12 filas con contenido",
                    n_filas == 12 and con_texto, f"{n_filas} filas")
+            # V-56: LOS DOS ENLACES DE SALIDA, y el de Earth no lo miraba nadie.
+            # Estuvo con la URL de cámara —/web/@lat,lon,0a,1200d,…— que sólo
+            # mueve la cámara y no planta marca: se abrió y se fotografió, y
+            # había que adivinar cuál de los claros era el punto. El orden
+            # también se fija aquí: `coord_de_la_ficha` lee el PRIMER <a>, así
+            # que si Earth pasara delante, V-23 y V-26b se caerían sin que nadie
+            # tocara Maps.
+            enlaces = json.loads(cdp.evaluar(
+                "JSON.stringify([...document.querySelectorAll('.ficha-acciones a')]"
+                ".map(a => a.getAttribute('href')))"))
+            prueba("V-56 Maps va primero y Earth usa la forma con marcador",
+                   len(enlaces) == 2
+                   and "google.com/maps/search/" in enlaces[0]
+                   and "earth.google.com/web/search/" in enlaces[1]
+                   and "/web/@" not in enlaces[1],
+                   " · ".join(e.split("?")[0][:52] for e in enlaces))
+
             capturar(cdp, os.path.join(AQUI, "captura-ficha.png"))
             cdp.evaluar("document.querySelector('dialog.ficha[open]').close()")
             esperar(cdp, f"!({FICHA_ABIERTA})", segundos=10)
 
-        # V-22b: LA TOLERANCIA DE PICKING, que es media reparación. Con el punto
-        # centrado al píxel, un pick de radio 0 acierta igual y V-22 pasa —medido
-        # reintroduciendo el defecto—, así que sin esta aserción quedaría sin
-        # cubrir justo el segundo síntoma: puntos de ~1 px que hay que acertar al
-        # píxel, indistinguible desde fuera de no tener ficha.
+        # V-22b: LA TOLERANCIA DE PICKING, y hay que ir a buscarla A ESCALA DE
+        # PAÍS, que es el único sitio donde manda: al acercarse el disco ya es
+        # grande y la tolerancia deja de notarse.
         #
-        # El desplazamiento se calcula con la MISMA fórmula que
-        # radiosDesdeSuperficie: hay que caer fuera del disco dibujado —o no se
-        # estaría midiendo la tolerancia— y dentro de los 6 px de tolerancia.
-        r_dibujado = min(12.0, max(0.9, 0.65 * float(fila["ha"]) ** 0.5))
-        desvio = r_dibujado + 2.5
-        if desvio > 5.5:
-            print(f"    V-22b NO APLICA: el punto se dibuja con r={r_dibujado:.1f} px "
-                  "y no queda hueco entre su borde y la tolerancia")
+        # Esta aserción ha pasado en verde DOS VECES sin medir la tolerancia, y
+        # las dos las encontró `mutaciones-visor.py`, no ella:
+        #
+        #   1. Calculaba el radio dibujado con la fórmula vieja en píxeles. Al
+        #      pasar el radio a metros, el clic «al lado» caía DENTRO del disco
+        #      —44 px a z15— y comprobaba que un clic dentro abre la ficha.
+        #   2. Corregida a z10, seguía verde con el radio de picking puesto a
+        #      CERO: alrededor de la fila 900.000 los cuatro rumbos están
+        #      tapados por vecinos, así que el clic desplazado aterrizaba sobre
+        #      OTRO polígono y la ficha que salía no era la del punto encuadrado.
+        #
+        # Por eso ahora el punto no es la fila de siempre sino uno buscado para
+        # esto —disco pequeño y sin nadie alrededor—, y se exige que la ficha que
+        # salga sea LA SUYA. Sin tolerancia, ese píxel no lo cubre ningún disco y
+        # no puede abrirse nada.
+        Z_TOLERANCIA = 10
+        hueco = punto_con_hueco(Z_TOLERANCIA)
+        if not hueco:
+            fallos.append("V-22b no encontró un punto con hueco alrededor")
+            print("    V-22b SIN MEDIR: ningún disco pequeño tiene los alrededores libres")
         else:
+            lat_h, lon_h, ha_h, (nombre_r, sx, sy) = hueco
+            r_dib = max(1.2, min(120.0, ((ha_h * 10000 / math.pi) ** 0.5)
+                                / metros_por_pixel(lat_h, Z_TOLERANCIA)))
+            desvio = r_dib + 2.5
+            cdp.enviar("Page.navigate", url="about:blank")
+            esperar(cdp, "document.readyState === 'complete'", segundos=30)
+            cdp.enviar("Page.navigate",
+                       url=f"{url}?lat={lat_h:.6f}&lon={lon_h:.6f}&z={Z_TOLERANCIA}")
+            esperar(cdp, "!!document.querySelector('.app')", segundos=60)
+            esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+            cx2, cy2 = centro_del_mapa(cdp)
             t0 = time.time()
             while time.time() - t0 < 12 and not cdp.evaluar(FICHA_ABIERTA):
-                clic(cdp, cx + desvio, cy)
+                clic(cdp, cx2 + sx * desvio, cy2 + sy * desvio)
                 time.sleep(0.5)
-            junto = cdp.evaluar(FICHA_ABIERTA)
-            prueba("V-22b un clic JUNTO al punto también lo abre", junto,
-                   f"a {desvio:.1f} px de un disco de r={r_dibujado:.1f} px")
-            if junto:
+            coord_t = coord_de_la_ficha(cdp) if cdp.evaluar(FICHA_ABIERTA) else None
+            # LA SUYA, no «alguna»: sin esto, un clic que aterriza en un vecino
+            # cuenta como éxito y la tolerancia queda sin ejercitar.
+            suya = (coord_t is not None
+                    and abs(coord_t[0] - lat_h) < 1e-5 and abs(coord_t[1] - lon_h) < 1e-5)
+            prueba("V-22b la tolerancia rescata un clic FUERA del disco", suya,
+                   f"{ha_h:.1f} ha a z{Z_TOLERANCIA} · {desvio:.1f} px al {nombre_r} "
+                   f"de un disco de r={r_dib:.1f} px · devolvió {coord_t}")
+            if cdp.evaluar(FICHA_ABIERTA):
                 cdp.evaluar("document.querySelector('dialog.ficha[open]').close()")
                 esperar(cdp, f"!({FICHA_ABIERTA})", segundos=10)
+
+        # SE VUELVE AL PUNTO DE LA FILA 900.000, que es el que V-26b espera.
+        # V-22b se lleva el mapa a otro sitio —desde que mide sobre un punto
+        # buscado a propósito, con hueco alrededor— y sin volver aquí, el Enter
+        # de V-26 abría la ficha del punto de V-22b: rojo, y por el encuadre, no
+        # por el teclado.
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=f"{url}?lat={lat_p:.6f}&lon={lon_p:.6f}&z=15")
+        esperar(cdp, "!!document.querySelector('.app')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
 
         # V-26: la misma ficha SIN RATÓN. Los 1,8 M de puntos viven en un lienzo
         # y no son nodos tabulables, así que sin esta ruta la ficha es
@@ -747,7 +1060,7 @@ def main():
         cdp.enviar("Page.navigate", url="about:blank")
         esperar(cdp, "document.readyState === 'complete'", segundos=30)
         cdp.enviar("Page.navigate", url=url)
-        esperar(cdp, "!!document.querySelector('.leyenda li')", segundos=60)
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
         esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
 
         # V-30: el vocabulario que no existe no se lista. Seis subclases de la
@@ -790,12 +1103,25 @@ def main():
         prueba("V-33b y la marcada sigue visible y marcada", len(marcada) == 1,
                f"{len(marcada)} marcadas")
 
-        # V-34: la leyenda es la excepción — las nueve clases SIEMPRE. Es uno de
-        # los cuatro mecanismos sin los cuales «se rompe la accesibilidad del
-        # mapa», y antes las clases a cero desaparecían de ella.
-        prueba("V-34 la leyenda mantiene las nueve clases con filtro activo",
-               cdp.evaluar("document.querySelectorAll('.leyenda li').length") == 9,
-               f"{cdp.evaluar('document.querySelectorAll(\".leyenda li\").length')} clases")
+        # V-34: NINGUNA CLASE DE USO DESAPARECE EN SILENCIO.
+        #
+        # Esto miraba la leyenda del panel —las nueve clases siempre, la
+        # excepción deliberada a la regla de ocultar lo que queda a cero— y la
+        # leyenda salió del panel. La regla que la sustituye es la general: se
+        # ocultan las clases sin polígonos y se DICE cuántas. Así que lo que se
+        # exige ahora es la suma: listadas + declaradas en el pie = nueve. Una
+        # lista que encoge sin decirlo vuelve a poner esto en rojo, que era el
+        # objeto de la aserción vieja.
+        uso_mod = grupo_filtro(cdp, "Uso")
+        ocultas = 0
+        for pie in (uso_mod["pies"] if uso_mod else []):
+            m = re.match(r"^(\d+) clases", pie)
+            if m:
+                ocultas = int(m.group(1))
+        listadas = len(uso_mod["filas"]) if uso_mod else 0
+        prueba("V-34 ninguna clase de uso desaparece sin declararse",
+               listadas + ocultas == 9 and listadas > 0,
+               f"{listadas} listadas + {ocultas} declaradas en el pie")
 
         # V-35: el coste de la pasada, medido en el navegador y no supuesto.
         #
@@ -820,7 +1146,7 @@ def main():
         cdp.enviar("Page.navigate", url="about:blank")
         esperar(cdp, "document.readyState === 'complete'", segundos=30)
         cdp.enviar("Page.navigate", url=f"{url}?reg=15")   # Arica y Parinacota
-        esperar(cdp, "!!document.querySelector('.leyenda li')", segundos=60)
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
         esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
 
         tifo = grupo_filtro(cdp, "Tipo forestal")
@@ -870,29 +1196,32 @@ def main():
 
         # V-37: el territorio también. Con «Denso» marcado hay dos regiones que
         # no tienen ni un polígono de dosel denso.
-        regs_todas = cdp.evaluar("document.querySelectorAll('.panel select')[0].options.length")
+        # SIN EL «Todo Chile» de la lista: el botón declara las regiones con
+        # datos, y el <select> contaba además su opción vacía. Por eso los
+        # detalles de abajo ya no restan uno.
+        regs_todas = regiones_ofrecidas(cdp)
         cdp.enviar("Page.navigate", url="about:blank")
         esperar(cdp, "document.readyState === 'complete'", segundos=30)
         cdp.enviar("Page.navigate", url=url)
-        esperar(cdp, "!!document.querySelector('.leyenda li')", segundos=60)
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
         esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
-        antes_regs = cdp.evaluar("document.querySelectorAll('.panel select')[0].options.length")
+        antes_regs = regiones_ofrecidas(cdp)
         marcar_clase(cdp, "Cobertura", "Denso")
         esperar(cdp, "document.querySelector('.cifra-num b').textContent !== '75,7 M ha'",
                 segundos=30)
-        despues_regs = cdp.evaluar("document.querySelectorAll('.panel select')[0].options.length")
+        despues_regs = regiones_ofrecidas(cdp)
         prueba("V-37 el ámbito territorial también va en cascada",
                despues_regs < antes_regs,
-               f"{antes_regs - 1} → {despues_regs - 1} regiones ofrecidas")
+               f"{antes_regs} → {despues_regs} regiones ofrecidas")
 
         # V-38: la ida y vuelta. Lo que se oculta tiene que volver.
         cdp.evaluar("[...document.querySelectorAll('.limpiar')]"
                     ".find(b => /Quitar/.test(b.textContent))?.click()")
         esperar(cdp, "document.querySelector('.cifra-num b').textContent === '75,7 M ha'",
                 segundos=30)
-        vuelta = cdp.evaluar("document.querySelectorAll('.panel select')[0].options.length")
+        vuelta = regiones_ofrecidas(cdp)
         prueba("V-38 al limpiar el filtro vuelve todo", vuelta == antes_regs,
-               f"{despues_regs - 1} → {vuelta - 1} regiones · {regs_todas - 1} en Arica")
+               f"{despues_regs} → {vuelta} regiones · {regs_todas} en Arica")
 
         # --- el encuadre sobre lo filtrado ----------------------------------
         # El defecto que esto cierra: filtrar y quedarse en la vista nacional. El
@@ -913,7 +1242,7 @@ def main():
         cdp.enviar("Page.navigate", url="about:blank")
         esperar(cdp, "document.readyState === 'complete'", segundos=30)
         cdp.enviar("Page.navigate", url=url)
-        esperar(cdp, "!!document.querySelector('.leyenda li')", segundos=60)
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
         esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
 
         def vista():
@@ -956,7 +1285,7 @@ def main():
         cdp.enviar("Page.navigate", url="about:blank")
         esperar(cdp, "document.readyState === 'complete'", segundos=30)
         cdp.enviar("Page.navigate", url=f"{url}?reg=12&tifo=03")
-        esperar(cdp, "!!document.querySelector('.leyenda li')", segundos=60)
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
         esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
         # Se espera a que la LATITUD entre en Magallanes, no a que exista `z=`:
         # la app escribe lat/lon/z en el primer moveend, que es el que Leaflet
@@ -980,21 +1309,46 @@ def main():
         cdp.enviar("Page.navigate", url="about:blank")
         esperar(cdp, "document.readyState === 'complete'", segundos=30)
         cdp.enviar("Page.navigate", url=url)
-        esperar(cdp, "!!document.querySelector('.leyenda li')", segundos=60)
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
         esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
 
         n_botones = cdp.evaluar("document.querySelectorAll('button.grupo-filtro').length")
         quedan = cdp.evaluar("document.querySelectorAll('details.grupo-filtro').length")
-        prueba("V-45 ocho botones de filtro y ningún desplegable",
-               n_botones == 8 and quedan == 0, f"{n_botones} botones · {quedan} <details>")
+        selects = cdp.evaluar("document.querySelectorAll('.panel select').length")
+        # ONCE, y ningún <select>. Territorio, Uso e Imagen de fondo eran
+        # desplegable y lista mientras las otras ocho ya eran botones: la misma
+        # pregunta contestada de tres formas en el mismo panel.
+        prueba("V-45 once botones, ningún desplegable y ningún <select>",
+               n_botones == 11 and quedan == 0 and selects == 0,
+               f"{n_botones} botones · {quedan} <details> · {selects} <select>")
+
+        titulos = json.loads(cdp.evaluar(
+            "JSON.stringify([...document.querySelectorAll('.gf-titulo')].map(e => e.textContent))"))
+        prueba("V-45b están los tres controles que se convirtieron",
+               {"Territorio", "Uso", "Imagen de fondo"} <= set(titulos),
+               " · ".join(titulos))
 
         # V-46: pulsar abre SU modal, no el de otra dimensión. Con un solo
         # <dialog> reutilizado, una `key` mal puesta lo llenaría con la lista
         # anterior y nadie lo notaría hasta filtrar por lo que no era.
         abrir_grupo(cdp, "Cobertura")
-        titulo = cdp.evaluar("document.querySelector('#mf-titulo')?.textContent")
-        prueba("V-46 el botón abre el modal de SU dimensión",
-               titulo == "Cobertura de copas", str(titulo))
+        # Por el <h2> del diálogo abierto, no por `#mf-titulo`: ese id era un
+        # literal y pasó a `useId()` cuando dejaron de ser ocho modales para ser
+        # once. Un id fijo repetido en dos diálogos deja el aria-labelledby
+        # ambiguo, así que el cambio era necesario — pero dejó esta aserción
+        # leyendo null y en rojo, que es como se descubrió.
+        titulo = cdp.evaluar(
+            "document.querySelector('dialog.modal-filtro[open] h2')?.textContent")
+        etiquetado = cdp.evaluar("""
+          (() => {
+            const d = document.querySelector('dialog.modal-filtro[open]')
+            const id = d?.getAttribute('aria-labelledby')
+            return !!(id && d.querySelector('h2')?.id === id)
+          })()
+        """)
+        prueba("V-46 el botón abre el modal de SU dimensión, con nombre",
+               titulo == "Cobertura de copas" and etiquetado,
+               f"{titulo!r} · aria-labelledby resuelve: {etiquetado}")
 
         # V-47: se aplica al instante, sin botón «Aplicar». Si el modal se
         # cerrara al marcar, no se podría elegir una segunda clase.
@@ -1015,10 +1369,21 @@ def main():
             cdp.enviar("Input.dispatchKeyEvent", type=t, key="Escape", code="Escape",
                        windowsVirtualKeyCode=27, nativeVirtualKeyCode=27)
         esperar(cdp, f"!({MODAL_FILTRO})", segundos=10)
+        # SE ESPERA A LA CONDICIÓN, no se lee una vez. El foco lo devuelve un
+        # efecto de React DESPUÉS de que el diálogo se desmonte, así que leer el
+        # activeElement justo tras el cierre es una carrera: esta aserción se
+        # cayó sola en una tanda que no tocaba nada del foco, y volvió a pasar en
+        # la siguiente. Es el mismo error que ya documenta `enfocar_mapa` unas
+        # líneas más arriba, cometido otra vez.
+        volvio = esperar(
+            cdp,
+            "document.activeElement?.querySelector?.('.gf-titulo')?.textContent === 'Cobertura'",
+            segundos=6)
         foco = cdp.evaluar(
             "document.activeElement?.querySelector?.('.gf-titulo')?.textContent ?? null")
         prueba("V-48 Escape cierra y el foco vuelve a su botón",
-               not cdp.evaluar(MODAL_FILTRO) and foco == "Cobertura", str(foco))
+               not cdp.evaluar(MODAL_FILTRO) and volvio is not None,
+               f"{foco!r} en {volvio:.0f} ms" if volvio is not None else f"{foco!r} tras 6 s")
 
         # V-49: el botón cuenta lo elegido sin abrir nada.
         badge = cdp.evaluar("""
@@ -1041,6 +1406,215 @@ def main():
             ".map(h => h.textContent.trim()))"))
         prueba("V-50 Compartir y Descargar van al fondo",
                secciones[-2:] == ["Compartir", "Descargar"], " · ".join(secciones))
+
+        # --- los tres controles que se convirtieron, y el modal anclado ------
+        print("")
+        print("=== territorio, mapa base y el anclaje del modal")
+
+        # V-42: la cuenta del botón de Territorio es la que lista su modal. Sin
+        # esto, V-37 y V-38 podrían estar leyendo un número decorativo y la
+        # cascada territorial quedaría sin vigilar.
+        del_boton = regiones_ofrecidas(cdp)
+        abrir_grupo(cdp, "Territorio")
+        # Menos la fila «Todo Chile», que no es una región.
+        del_modal = cdp.evaluar(
+            "document.querySelectorAll('.mf-nivel')[0]"
+            ".querySelectorAll('.gf-opcion').length - 1")
+        prueba("V-42 el botón de Territorio cuenta lo que lista su modal",
+               del_boton == del_modal and del_boton > 0,
+               f"botón {del_boton} · modal {del_modal}")
+
+        # V-51: EL ANCLAJE. Es lo único que distingue «anclado a la izquierda»
+        # de «centrado encima del mapa», y son dos cosas distintas para quien
+        # está mirando el mapa cambiar mientras marca. Se mide el borde del
+        # diálogo Y los píxeles pintados del mapa con el modal abierto: anclarlo
+        # sin quitar el ::backdrop dejaría el mapa igual de velado.
+        caja = json.loads(cdp.evaluar(
+            "JSON.stringify(document.querySelector('dialog.modal-filtro[open]')"
+            ".getBoundingClientRect())"))
+        img_modal = capturar(cdp, os.path.join(AQUI, "captura-modal-anclado.png"))
+        px_modal, _ = pintados(img_modal, int(caja["right"]) + 8)
+        cerrar_grupo(cdp)
+        img_libre = capturar(cdp, os.path.join(AQUI, "captura-modal-cerrado.png"))
+        px_libre, _ = pintados(img_libre, int(caja["right"]) + 8)
+        # EN RELATIVO Y NO CONTRA UN NÚMERO. Con un umbral absoluto —«más de
+        # 20.000 px»— el velo del ::backdrop al 55 % pasaba la aserción: el mapa
+        # quedaba en 59.000 px de los 398.000 que tiene sin velo, o sea siete
+        # veces más oscuro, y aun así por encima del umbral. Lo caza
+        # `mutaciones-visor.py`. Comparado con el mismo encuadre sin modal, no
+        # hay número que calibrar y la pregunta es la que importa: ¿se ve el mapa
+        # IGUAL de bien con el modal abierto?
+        proporcion = px_modal / px_libre if px_libre else 0
+        prueba("V-51 el modal abre pegado a la izquierda y el mapa se ve igual",
+               caja["x"] <= 2 and caja["bottom"] >= 900 and proporcion > 0.9,
+               f"x={caja['x']:.0f} alto={caja['height']:.0f} · "
+               f"{px_modal:,} de {px_libre:,} px ({proporcion:.0%})")
+        abrir_grupo(cdp, "Territorio")
+
+        # V-52: elegir región dentro del modal reencuadra el mapa Y rotula el
+        # botón. Las dos mitades importan: un ámbito que cambia las cifras sin
+        # verse en ninguna parte es la forma más fácil de citar una cifra
+        # regional como nacional.
+        cdp.evaluar("""
+          (() => {
+            const l = [...document.querySelectorAll('.mf-nivel .gf-opcion')]
+              .find(x => x.querySelector('.gf-etq').childNodes[0].textContent.trim() === 'Los Lagos')
+            l?.querySelector('input').click()
+          })()
+        """)
+        volo = esperar(cdp,
+                       "parseFloat(new URLSearchParams(location.search).get('lat')) < -40",
+                       segundos=30)
+        cerrar_grupo(cdp)
+        rotulo = cdp.evaluar(
+            "document.querySelector('.grupo-filtro[data-col=\"territorio\"] .gf-valor')"
+            "?.textContent")
+        v_reg = vista()
+        prueba("V-52 elegir región reencuadra el mapa y rotula el botón",
+               volo is not None and rotulo == "Los Lagos" and bool(v_reg) and v_reg[0] < -40,
+               f"{rotulo!r} · {v_reg}")
+
+        # V-53: el mapa base. Cada fila enseña SU advertencia, no sólo la de la
+        # capa activa: con el <select> la nota de Sentinel-2 aparecía después de
+        # haberla elegido, o sea cuando ya no servía para no elegirla.
+        abrir_grupo(cdp, "Imagen de fondo")
+        fondos = cdp.evaluar("document.querySelectorAll('.modal-filtro .gf-opcion').length")
+        avisos = cdp.evaluar("document.querySelectorAll('.modal-filtro .gf-opcion .gf-sub').length")
+        cdp.evaluar("""
+          (() => {
+            const l = [...document.querySelectorAll('.modal-filtro .gf-opcion')]
+              .find(x => x.querySelector('.gf-etq').childNodes[0].textContent.trim() === 'Satelital')
+            l?.querySelector('input').click()
+          })()
+        """)
+        cambio = esperar(cdp,
+                         "[...document.querySelectorAll('.leaflet-tile-pane img')]"
+                         ".some(i => /World_Imagery/.test(i.src))", segundos=20)
+        cerrar_grupo(cdp)
+        valor_base = cdp.evaluar(
+            "document.querySelector('.grupo-filtro[data-col=\"base\"] .gf-valor')?.textContent")
+        prueba("V-53 el mapa base lista sus 7 fondos con aviso y cambia la capa",
+               fondos == 7 and avisos >= 4 and cambio is not None and valor_base == "Satelital",
+               f"{fondos} fondos · {avisos} avisos · botón {valor_base!r}")
+
+        # --- el tamaño del punto ---------------------------------------------
+        # NINGUNA ASERCIÓN MEDÍA UN DIÁMETRO, y por eso el defecto vivió tanto:
+        # `getRadius` estaba puesto como PROP de la capa en vez de dentro de
+        # `data.attributes`, deck.gl lo ignoraba en silencio y todos los discos
+        # se dibujaban con el radio por defecto —un metro, o sea el suelo de
+        # píxeles— desde el primer día del proyecto. Eso era la «viruela».
+        print("")
+        print("=== el tamaño del punto")
+        aislado = punto_aislado()
+        if not aislado:
+            fallos.append("V-54 no encontró un punto aislado que medir")
+            print("    V-54 SIN MEDIR: no hay ningún disco medible sin vecino pegado")
+        else:
+            lat_a, lon_a, ha_a = aislado
+            r_m = (ha_a * 10000 / math.pi) ** 0.5
+            medido = {}
+            for z in (11, 13):
+                cdp.enviar("Page.navigate", url="about:blank")
+                esperar(cdp, "document.readyState === 'complete'", segundos=30)
+                cdp.enviar("Page.navigate", url=f"{url}?lat={lat_a:.6f}&lon={lon_a:.6f}&z={z}")
+                esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
+                esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+                # Al primer fotograma de deck.gl no se le pone reloj: se espera a
+                # que haya algo pintado bajo el centro.
+                cx_a, cy_a = centro_del_mapa(cdp)
+                ruta_z = os.path.join(AQUI, f"captura-radio-z{z}.png")
+                d = 0
+                t0 = time.time()
+                while time.time() - t0 < 30:
+                    d = diametro_del_disco(cdp, cx_a, cy_a, ruta_z)
+                    if d > 0:
+                        break
+                    time.sleep(0.4)
+                medido[z] = d
+
+            previsto = {z: 2 * r_m / metros_por_pixel(lat_a, z) for z in (11, 13)}
+            razon = medido[13] / medido[11] if medido[11] else 0
+            # La razón entre los dos zooms es LA prueba de que el radio está en
+            # metros: dos niveles de zoom son exactamente 4x. Con el radio en
+            # píxeles —lo que había— saldría 1.
+            prueba("V-54 el disco crece con el zoom, y lo hace en metros",
+                   0.6 * previsto[11] < medido[11] < 1.6 * previsto[11] + 3
+                   and 0.6 * previsto[13] < medido[13] < 1.6 * previsto[13] + 3
+                   and 3.0 < razon < 5.2,
+                   f"{ha_a:.0f} ha · z11 {medido[11]} px (previsto {previsto[11]:.0f}) · "
+                   f"z13 {medido[13]} px (previsto {previsto[13]:.0f}) · razón {razon:.1f}")
+
+        # V-55: EL COSTE DEL PINTADO, que no tenía techo. Todas las mediciones de
+        # este repo se tomaron con `radiusMaxPixels: 3`; pasar el punto mediano a
+        # decenas de píxeles de radio son órdenes de magnitud más fragmentos por
+        # punto, y el presupuesto medido que había era el del FILTRO, no el del
+        # dibujo.
+        #
+        # La resolución de esta medida es una captura de pantalla —unos 150 ms—,
+        # así que es una RED DE SEGURIDAD contra una regresión grande, no un gate
+        # fino. Se dice para que nadie la lea como más precisa de lo que es.
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=f"{url}?lat=-39.814&lon=-73.245&z=13")
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=180)
+        t0 = time.time()
+        px_pint = 0
+        while time.time() - t0 < 20:
+            img = capturar(cdp, os.path.join(AQUI, "captura-pintado.png"))
+            px_pint, _ = pintados(img, 340)
+            if px_pint > 20000:
+                break
+            time.sleep(0.15)
+        ms_pintado = (time.time() - t0) * 1000
+        prueba("V-55 el primer pintado con discos grandes cabe en el techo",
+               px_pint > 20000 and ms_pintado < TECHO_PINTADO_MS,
+               f"{ms_pintado:.0f} ms de {TECHO_PINTADO_MS} · {px_pint:,} px sobre Valdivia")
+
+        # --- el reporte -------------------------------------------------------
+        # No lo había: cuando se preguntó, la respuesta fue que el PDF se
+        # resolvía por otra vía, así que quedó fuera. Se hace con window.print()
+        # y CSS @media print, y lo que se comprueba aquí es lo que distingue eso
+        # de una captura de pantalla: que hay TEXTO.
+        print("")
+        print("=== el reporte")
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=f"{url}?reg=10")
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+        titular_panel = cdp.evaluar("document.querySelector('.cifra-num b').textContent")
+        cdp.evaluar(
+            "[...document.querySelectorAll('.panel button')]"
+            ".find(b => /Reporte del/.test(b.textContent))?.click()")
+        abrio = esperar(cdp, "!!document.querySelector('.reporte-doc')", segundos=20)
+        texto = str(cdp.evaluar("document.querySelector('.reporte-doc')?.innerText") or "")
+        secciones_rep = json.loads(cdp.evaluar(
+            "JSON.stringify([...document.querySelectorAll('.reporte-doc h2')]"
+            ".map(h => h.textContent))"))
+        prueba("V-57 el reporte abre con texto real y las cifras del ámbito",
+               abrio is not None and len(texto) > 1500 and len(secciones_rep) >= 4
+               and "Los Lagos" in texto and str(titular_panel) in texto,
+               f"{len(texto)} caracteres · {len(secciones_rep)} secciones · "
+               f"titular {titular_panel!r}")
+
+        # V-57b: LO QUE SE IMPRIME. Un reporte que en pantalla se ve perfecto y
+        # sale con el mapa detrás —o con la barra de botones dentro— no sirve, y
+        # es exactamente el fallo silencioso que dejó el reporte de referencia en
+        # cincuenta páginas blancas. Se emula el medio de impresión y se mira.
+        cdp.enviar("Emulation.setEmulatedMedia", media="print")
+        time.sleep(0.6)
+        fuera = json.loads(cdp.evaluar(
+            "JSON.stringify({"
+            "  mapa: !!document.querySelector('.mapa')?.offsetParent,"
+            "  panel: !!document.querySelector('.panel')?.offsetParent,"
+            "  barra: !!document.querySelector('.reporte-barra')?.offsetParent,"
+            "  doc: !!document.querySelector('.reporte-doc')?.offsetParent})"))
+        capturar(cdp, os.path.join(AQUI, "captura-reporte-impreso.png"))
+        cdp.enviar("Emulation.setEmulatedMedia", media="")
+        prueba("V-57b al imprimir sale el documento y nada más",
+               fuera["doc"] and not fuera["mapa"] and not fuera["panel"] and not fuera["barra"],
+               json.dumps(fuera))
 
         print("\n" + "=" * 62)
         print(f"  {'TODO EN VERDE' if not fallos else str(len(fallos)) + ' EN ROJO'}")

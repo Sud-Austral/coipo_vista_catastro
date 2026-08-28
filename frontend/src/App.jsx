@@ -30,6 +30,7 @@ import CartelContexto from './components/CartelContexto'
 import PaginaMetodologia from './components/PaginaMetodologia'
 import PanelIndicadores from './components/PanelIndicadores'
 import PanelLateral from './components/PanelLateral'
+import Reporte from './components/Reporte'
 import SeccionDescargas from './components/SeccionDescargas'
 import Tirador from './components/Tirador'
 import { IconoIndicadores } from './components/graficos'
@@ -103,6 +104,7 @@ export default function App() {
   const [simef, setSimef] = useState(null)
   const [cartel, setCartel] = useState(true)
   const [metodologia, setMetodologia] = useState(false)
+  const [reporte, setReporte] = useState(false)
   const [oficiales, setOficiales] = useState(null)
 
   // SIMEF es OTRA FUENTE y se carga aparte a proposito: si su archivo falta o
@@ -761,6 +763,7 @@ export default function App() {
           manifest={manifest}
           ambitoTxt={manifest ? ambitoTexto(ambito, manifest) : 'todo Chile'}
           nFiltrado={resumen?.n ?? 0}
+          onReporte={() => setReporte(true)}
         />
       </PanelLateral>
 
@@ -847,6 +850,20 @@ export default function App() {
         simef={simef}
       />
       <ModalFicha ficha={ficha} onCerrar={() => setFicha(null)} />
+      {/* EL REPORTE, con el mismo resumen que ya alimenta el panel de
+          indicadores. No recalcula nada: si las dos cifras pudieran salir de
+          dos pasadas distintas, el papel y la pantalla acabarían discrepando y
+          nadie sabría cuál citar. */}
+      <Reporte
+        abierto={reporte}
+        onCerrar={() => setReporte(false)}
+        manifest={manifest}
+        resumen={resumen}
+        ambito={ambito}
+        filtros={filtros}
+        usosActivos={usosActivos}
+        oscuro={oscuro}
+      />
 
       {!datos && (
         <p className="descargando" role="status">

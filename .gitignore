@@ -22,3 +22,12 @@ notebooks/*.parquet
 # `git rm --cached`, y no se hace aqui porque cambia el historial de archivos
 # que alguien pudo haber puesto a proposito.
 __pycache__/
+
+# Intermedios de la verificacion del visor. Las `captura-*.png` SI se versionan
+# --son la evidencia mirable de cada tanda--, pero estas dos familias no:
+#   - `*-sin-capa.png` es el fotograma auxiliar con `.deck-overlay` oculto, que
+#     solo existe para restarlo y medir el disco;
+#   - `mutacion-*.png` las escribe `mutaciones-visor.py`, que corre con el codigo
+#     ROTO a proposito: versionarlas seria versionar el defecto.
+frontend/verificacion/*-sin-capa.png
+frontend/verificacion/mutacion-*.png

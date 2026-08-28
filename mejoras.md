@@ -174,11 +174,19 @@ como patrón; **todo lo que toca datos por punto se rediseña** (ver «Construir
    `Input.dispatchMouseEvent`; si está roto, capturar el `click` de Leaflet y llamar a
    `deck.pickObject`.
 
-2. **Tooltip de hover prometido y ausente.** El bloque `SIMBOLOGIA` de
-   [config.js:143-154](frontend/src/config.js#L143-L154) declara cuatro mecanismos
-   obligatorios y dice que quitar cualquiera «rompe la accesibilidad del mapa»; la bajada de
-   la leyenda promete «el nombre al pasar por encima». No hay `onHover` ni `getTooltip` en
-   ningún archivo. Con deck es directo: `onHover` con `info.index` + un div posicionado.
+2. ~~**Tooltip de hover prometido y ausente.**~~ **Resuelto a medias, y en la dirección
+   incómoda.** El bloque `SIMBOLOGIA` de `config.js` declaraba cuatro mecanismos obligatorios
+   y decía que quitar cualquiera «rompe la accesibilidad del mapa». Dos de los cuatro no eran
+   ciertos: el tooltip nunca se implementó, y la leyenda siempre visible salió del panel al
+   pasar todos los controles a botonera. El bloque está reescrito y ahora **cuenta lo que hay**
+   —aislar-al-marcar, tabla de superficie, la ficha del punto y los nombres dentro del modal de
+   Uso— y dice explícitamente que la lectura del mapa *sin interactuar* depende más del color
+   que antes.
+
+   Lo que queda pendiente **no es documentación sino producto**: el tooltip sigue sin existir y
+   sería el mecanismo que devuelve el nombre de la clase sin obligar a abrir nada. Con deck es
+   directo: `onHover` con `info.index` + un div posicionado. Es la mitigación natural de haber
+   quitado la leyenda.
 
 ### Prioridad media
 
