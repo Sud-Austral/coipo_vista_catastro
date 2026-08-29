@@ -12,7 +12,7 @@ network: defaults
 
 tools:
   github:
-    toolsets: [default]
+    toolsets: [pull_requests, repos]
 
 safe-outputs:
   create-pull-request:

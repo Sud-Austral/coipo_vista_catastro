@@ -10,3 +10,5 @@
 *.parquet  binary -text -diff
 *.png      binary -text -diff
 *.jpg      binary -text -diff
+
+.github/workflows/*.lock.yml linguist-generated=true
