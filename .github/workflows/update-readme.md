@@ -1,6 +1,7 @@
 ---
 on:
-  pull_request:
+  #pull_request:
+  push:
     types: [opened, synchronize, reopened]
 
 permissions:
