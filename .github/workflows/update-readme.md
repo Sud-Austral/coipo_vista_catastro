@@ -1,8 +1,10 @@
 ---
 on:
   #pull_request:
-  push:
-    types: [opened, synchronize, reopened]
+  #types: [opened, synchronize, reopened]
+  push:    
+    branches:
+    - main
 
 permissions:
   contents: read
