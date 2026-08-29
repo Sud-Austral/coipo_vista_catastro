@@ -1,196 +1,79 @@
-name: AI README Maintenance
+name: Actualizar README
 
 on:
   push:
-    branches:
-      - main
-
+    branches: [main]
+    paths:
+      - 'ETL/**'
+      - 'frontend/**'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 permissions:
   contents: write
-  pull-requests: write
+  models: read          # habilita GitHub Models para el GITHUB_TOKEN
 
 concurrency:
-  group: update-readme
+  group: readme
   cancel-in-progress: true
 
 jobs:
-  update-readme:
-    name: Analyze and update README
-    runs-on: ubuntu-24.04
-
+  readme:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
-      - name: Install Python
-        uses: actions/setup-python@v6
+      # El diff acotado es lo que mantiene la peticion dentro del limite de
+      # entrada del tier gratuito (8K tokens). Sin el head -c, un commit grande
+      # devuelve 413 y el job falla por una razon que no es la interesante.
+      - name: Preparar contexto
+        run: |
+          git diff HEAD~1 HEAD -- ETL frontend .github | head -c 12000 > /tmp/diff.txt
+          sed -n '/AUTODOC:INICIO/,/AUTODOC:FIN/p' README.md > /tmp/bloque.txt
+
+      - id: ia
+        uses: actions/ai-inference@v1
         with:
-          python-version: "3.12"
+          model: openai/gpt-4.1-mini
+          max-tokens: 800
+          system-prompt: |
+            Editas UNA seccion de un README. Usa solo lo que aparece en el
+            contexto. No inventes comandos, variables ni dependencias.
+            Responde en espanol, en Markdown, sin fences ni explicaciones.
+            Si la seccion sigue siendo correcta responde exactamente: NO_UPDATE
+          prompt: |
+            CAMBIOS RECIENTES
+            ${{ github.workspace && '' }}
+            $(cat /tmp/diff.txt)
 
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install huggingface_hub
+            SECCION ACTUAL
+            $(cat /tmp/bloque.txt)
 
-      - name: Download llama.cpp
-        run: |
-          set -e
-
-          LLAMA_VERSION="b10507"
-
-          mkdir -p "$HOME/llama"
-
-          wget -q \
-            "https://github.com/ggml-org/llama.cpp/releases/download/${LLAMA_VERSION}/llama-${LLAMA_VERSION}-bin-ubuntu-x64.tar.gz" \
-            -O "$HOME/llama/llama.tar.gz"
-
-          tar -xzf "$HOME/llama/llama.tar.gz" \
-            -C "$HOME/llama"
-
-          find "$HOME/llama" -type f -name "llama-cli" -print
-
-      - name: Download Qwen model
-        run: |
-          set -e
-
-          mkdir -p "$HOME/models"
-
-          python - <<'PY'
-          from huggingface_hub import hf_hub_download
-
-          hf_hub_download(
-              repo_id="Qwen/Qwen2.5-1.5B-Instruct-GGUF",
-              filename="qwen2.5-1.5b-instruct-q4_k_m.gguf",
-              local_dir="/home/runner/models"
-          )
-          PY
-
-      - name: Prepare repository context
+      # La verificacion que queda: que no sea NO_UPDATE y que traiga algo.
+      # No hace falta mas, porque el resto del README no esta en juego.
+      - name: Aplicar
         env:
-          BEFORE_SHA: ${{ github.event.before }}
-          AFTER_SHA: ${{ github.sha }}
+          RESP: ${{ steps.ia.outputs.response }}
         run: |
-          set -e
+          [ "${RESP:0:9}" = "NO_UPDATE" ] && { echo "sin cambios"; exit 0; }
+          [ ${#RESP} -lt 40 ] && { echo "respuesta demasiado corta"; exit 1; }
+          python3 - <<'EOF'
+          import os, re, pathlib
+          p = pathlib.Path("README.md"); t = p.read_text(encoding="utf-8")
+          nuevo = ("<!-- AUTODOC:INICIO -->\n"
+                   + os.environ["RESP"].strip()
+                   + "\n<!-- AUTODOC:FIN -->")
+          t2 = re.sub(r"<!-- AUTODOC:INICIO -->.*?<!-- AUTODOC:FIN -->",
+                      lambda _: nuevo, t, flags=re.S)
+          assert t2 != t, "los marcadores AUTODOC no estan en el README"
+          p.write_text(t2, encoding="utf-8")
+          EOF
 
-          echo "=== COMMIT ==="
-          git log -1 --oneline
-
-          echo "=== CHANGED FILES ==="
-
-          if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
-            git diff-tree --no-commit-id --name-only -r "$AFTER_SHA" \
-              > /tmp/changed-files.txt
-          else
-            git diff --name-only "$BEFORE_SHA" "$AFTER_SHA" \
-              > /tmp/changed-files.txt
-          fi
-
-          cat /tmp/changed-files.txt
-
-          echo "=== DIFF ==="
-
-          if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
-            git show --format= --stat "$AFTER_SHA" > /tmp/diff.txt
-            git show --format= "$AFTER_SHA" >> /tmp/diff.txt
-          else
-            git diff "$BEFORE_SHA" "$AFTER_SHA" > /tmp/diff.txt
-          fi
-
-          # Evita enviar cantidades absurdas de código al modelo.
-          # El README y el diff son suficientes para esta tarea.
-          head -c 120000 /tmp/diff.txt > /tmp/diff-limited.txt
-
-      - name: Run AI README analyzer
-        env:
-          LLAMA_ROOT: /home/runner/llama
-          MODEL_PATH: /home/runner/models/qwen2.5-1.5b-instruct-q4_k_m.gguf
-        run: |
-          set -e
-
-          LLAMA_BIN=$(find "$LLAMA_ROOT" -type f -name "llama-cli" | head -1)
-
-          if [ -z "$LLAMA_BIN" ]; then
-            echo "ERROR: llama-cli no encontrado"
-            find "$LLAMA_ROOT" -maxdepth 3 -type f | head -100
-            exit 1
-          fi
-
-          chmod +x "$LLAMA_BIN"
-
-          python scripts/update_readme.py \
-            --llama "$LLAMA_BIN" \
-            --model "$MODEL_PATH" \
-            --readme README.md \
-            --diff /tmp/diff-limited.txt \
-            --changed-files /tmp/changed-files.txt
-
-      - name: Check README changes
-        id: changes
-        run: |
-          if git diff --quiet -- README.md; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "README no necesita cambios."
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "README fue actualizado."
-            git diff -- README.md
-          fi
-
-      - name: Validate README change
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          set -e
-
-          # Solo README.md puede haber cambiado.
-          OTHER_CHANGES=$(git status --short | \
-            grep -vE '^[ MADRCU?]{2} README\.md$' || true)
-
-          if [ -n "$OTHER_CHANGES" ]; then
-            echo "ERROR: El proceso modificó archivos distintos de README.md:"
-            echo "$OTHER_CHANGES"
-            git restore --staged .
-            git restore .
-            exit 1
-          fi
-
-          # El README no puede quedar vacío.
-          if [ ! -s README.md ]; then
-            echo "ERROR: README.md quedó vacío."
-            exit 1
-          fi
-
-      - name: Create Pull Request
-        if: steps.changes.outputs.changed == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -e
-
-          BRANCH="docs/ai-update-readme-${GITHUB_RUN_ID}"
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git checkout -b "$BRANCH"
-
-          git add README.md
-
-          git commit -m "docs: update README"
-
-          git push origin "$BRANCH"
-
-          gh pr create \
-            --base main \
-            --head "$BRANCH" \
-            --title "docs: update README" \
-            --body "## README maintenance
-
-          This pull request was generated automatically after changes were pushed to \`main\`.
-
-          The local documentation model analyzed the repository changes and determined that the README required an update.
-
-          Only \`README.md\` was modified."
+      - uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "docs: actualizar seccion autodocumentada"
+          branch: readme/autodoc
+          title: "Actualización del README"
+          delete-branch: true
