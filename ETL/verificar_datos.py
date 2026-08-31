@@ -26,7 +26,7 @@ RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATOS = os.path.join(RAIZ, "frontend", "public", "datos")
 
 FILAS_CBN = 1_827_933
-BYTES_POR_FILA = 24          # 3 f32 + 2 u16 + 8 u8
+BYTES_POR_FILA = 25          # 3 f32 + 2 u16 + 9 u8
 
 # Las cifras oficiales NO se escriben aqui: se leen de oficiales.json, que
 # `ETL/cifras_oficiales.py` parsea de la planilla que CONAF publico dentro de la
@@ -75,8 +75,11 @@ def comprobar(man, crudo, tam, hashes):
     fallos = []
     cap = man["capas"]["cbn_puntos"]
 
-    if man.get("esquema") != 3:
-        fallos.append(f"D1 esquema {man.get('esquema')} != 3")
+    # 4 desde que la region va en columna propia. El numero vive tambien en
+    # build_bin.py y en binario.js: los tres tienen que subir a la vez, y esta
+    # asercion es la que caza que uno se quede atras.
+    if man.get("esquema") != 4:
+        fallos.append(f"D1 esquema {man.get('esquema')} != 4")
 
     # Ninguna marca de tiempo. Es lo que permite commitear datos: si el manifest
     # llevara fecha, cada regeneracion ensuciaria git aunque los datos fueran
@@ -281,6 +284,80 @@ def comprobar(man, crudo, tam, hashes):
             fallos.append(f"D20 {dim} reparte {repartidas:,} filas de "
                           f"{man['total']['filas']:,} (desconocidas: {desconocidas:,})")
 
+    # D22 - CADA REGION TIENE AL MENOS UNA COMUNA. Es la asercion que habria
+    # cazado el defecto mas caro de este visor el primer dia.
+    #
+    # El .bin no traia columna de region: los tres niveles del ambito
+    # --region, provincia, comuna-- se derivaban de la columna `comuna`, y
+    # elegir una region se traducia en reunir sus comunas y filtrar por ese
+    # conjunto. Las 79.727 filas de Los Rios llegaban SIN comuna --su codigo
+    # venia en otra columna del origen, `Codcomun`, que el ETL no leia--, asi
+    # que el conjunto salia VACIO. Y un conjunto vacio significa «todas» en el
+    # cliente: el visor entrego cifras NACIONALES rotuladas «Los Rios» durante
+    # meses, con el mapa encuadrado en la region y el nombre correcto al lado.
+    # El manifest ya publicaba las dos mitades del problema --79.727 poligonos
+    # en Los Rios, 79.731 filas sin comuna-- y nadie las habia cruzado.
+    #
+    # La region tiene columna propia desde el esquema 4, asi que el ambito ya no
+    # se deriva. Esto se queda igualmente: es la comprobacion de que el desglose
+    # territorial de cada region existe.
+    comunas_por_region = {}
+    for c in man.get("comunas", []):
+        comunas_por_region.setdefault(c.get("region"), []).append(c)
+    for r in man.get("regiones", []):
+        cs = comunas_por_region.get(r["cod"], [])
+        if not cs:
+            fallos.append(f"D22 la region {r['cod']} ({r['nombre']}) no tiene ninguna comuna: "
+                          f"{r['n']:,} poligonos sin desglose territorial")
+
+    # D23 - las cifras regionales cuadran con el total y con sus comunas.
+    suma_reg = sum(r["n"] for r in man.get("regiones", []))
+    if man.get("regiones") and suma_reg != man["total"]["filas"]:
+        fallos.append(f"D23 las regiones suman {suma_reg:,} de {man['total']['filas']:,} filas")
+    for r in man.get("regiones", []):
+        n_com = sum(c["n"] for c in comunas_por_region.get(r["cod"], []))
+        if n_com > r["n"]:
+            fallos.append(f"D23 {r['nombre']}: sus comunas suman {n_com:,} y la region {r['n']:,}")
+    # Lo que queda fuera de toda comuna tiene que ser exactamente lo declarado
+    # como «sin comuna». Son los 4 poligonos de «Areas no Reconocidas» de
+    # Magallanes, que no tienen ningun dato territorial en el origen.
+    huerfanos = suma_reg - sum(c["n"] for c in man.get("comunas", []))
+    if man.get("regiones") and huerfanos != sin.get("comuna", 0):
+        fallos.append(f"D23 {huerfanos:,} filas fuera de toda comuna, "
+                      f"pero se declaran {sin.get('comuna', 0):,} sin comuna")
+
+    # D24 - NINGUNA ETIQUETA SE PARTE EN DOS POR LA GRAFIA. Cuatro unidades del
+    # SNASPE y cuatro subtipos forestales llegaban duplicados: el Parque
+    # Nacional Bernardo O'Higgins figuraba como «Ohiggins» y como «OHiggins», y
+    # quien consultaba una de las dos obtenia 2,8 de sus 3,8 M ha.
+    for dim in ("snaspe", "subtipos_forestales"):
+        grupos = {}
+        for f in man.get(dim, []):
+            grupos.setdefault(_canon(f["etiqueta"]), []).append(f["etiqueta"])
+        for k, v in grupos.items():
+            if len(v) > 1:
+                fallos.append(f"D24 {dim}: {v} colapsan en la misma etiqueta")
+    # Y el reverso, que es lo que una normalizacion automatica destruiria: el
+    # Parque Nacional Villarrica y la Reserva Nacional Villarrica son DOS
+    # unidades distintas que comparten toponimo. Si alguna vez se funden, esta
+    # linea es la que lo dice.
+    villarrica = sorted(f["etiqueta"] for f in man.get("snaspe", [])
+                        if "villarrica" in _canon(f["etiqueta"]))
+    if len(villarrica) != 2:
+        fallos.append(f"D24 Villarrica deberian ser dos unidades distintas: {villarrica}")
+
+    # D25 - los alias apuntan a algo. Al homologar, el codigo de una clase
+    # fundida deja de existir, y ese codigo ya viaja en enlaces compartidos.
+    # Un alias que apunte a un codigo inexistente es peor que no tenerlo: hace
+    # creer que el enlace viejo sigue sirviendo.
+    for dim, clave in (("snaspe", "snaspe"), ("stifo", "subtipos_forestales")):
+        vivos = {f["cod"] for f in man.get(clave, [])}
+        for viejo, nuevo in man.get("alias", {}).get(dim, {}).items():
+            if nuevo not in vivos:
+                fallos.append(f"D25 alias {dim}: {viejo!r} apunta a {nuevo!r}, que no existe")
+            if viejo in vivos:
+                fallos.append(f"D25 alias {dim}: {viejo!r} sigue vivo y no deberia")
+
     # D21 - «no aplica» se dice de UNA sola forma, y solo donde toca.
     #
     # Tipo y subtipo forestal traian el mismo concepto por dos vias: el
@@ -416,6 +493,29 @@ def _sin_clase_na(man, dim):
     return m
 
 
+def _region_sin_comunas(man, cod="14"):
+    """Deja una region sin ninguna comuna: EL defecto de Los Rios, reintroducido."""
+    m = json.loads(json.dumps(man))
+    m["comunas"] = [c for c in m["comunas"] if c.get("region") != cod]
+    return m
+
+
+def _fundir_etiqueta(man, dim):
+    """Parte una clase en dos grafias, como llegaban «Ohiggins» y «OHiggins»."""
+    m = json.loads(json.dumps(man))
+    f = dict(m[dim][0])
+    f["etiqueta"] = f["etiqueta"].upper()
+    f["cod"] = f["cod"] + "_x"
+    m[dim].append(f)
+    return m
+
+
+def _alias_roto(man, dim="stifo"):
+    m = json.loads(json.dumps(man))
+    m.setdefault("alias", {}).setdefault(dim, {})["clase-que-fue"] = "clase-que-no-existe"
+    return m
+
+
 NEGATIVAS = [
     ("D2 marca de tiempo", "D2",
      lambda m, c, t, h: (m, c + '"generado":"2026-08-20T10:00:00"', t, h)),
@@ -454,6 +554,14 @@ NEGATIVAS = [
      lambda m, c, t, h: (_quitar_clase(m, "coberturas"), c, t, h)),
     ("D21 tipo forestal vuelve a tener centinela", "D21",
      lambda m, c, t, h: (_sin_dato(m, "tifo", 1_114_688), c, t, h)),
+    ("D22 una region se queda sin comunas (el defecto de Los Rios)", "D22",
+     lambda m, c, t, h: (_region_sin_comunas(m), c, t, h)),
+    ("D24 una unidad del SNASPE se parte en dos grafias", "D24",
+     lambda m, c, t, h: (_fundir_etiqueta(m, "snaspe"), c, t, h)),
+    ("D24 un subtipo forestal se parte en dos grafias", "D24",
+     lambda m, c, t, h: (_fundir_etiqueta(m, "subtipos_forestales"), c, t, h)),
+    ("D25 un alias apunta a un codigo que no existe", "D25",
+     lambda m, c, t, h: (_alias_roto(m), c, t, h)),
     ("D21 subtipo sin su clase «No Aplica»", "D21",
      lambda m, c, t, h: (_sin_clase_na(m, "subtipos_forestales"), c, t, h)),
     ("D21 cobertura pierde su centinela", "D21",

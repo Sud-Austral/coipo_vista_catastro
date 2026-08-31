@@ -1,0 +1,17 @@
+valor_origen,valor_canonico,accion,confianza,nota
+Antofagasta,Antofagasta,sin_cambio,alta,Sin observaciones
+Arica y Parinacota,Arica y Parinacota,sin_cambio,alta,Sin observaciones
+Atacama,Atacama,sin_cambio,alta,Sin observaciones
+Aysén,Aysén,sin_cambio,alta,Sin observaciones
+Biobío,Biobío,sin_cambio,alta,Sin observaciones
+Coquimbo,Coquimbo,sin_cambio,alta,Sin observaciones
+La Araucanía,La Araucanía,sin_cambio,alta,Sin observaciones
+Los Lagos,Los Lagos,sin_cambio,alta,Sin observaciones
+Magallanes,Magallanes,sin_cambio,alta,Sin observaciones
+Maule,Maule,sin_cambio,alta,Sin observaciones
+Metropolitana,Metropolitana,sin_cambio,alta,Sin observaciones
+O'Higgins,O'Higgins,sin_cambio,alta,Sin observaciones
+Tarapacá,Tarapacá,sin_cambio,alta,Sin observaciones
+Valparaíso,Valparaíso,sin_cambio,alta,Sin observaciones
+Ñuble,Ñuble,sin_cambio,alta,Sin observaciones
+(ausente),Los Ríos,FALTA,alta,"Los Ríos no aparece en el vocabulario de región ni tiene ninguna comuna asociada, pese a tener 79.727 polígonos y 1.835.307,15 ha en el manifiesto. Es la causa raíz del error de ámbito del visor."

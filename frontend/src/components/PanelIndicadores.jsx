@@ -344,11 +344,13 @@ export default function PanelIndicadores({
             advertencia={{
               titulo: 'Por qué este vocabulario no es el oficial',
               cuerpo:
-                'El subtipo forestal se agrupa por el TEXTO de la capa y no por su código, que es ' +
-                'la única dimensión donde se hace así. El motivo está medido: ID_STIF tiene 10 ' +
-                'códigos para 39 subtipos distintos, y usar el par (tipo, subtipo) como clave ' +
-                'empeora la ambigüedad en vez de resolverla. La guía oficial de códigos no nombra ' +
-                'estos subtipos, así que las etiquetas salen del propio dato, normalizadas.',
+                'El subtipo forestal se agrupa por el TEXTO de la capa y no por su código. El ' +
+                'motivo está medido: ID_STIF tiene 10 códigos para más de treinta subtipos ' +
+                'distintos, y usar el par (tipo, subtipo) como clave empeora la ambigüedad en vez ' +
+                'de resolverla. La guía oficial no nombra estos subtipos, así que las etiquetas ' +
+                'salen del propio dato, normalizadas y después homologadas contra la tabla de la ' +
+                'Unidad de Información y Análisis: cuatro pares llegaban partidos por la ' +
+                'ortografía —«Roble-Hualo» y «Roble - Hualo»— y sumaban por separado.',
             }}
             tabla={{
               titulo: 'Superficie por subtipo forestal',

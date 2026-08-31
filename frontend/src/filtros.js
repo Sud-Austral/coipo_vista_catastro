@@ -103,6 +103,62 @@ export const FILTROS = [
     conCientifico: true,
     nota: 'Es la PRIMERA especie del polígono, la dominante. Cada polígono puede registrar hasta seis, y las otras cinco no filtran aquí. Incluye toda la vegetación, no sólo árboles.',
   },
+  // --- las seis que describen la VEGETACIÓN, no el polígono ----------------
+  // Se derivan del código de especie contra la tabla de clasificación de la
+  // Unidad de Información y Análisis (hoja 15 del libro de homologación). Las
+  // seis heredan la misma advertencia, y no es menor: el Catastro registra hasta
+  // SEIS especies por polígono y aquí sólo pesa la dominante.
+  {
+    col: 'grupo',
+    clave: 'grupos',
+    resumen: 'grupos',
+    titulo: 'Grupo botánico',
+    corto: 'Grupo',
+    nota: 'Se deduce de la especie PRINCIPAL del polígono. Las otras cinco que el Catastro puede registrar no cuentan aquí.',
+  },
+  {
+    col: 'habito',
+    clave: 'habitos',
+    resumen: 'habitos',
+    titulo: 'Hábito de crecimiento',
+    corto: 'Hábito',
+    nota: 'Forma de vida de la especie principal: árbol, arbusto, hierba, gramínea, cactácea… No es la estructura del dosel, que se filtra aparte.',
+  },
+  {
+    col: 'arboreo',
+    clave: 'arboreas',
+    resumen: 'arboreas',
+    titulo: '¿La especie principal es arbórea?',
+    corto: 'Arbórea',
+    nota: 'Que la especie sea arbórea NO significa que el polígono sea bosque: para eso está la clase de uso. Una palma es arbórea y su hábito es Palma.',
+  },
+  {
+    col: 'origen',
+    clave: 'origenes',
+    resumen: 'origenes',
+    titulo: 'Origen de la especie',
+    corto: 'Origen',
+    nota: 'Nativa o exótica según la tabla de clasificación. Seis especies quedan «Sin determinar», y eso no es lo mismo que ninguna de las dos.',
+  },
+  {
+    col: 'invasora',
+    clave: 'invasoras',
+    resumen: 'invasoras',
+    titulo: 'Comportamiento invasor',
+    corto: 'Invasora',
+    nota: '«No aplica» es la respuesta para las especies nativas, a las que no se les hace esta pregunta. Sólo 21 exóticas figuran con comportamiento invasor.',
+  },
+  {
+    col: 'conservacion',
+    clave: 'conservaciones',
+    resumen: 'conservaciones',
+    titulo: 'Estado de conservación',
+    corto: 'Conservación',
+    // LA ADVERTENCIA MÁS IMPORTANTE DEL PANEL, y va aquí porque es donde se usa
+    // el dato. 976 de las 989 especies están sin verificar: leer esta dimensión
+    // como un inventario de especies amenazadas sería exactamente al revés.
+    nota: 'El Catastro NO registra estado de conservación. Esta columna viene de una tabla auxiliar SIN validar contra el Reglamento de Clasificación de Especies, y 976 de las 989 especies figuran como «Sin dato». Eso no es ausencia de amenaza.',
+  },
   {
     col: 'snaspe',
     clave: 'snaspe',
@@ -243,16 +299,29 @@ export function filtrosAURL(filtros, manifest) {
   return out
 }
 
-/** El camino de vuelta: códigos de la URL a índices del vocabulario vigente. */
+/**
+ * El camino de vuelta: códigos de la URL a índices del vocabulario vigente.
+ *
+ * CONSULTA EL MAPA DE ALIAS antes de rendirse, y no es un detalle. Cinco
+ * dimensiones no tienen código propio y usan su TEXTO como código; al homologar
+ * dos grafías en una, el código de la minoritaria deja de existir. Un enlace ya
+ * compartido con `?snaspe=Nuble` o `?stifo=roble-hualo` filtraría entonces
+ * NADA, y el visor no distingue «el filtro no encuentra» de «no hay filtro»:
+ * quien lo abriera vería el país entero creyendo estar mirando una unidad del
+ * SNASPE. El alias lo publica el manifest, así que la traducción viaja con los
+ * datos que la hicieron necesaria.
+ */
 export function filtrosDesdeURL(crudo, manifest) {
   const out = {}
   for (const def of FILTROS) {
     const cods = crudo?.[def.col]
     if (!cods || !cods.length) continue
     const dominio = manifest?.[def.clave] ?? []
+    const alias = manifest?.alias?.[def.col] ?? {}
     const s = new Set()
     for (const cod of cods) {
-      const i = dominio.findIndex((d) => d.cod === cod)
+      const buscado = alias[cod] ?? cod
+      const i = dominio.findIndex((d) => d.cod === buscado)
       if (i >= 0) s.add(i)
     }
     if (s.size) out[def.col] = s

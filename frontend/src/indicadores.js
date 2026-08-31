@@ -43,6 +43,24 @@ export const DIMENSIONES = [
   { col: 'especie', dominio: 'especies', resumen: 'especies', centinela: 65535 },
   { col: 'snaspe', dominio: 'snaspe', resumen: 'snaspe', centinela: 255 },
   { col: 'comuna', dominio: 'comunas', resumen: 'comunas', centinela: 65535 },
+  // LA REGION TIENE COLUMNA PROPIA desde el esquema 4, y por eso es una
+  // dimension mas. Antes se DERIVABA de las comunas, y esa indireccion publico
+  // cifras nacionales bajo el rotulo «Los Rios» durante meses: sus 79.727
+  // poligonos llegaban sin comuna, el conjunto del ambito salia vacio, y un
+  // conjunto vacio significaba «todas». Ahora el ambito regional filtra
+  // directo, y los 4 poligonos de Magallanes que no tienen comuna vuelven a
+  // contar en su region.
+  { col: 'region', dominio: 'regiones', resumen: 'regiones', centinela: 255 },
+  // LAS SEIS DERIVADAS DE LA ESPECIE. No son columnas del .bin: `binario.js` las
+  // construye al cargar a partir del código de especie, que sí viaja. Describen
+  // la VEGETACIÓN y no el polígono, y por eso su «sin dato» es el mismo que el
+  // de especie: 284.279 filas.
+  { col: 'grupo', dominio: 'grupos', resumen: 'grupos', centinela: 255 },
+  { col: 'habito', dominio: 'habitos', resumen: 'habitos', centinela: 255 },
+  { col: 'arboreo', dominio: 'arboreas', resumen: 'arboreas', centinela: 255 },
+  { col: 'origen', dominio: 'origenes', resumen: 'origenes', centinela: 255 },
+  { col: 'invasora', dominio: 'invasoras', resumen: 'invasoras', centinela: 255 },
+  { col: 'conservacion', dominio: 'conservaciones', resumen: 'conservaciones', centinela: 255 },
 ]
 
 /**
@@ -100,7 +118,13 @@ export function resumenNacional(manifest) {
     tiposForestales: conPct(manifest.tipos_forestales),
     snaspe: conPct(manifest.snaspe),
     comunas: conPct(manifest.comunas),
-    regiones: manifest.regiones.filter((r) => r.n > 0),
+    regiones: conPct(manifest.regiones),
+    grupos: conPct(manifest.grupos),
+    habitos: conPct(manifest.habitos),
+    arboreas: conPct(manifest.arboreas),
+    origenes: conPct(manifest.origenes),
+    invasoras: conPct(manifest.invasoras),
+    conservaciones: conPct(manifest.conservaciones),
     // El manifest YA trae las filas sin dato por dimensión y aquí no se leían,
     // así que sin ningún filtro activo el panel decía que no había ninguna. Son
     // 1.114.688 polígonos sin tipo forestal y 1.431.130 fuera del SNASPE: justo
@@ -127,6 +151,12 @@ export const SIN_DATO_POR_COL = {
   altura: 'altura',
   stifo: 'subtipoForestal',
   especie: 'especie',
+  grupo: 'grupo',
+  habito: 'habito',
+  arboreo: 'arboreo',
+  origen: 'origen',
+  invasora: 'invasora',
+  conservacion: 'conservacion',
 }
 
 /**
@@ -145,7 +175,12 @@ function sinDatoDe(por, cuenta) {
 
 /** Lo mismo, del manifest: ahí `sin_dato` va con los nombres de la columna. */
 function sinDatoDelManifest(manifest) {
-  const s = manifest.capas?.cbn_puntos?.sin_dato ?? {}
+  // Dos claves: `sin_dato` son las columnas del .bin y `sin_dato_derivado` las
+  // seis que el cliente construye a partir de la especie. Están separadas
+  // porque D13, en el verificador de datos, exige que las claves de `sin_dato`
+  // sean exactamente las columnas con centinela.
+  const cap = manifest.capas?.cbn_puntos ?? {}
+  const s = { ...(cap.sin_dato ?? {}), ...(cap.sin_dato_derivado ?? {}) }
   const out = {}
   for (const [col, nombre] of Object.entries(SIN_DATO_POR_COL)) {
     out[nombre] = s[col] ?? 0
@@ -209,6 +244,12 @@ export function resumenYMarginales(datos, filtros = {}) {
   const m = datos.manifest
   const n = datos.n
 
+  // Ruidoso a proposito: una dimension declarada cuya columna no llega --las
+  // seis derivadas hay que construirlas, no vienen en el .bin-- reventaba a
+  // mitad del bucle con «Cannot read properties of undefined». Aqui se dice cual.
+  for (const d of DIMENSIONES) {
+    if (!datos[d.col]) throw new Error(`falta la columna «${d.col}» en los datos cargados`)
+  }
   const dims = DIMENSIONES.map((d) => {
     const dom = m[d.dominio] ?? []
     return {
@@ -236,9 +277,21 @@ export function resumenYMarginales(datos, filtros = {}) {
   const activos = []
   for (const d of dims) {
     const sel = filtros[d.col]
-    // Un Set vacío o ausente significa «todas», no «ninguna»: la diferencia
-    // entre no haber filtrado y haber filtrado a cero.
-    if (!d.columna || !sel || sel.size === 0) continue
+    // AUSENTE es «todas». VACÍO es «ninguna», y son cosas distintas.
+    //
+    // Aquí decía que un Set vacío también significaba «todas», y esa línea es
+    // la MISMA trampa que hizo que el visor publicara cifras nacionales bajo el
+    // rótulo «Los Ríos»: un ámbito que no calza con nada producía un conjunto
+    // vacío, y un conjunto vacío se ignoraba. Se arregló primero en App.jsx —el
+    // ámbito entra siempre al filtro— y el defecto seguía vivo aquí: con
+    // `?reg=15&prov=Valdivia` —una provincia que no existe en esa región— el
+    // panel devolvía la región ENTERA, 1,7 M ha, rotulada «Arica y Parinacota ›
+    // Valdivia». Lo encontró una sonda, no una aserción.
+    //
+    // `tablaPertenencia` de un Set vacío ya es una tabla de ceros: no pasa nada,
+    // que es exactamente lo que se pidió. Quien no quiera filtrar, que no ponga
+    // la clave.
+    if (!d.columna || !sel) continue
     d.tabla = tablaPertenencia(d.columna, sel)
     activos.push(d)
   }
@@ -316,29 +369,11 @@ export function resumenYMarginales(datos, filtros = {}) {
   }
 
   const por = Object.fromEntries(dims.map((d) => [d.col, d]))
-  const c = por.comuna
-
-  // Las regiones se agregan desde las comunas: el .bin no lleva columna de
-  // región, y añadirla sería un byte por punto para un dato que ya se deduce.
-  const regionesDe = (cuenta, suma) => {
-    const acc = new Map()
-    m.comunas.forEach((com, i) => {
-      if (!cuenta[i]) return
-      const r = acc.get(com.region) ?? { n: 0, ha: 0 }
-      r.n += cuenta[i]
-      r.ha += suma[i]
-      acc.set(com.region, r)
-    })
-    return m.regiones
-      .map((r) => ({ ...r, ...(acc.get(r.cod) ?? { n: 0, ha: 0 }) }))
-      .filter((r) => r.n > 0)
-  }
 
   const resumen = {
     fuente: 'filtrado',
     n: nTotal,
     ha: haTotal,
-    regiones: regionesDe(c.cuenta, c.suma),
     // Las filas que no se pudieron clasificar en cada dimensión. Se publican:
     // «sin dato» y «con un valor que la guía no nombra» no son cero.
     sinDato: sinDatoDe(por, (d) => d.cuenta),
@@ -359,7 +394,6 @@ export function resumenYMarginales(datos, filtros = {}) {
         .filter((x) => x.n > 0)
         .map((x) => ({ ...x, pct: m.total.ha > 0 ? (100 * x.ha) / m.total.ha : null }))
         .sort((a, b) => b.ha - a.ha)
-      if (d.col === 'comuna') marginales.regiones = m.regiones.filter((r) => r.n > 0)
       continue
     }
     d.mCuenta = new Int32Array(d.k + 1)
@@ -369,7 +403,6 @@ export function resumenYMarginales(datos, filtros = {}) {
       d.mSuma[j] = d.suma[j] + d.xSuma[j]
     }
     marginales[d.resumen] = listar(d.dom, d.mCuenta, d.mSuma, haTotal + d.xHa)
-    if (d.col === 'comuna') marginales.regiones = regionesDe(d.mCuenta, d.mSuma)
   }
   marginales.sinDato = sinDatoDe(por, (d) => d.mCuenta ?? d.cuenta)
   // La dimensión que se saltó el conteo toma su «sin dato» del manifest, por la

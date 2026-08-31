@@ -28,6 +28,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { DIMENSIONES, SIN_DATO_POR_COL, resumenYMarginales } from '../src/indicadores.js'
+import { derivarDeEspecie } from '../src/datos/derivadas.js'
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url))
 const DATOS = path.join(AQUI, '..', 'public', 'datos')
@@ -54,6 +55,9 @@ function cargar() {
   for (const [nombre, c] of Object.entries(capa.campos)) {
     datos[nombre] = new CTOR[c.tipo](ab, c.offset, n)
   }
+  // Las seis derivadas de la especie NO están en el .bin: las construye el
+  // mismo módulo que usa el visor, para que el oráculo mida lo que se publica.
+  Object.assign(datos, derivarDeEspecie(datos.especie, n, man))
   return datos
 }
 

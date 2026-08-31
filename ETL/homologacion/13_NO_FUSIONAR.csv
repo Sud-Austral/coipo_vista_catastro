@@ -1,0 +1,7 @@
+dimension,valores,por_que_parecen_iguales,regla
+altura,<2  /  >2,Son rangos OPUESTOS de la escala gruesa. Cualquier normalización que elimine los signos «<» y «>» los colapsa en el mismo valor.,Conservar los signos; no plegar símbolos en esta dimensión.
+snaspe,Parque Nacional Villarrica  /  Reserva Nacional Villarrica,Son dos unidades distintas del SNASPE que comparten topónimo. Las distingue la categoría.,No fusionar. Es la razón por la que el canónico del SNASPE incluye siempre la categoría.
+especie_cod,207 grupos que sólo difieren en mayúsculas,"206 de los 207 grupos designan especies científicas DISTINTAS: AB=Abies sp., Ab=Adesmia boronioides, ab=Calceolaria biflora.",No aplicar UPPER() ni LOWER() al código de especie en ningún punto del proceso.
+especie,7 etiquetas que sólo difieren en mayúsculas,Las siete designan especies distintas: «Llareta»=Azorella compacta y «llareta»=Azorella madreporica; «totora»=Typha angustifolia y «Totora»=Schoenoplectus pungens.,"No fusionar por plegado de mayúsculas. Unir siempre por código, nunca por nombre."
+especie,53 nombres comunes compartidos,"«álamo» son tres especies (Populus sp., P. nigra, P. alba); «aromo» tres; «arvejilla» tres.",La etiqueta de especie no es clave de unión. Sólo el código lo es.
+estruc,Adulta  /  Adulto,"Podrían ser la misma clase escrita con distinto género gramatical, o dos clases legítimas del vocabulario oficial.",No fusionar sin confirmar contra la guía oficial de códigos. Ver 14_REVISAR.

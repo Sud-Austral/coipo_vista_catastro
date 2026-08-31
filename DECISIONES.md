@@ -145,6 +145,88 @@ Las cuatro pruebas negativas se han visto en rojo.
 Efecto en las cifras: ninguno. El total nacional sigue en 75.661.200,40 ha y el bosque nativo
 en 15.536.329,01 ha. Lo que cambia es dónde se leen 1,1 M de polígonos.
 
+## G. La comuna de Los Ríos venía en otra columna, y eso publicó cifras nacionales
+
+**El síntoma.** Elegir la Región de Los Ríos movía el mapa, rotulaba «Los Ríos» y entregaba
+**75.661.200,39 ha y 1.827.933 polígonos**: el país entero. Corresponden 1.835.307,15 ha y
+79.727 polígonos. Era la única de las dieciséis regiones donde ocurría, y la región tampoco
+ofrecía provincias ni comunas: su desglose territorial completo era inaccesible.
+
+**La causa, medida.** El `.bin` no llevaba columna de región, así que los tres niveles del
+ámbito se derivaban de la columna `comuna`. Ninguna de las 331 comunas publicadas pertenecía a
+la región 14, de modo que el conjunto salía vacío — y un conjunto vacío significaba «todas», no
+«ninguna», tanto en `App.jsx` como en el cruce. El visor no podía distinguir «no elegí región»
+de «elegí una región que no calza con nada».
+
+**Lo que el informe de la Unidad daba por perdido no lo estaba.** El informe pedía «recuperar el
+atributo de comuna desde la capa de origen». No hizo falta: el código está en la columna
+**`Codcomun`**, poblada en las 79.727 filas de Los Ríos y **NULL en las otras quince regiones**
+— el complemento exacto de `CODCOM`. Medido:
+`count(COALESCE(CODCOM, Codcomun)) = 1.827.929` de 1.827.933. Las doce comunas estaban
+completas, con códigos 14101–14204. El arreglo del dato es un `COALESCE`.
+
+**Tres cambios, y hacen falta los tres.** Cada uno cierra un eslabón distinto:
+
+1. **El dato**: `COALESCE(CODCOM, Codcomun)`. Comunas 331 → 343, provincias 53 → 55, y
+   `sin_dato.comuna` de 79.731 a **4**.
+2. **La columna de región** (`u8` desde `reg_cod`, esquema 3 → 4, +1,74 MB sobre 43,87). El
+   ámbito regional deja de derivarse. Esto cierra además el hallazgo H4: los 4 polígonos de
+   «Áreas no Reconocidas» de Magallanes no tienen ningún dato territorial en el origen pero sí
+   `reg_cod`, así que vuelven a contar en su región — 286.529, no 286.525.
+3. **La ambigüedad del conjunto vacío**, que es lo único que impide que el próximo hueco vuelva
+   a publicarse como cifra nacional. Estaba en DOS sitios y el primer arreglo sólo cerró uno:
+   `App.jsx` dejaba el ámbito fuera del filtro, y `resumenYMarginales` además *saltaba* los
+   filtros con el conjunto vacío. Con la primera mitad arreglada, `?reg=15&prov=Valdivia`
+   —una provincia que no existe en esa región— seguía devolviendo la región entera, 1,7 M ha,
+   rotulada «Arica y Parinacota › Valdivia». Lo encontró una sonda, no una aserción.
+
+**Por qué ninguna prueba lo cazaba.** No había ni una aserción que comparara un ámbito contra el
+manifest, y quince de las dieciséis regiones cuadraban: cualquier prueba sobre *una* región
+elegida al azar tenía quince de dieciséis de pasar. Ahora **V-59 recorre las dieciséis**, y
+**D22** exige en el ETL que toda región tenga al menos una comuna — que es la comprobación que
+sobrevive a un defecto del ETL, porque no compara el visor con el manifest sino el manifest
+consigo mismo.
+
+## H. La homologación: cuatro unidades y cuatro subtipos llegaban partidos en dos
+
+Cinco dimensiones no tienen código utilizable —altura, subtipo forestal, especie, SNASPE y
+comuna— y su vocabulario se deduce del texto de la capa, así que **cualquier variante de
+escritura genera una clase nueva**. El Parque Nacional Bernardo O'Higgins figuraba como
+«Ohiggins» (2.849.820,93 ha) y como «OHiggins» (962.126,98 ha): quien consultara una de las dos
+obtenía poco más de la mitad de su superficie. Lo mismo con la Reserva Nacional Ñuble, el Parque
+Nacional Pan de Azúcar y el Nahuelbuta; y cuatro pares de subtipos forestales, con 75.918,86 ha
+en la variante minoritaria.
+
+`canon()` ya fundía mayúsculas, tildes, guiones tipográficos y saltos de línea, pero **no los
+espacios alrededor del guion**: «Roble-Hualo» y «Roble - Hualo» sobrevivían como dos clases. No
+se resuelve con una regla más agresiva, y ése es el punto: fundir por plegado destruiría
+distinciones reales. **El Parque Nacional Villarrica y la Reserva Nacional Villarrica son dos
+unidades distintas** que comparten topónimo, y el código de especie distingue caja — `AB` es
+*Abies*, `Ab` es *Adesmia boronioides*, `ab` es *Calceolaria biflora*; de 207 grupos que sólo
+difieren en mayúsculas, **206 son especies genuinamente distintas**.
+
+Por eso se aplica una **tabla revisada** y no una heurística: `ETL/homologacion/`, convertida a
+CSV versionados desde el libro de la Unidad. Resultado: SNASPE 94 → **90**, subtipos 37 → **33**,
+20 comunas y 6 provincias con sus tildes, el separador decimal de las alturas a coma.
+
+**Dos fronteras deliberadas.** La acción `revisar` **no se aplica**: el libro marca así las
+grafías que difieren del nombre oficial por algo más que un acento —Calera/La Calera,
+Coihaique/Coyhaique, Mariquina/San José de la Mariquina— y dice «confirmar antes de aplicar».
+Y la homologación de especie toca **etiquetas, nunca códigos**: la hoja 12 propone dos cambios de
+código y ninguno puede aplicarse a ciegas —uno es el marcador `(recuperar del origen)` y el otro
+una fusión que la propia hoja 14 manda a decisión—.
+
+**El catálogo es cerrado**: si el origen trae un valor que la tabla no nombra, el ETL revienta con
+el valor en pantalla. Encontró tres cosas al estrenarse, y la tercera es la que importa: que la
+hoja 12 del libro trae el código del raulí como la cadena literal **`nan`**. El código es `NA`, y
+pandas lo leyó como nulo al construir el libro — exactamente lo que el propio informe advertía.
+Son 3.654 polígonos y 89.994,21 ha de una especie comercial. Se repone en `adiciones_12_especie.csv`.
+
+**Los enlaces ya compartidos.** Al fundir dos grafías desaparece un código que ya viaja en URLs,
+y el visor no distingue «el filtro no encuentra» de «no hay filtro»: un enlace con
+`?snaspe=Nuble` habría mostrado el país entero bajo el nombre de una reserva. El manifest publica
+un mapa `alias` (37 en SNASPE, 4 en subtipos) que `filtrosDesdeURL` consulta antes de rendirse.
+
 ## Fallos propios cometidos al establecer todo esto
 
 Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse.
@@ -156,3 +238,12 @@ Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse
    derivar cada campo de su propio código.
 2. Tres intentos de editar una línea con heredoc y `sed` la dejaron peor cada vez. A la
    tercera hay que cambiar de herramienta, no insistir.
+3. **Di por cerrada la ambigüedad del conjunto vacío arreglando sólo `App.jsx`.** El mismo
+   defecto vivía también en `resumenYMarginales`, que saltaba los filtros vacíos, y el visor
+   siguió devolviendo la región entera para un ámbito imposible. Lo encontré probando el caso a
+   mano; ninguna aserción lo cubría todavía. Arreglar la mitad de un defecto y declararlo cerrado
+   es peor que no tocarlo, porque la siguiente persona lo lee como resuelto.
+4. **Metí las seis dimensiones derivadas dentro de `sin_dato` del manifest** sin volver a correr
+   `verificar_datos.py`. D13 declara que las claves de `sin_dato` son exactamente las columnas
+   del `.bin` con centinela, y se puso roja con razón. Lo cazó el control positivo del mutador,
+   no yo. Van en `sin_dato_derivado`.

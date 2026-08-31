@@ -188,6 +188,12 @@ como patrón; **todo lo que toca datos por punto se rediseña** (ver «Construir
    directo: `onHover` con `info.index` + un div posicionado. Es la mitigación natural de haber
    quitado la leyenda.
 
+   *Actualizado tras la homologación:* la afirmación absoluta de la Metodología —«todas las
+   etiquetas salen del código oficial, nunca del texto»— ya está reescrita, y ahora enumera las
+   cinco dimensiones sin código y remite a la tabla de homologación publicada, que es
+   verificable por terceros. También se corrigió «39 subtipos distintos», que contradecía al
+   manifest antes de la fusión y lo contradiría más después (son 33).
+
 ### Prioridad media
 
 3. **Script `verify:base` roto.** `package.json` declara `"verify:base": "node

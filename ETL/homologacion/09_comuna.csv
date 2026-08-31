@@ -1,0 +1,332 @@
+valor_origen,valor_canonico,accion,confianza,nota
+Aisén,Aisén,sin_cambio,alta,Sin observaciones
+Algarrobo,Algarrobo,sin_cambio,alta,Sin observaciones
+Alhué,Alhué,sin_cambio,alta,Sin observaciones
+Alto Biobío,Alto Biobío,sin_cambio,alta,Sin observaciones
+Alto Hospicio,Alto Hospicio,sin_cambio,alta,Sin observaciones
+Alto del Carmen,Alto del Carmen,sin_cambio,alta,Sin observaciones
+Ancud,Ancud,sin_cambio,alta,Sin observaciones
+Andacollo,Andacollo,sin_cambio,alta,Sin observaciones
+Angol,Angol,sin_cambio,alta,Sin observaciones
+Antofagasta,Antofagasta,sin_cambio,alta,Sin observaciones
+Antuco,Antuco,sin_cambio,alta,Sin observaciones
+Arauco,Arauco,sin_cambio,alta,Sin observaciones
+Arica,Arica,sin_cambio,alta,Sin observaciones
+Buin,Buin,sin_cambio,alta,Sin observaciones
+Bulnes,Bulnes,sin_cambio,alta,Sin observaciones
+Cabildo,Cabildo,sin_cambio,alta,Sin observaciones
+Cabo de Hornos,Cabo de Hornos,sin_cambio,alta,Sin observaciones
+Cabrero,Cabrero,sin_cambio,alta,Sin observaciones
+Calama,Calama,sin_cambio,alta,Sin observaciones
+Calbuco,Calbuco,sin_cambio,alta,Sin observaciones
+Caldera,Caldera,sin_cambio,alta,Sin observaciones
+Calera,La Calera,revisar,baja,Grafía oficial distinta de la del dato. Confirmar antes de aplicar.
+Calera de Tango,Calera de Tango,sin_cambio,alta,Sin observaciones
+Calle Larga,Calle Larga,sin_cambio,alta,Sin observaciones
+Camarones,Camarones,sin_cambio,alta,Sin observaciones
+Camiña,Camiña,sin_cambio,alta,Sin observaciones
+Canela,Canela,sin_cambio,alta,Sin observaciones
+Carahue,Carahue,sin_cambio,alta,Sin observaciones
+Cartagena,Cartagena,sin_cambio,alta,Sin observaciones
+Casablanca,Casablanca,sin_cambio,alta,Sin observaciones
+Castro,Castro,sin_cambio,alta,Sin observaciones
+Catemu,Catemu,sin_cambio,alta,Sin observaciones
+Cauquenes,Cauquenes,sin_cambio,alta,Sin observaciones
+Cañete,Cañete,sin_cambio,alta,Sin observaciones
+Cerrillos,Cerrillos,sin_cambio,alta,Sin observaciones
+Cerro Navia,Cerro Navia,sin_cambio,alta,Sin observaciones
+Chaiten,Chaitén,ortografia,alta,"Se repone tilde, ñ o ü."
+Chanco,Chanco,sin_cambio,alta,Sin observaciones
+Chañaral,Chañaral,sin_cambio,alta,Sin observaciones
+Chiguayante,Chiguayante,sin_cambio,alta,Sin observaciones
+Chile Chico,Chile Chico,sin_cambio,alta,Sin observaciones
+Chillán,Chillán,sin_cambio,alta,Sin observaciones
+Chillán Viejo,Chillán Viejo,sin_cambio,alta,Sin observaciones
+Chimbarongo,Chimbarongo,sin_cambio,alta,Sin observaciones
+Cholchol,Cholchol,sin_cambio,alta,Sin observaciones
+Chonchi,Chonchi,sin_cambio,alta,Sin observaciones
+Chépica,Chépica,sin_cambio,alta,Sin observaciones
+Cisnes,Cisnes,sin_cambio,alta,Sin observaciones
+Cobquecura,Cobquecura,sin_cambio,alta,Sin observaciones
+Cochamo,Cochamó,ortografia,alta,"Se repone tilde, ñ o ü."
+Cochrane,Cochrane,sin_cambio,alta,Sin observaciones
+Codegua,Codegua,sin_cambio,alta,Sin observaciones
+Coelemu,Coelemu,sin_cambio,alta,Sin observaciones
+Coihaique,Coyhaique,revisar,baja,Grafía oficial distinta de la del dato. Confirmar antes de aplicar.
+Coihueco,Coihueco,sin_cambio,alta,Sin observaciones
+Coinco,Coinco,sin_cambio,alta,Sin observaciones
+Colbún,Colbún,sin_cambio,alta,Sin observaciones
+Colchane,Colchane,sin_cambio,alta,Sin observaciones
+Colina,Colina,sin_cambio,alta,Sin observaciones
+Collipulli,Collipulli,sin_cambio,alta,Sin observaciones
+Coltauco,Coltauco,sin_cambio,alta,Sin observaciones
+Combarbalá,Combarbalá,sin_cambio,alta,Sin observaciones
+Concepción,Concepción,sin_cambio,alta,Sin observaciones
+Conchalí,Conchalí,sin_cambio,alta,Sin observaciones
+Concón,Concón,sin_cambio,alta,Sin observaciones
+Constitución,Constitución,sin_cambio,alta,Sin observaciones
+Contulmo,Contulmo,sin_cambio,alta,Sin observaciones
+Copiapo,Copiapó,ortografia,alta,"Se repone tilde, ñ o ü."
+Coquimbo,Coquimbo,sin_cambio,alta,Sin observaciones
+Coronel,Coronel,sin_cambio,alta,Sin observaciones
+Cunco,Cunco,sin_cambio,alta,Sin observaciones
+Curacautin,Curacautín,ortografia,alta,"Se repone tilde, ñ o ü."
+Curacaví,Curacaví,sin_cambio,alta,Sin observaciones
+Curaco de Velez,Curaco de Vélez,ortografia,alta,"Se repone tilde, ñ o ü."
+Curanilahue,Curanilahue,sin_cambio,alta,Sin observaciones
+Curarrehue,Curarrehue,sin_cambio,alta,Sin observaciones
+Curepto,Curepto,sin_cambio,alta,Sin observaciones
+Curicó,Curicó,sin_cambio,alta,Sin observaciones
+Dalcahue,Dalcahue,sin_cambio,alta,Sin observaciones
+Diego de Almagro,Diego de Almagro,sin_cambio,alta,Sin observaciones
+Doñihue,Doñihue,sin_cambio,alta,Sin observaciones
+El Bosque,El Bosque,sin_cambio,alta,Sin observaciones
+El Carmen,El Carmen,sin_cambio,alta,Sin observaciones
+El Monte,El Monte,sin_cambio,alta,Sin observaciones
+El Quisco,El Quisco,sin_cambio,alta,Sin observaciones
+El Tabo,El Tabo,sin_cambio,alta,Sin observaciones
+Empedrado,Empedrado,sin_cambio,alta,Sin observaciones
+Ercilla,Ercilla,sin_cambio,alta,Sin observaciones
+Estación Central,Estación Central,sin_cambio,alta,Sin observaciones
+Florida,Florida,sin_cambio,alta,Sin observaciones
+Freire,Freire,sin_cambio,alta,Sin observaciones
+Freirina,Freirina,sin_cambio,alta,Sin observaciones
+Fresia,Fresia,sin_cambio,alta,Sin observaciones
+Frutillar,Frutillar,sin_cambio,alta,Sin observaciones
+Futaleufu,Futaleufú,ortografia,alta,"Se repone tilde, ñ o ü."
+Galvarino,Galvarino,sin_cambio,alta,Sin observaciones
+General Lagos,General Lagos,sin_cambio,alta,Sin observaciones
+Gorbea,Gorbea,sin_cambio,alta,Sin observaciones
+Graneros,Graneros,sin_cambio,alta,Sin observaciones
+Guaitecas,Guaitecas,sin_cambio,alta,Sin observaciones
+Hijuelas,Hijuelas,sin_cambio,alta,Sin observaciones
+Hualaihue,Hualaihué,ortografia,alta,"Se repone tilde, ñ o ü."
+Hualañé,Hualañé,sin_cambio,alta,Sin observaciones
+Hualpén,Hualpén,sin_cambio,alta,Sin observaciones
+Hualqui,Hualqui,sin_cambio,alta,Sin observaciones
+Huara,Huara,sin_cambio,alta,Sin observaciones
+Huasco,Huasco,sin_cambio,alta,Sin observaciones
+Huechuraba,Huechuraba,sin_cambio,alta,Sin observaciones
+Illapel,Illapel,sin_cambio,alta,Sin observaciones
+Independencia,Independencia,sin_cambio,alta,Sin observaciones
+Iquique,Iquique,sin_cambio,alta,Sin observaciones
+Isla de Maipo,Isla de Maipo,sin_cambio,alta,Sin observaciones
+La Cisterna,La Cisterna,sin_cambio,alta,Sin observaciones
+La Cruz,La Cruz,sin_cambio,alta,Sin observaciones
+La Estrella,La Estrella,sin_cambio,alta,Sin observaciones
+La Florida,La Florida,sin_cambio,alta,Sin observaciones
+La Granja,La Granja,sin_cambio,alta,Sin observaciones
+La Higuera,La Higuera,sin_cambio,alta,Sin observaciones
+La Ligua,La Ligua,sin_cambio,alta,Sin observaciones
+La Pintana,La Pintana,sin_cambio,alta,Sin observaciones
+La Reina,La Reina,sin_cambio,alta,Sin observaciones
+La Serena,La Serena,sin_cambio,alta,Sin observaciones
+Lago Verde,Lago Verde,sin_cambio,alta,Sin observaciones
+Laguna Blanca,Laguna Blanca,sin_cambio,alta,Sin observaciones
+Laja,Laja,sin_cambio,alta,Sin observaciones
+Lampa,Lampa,sin_cambio,alta,Sin observaciones
+Las Cabras,Las Cabras,sin_cambio,alta,Sin observaciones
+Las Condes,Las Condes,sin_cambio,alta,Sin observaciones
+Lautaro,Lautaro,sin_cambio,alta,Sin observaciones
+Lebu,Lebu,sin_cambio,alta,Sin observaciones
+Licantén,Licantén,sin_cambio,alta,Sin observaciones
+Limache,Limache,sin_cambio,alta,Sin observaciones
+Linares,Linares,sin_cambio,alta,Sin observaciones
+Litueche,Litueche,sin_cambio,alta,Sin observaciones
+Llaillay,Llay-Llay,revisar,baja,Grafía oficial distinta de la del dato. Confirmar antes de aplicar.
+Llanquihue,Llanquihue,sin_cambio,alta,Sin observaciones
+Lo Barnechea,Lo Barnechea,sin_cambio,alta,Sin observaciones
+Lo Espejo,Lo Espejo,sin_cambio,alta,Sin observaciones
+Lo Prado,Lo Prado,sin_cambio,alta,Sin observaciones
+Lolol,Lolol,sin_cambio,alta,Sin observaciones
+Loncoche,Loncoche,sin_cambio,alta,Sin observaciones
+Longaví,Longaví,sin_cambio,alta,Sin observaciones
+Lonquimay,Lonquimay,sin_cambio,alta,Sin observaciones
+Los Alamos,Los Álamos,ortografia,alta,"Se repone tilde, ñ o ü."
+Los Andes,Los Andes,sin_cambio,alta,Sin observaciones
+Los Angeles,Los Ángeles,ortografia,alta,"Se repone tilde, ñ o ü."
+Los Muermos,Los Muermos,sin_cambio,alta,Sin observaciones
+Los Sauces,Los Sauces,sin_cambio,alta,Sin observaciones
+Los Vilos,Los Vilos,sin_cambio,alta,Sin observaciones
+Lota,Lota,sin_cambio,alta,Sin observaciones
+Lumaco,Lumaco,sin_cambio,alta,Sin observaciones
+Machalí,Machalí,sin_cambio,alta,Sin observaciones
+Macul,Macul,sin_cambio,alta,Sin observaciones
+Maipú,Maipú,sin_cambio,alta,Sin observaciones
+Malloa,Malloa,sin_cambio,alta,Sin observaciones
+Marchihue,Marchihue,sin_cambio,alta,Sin observaciones
+María Elena,María Elena,sin_cambio,alta,Sin observaciones
+María Pinto,María Pinto,sin_cambio,alta,Sin observaciones
+Maule,Maule,sin_cambio,alta,Sin observaciones
+Maullin,Maullín,ortografia,alta,"Se repone tilde, ñ o ü."
+Mejillones,Mejillones,sin_cambio,alta,Sin observaciones
+Melipeuco,Melipeuco,sin_cambio,alta,Sin observaciones
+Melipilla,Melipilla,sin_cambio,alta,Sin observaciones
+Molina,Molina,sin_cambio,alta,Sin observaciones
+Monte Patria,Monte Patria,sin_cambio,alta,Sin observaciones
+Mostazal,Mostazal,sin_cambio,alta,Sin observaciones
+Mulchén,Mulchén,sin_cambio,alta,Sin observaciones
+Nacimiento,Nacimiento,sin_cambio,alta,Sin observaciones
+Nancagua,Nancagua,sin_cambio,alta,Sin observaciones
+Natales,Natales,sin_cambio,alta,Sin observaciones
+Navidad,Navidad,sin_cambio,alta,Sin observaciones
+Negrete,Negrete,sin_cambio,alta,Sin observaciones
+Ninhue,Ninhue,sin_cambio,alta,Sin observaciones
+Nogales,Nogales,sin_cambio,alta,Sin observaciones
+Nueva Imperial,Nueva Imperial,sin_cambio,alta,Sin observaciones
+O'Higgins,O'Higgins,sin_cambio,alta,Sin observaciones
+Olivar,Olivar,sin_cambio,alta,Sin observaciones
+Ollague,Ollagüe,ortografia,alta,"Se repone tilde, ñ o ü."
+Olmué,Olmué,sin_cambio,alta,Sin observaciones
+Osorno,Osorno,sin_cambio,alta,Sin observaciones
+Ovalle,Ovalle,sin_cambio,alta,Sin observaciones
+Padre Hurtado,Padre Hurtado,sin_cambio,alta,Sin observaciones
+Padre las Casas,Padre Las Casas,revisar,baja,Grafía oficial distinta de la del dato. Confirmar antes de aplicar.
+Paiguano,Paihuano,revisar,baja,Grafía oficial distinta de la del dato. Confirmar antes de aplicar.
+Paine,Paine,sin_cambio,alta,Sin observaciones
+Palena,Palena,sin_cambio,alta,Sin observaciones
+Palmilla,Palmilla,sin_cambio,alta,Sin observaciones
+Panquehue,Panquehue,sin_cambio,alta,Sin observaciones
+Papudo,Papudo,sin_cambio,alta,Sin observaciones
+Paredones,Paredones,sin_cambio,alta,Sin observaciones
+Parral,Parral,sin_cambio,alta,Sin observaciones
+Pedro Aguirre Cerda,Pedro Aguirre Cerda,sin_cambio,alta,Sin observaciones
+Pelarco,Pelarco,sin_cambio,alta,Sin observaciones
+Pelluhue,Pelluhue,sin_cambio,alta,Sin observaciones
+Pemuco,Pemuco,sin_cambio,alta,Sin observaciones
+Pencahue,Pencahue,sin_cambio,alta,Sin observaciones
+Penco,Penco,sin_cambio,alta,Sin observaciones
+Peralillo,Peralillo,sin_cambio,alta,Sin observaciones
+Perquenco,Perquenco,sin_cambio,alta,Sin observaciones
+Petorca,Petorca,sin_cambio,alta,Sin observaciones
+Peumo,Peumo,sin_cambio,alta,Sin observaciones
+Peñaflor,Peñaflor,sin_cambio,alta,Sin observaciones
+Peñalolén,Peñalolén,sin_cambio,alta,Sin observaciones
+Pica,Pica,sin_cambio,alta,Sin observaciones
+Pichidegua,Pichidegua,sin_cambio,alta,Sin observaciones
+Pichilemu,Pichilemu,sin_cambio,alta,Sin observaciones
+Pinto,Pinto,sin_cambio,alta,Sin observaciones
+Pirque,Pirque,sin_cambio,alta,Sin observaciones
+Pitrufquen,Pitrufquén,ortografia,alta,"Se repone tilde, ñ o ü."
+Placilla,Placilla,sin_cambio,alta,Sin observaciones
+Portezuelo,Portezuelo,sin_cambio,alta,Sin observaciones
+Porvenir,Porvenir,sin_cambio,alta,Sin observaciones
+Pozo Almonte,Pozo Almonte,sin_cambio,alta,Sin observaciones
+Primavera,Primavera,sin_cambio,alta,Sin observaciones
+Providencia,Providencia,sin_cambio,alta,Sin observaciones
+Puchuncaví,Puchuncaví,sin_cambio,alta,Sin observaciones
+Pucon,Pucón,ortografia,alta,"Se repone tilde, ñ o ü."
+Pudahuel,Pudahuel,sin_cambio,alta,Sin observaciones
+Puente Alto,Puente Alto,sin_cambio,alta,Sin observaciones
+Puerto Montt,Puerto Montt,sin_cambio,alta,Sin observaciones
+Puerto Octay,Puerto Octay,sin_cambio,alta,Sin observaciones
+Puerto Varas,Puerto Varas,sin_cambio,alta,Sin observaciones
+Pumanque,Pumanque,sin_cambio,alta,Sin observaciones
+Punitaqui,Punitaqui,sin_cambio,alta,Sin observaciones
+Punta Arenas,Punta Arenas,sin_cambio,alta,Sin observaciones
+Puqueldon,Puqueldón,ortografia,alta,"Se repone tilde, ñ o ü."
+Puren,Purén,ortografia,alta,"Se repone tilde, ñ o ü."
+Purranque,Purranque,sin_cambio,alta,Sin observaciones
+Putaendo,Putaendo,sin_cambio,alta,Sin observaciones
+Putre,Putre,sin_cambio,alta,Sin observaciones
+Puyehue,Puyehue,sin_cambio,alta,Sin observaciones
+Queilen,Queilen,sin_cambio,alta,Sin observaciones
+Quellon,Quellón,ortografia,alta,"Se repone tilde, ñ o ü."
+Quemchi,Quemchi,sin_cambio,alta,Sin observaciones
+Quilaco,Quilaco,sin_cambio,alta,Sin observaciones
+Quilicura,Quilicura,sin_cambio,alta,Sin observaciones
+Quilleco,Quilleco,sin_cambio,alta,Sin observaciones
+Quillota,Quillota,sin_cambio,alta,Sin observaciones
+Quillón,Quillón,sin_cambio,alta,Sin observaciones
+Quilpué,Quilpué,sin_cambio,alta,Sin observaciones
+Quinchao,Quinchao,sin_cambio,alta,Sin observaciones
+Quinta Normal,Quinta Normal,sin_cambio,alta,Sin observaciones
+Quinta de Tilcoco,Quinta de Tilcoco,sin_cambio,alta,Sin observaciones
+Quintero,Quintero,sin_cambio,alta,Sin observaciones
+Quirihue,Quirihue,sin_cambio,alta,Sin observaciones
+Rancagua,Rancagua,sin_cambio,alta,Sin observaciones
+Rauco,Rauco,sin_cambio,alta,Sin observaciones
+Recoleta,Recoleta,sin_cambio,alta,Sin observaciones
+Renaico,Renaico,sin_cambio,alta,Sin observaciones
+Renca,Renca,sin_cambio,alta,Sin observaciones
+Rengo,Rengo,sin_cambio,alta,Sin observaciones
+Requínoa,Requínoa,sin_cambio,alta,Sin observaciones
+Retiro,Retiro,sin_cambio,alta,Sin observaciones
+Rinconada,Rinconada,sin_cambio,alta,Sin observaciones
+Rio Negro,Río Negro,ortografia,alta,"Se repone tilde, ñ o ü."
+Romeral,Romeral,sin_cambio,alta,Sin observaciones
+Ránquil,Ránquil,sin_cambio,alta,Sin observaciones
+Río Claro,Río Claro,sin_cambio,alta,Sin observaciones
+Río Hurtado,Río Hurtado,sin_cambio,alta,Sin observaciones
+Río Ibañez,Río Ibañez,sin_cambio,alta,Sin observaciones
+Río Verde,Río Verde,sin_cambio,alta,Sin observaciones
+Saavedra,Saavedra,sin_cambio,alta,Sin observaciones
+Sagrada Familia,Sagrada Familia,sin_cambio,alta,Sin observaciones
+Salamanca,Salamanca,sin_cambio,alta,Sin observaciones
+San Antonio,San Antonio,sin_cambio,alta,Sin observaciones
+San Bernardo,San Bernardo,sin_cambio,alta,Sin observaciones
+San Carlos,San Carlos,sin_cambio,alta,Sin observaciones
+San Clemente,San Clemente,sin_cambio,alta,Sin observaciones
+San Esteban,San Esteban,sin_cambio,alta,Sin observaciones
+San Fabián,San Fabián,sin_cambio,alta,Sin observaciones
+San Felipe,San Felipe,sin_cambio,alta,Sin observaciones
+San Fernando,San Fernando,sin_cambio,alta,Sin observaciones
+San Gregorio,San Gregorio,sin_cambio,alta,Sin observaciones
+San Ignacio,San Ignacio,sin_cambio,alta,Sin observaciones
+San Javier,San Javier,sin_cambio,alta,Sin observaciones
+San Joaquín,San Joaquín,sin_cambio,alta,Sin observaciones
+San José de Maipo,San José de Maipo,sin_cambio,alta,Sin observaciones
+San Juan de La Costa,San Juan de la Costa,revisar,baja,Grafía oficial distinta de la del dato. Confirmar antes de aplicar.
+San Miguel,San Miguel,sin_cambio,alta,Sin observaciones
+San Nicolás,San Nicolás,sin_cambio,alta,Sin observaciones
+San Pablo,San Pablo,sin_cambio,alta,Sin observaciones
+San Pedro,San Pedro,sin_cambio,alta,Sin observaciones
+San Pedro de Atacama,San Pedro de Atacama,sin_cambio,alta,Sin observaciones
+San Pedro de la Paz,San Pedro de la Paz,sin_cambio,alta,Sin observaciones
+San Rafael,San Rafael,sin_cambio,alta,Sin observaciones
+San Ramón,San Ramón,sin_cambio,alta,Sin observaciones
+San Rosendo,San Rosendo,sin_cambio,alta,Sin observaciones
+San Vicente,San Vicente,sin_cambio,alta,Sin observaciones
+Santa Bárbara,Santa Bárbara,sin_cambio,alta,Sin observaciones
+Santa Cruz,Santa Cruz,sin_cambio,alta,Sin observaciones
+Santa Juana,Santa Juana,sin_cambio,alta,Sin observaciones
+Santa María,Santa María,sin_cambio,alta,Sin observaciones
+Santiago,Santiago,sin_cambio,alta,Sin observaciones
+Santo Domingo,Santo Domingo,sin_cambio,alta,Sin observaciones
+Sierra Gorda,Sierra Gorda,sin_cambio,alta,Sin observaciones
+Talagante,Talagante,sin_cambio,alta,Sin observaciones
+Talca,Talca,sin_cambio,alta,Sin observaciones
+Talcahuano,Talcahuano,sin_cambio,alta,Sin observaciones
+Taltal,Taltal,sin_cambio,alta,Sin observaciones
+Temuco,Temuco,sin_cambio,alta,Sin observaciones
+Teno,Teno,sin_cambio,alta,Sin observaciones
+Teodoro Schmidt,Teodoro Schmidt,sin_cambio,alta,Sin observaciones
+Tierra Amarilla,Tierra Amarilla,sin_cambio,alta,Sin observaciones
+Tiltil,Tiltil,sin_cambio,alta,Sin observaciones
+Timaukel,Timaukel,sin_cambio,alta,Sin observaciones
+Tirúa,Tirúa,sin_cambio,alta,Sin observaciones
+Tocopilla,Tocopilla,sin_cambio,alta,Sin observaciones
+Tolten,Toltén,ortografia,alta,"Se repone tilde, ñ o ü."
+Tomé,Tomé,sin_cambio,alta,Sin observaciones
+Torres del Paine,Torres del Paine,sin_cambio,alta,Sin observaciones
+Tortel,Tortel,sin_cambio,alta,Sin observaciones
+Traiguen,Traiguén,ortografia,alta,"Se repone tilde, ñ o ü."
+Treguaco,Trehuaco,revisar,baja,Grafía oficial distinta de la del dato. Confirmar antes de aplicar.
+Tucapel,Tucapel,sin_cambio,alta,Sin observaciones
+Vallenar,Vallenar,sin_cambio,alta,Sin observaciones
+Valparaíso,Valparaíso,sin_cambio,alta,Sin observaciones
+Vichuquén,Vichuquén,sin_cambio,alta,Sin observaciones
+Victoria,Victoria,sin_cambio,alta,Sin observaciones
+Vicuña,Vicuña,sin_cambio,alta,Sin observaciones
+Vilcun,Vilcún,ortografia,alta,"Se repone tilde, ñ o ü."
+Villa Alegre,Villa Alegre,sin_cambio,alta,Sin observaciones
+Villa Alemana,Villa Alemana,sin_cambio,alta,Sin observaciones
+Villarrica,Villarrica,sin_cambio,alta,Sin observaciones
+Vitacura,Vitacura,sin_cambio,alta,Sin observaciones
+Viña del Mar,Viña del Mar,sin_cambio,alta,Sin observaciones
+Yerbas Buenas,Yerbas Buenas,sin_cambio,alta,Sin observaciones
+Yumbel,Yumbel,sin_cambio,alta,Sin observaciones
+Yungay,Yungay,sin_cambio,alta,Sin observaciones
+Zapallar,Zapallar,sin_cambio,alta,Sin observaciones
+Ñiquén,Ñiquén,sin_cambio,alta,Sin observaciones
+Ñuñoa,Ñuñoa,sin_cambio,alta,Sin observaciones

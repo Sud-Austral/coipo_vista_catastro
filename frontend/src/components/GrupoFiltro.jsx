@@ -204,7 +204,14 @@ export function ModalFiltro({
   // igual sería mentir en una de las dos.
   const hayRecorte = cifras?.fuente !== 'manifest'
   const activas = seleccion.size
-  const oficial = manifest?.vocabulario?.[def.clave] === 'guia'
+  // De dónde sale el vocabulario de esta dimensión, en tres estados y no dos:
+  // la guía oficial, el propio dato, o una tabla auxiliar. Distinguir el tercero
+  // importa —las seis dimensiones de la especie las clasifica la Unidad de
+  // Información y Análisis, no el Catastro—, y decir «deducido de los propios
+  // datos» les atribuiría una clasificación que el Catastro no hace.
+  const origenVoc = manifest?.vocabulario?.[def.clave]
+  const oficial = origenVoc === 'guia'
+  const deTabla = String(origenVoc ?? '').includes('homologacion')
 
   let escalaPrevia = null
 
@@ -232,8 +239,14 @@ export function ModalFiltro({
           cifra tiene derecho a saber cuál de las dos está citando. */}
       {!oficial && (
         <p className="nota nota-voc">
-          Vocabulario deducido de los propios datos: la guía oficial de códigos no nombra
-          estas clases.
+          {origenVoc === 'homologacion'
+            ? 'Clasificación de la Unidad de Información y Análisis, no del Catastro: el ' +
+              'Catastro no registra este atributo.'
+            : deTabla
+              ? 'Vocabulario deducido de los propios datos y homologado contra una tabla ' +
+                'revisada: la guía oficial de códigos no nombra estas clases.'
+              : 'Vocabulario deducido de los propios datos: la guía oficial de códigos no ' +
+                'nombra estas clases.'}
         </p>
       )}
 

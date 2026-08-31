@@ -1,0 +1,15 @@
+dimension,caso,prioridad,que_hay_que_decidir
+region,Los Ríos ausente,Crítico,"Sin comunas y sin entrada de región, pese a 79.727 polígonos y 1.835.307,15 ha en el manifiesto. El visor deriva de la comuna los tres niveles de su selector de ámbito, de modo que Los Ríos es la única región que no ofrece provincias ni comunas: su desglose territorial completo es inaccesible. Recuperar el atributo de comuna de la capa en el ETL cierra el error de ámbito y devuelve el desglose."
+comuna,79.731 filas sin comuna,Crítico,79.727 son Los Ríos y 4 son polígonos de «Áreas no Reconocidas» en Magallanes.
+estruc,Adulta / Adulto,Alta,"Confirmar contra la guía oficial si son una o dos clases. Si son una, fusionar hacia la forma que use la guía."
+especie_cod,c57 / cs,Media,Dos códigos para Caltha sagittata. Elegir uno y mapear el otro.
+especie_cod,h3 / h20,Media,Dos códigos para Hordeum pubiflorum.
+especie_cod,zt / s35,Media,Dos códigos para Stipa sp.
+especie_cod,wÃ / wñ,Media,"Dos códigos para Phylloscirpus deserticola, uno de ellos mojibake del otro. Confirma que el problema de codificación genera claves duplicadas."
+especie_cod,dD / Dd,Media,Desfontainia fulgens: uno rotulado con el nombre científico y el otro con el nombre común «taique».
+especie_cod,f10 / fo,Media,Festuca orthophylla: uno rotulado con el científico (con el typo «FesTuca») y el otro «Paja brava».
+especie_cod,s28 / wo,Media,Schoenoplectus pungens: uno con el científico y el otro «Totora».
+especie_cod,a19 «Agrostis capilaris» / a35 «Agrostis capillaris»,Media,"La misma especie bajo dos códigos, uno con el epíteto mal escrito. Al corregir la grafía quedan dos entradas idénticas: hay que elegir cuál se conserva."
+especie_cod,raulí sin código en el Excel,Alta,"El código es «NA» y se pierde al exportar porque pandas y R lo leen como nulo. Es el único caso en todo el vocabulario, y afecta a 3.654 polígonos con 89.994,21 ha de una especie comercial del tipo forestal Roble-Raulí-Coihue. Reponer «NA» y leer siempre con la interpretación de nulos desactivada."
+comuna,Coihaique / Llaillay / Paiguano / Treguaco / Calera,Baja,Grafías que difieren del nombre oficial vigente por algo más que un acento. Decidir si el visor usa la grafía del dato o la oficial.
+stifo,«Coihue común» / «Lenga - Coihue Común»,Baja,Criterio de mayúsculas inconsistente dentro de la misma dimensión.

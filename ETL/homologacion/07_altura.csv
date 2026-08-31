@@ -1,0 +1,13 @@
+valor_origen,valor_canonico,accion,confianza,nota
+0 - 0.5,"0 - 0,5",formato,alta,"Coma decimal, como el resto del visor."
+0.5 - 1,"0,5 - 1",formato,alta,"Coma decimal, como el resto del visor."
+1 - 2,1 - 2,sin_cambio,alta,Sin observaciones
+12 - 20,12 - 20,sin_cambio,alta,Sin observaciones
+2 - 4,2 - 4,sin_cambio,alta,Sin observaciones
+20 - 32,20 - 32,sin_cambio,alta,Sin observaciones
+4 - 8,4 - 8,sin_cambio,alta,Sin observaciones
+8 - 12,8 - 12,sin_cambio,alta,Sin observaciones
+<2,<2,sin_cambio,alta,Sin observaciones
+>2,>2,sin_cambio,alta,Sin observaciones
+>32,>32,sin_cambio,alta,Sin observaciones
+No Aplica,No Aplica,sin_cambio,alta,Sin observaciones

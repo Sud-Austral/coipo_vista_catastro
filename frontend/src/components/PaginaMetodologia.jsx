@@ -130,16 +130,29 @@ export default function PaginaMetodologia({ abierta, onCerrar, manifest, oficial
               forestal sí son oficiales.
             </li>
           </ul>
-          {/* Esto se pregunta constantemente y la respuesta honesta es que el
-              dato no está. Decir que no está es la única forma de impedir que
-              alguien lo deduzca de la lista de especies, que no lo contiene. */}
+          {/* ESTE AVISO CAMBIÓ, y el cambio hay que contarlo. Decía que el visor
+              «no puede decir si una especie está amenazada y no lo insinúa en
+              ninguna parte». Desde que existe el filtro de estado de
+              conservación, la segunda mitad dejó de ser cierta: el visor SÍ
+              muestra categorías. Lo que sigue siendo cierto —y ahora importa
+              más— es de dónde salen y cuántas faltan. */}
           <p className="pendiente">
             ⚠ <strong>El Catastro no registra el estado de conservación de las especies.</strong> No
-            hay ninguna columna de categoría de amenaza —ni vulnerable, ni en peligro, ni la
-            clasificación del Reglamento de Clasificación de Especies— en ninguna de las capas, así
-            que este visor no puede decir si una especie está amenazada y no lo insinúa en ninguna
-            parte. Que una especie aparezca con poca superficie <strong>no</strong> significa que
-            esté amenazada. Para eso hay que ir al inventario oficial del RCE, que es otra fuente.
+            hay ninguna columna de categoría de amenaza en ninguna de sus capas. El filtro
+            «Estado de conservación» que ofrece este visor <strong>no viene del Catastro</strong>:
+            sale de una tabla auxiliar de la Unidad de Información y Análisis que clasifica las
+            989 especies del vocabulario.
+          </p>
+          <p className="pendiente">
+            ⚠ Esa tabla <strong>no está validada contra el Reglamento de Clasificación de
+            Especies</strong>, y sólo trae categoría para trece especies: las otras{' '}
+            <strong>976 figuran como «Sin dato - no verificado en RCE»</strong>. Eso significa que
+            no se ha comprobado, <strong>no</strong> que la especie esté fuera de peligro. Leer ese
+            filtro como un inventario de especies amenazadas lo lee exactamente al revés.
+          </p>
+          <p className="pendiente">
+            ⚠ Y que una especie aparezca con poca superficie <strong>no</strong> significa que esté
+            amenazada. Para eso hay que ir al inventario oficial del RCE, que es otra fuente.
           </p>
         </section>
 
@@ -187,11 +200,28 @@ export default function PaginaMetodologia({ abierta, onCerrar, manifest, oficial
 
         <section>
           <h3>Cómo se contrastan estas cifras</h3>
+          {/* ESTA FRASE DECÍA «nunca del texto de la capa», en absoluto, y era
+              falsa desde el primer día: el propio manifest declara cinco
+              vocabularios deducidos del dato. Una afirmación absoluta que la
+              misma página contradice es indefendible ante quien la cite; la
+              enumeración, en cambio, se puede comprobar contra el manifest. */}
           <p>
-            Todas las etiquetas y todos los agregados salen del <strong>código oficial</strong>,
-            nunca del texto de la capa. Agregando por texto faltaban 95.626 ha en la estructura
-            del bosque nativo, que resultaron ser Coquimbo y Arica enteras, cada una escrita con
-            su propia variante ortográfica.
+            Donde hay <strong>código oficial</strong>, las etiquetas y los agregados salen de él, y
+            no del texto de la capa: agregando por texto faltaban 95.626 ha en la estructura del
+            bosque nativo, que resultaron ser Coquimbo y Arica enteras, cada una escrita con su
+            propia variante ortográfica.
+          </p>
+          <p>
+            Cinco dimensiones <strong>no tienen código utilizable</strong> —altura del dosel,
+            subtipo forestal, especie, unidad del SNASPE y comuna— y en ésas manda una{' '}
+            <strong>tabla de homologación</strong> revisada por la Unidad de Información y
+            Análisis, nunca una regla automática sobre el texto. Cada filtro declara al pie de
+            dónde sale su vocabulario, y el manifest lo publica dimensión por dimensión.
+          </p>
+          <p>
+            Que la tabla exista no es un detalle administrativo: sin ella, el Parque Nacional
+            Bernardo O&apos;Higgins figuraba como dos unidades —«Ohiggins» y «OHiggins»— y quien
+            consultara una de las dos obtenía 2,8 de sus 3,8 millones de hectáreas.
           </p>
           {oficialTotal && total && (
             <p>
@@ -309,8 +339,10 @@ export default function PaginaMetodologia({ abierta, onCerrar, manifest, oficial
               así que no forman una serie.
             </li>
             <li>
-              No dice si una especie está amenazada: el Catastro no registra estado de
-              conservación, y una especie con poca superficie aquí no es una especie en riesgo.
+              No dice, por sí solo, si una especie está amenazada: el Catastro no registra estado
+              de conservación. El filtro que lo ofrece sale de una tabla auxiliar sin validar, con
+              976 de 989 especies sin verificar. Y una especie con poca superficie aquí no es una
+              especie en riesgo.
             </li>
             <li>
               No dice qué especies acompañan a la dominante. Cada polígono registra hasta seis y

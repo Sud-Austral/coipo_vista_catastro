@@ -1,4 +1,5 @@
 import { DATA } from '../config'
+import { derivarDeEspecie } from './derivadas'
 
 /**
  * Carga la capa de render: manifest.json (el contrato) + cbn_puntos.bin.
@@ -21,12 +22,12 @@ export async function cargarPuntos(señal) {
   // arrastra consigo la versión equivocada de todo lo demás.
   const man = await pedir(`${DATA}/manifest.json`, señal, { cache: 'no-cache' })
     .then((r) => r.json())
-  if (man.esquema !== 3) {
+  if (man.esquema !== 4) {
     // Ruidoso a proposito: un manifest de otra version abriria vistas tipadas
     // perfectamente validas sobre offsets equivocados, y el mapa saldria
     // PLAUSIBLE, con los puntos desplazados. Es el peor fallo posible.
     throw new Error(
-      `manifest.json declara esquema ${man.esquema} y este visor lee el 3. ` +
+      `manifest.json declara esquema ${man.esquema} y este visor lee el 4. ` +
         'Vuelve a generar los datos con `python ETL/build_bin.py`.',
     )
   }
@@ -75,7 +76,7 @@ export async function cargarPuntos(señal) {
     pos[i * 3 + 1] = col.lat[i]
   }
 
-  return { n, ...col, pos, manifest: man, capa }
+  return { n, ...col, ...derivarDeEspecie(col.especie, n, man), pos, manifest: man, capa }
 }
 
 /** RGBA por punto a partir del indice de uso. Se recalcula al cambiar de tema. */

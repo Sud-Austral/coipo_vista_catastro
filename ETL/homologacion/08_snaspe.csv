@@ -1,0 +1,95 @@
+valor_origen,valor_canonico,accion,confianza,nota
+Altos De Pemehue,Reserva Nacional Altos de Pemehue,prefijo,alta,Se antepone la categoría y se corrige «De»→«de».
+Federico Albert,Reserva Nacional Federico Albert,prefijo,alta,Se antepone la categoría.
+Laguna De Torca,Reserva Nacional Laguna de Torca,prefijo,alta,Se antepone la categoría y se corrige «De»→«de».
+Laguna Del Laja,Parque Nacional Laguna del Laja,prefijo,alta,Se antepone la categoría y se corrige «Del»→«del».
+Llanos de Challe,Parque Nacional Llanos de Challe,prefijo,alta,Se antepone la categoría.
+Los Bellotos Del Melado,Reserva Nacional Los Bellotos del Melado,prefijo,alta,Se antepone la categoría y se corrige «Del»→«del».
+Los Ruiles,Reserva Nacional Los Ruiles,prefijo,alta,Se antepone la categoría.
+Mon. Natural Islotes de Puñihuil,Monumento Natural Islotes de Puñihuil,prefijo,alta,Se desabrevia la categoría.
+Monumento Natural Cerro Nielol,Monumento Natural Cerro Nielol,sin_cambio,alta,Sin observaciones
+Monumento Natural Cinco Hermanas,Monumento Natural Cinco Hermanas,sin_cambio,alta,Sin observaciones
+Monumento Natural Contulmo,Monumento Natural Contulmo,sin_cambio,alta,Sin observaciones
+Monumento Natural Cueva del Milodón,Monumento Natural Cueva del Milodón,sin_cambio,alta,Sin observaciones
+Monumento Natural Dos Lagunas,Monumento Natural Dos Lagunas,sin_cambio,alta,Sin observaciones
+Monumento Natural El Morado,Monumento Natural El Morado,sin_cambio,alta,Sin observaciones
+Monumento Natural Isla Cachagua,Monumento Natural Isla Cachagua,sin_cambio,alta,Sin observaciones
+Monumento Natural La Portada,Monumento Natural La Portada,sin_cambio,alta,Sin observaciones
+Monumento Natural Laguna de los Cisnes,Monumento Natural Laguna de los Cisnes,sin_cambio,alta,Sin observaciones
+Monumento Natural Los Pinguinos,Monumento Natural Los Pingüinos,ortografia,alta,Diéresis.
+Monumento Natural Paposo Norte,Monumento Natural Paposo Norte,sin_cambio,alta,Sin observaciones
+Monumentro Nacional Lahuen Ñadi,Monumento Natural Lahuen Ñadi,ortografia,alta,Error de tipeo «Monumentro» y categoría equivocada en el rótulo: el manifiesto ya la clasifica como Monumento Natural.
+Nahuelbuta,Parque Nacional Nahuelbuta,fusion,alta,"Se une con «Parque Nacional Nahuelbuta». Total real 6.647,12 ha en 295 polígonos."
+Nevado Tres Cruces,Parque Nacional Nevado Tres Cruces,prefijo,alta,Se antepone la categoría.
+Nonguen,Parque Nacional Nonguén,prefijo,alta,Se antepone la categoría y se repone la tilde.
+Nuble,Reserva Nacional Ñuble,fusion,alta,"Se une con «Reserva Nacional Nuble». Total real 74.437,97 ha en 2.634 polígonos."
+Pan de Azúcar,Parque Nacional Pan de Azúcar,fusion,alta,"Se une con «Parque Nacional Pan de Azúcar». Total real 44.558,70 ha en 310 polígonos."
+Parque Nacional Alberto de Agostini,Parque Nacional Alberto de Agostini,sin_cambio,alta,Sin observaciones
+Parque Nacional Alerce Andino,Parque Nacional Alerce Andino,sin_cambio,alta,Sin observaciones
+Parque Nacional Alerce Costero,Parque Nacional Alerce Costero,sin_cambio,alta,Sin observaciones
+Parque Nacional Bernardo OHiggins,Parque Nacional Bernardo O'Higgins,fusion,alta,"Se une con «Bernardo Ohiggins». Misma categoría. Total real 3.811.947,91 ha en 85.684 polígonos."
+Parque Nacional Bernardo Ohiggins,Parque Nacional Bernardo O'Higgins,fusion,alta,Se une con «Bernardo OHiggins». Misma categoría.
+Parque Nacional Cabo de Hornos,Parque Nacional Cabo de Hornos,sin_cambio,alta,Sin observaciones
+Parque Nacional Cerro Castillo,Parque Nacional Cerro Castillo,sin_cambio,alta,Sin observaciones
+Parque Nacional Chiloe,Parque Nacional Chiloé,ortografia,alta,Tilde.
+Parque Nacional Conguillio,Parque Nacional Conguillío,ortografia,alta,Tilde.
+Parque Nacional Corcovado,Parque Nacional Corcovado,sin_cambio,alta,Sin observaciones
+Parque Nacional Hornopiren,Parque Nacional Hornopirén,ortografia,alta,Tilde.
+Parque Nacional Huerquehue,Parque Nacional Huerquehue,sin_cambio,alta,Sin observaciones
+Parque Nacional Isla Guamblin,Parque Nacional Isla Guamblín,ortografia,alta,Tilde.
+Parque Nacional Isla Magdalena maritimo,Parque Nacional Isla Magdalena (sector marítimo),ortografia,media,Tilde y el calificador de sector entre paréntesis.
+Parque Nacional Isla Magdalena terrestre,Parque Nacional Isla Magdalena (sector terrestre),ortografia,media,El calificador de sector entre paréntesis.
+Parque Nacional Kawesqar,Parque Nacional Kawésqar,ortografia,alta,Tilde.
+Parque Nacional La Campana,Parque Nacional La Campana,sin_cambio,alta,Sin observaciones
+Parque Nacional Laguna San Rafael,Parque Nacional Laguna San Rafael,sin_cambio,alta,Sin observaciones
+Parque Nacional Llullaillaco,Parque Nacional Llullaillaco,sin_cambio,alta,Sin observaciones
+Parque Nacional Melimoyu,Parque Nacional Melimoyu,sin_cambio,alta,Sin observaciones
+Parque Nacional Morro Moreno,Parque Nacional Morro Moreno,sin_cambio,alta,Sin observaciones
+Parque Nacional Nahuelbuta,Parque Nacional Nahuelbuta,fusion,alta,Absorbe «Nahuelbuta».
+Parque Nacional Pali Aike,Parque Nacional Pali Aike,sin_cambio,alta,Sin observaciones
+Parque Nacional Palmas de Cocalán,Parque Nacional Palmas de Cocalán,sin_cambio,alta,Sin observaciones
+Parque Nacional Pan de Azúcar,Parque Nacional Pan de Azúcar,fusion,alta,Absorbe «Pan de Azúcar».
+Parque Nacional Patagonia,Parque Nacional Patagonia,sin_cambio,alta,Sin observaciones
+Parque Nacional Pumalín,Parque Nacional Pumalín,sin_cambio,alta,Sin observaciones
+Parque Nacional Puyehue,Parque Nacional Puyehue,sin_cambio,alta,Sin observaciones
+Parque Nacional Queulat,Parque Nacional Queulat,sin_cambio,alta,Sin observaciones
+Parque Nacional Río Clarillo,Parque Nacional Río Clarillo,sin_cambio,alta,Sin observaciones
+Parque Nacional Tolhuaca,Parque Nacional Tolhuaca,sin_cambio,alta,Sin observaciones
+Parque Nacional Torres del Paine,Parque Nacional Torres del Paine,sin_cambio,alta,Sin observaciones
+Parque Nacional Vicente Perez Rosal,Parque Nacional Vicente Pérez Rosales,ortografia,media,Nombre oficial incompleto además de la tilde. Confirmar con SNASPE.
+Parque Nacional Villarrica,Parque Nacional Villarrica,sin_cambio,alta,Sin observaciones
+Parque Nacional Volcán Isluga,Parque Nacional Volcán Isluga,sin_cambio,alta,Sin observaciones
+Parque Nacional Yendegaia,Parque Nacional Yendegaia,sin_cambio,alta,Sin observaciones
+Pinguino de Humboldt,Reserva Nacional Pingüino de Humboldt,prefijo,alta,Se antepone la categoría y se repone la diéresis.
+Radal Siete Tazas,Parque Nacional Radal Siete Tazas,prefijo,alta,Se antepone la categoría.
+Ralco,Reserva Nacional Ralco,prefijo,alta,Se antepone la categoría.
+Reserva Nacional Alto Bio Bio,Reserva Nacional Alto Biobío,ortografia,media,Grafía oficial del topónimo. Confirmar con SNASPE.
+Reserva Nacional China Muerta,Reserva Nacional China Muerta,sin_cambio,alta,Sin observaciones
+Reserva Nacional Coyhaique,Reserva Nacional Coyhaique,sin_cambio,alta,Sin observaciones
+Reserva Nacional El Yali,Reserva Nacional El Yali,sin_cambio,alta,Sin observaciones
+Reserva Nacional Futaleufu,Reserva Nacional Futaleufú,ortografia,alta,Tilde.
+Reserva Nacional Katalalixar,Reserva Nacional Katalalixar,sin_cambio,alta,Sin observaciones
+Reserva Nacional La Chimba,Reserva Nacional La Chimba,sin_cambio,alta,Sin observaciones
+Reserva Nacional Lago Carlota,Reserva Nacional Lago Carlota,sin_cambio,alta,Sin observaciones
+Reserva Nacional Lago Las Torres,Reserva Nacional Lago Las Torres,sin_cambio,alta,Sin observaciones
+Reserva Nacional Lago Palena,Reserva Nacional Lago Palena,sin_cambio,alta,Sin observaciones
+Reserva Nacional Lago Rosselot,Reserva Nacional Lago Rosselot,sin_cambio,alta,Sin observaciones
+Reserva Nacional Laguna Parrillar,Reserva Nacional Laguna Parrillar,sin_cambio,alta,Sin observaciones
+Reserva Nacional Las Guaitecas,Reserva Nacional Las Guaitecas,sin_cambio,alta,Sin observaciones
+Reserva Nacional Llanquihue,Reserva Nacional Llanquihue,sin_cambio,alta,Sin observaciones
+Reserva Nacional Los Flamencos,Reserva Nacional Los Flamencos,sin_cambio,alta,Sin observaciones
+Reserva Nacional Los Huemules Del Niblinto,Reserva Nacional Los Huemules de Niblinto,ortografia,media,Preposición del nombre oficial. Confirmar con SNASPE.
+Reserva Nacional Magallanes,Reserva Nacional Magallanes,sin_cambio,alta,Sin observaciones
+Reserva Nacional Malalcahuello,Reserva Nacional Malalcahuello,sin_cambio,alta,Sin observaciones
+Reserva Nacional Malleco,Reserva Nacional Malleco,sin_cambio,alta,Sin observaciones
+Reserva Nacional Mocho Choshuenco,Reserva Nacional Mocho-Choshuenco,ortografia,media,Guion del nombre oficial. Confirmar con SNASPE.
+Reserva Nacional Nalcas,Reserva Nacional Nalcas,sin_cambio,alta,Sin observaciones
+Reserva Nacional Nuble,Reserva Nacional Ñuble,fusion,alta,Se une con «Nuble».
+Reserva Nacional Pampa del Tamarugal,Reserva Nacional Pampa del Tamarugal,sin_cambio,alta,Sin observaciones
+Reserva Nacional Penuelas,Reserva Nacional Peñuelas,ortografia,alta,Falta la ñ.
+Reserva Nacional Rio Blanco,Reserva Nacional Río Blanco,ortografia,alta,Tilde.
+Reserva Nacional Rio Simpson,Reserva Nacional Río Simpson,ortografia,alta,Tilde.
+Reserva Nacional Robleria del Cobre Loncha,Reserva Nacional Roblería del Cobre de Loncha,ortografia,media,Tilde y preposición del nombre oficial. Confirmar con SNASPE.
+Reserva Nacional Río Los Cipreses,Reserva Nacional Río Los Cipreses,sin_cambio,alta,Sin observaciones
+Reserva Nacional Trapananda,Reserva Nacional Trapananda,sin_cambio,alta,Sin observaciones
+Reserva Nacional Villarrica,Reserva Nacional Villarrica,sin_cambio,alta,Sin observaciones

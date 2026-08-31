@@ -1,0 +1,16 @@
+hoja,valor_origen,valor_canonico,accion,confianza,nota
+09_comuna,Corral,Corral,sin_cambio,alta,Los Rios. Sin observaciones.
+09_comuna,Futrono,Futrono,sin_cambio,alta,Los Rios. Sin observaciones.
+09_comuna,La Unión,La Unión,sin_cambio,alta,Los Rios. Sin observaciones.
+09_comuna,Lago Ranco,Lago Ranco,sin_cambio,alta,Los Rios. Sin observaciones.
+09_comuna,Lanco,Lanco,sin_cambio,alta,Los Rios. Sin observaciones.
+09_comuna,Los Lagos,Los Lagos,sin_cambio,alta,"Los Rios. Homonima de la Region de Los Lagos: NO es un error, no fusionar."
+09_comuna,Mafil,Máfil,ortografia,alta,Los Rios. Se repone tilde.
+09_comuna,Mariquina,Mariquina,revisar,baja,Los Rios. El nombre oficial vigente es «San José de la Mariquina». Confirmar antes de aplicar.
+09_comuna,Paillaco,Paillaco,sin_cambio,alta,Los Rios. Sin observaciones.
+09_comuna,Panguipulli,Panguipulli,sin_cambio,alta,Los Rios. Sin observaciones.
+09_comuna,Río Bueno,Río Bueno,sin_cambio,alta,Los Rios. Sin observaciones.
+09_comuna,Valdivia,Valdivia,sin_cambio,alta,Los Rios. Sin observaciones.
+10_provincia,Ranco,Ranco,sin_cambio,alta,Los Rios. Sin observaciones.
+10_provincia,Valdivia,Valdivia,sin_cambio,alta,Los Rios. Sin observaciones.
+11_region,Los Rios,Los Ríos,ortografia,alta,Sustituye la fila «(ausente)» de la hoja 11: la region existe y aporta 79.727 poligonos.

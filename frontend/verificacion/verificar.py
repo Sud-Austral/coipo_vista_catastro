@@ -23,6 +23,7 @@ import socketserver
 import sys
 import threading
 import time
+import unicodedata
 
 import numpy as np
 import requests
@@ -111,6 +112,12 @@ TECHO_CRUCE_MS = 400
 TECHO_PINTADO_MS = 6000
 
 MODAL_FILTRO = "!!document.querySelector('dialog.modal-filtro[open]')"
+
+# Cuantos botones tiene el panel: Territorio + las quince dimensiones de FILTROS
+# + Imagen de fondo. EL NUMERO SE ACTUALIZA A MANO Y A PROPOSITO. Es la cuenta
+# que caza que un control desaparezca en silencio --que es como se pierde uno--,
+# asi que derivarla de la propia pagina la volveria una tautologia.
+CONTROLES = 17
 
 
 def abrir_grupo(cdp, titulo):
@@ -571,7 +578,8 @@ def main():
             # selector obsoleto. Once y no «alguno»: la cuenta es lo que caza
             # que un control se quede por el camino.
             ms = esperar(cdp, "!!(document.querySelector('.app') && "
-                              "document.querySelectorAll('.grupo-filtro').length === 11)")
+                              "document.querySelectorAll('.grupo-filtro').length === %d)"
+                         % CONTROLES)
             if ms is None:
                 fallos.append(f"la app no montó a {ancho} px")
                 print("    LA APP NO MONTÓ")
@@ -679,7 +687,7 @@ def main():
         # importa.
         print("\n=== filtros temáticos")
         grupos = cdp.evaluar("document.querySelectorAll('.grupo-filtro').length")
-        prueba("V-17 los once controles se dibujan", grupos == 11, f"{grupos}")
+        prueba(f"V-17 los {CONTROLES} controles se dibujan", grupos == CONTROLES, f"{grupos}")
 
         # Cada grupo declara cuántas clases tiene. Si alguno sale con cero, su
         # dimensión no llegó del manifest y el filtro sería una lista vacía.
@@ -1318,8 +1326,8 @@ def main():
         # ONCE, y ningún <select>. Territorio, Uso e Imagen de fondo eran
         # desplegable y lista mientras las otras ocho ya eran botones: la misma
         # pregunta contestada de tres formas en el mismo panel.
-        prueba("V-45 once botones, ningún desplegable y ningún <select>",
-               n_botones == 11 and quedan == 0 and selects == 0,
+        prueba(f"V-45 {CONTROLES} botones, ningún desplegable y ningún <select>",
+               n_botones == CONTROLES and quedan == 0 and selects == 0,
                f"{n_botones} botones · {quedan} <details> · {selects} <select>")
 
         titulos = json.loads(cdp.evaluar(
@@ -1647,6 +1655,176 @@ def main():
         prueba("V-57b al imprimir sale el documento y nada más",
                fuera["doc"] and not fuera["mapa"] and not fuera["panel"] and not fuera["barra"],
                json.dumps(fuera))
+
+        # --- el ámbito territorial contra el manifest -------------------------
+        print("")
+        print("=== las dieciséis regiones, una a una")
+
+        # V-59 ES LA ASERCIÓN QUE HABRÍA CAZADO EL DEFECTO MÁS CARO DE ESTE
+        # VISOR EL PRIMER DÍA, y no existía: ninguna comparaba un ámbito contra
+        # el manifest.
+        #
+        # Durante meses, elegir la Región de Los Ríos movía el mapa, rotulaba
+        # «Los Ríos» y entregaba 75,7 M ha y 1.827.933 polígonos: el país
+        # entero. Sus 79.727 filas llegaban sin comuna --el código venía en otra
+        # columna del origen-- y el ámbito, que se derivaba de las comunas,
+        # salía vacío; un conjunto vacío significaba «todas». Las otras quince
+        # regiones sí cuadraban, así que cualquier prueba sobre UNA región
+        # elegida al azar tenía quince de dieciséis de pasar.
+        #
+        # Por eso se recorren LAS DIECISÉIS. Y se hace por la interfaz, con un
+        # solo `.bin` cargado: navegar dieciséis veces costaría cuatro minutos
+        # de descarga para medir lo mismo.
+        man_reg = json.load(open(os.path.join(DIST, "datos", "manifest.json"),
+                                 encoding="utf-8"))
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=url)
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+        nacional = cdp.evaluar("document.querySelector('.cifra-etq')?.textContent")
+
+        descuadran = []
+        for r in sorted(man_reg["regiones"], key=lambda x: x["orden"]):
+            abrir_grupo(cdp, "Territorio")
+            hecho = cdp.evaluar("""
+              (() => {
+                const l = [...document.querySelectorAll('.mf-nivel')[0].querySelectorAll('.gf-opcion')]
+                  .find(x => x.querySelector('.gf-etq').childNodes[0].textContent.trim() === %s)
+                if (!l) return false
+                l.querySelector('input').click()
+                return true
+              })()
+            """ % json.dumps(r["nombre"]))
+            # Se espera a que la CIFRA lleve el nombre de la región: el recálculo
+            # tarda, y durante ese rato el panel conserva la del ámbito anterior
+            # ya con el rótulo nuevo. Leer antes mediría el ámbito de antes.
+            esperar(cdp, "document.querySelector('.cifra-etq')?.textContent.includes(%s)"
+                    % json.dumps(r["nombre"]), segundos=40)
+            etq = str(cdp.evaluar("document.querySelector('.cifra-etq')?.textContent") or "")
+            niveles = cdp.evaluar("document.querySelectorAll('.mf-nivel').length")
+            comunas = cdp.evaluar(
+                "document.querySelectorAll('.mf-nivel')[2]?.querySelectorAll('.gf-opcion').length ?? 0")
+            cerrar_grupo(cdp)
+            leido = int(re.sub(r"[^\d]", "", etq.split("polígonos")[0]) or -1)
+            del_manifest = [c for c in man_reg["comunas"] if c["region"] == r["cod"]]
+            if not hecho or leido != r["n"] or niveles != 3 or (comunas - 1) != len(del_manifest):
+                descuadran.append(
+                    f"{r['nombre']}: panel {leido:,} vs manifest {r['n']:,}, "
+                    f"{max(0, comunas - 1)} comunas vs {len(del_manifest)}")
+        prueba("V-59 las dieciséis regiones cuadran con el manifest",
+               not descuadran, " · ".join(descuadran) if descuadran
+               else f"16/16, y ninguna devuelve el nacional ({nacional})")
+
+        # V-60: un ámbito que NO CALZA con nada devuelve cero y lo dice. Es la
+        # otra mitad del mismo defecto, y sobrevivió al primer arreglo: el cruce
+        # se saltaba los filtros con el conjunto vacío, así que una provincia
+        # que no existe en esa región devolvía la REGIÓN ENTERA rotulada con la
+        # provincia ajena. Lo encontró una sonda, no una aserción; ésta es la
+        # aserción.
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=f"{url}?reg=15&prov=Valdivia")
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+        esperar(cdp, "document.querySelector('.cifra-etq')?.textContent.includes('Valdivia')",
+                segundos=40)
+        etq_v = str(cdp.evaluar("document.querySelector('.cifra-etq')?.textContent") or "")
+        titular_v = str(cdp.evaluar("document.querySelector('.cifra-num b')?.textContent") or "")
+        prueba("V-60 un ámbito sin coincidencias da cero, no el país",
+               etq_v.startswith("0 polígonos") and titular_v.strip().split()[:1] == ["0"],
+               f"{titular_v!r} · {etq_v!r}")
+
+        # --- lo que cambió la homologación -----------------------------------
+        print("")
+        print("=== la homologación")
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=url)
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+
+        # V-61: las clases que llegaban partidas por la ortografía. Cuatro
+        # unidades del SNASPE y cuatro subtipos sumaban por separado, y quien
+        # consultaba una obtenía poco más de la mitad de su superficie.
+        def sin_tilde(x):
+            x = unicodedata.normalize("NFKD", str(x))
+            return re.sub(r"[^a-z0-9]", "", "".join(
+                c for c in x if not unicodedata.combining(c)).lower())
+
+        colapsos = []
+        for titulo, cuantas in (("SNASPE", 90), ("Subtipo", 33)):
+            g = grupo_filtro(cdp, titulo)
+            # SNASPE lista recortada a 40: la cuenta va en el botón, no en la lista.
+            total = int(re.sub(r"[^\d]", "", g["total"]) or -1)
+            vistos = {}
+            for f in g["filas"]:
+                vistos.setdefault(sin_tilde(f["etq"]), []).append(f["etq"])
+            dobles = [v for v in vistos.values() if len(v) > 1]
+            if total != cuantas or dobles:
+                colapsos.append(f"{titulo}: {total} de {cuantas}, colapsan {dobles}")
+        prueba("V-61 SNASPE y subtipos, homologados y sin pares que colapsen",
+               not colapsos, " · ".join(colapsos) if colapsos else "90 unidades · 33 subtipos")
+
+        # V-61b: Villarrica NO se fundió. Son dos unidades distintas del Sistema
+        # que comparten topónimo, y es el caso que una normalización automática
+        # habría destruido: por eso el canónico lleva siempre la categoría.
+        sna = grupo_filtro(cdp, "SNASPE")
+        villa = sorted(f["etq"] for f in sna["filas"] if "villarrica" in sin_tilde(f["etq"]))
+        prueba("V-61b Parque y Reserva Villarrica siguen separados",
+               len(villa) == 2, " · ".join(villa) or "ninguna")
+
+        # V-62: un enlace ya compartido con un código que la homologación borró
+        # sigue filtrando lo mismo. Sin el mapa de alias filtraría NADA, y el
+        # visor no distingue «no encuentra» de «no hay filtro»: quien lo abriera
+        # vería el país entero creyendo mirar una unidad del SNASPE.
+        viejo_cod = next(iter(man_reg.get("alias", {}).get("snaspe", {})), None)
+        if not viejo_cod:
+            fallos.append("V-62 el manifest no publica ningún alias que probar")
+            print("    V-62 SIN MEDIR: no hay alias en el manifest")
+        else:
+            nuevo_cod = man_reg["alias"]["snaspe"][viejo_cod]
+            esperado = next(u["n"] for u in man_reg["snaspe"] if u["cod"] == nuevo_cod)
+            cdp.enviar("Page.navigate", url="about:blank")
+            esperar(cdp, "document.readyState === 'complete'", segundos=30)
+            cdp.enviar("Page.navigate",
+                       url=f"{url}?snaspe={requests.utils.quote(viejo_cod)}")
+            esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
+            esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+            esperar(cdp, "document.querySelector('.cifra-num b')?.textContent !== '75,7'",
+                    segundos=40)
+            etq_a = str(cdp.evaluar("document.querySelector('.cifra-etq')?.textContent") or "")
+            leido_a = int(re.sub(r"[^\d]", "", etq_a.split("polígonos")[0]) or -1)
+            prueba("V-62 un código borrado por la homologación sigue filtrando",
+                   leido_a == esperado,
+                   f"?snaspe={viejo_cod!r} -> {leido_a:,} polígonos, {nuevo_cod!r} tiene "
+                   f"{esperado:,}")
+
+        # V-63: las seis dimensiones derivadas de la especie filtran de verdad.
+        # No son columnas del .bin: las construye el cliente al cargar, y una
+        # derivación mal hecha da una lista con clases y cifras plausibles que no
+        # filtra nada. Se comprueba que MUEVEN la cifra.
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=url)
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+        mudas = []
+        for titulo in ("Grupo", "Hábito", "Arbórea", "Origen", "Invasora", "Conservación"):
+            g = grupo_filtro(cdp, titulo)
+            antes_d = cdp.evaluar("document.querySelector('.cifra-num b').textContent")
+            marcar_clase(cdp, titulo, g["filas"][0]["etq"])
+            movio = esperar(cdp, "document.querySelector('.cifra-num b').textContent !== %r"
+                            % antes_d, segundos=30)
+            if movio is None or not g["filas"]:
+                mudas.append(f"{titulo} ({len(g['filas'])} clases)")
+            cdp.evaluar("[...document.querySelectorAll('.limpiar')]"
+                        ".find(b => /Quitar/.test(b.textContent))?.click()")
+            esperar(cdp, "document.querySelector('.cifra-num b').textContent === %r" % antes_d,
+                    segundos=30)
+        prueba("V-63 las seis dimensiones de la especie filtran de verdad",
+               not mudas, " · ".join(mudas) if mudas else "grupo, hábito, arbórea, origen, "
+                                                          "invasora y conservación mueven la cifra")
 
         print("\n" + "=" * 62)
         print(f"  {'TODO EN VERDE' if not fallos else str(len(fallos)) + ' EN ROJO'}")

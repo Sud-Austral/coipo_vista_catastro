@@ -428,18 +428,44 @@ export default function App() {
     return () => map.off('moveend', al)
   }, [map, manifest, ambito, usosActivos, filtros, base])
 
-  // Índices de comuna que caen dentro del ámbito. Un Set vacío significa «todas»,
-  // no «ninguna».
-  const comunasDelAmbito = useMemo(() => {
-    if (!manifest || !ambito.region) return new Set()
-    const s = new Set()
-    manifest.comunas.forEach((c, i) => {
-      if (c.region !== ambito.region) return
-      if (ambito.provincia && c.provincia !== ambito.provincia) return
-      if (ambito.comuna && c.cod !== ambito.comuna) return
-      s.add(i)
-    })
-    return s
+  // El filtro del ámbito territorial, o null si no hay ámbito.
+  //
+  // AQUÍ VIVÍA EL DEFECTO MÁS CARO DE ESTE VISOR, y conviene dejarlo escrito.
+  // Esto devolvía un Set de comunas, y más abajo se aplicaba sólo `if
+  // (comunasDelAmbito.size)`. Un Set vacío significaba «todas», no «ninguna»,
+  // así que elegir un ámbito que no calzaba con ningún registro producía
+  // EXACTAMENTE el mismo objeto que no elegir ámbito. Con las 79.727 filas de
+  // Los Ríos llegando sin comuna, el visor entregó cifras nacionales —75,7 M ha,
+  // 1.827.933 polígonos— rotuladas «Los Ríos», con el mapa encuadrado sobre la
+  // región y su nombre correcto al lado. Convincente y falso.
+  //
+  // Dos cambios, y hacen falta los dos:
+  //
+  //  1. La REGIÓN filtra por su propia columna, que existe desde el esquema 4.
+  //     Ya no se deriva de las comunas, así que un hueco en `comuna` no puede
+  //     volver a vaciar el ámbito regional. Y los 4 polígonos de Magallanes que
+  //     no tienen comuna vuelven a contar en su región.
+  //  2. El filtro se aplica SIEMPRE que hay ámbito, aunque el conjunto salga
+  //     vacío. Un ámbito sin coincidencias devuelve CERO y lo dice; nunca el
+  //     país entero. Esto es lo que impide que el próximo hueco en los datos se
+  //     publique otra vez como cifra nacional bajo rótulo regional.
+  const filtroAmbito = useMemo(() => {
+    if (!manifest || !ambito.region) return null
+    const i = manifest.regiones.findIndex((r) => r.cod === ambito.region)
+    const f = { region: new Set(i >= 0 ? [i] : []) }
+    // Provincia y comuna siguen saliendo de la columna `comuna`: son los dos
+    // niveles que el .bin sí resuelve por ahí.
+    if (ambito.provincia || ambito.comuna) {
+      const s = new Set()
+      manifest.comunas.forEach((c, k) => {
+        if (c.region !== ambito.region) return
+        if (ambito.provincia && c.provincia !== ambito.provincia) return
+        if (ambito.comuna && c.cod !== ambito.comuna) return
+        s.add(k)
+      })
+      f.comuna = s
+    }
+    return f
   }, [manifest, ambito])
 
   // Las tres fuentes de filtro se juntan en un solo objeto antes de bajar al
@@ -450,9 +476,12 @@ export default function App() {
   const filtroCompleto = useMemo(() => {
     const f = { ...filtros }
     if (usosActivos.size) f.uso = usosActivos
-    if (comunasDelAmbito.size) f.comuna = comunasDelAmbito
+    // SIN GUARDA DE TAMAÑO sobre el ámbito: si hay ámbito, entra, aunque sus
+    // conjuntos estén vacíos. Ésa es la diferencia entre «no elegí territorio» y
+    // «elegí un territorio que no tiene nada», que antes eran indistinguibles.
+    if (filtroAmbito) Object.assign(f, filtroAmbito)
     return f
-  }, [filtros, usosActivos, comunasDelAmbito])
+  }, [filtros, usosActivos, filtroAmbito])
 
   const hayFiltro = Object.keys(filtroCompleto).length > 0
 
@@ -499,7 +528,7 @@ export default function App() {
   // El mapa VA a lo que se acaba de filtrar, sea un territorio, una clase o un
   // cruce de las dos. Sin esto el panel dice una cosa y el mapa muestra otra.
   //
-  // UN SOLO EFECTO, y por construcción y no por convención: `comunasDelAmbito`
+  // UN SOLO EFECTO, y por construcción y no por convención: `filtroAmbito`
   // es una de las entradas de `filtroCompleto`, así que elegir una región cambia
   // el ámbito Y el filtro en el MISMO commit. Con dos efectos habría dos vuelos
   // en el mismo flush, Leaflet abortaría el primero al arrancar el segundo, y
@@ -511,14 +540,15 @@ export default function App() {
     if (!manifest) return null
     const cajaAmbito = cajaDelAmbito(ambito, manifest)
 
-    // LOS RÍOS. La región 14 declara 79.727 filas y CERO comunas en el manifest
-    // —sus filas llevan el centinela en la columna comuna, y de hecho el
-    // `sin_dato.comuna` nacional son 79.731—, así que `comunasDelAmbito` sale
-    // vacío y el cruce NO se entera de que hay un ámbito elegido. Sin esta rama,
-    // marcar cualquier casilla con Los Ríos puesto mandaría el mapa a la caja
-    // NACIONAL de esa casilla mientras el panel rotula «Los Ríos».
-    const ambitoSinFiltrar = Boolean(ambito.region) && comunasDelAmbito.size === 0
-    if (ambitoSinFiltrar && cajaAmbito) return cajaAmbito
+    // AQUÍ HABÍA UNA RAMA PARA LOS RÍOS, y se fue con la causa. Decía: si hay
+    // región elegida y su conjunto de comunas está vacío, encuadra en la región
+    // igualmente, porque el cruce no se entera de que hay ámbito. Era una
+    // compensación del defecto, no un caso legítimo: la región 14 declaraba
+    // 79.727 filas y cero comunas porque el ETL no leía su columna de código.
+    // Con la región en columna propia y el ámbito entrando siempre al filtro, el
+    // cruce SÍ se entera, y el caso «ámbito sin resultados» ya lo cubren las dos
+    // ramas de abajo. Quitarla es parte del arreglo: dejarla mantendría vivo el
+    // camino que hacía plausible el error.
 
     // Lo que de verdad pasó el filtro. Sale del cruce, que ya recorrió las filas.
     if (cruce?.caja) return cruce.caja
@@ -531,7 +561,7 @@ export default function App() {
     if (hayFiltro) return null
     // Nada elegido: la vista inicial, igual que «volver a Chile».
     return 'inicial'
-  }, [manifest, ambito, comunasDelAmbito, cruce, hayFiltro])
+  }, [manifest, ambito, cruce, hayFiltro])
 
   // El objetivo del vuelo EN CURSO. A mitad de un flyTo Leaflet va actualizando
   // centro y zoom fotograma a fotograma, así que un segundo filtro dentro de los

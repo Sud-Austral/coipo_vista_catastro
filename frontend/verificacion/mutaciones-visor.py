@@ -32,6 +32,7 @@ import json
 import math
 import os
 import re
+import unicodedata
 import shutil
 import socketserver
 import subprocess
@@ -83,6 +84,19 @@ def compilar():
         raise RuntimeError("no compila:\n" + r.stdout[-2000:] + r.stderr[-2000:])
 
 
+def construir_datos():
+    """Regenera el .bin y el manifest. Cuesta 15 s, medido, asi que las
+    mutaciones del ETL --las que rompen el DATO y no el codigo del visor-- salen
+    baratas. Sin esto, el defecto de Los Rios no se podria reintroducir: vivia en
+    una consulta SQL, no en el frontend."""
+    r = subprocess.run([sys.executable, os.path.join(RAIZ, "ETL", "build_bin.py")],
+                       cwd=RAIZ, capture_output=True, text=True)
+    if r.returncode != 0:
+        raise RuntimeError("el ETL no construye:\n" + (r.stdout + r.stderr)[-2000:])
+    # `dist/datos` es una copia de `public/datos` que hace Vite al compilar.
+    compilar()
+
+
 def abrir(url):
     proc, perfil, dp = lanzar_chrome(url, ver=False, swiftshader=False)
     destino = None
@@ -131,7 +145,10 @@ def sonda_botones(cdp, url):
     sel = cdp.evaluar("document.querySelectorAll('.panel select').length")
     tit = json.loads(cdp.evaluar(
         "JSON.stringify([...document.querySelectorAll('.gf-titulo')].map(e => e.textContent))"))
-    pasa = n == 11 and sel == 0 and {"Territorio", "Uso", "Imagen de fondo"} <= set(tit)
+    # 17 desde que entraron las seis dimensiones derivadas de la especie. El
+    # numero se actualiza a mano, igual que CONTROLES en verificar.py: es la
+    # cuenta que caza que un control desaparezca sin que nadie lo note.
+    pasa = n == 17 and sel == 0 and {"Territorio", "Uso", "Imagen de fondo"} <= set(tit)
     return pasa, f"{n} botones · {sel} <select>"
 
 
@@ -310,6 +327,103 @@ def sonda_orden(cdp, url):
     return sec[-3:] == ["Compartir", "Descargar", "Simbología"], " · ".join(sec)
 
 
+def sonda_datos(cdp, url):
+    """Corre `ETL/verificar_datos.py` y exige que pase.
+
+    ES LA SONDA DE UN DEFECTO DEL DATO, y por eso no mira el navegador. Se
+    intento con la sonda de V-59 --las dieciseis regiones contra el manifest-- y
+    salio VERDE con el defecto puesto, por dos razones que conviene dejar
+    escritas:
+
+      1. La columna de region hizo que el defecto original ya no se pueda
+         reproducir por ese camino. El ambito regional ya no se deriva de las
+         comunas, asi que aunque Los Rios pierda las suyas, sus 79.727 poligonos
+         siguen contandose bien. Eso es el arreglo funcionando.
+      2. Y lo que si queda roto --Los Rios sin desglose territorial-- es
+         INVISIBLE para V-59: esa asercion compara el visor contra el manifest, y
+         un defecto del ETL corrompe LOS DOS a la vez. Los dos coinciden en estar
+         mal.
+
+    Quien lo caza es D22 en el verificador de datos, que no compara el visor con
+    el manifest sino el manifest CONSIGO MISMO: toda region tiene que tener al
+    menos una comuna. Ese es el emparejamiento correcto.
+    """
+    r = subprocess.run([sys.executable, os.path.join(RAIZ, "ETL", "verificar_datos.py")],
+                       cwd=RAIZ, capture_output=True, text=True)
+    salida = (r.stdout + r.stderr)
+    lineas = [x.strip() for x in salida.splitlines() if x.strip().startswith("- D")]
+    return r.returncode == 0, (" · ".join(lineas) if lineas else "integridad OK")
+
+
+def sonda_regiones(cdp, url):
+    """Las dieciseis regiones contra el manifest, por la interfaz.
+
+    Es la sonda de V-59, la asercion que habria cazado el defecto de Los Rios el
+    primer dia. Se recorren las DIECISEIS y no una: quince cuadraban, asi que
+    cualquier prueba sobre una region al azar tenia quince de dieciseis de pasar.
+    """
+    man = json.load(open(os.path.join(DIST, "datos", "manifest.json"), encoding="utf-8"))
+    ir(cdp, url)
+    malas = []
+    for r in sorted(man["regiones"], key=lambda x: x["orden"]):
+        V.abrir_grupo(cdp, "Territorio")
+        cdp.evaluar("""
+          (() => {
+            const l = [...document.querySelectorAll('.mf-nivel')[0].querySelectorAll('.gf-opcion')]
+              .find(x => x.querySelector('.gf-etq').childNodes[0].textContent.trim() === %s)
+            l?.querySelector('input').click()
+          })()
+        """ % json.dumps(r["nombre"]))
+        V.esperar(cdp, "document.querySelector('.cifra-etq')?.textContent.includes(%s)"
+                  % json.dumps(r["nombre"]), segundos=40)
+        etq = str(cdp.evaluar("document.querySelector('.cifra-etq')?.textContent") or "")
+        V.cerrar_grupo(cdp)
+        leido = int(re.sub(r"[^\d]", "", etq.split("polígonos")[0]) or -1)
+        if leido != r["n"]:
+            malas.append(f"{r['nombre']} {leido:,}!={r['n']:,}")
+    return not malas, (" · ".join(malas) if malas else "16/16 cuadran")
+
+
+def sonda_ambito_vacio(cdp, url):
+    ir(cdp, url + "?reg=15&prov=Valdivia")
+    V.esperar(cdp, "document.querySelector('.cifra-etq')?.textContent.includes('Valdivia')",
+              segundos=40)
+    etq = str(cdp.evaluar("document.querySelector('.cifra-etq')?.textContent") or "")
+    return etq.startswith("0 polígonos"), etq
+
+
+def sonda_homologacion(cdp, url):
+    ir(cdp, url)
+    def plano(x):
+        x = unicodedata.normalize("NFKD", str(x))
+        return re.sub(r"[^a-z0-9]", "",
+                      "".join(c for c in x if not unicodedata.combining(c)).lower())
+    problemas = []
+    for titulo, cuantas in (("SNASPE", 90), ("Subtipo", 33)):
+        g = V.grupo_filtro(cdp, titulo)
+        total = int(re.sub(r"[^\d]", "", g["total"]) or -1)
+        vistos = {}
+        for f in g["filas"]:
+            vistos.setdefault(plano(f["etq"]), []).append(f["etq"])
+        if total != cuantas or any(len(v) > 1 for v in vistos.values()):
+            problemas.append(f"{titulo}={total}")
+    return not problemas, (" · ".join(problemas) if problemas else "90 y 33, sin colapsos")
+
+
+def sonda_alias(cdp, url):
+    man = json.load(open(os.path.join(DIST, "datos", "manifest.json"), encoding="utf-8"))
+    viejo = next(iter(man.get("alias", {}).get("snaspe", {})), None)
+    if not viejo:
+        return False, "el manifest no publica alias"
+    nuevo = man["alias"]["snaspe"][viejo]
+    esperado = next(u["n"] for u in man["snaspe"] if u["cod"] == nuevo)
+    ir(cdp, f"{url}?snaspe={requests.utils.quote(viejo)}")
+    V.esperar(cdp, "document.querySelector('.cifra-num b')?.textContent !== '75,7'", segundos=40)
+    etq = str(cdp.evaluar("document.querySelector('.cifra-etq')?.textContent") or "")
+    leido = int(re.sub(r"[^\d]", "", etq.split("polígonos")[0]) or -1)
+    return leido == esperado, f"{viejo!r} -> {leido:,} (esperado {esperado:,})"
+
+
 def sonda_reporte(cdp, url):
     ir(cdp, url + "?reg=10")
     titular = cdp.evaluar("document.querySelector('.cifra-num b').textContent")
@@ -436,6 +550,45 @@ MUTACIONES = [
        "filas={[...resumen.coberturas]",
        "filas={[] || [...resumen.coberturas]")]),
 
+    # --- las cuatro del arreglo de datos -------------------------------------
+    # La primera rompe el DATO y no el codigo: hay que regenerar el .bin, y por
+    # eso lleva el cuarto elemento en True. Sin esto no se podria ver roja la
+    # asercion que mas importa de todo el arnes.
+    ("D22 · el ETL vuelve a leer solo CODCOM (Los Rios sin comunas)",
+     sonda_datos,
+     [(os.path.join(RAIZ, "ETL", "build_bin.py"),
+       "ID_TIFO AS c_tif, COALESCE(CODCOM, Codcomun) AS c_com",
+       "ID_TIFO AS c_tif, CODCOM AS c_com"),
+      (os.path.join(RAIZ, "ETL", "build_bin.py"),
+       "        WHERE COALESCE(CODCOM, Codcomun) IS NOT NULL AND centroide_lon IS NOT NULL",
+       "        WHERE CODCOM IS NOT NULL AND centroide_lon IS NOT NULL")],
+     True),
+
+    # V-59 protege que el VISOR no se separe del manifest. Su defecto propio no
+    # es de datos sino de codigo: que el ambito deje de entrar en el filtro.
+    ("V-59 · el ambito regional deja de aplicarse",
+     sonda_regiones,
+     [(os.path.join(FRONTEND, "src", "App.jsx"),
+       "    if (filtroAmbito) Object.assign(f, filtroAmbito)",
+       "    if (filtroAmbito?.comuna?.size) Object.assign(f, filtroAmbito)")]),
+
+    ("V-60 · un conjunto vacio vuelve a significar «todas»",
+     sonda_ambito_vacio,
+     [(os.path.join(FRONTEND, "src", "indicadores.js"),
+       "    if (!d.columna || !sel) continue",
+       "    if (!d.columna || !sel || sel.size === 0) continue")]),
+
+    ("V-61 · se deshace una fusion de subtipo forestal",
+     sonda_homologacion,
+     [(os.path.join(RAIZ, "ETL", "homologacion", "05_subtipo_forestal.csv"),
+       "Roble - Hualo,Roble-Hualo,fusion", "Roble - Hualo,Roble - Hualo,sin_cambio")],
+     True),
+
+    ("V-62 · filtrosDesdeURL deja de consultar el mapa de alias",
+     sonda_alias,
+     [(os.path.join(FRONTEND, "src", "filtros.js"),
+       "      const buscado = alias[cod] ?? cod", "      const buscado = cod")]),
+
     ("V-57 · el reporte deja de nombrar el ambito que imprime",
      sonda_reporte,
      [(os.path.join(JSX, "Reporte.jsx"),
@@ -457,7 +610,7 @@ def main():
     if not casos:
         sys.exit("ninguna mutacion coincide con --solo")
 
-    archivos = sorted({a for _, _, ed in casos for a, _, _ in ed})
+    archivos = sorted({a for c in casos for a, _, _ in c[2]})
     respaldo = {a: tempfile.mktemp(suffix=".bak") for a in archivos}
     for a, b in respaldo.items():
         shutil.copy2(a, b)
@@ -476,7 +629,8 @@ def main():
         compilar()
         proc, perfil, cdp = abrir(url)
         try:
-            for nombre, sonda, _ in casos:
+            for caso in casos:
+                nombre, sonda = caso[0], caso[1]
                 pasa, det = sonda(cdp, url)
                 print(f"  {'OK   ' if pasa else 'FALLA'}  {nombre.split(' · ')[0]:<8} {det}")
                 if not pasa:
@@ -486,7 +640,9 @@ def main():
             shutil.rmtree(perfil, ignore_errors=True)
 
         print("\n=== cada defecto DEBE poner roja su asercion\n")
-        for nombre, sonda, ediciones in casos:
+        for caso in casos:
+            nombre, sonda, ediciones = caso[0], caso[1], caso[2]
+            toca_datos = len(caso) > 3 and caso[3]
             for archivo, de, a in ediciones:
                 if not de.strip():
                     continue
@@ -498,7 +654,7 @@ def main():
                 open(archivo, "w", encoding="utf-8").write(texto.replace(de, a, 1))
             else:
                 try:
-                    compilar()
+                    construir_datos() if toca_datos else compilar()
                     proc, perfil, cdp = abrir(url)
                     try:
                         pasa, det = sonda(cdp, url)
@@ -515,6 +671,8 @@ def main():
                     print(f"  ROJA (no compila)   {nombre}\n             {str(e)[:120]}")
             for archivo, _, _ in ediciones:
                 shutil.copy2(respaldo[archivo], archivo)
+            if toca_datos:
+                construir_datos()
     finally:
         for a, b in respaldo.items():
             shutil.copy2(b, a)

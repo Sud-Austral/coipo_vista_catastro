@@ -1,0 +1,990 @@
+cod_origen,cod_canonico,especie_origen,especie_canonica,cientifico_origen,cientifico_canonico,genero_canonico,accion,confianza,nota
+AB,AB,abeto,abeto,Abies sp.,Abies sp.,Abies,sin_cambio,alta,Sin observaciones
+CI,CI,acacia,acacia,Acacia sp.,Acacia sp.,Acacia,sin_cambio,alta,Sin observaciones
+AE,AE,acacia azul,acacia azul,Acacia saligna,Acacia saligna,Acacia,sin_cambio,alta,Sin observaciones
+ai,ai,Acaena integerrima,Acaena integerrima,Acaena integerrima,Acaena integerrima,Acaena,sin_cambio,alta,Sin observaciones
+a51,a51,Acaena patagonica,Acaena patagonica,Acaena patagonica,Acaena patagonica,Acaena,sin_cambio,alta,Sin observaciones
+ac2,ac2,Adenocaulon chilense,Adenocaulon chilense,Adenocaulon chilense,Adenocaulon chilense,Adenocaulon,sin_cambio,alta,Sin observaciones
+Zb,Zb,Adesmia aphylla,Adesmia aphylla,Adesmia aphylla,Adesmia aphylla,Adesmia,sin_cambio,alta,Sin observaciones
+Dy,Dy,Adesmia argyrophylla,Adesmia argyrophylla,Adesmia argyrophylla,Adesmia argyrophylla,Adesmia,sin_cambio,alta,Sin observaciones
+At,At,Adesmia atacamensis,Adesmia atacamensis,Adesmia atacamensis,Adesmia atacamensis,Adesmia,sin_cambio,alta,Sin observaciones
+Ai,Ai,Adesmia echinus,Adesmia echinus,Adesmia echinus,Adesmia echinus,Adesmia,sin_cambio,alta,Sin observaciones
+dm,dm,Adesmia eremophila,Adesmia eremophila,Adesmia eremophila,Adesmia eremophila,Adesmia,sin_cambio,alta,Sin observaciones
+A30,A30,Adesmia erinacea,Adesmia erinacea,Adesmia erinacea,Adesmia erinacea,Adesmia,sin_cambio,alta,Sin observaciones
+Di,Di,Adesmia gracilis,Adesmia gracilis,Adesmia gracilis,Adesmia gracilis,Adesmia,sin_cambio,alta,Sin observaciones
+Dk,Dk,Adesmia kingii,Adesmia kingii,Adesmia kingii,Adesmia kingii,Adesmia,sin_cambio,alta,Sin observaciones
+Zl,Zl,Adesmia littoralis,Adesmia littoralis,Adesmia littoralis,Adesmia littoralis,Adesmia,sin_cambio,alta,Sin observaciones
+A18,A18,Adesmia monosperma,Adesmia monosperma,Adesmia monosperma,Adesmia monosperma,Adesmia,sin_cambio,alta,Sin observaciones
+A37,A37,Adesmia pauciflora,Adesmia pauciflora,Adesmia pauciflora,Adesmia pauciflora,Adesmia,sin_cambio,alta,Sin observaciones
+a56,a56,Adesmia rahmeri,Adesmia rahmeri,Adesmia rahmeri,Adesmia rahmeri,Adesmia,sin_cambio,alta,Sin observaciones
+A20,A20,Adesmia rubroviridis,Adesmia rubroviridis,Adesmia rubroviridis,Adesmia rubroviridis,Adesmia,sin_cambio,alta,Sin observaciones
+A38,A38,Adesmia schneideri,Adesmia schneideri,Adesmia schneideri,Adesmia schneideri,Adesmia,sin_cambio,alta,Sin observaciones
+A21,A21,Adesmia subterranea,Adesmia subterranea,Adesmia subterranea,Adesmia subterranea,Adesmia,sin_cambio,alta,Sin observaciones
+A11,A11,Adesmia verrucosa,Adesmia verrucosa,Adesmia verrucosa,Adesmia verrucosa,Adesmia,sin_cambio,alta,Sin observaciones
+a19,a19,Agrostis capilaris,Agrostis capilaris,Agrostis capilaris,Agrostis capillaris,Agrostis,ortografia,media,"Epíteto con una sola «l»: el válido es Agrostis capillaris, que ya existe en el diccionario con el código a35. Es la misma especie bajo dos códigos (a19 y a35): decidir cuál se conserva antes de corregir la grafía, o quedarán dos entradas idénticas."
+a35,a35,Agrostis capillaris,Agrostis capillaris,Agrostis capillaris,Agrostis capillaris,Agrostis,sin_cambio,alta,Sin observaciones
+a53,a53,Agrostis leptotricha,Agrostis leptotricha,Agrostis leptotricha,Agrostis leptotricha,Agrostis,sin_cambio,alta,Sin observaciones
+a20,a20,Agrostis sp.,Agrostis sp.,Agrostis sp.,Agrostis sp.,Agrostis,sin_cambio,alta,Sin observaciones
+a54,a54,Agrostis stolonifera,Agrostis stolonifera,Agrostis stolonifera,Agrostis stolonifera,Agrostis,sin_cambio,alta,Sin observaciones
+t14,t14,Aguanosa,Aguanosa,Tetragonia microcarpa,Tetragonia microcarpa,Tetragonia,sin_cambio,alta,Sin observaciones
+ac,ac,Aira caryophyllea,Aira caryophyllea,Aira caryophyllea,Aira caryophyllea,Aira,sin_cambio,alta,Sin observaciones
+a55,a55,Aira praecox,Aira praecox,Aira praecox,Aira praecox,Aira,sin_cambio,alta,Sin observaciones
+PZ,PZ,álamo,álamo,Populus sp.,Populus sp.,Populus,sin_cambio,alta,Sin observaciones
+PI,PI,álamo,álamo,Populus nigra,Populus nigra,Populus,sin_cambio,alta,Sin observaciones
+PH,PH,álamo,álamo,Populus alba,Populus alba,Populus,sin_cambio,alta,Sin observaciones
+Sd,Sd,alcaparra,alcaparra,Senna cumingii,Senna cumingii,Senna,sin_cambio,alta,Sin observaciones
+vr,vr,Aldama revoluta,Aldama revoluta,Aldama revoluta,Aldama revoluta,Aldama,sin_cambio,alta,Sin observaciones
+FC,FC,alerce,alerce,Fitzroya cupressoides,Fitzroya cupressoides,Fitzroya,sin_cambio,alta,Sin observaciones
+al,al,alfalfa,alfalfa,Medicago sativa,Medicago sativa,Medicago,sin_cambio,alta,Sin observaciones
+lc,lc,alfalfa chilota,alfalfa chilota,Lotus corniculatus,Lotus corniculatus,Lotus,sin_cambio,alta,Sin observaciones
+ec,ec,alfilerillo,alfilerillo,Erodium cicutarium,Erodium cicutarium,Erodium,sin_cambio,alta,Sin observaciones
+eh,eh,alfilerillo,alfilerillo,Erodium moschatum,Erodium moschatum,Erodium,sin_cambio,alta,Sin observaciones
+eb,eb,alfilerillo,alfilerillo,Erodium botrys,Erodium botrys,Erodium,sin_cambio,alta,Sin observaciones
+Bz,Bz,algarrobilla,algarrobilla,Balsamocarpon brevifolium,Balsamocarpon brevifolium,Balsamocarpon,sin_cambio,alta,Sin observaciones
+PC,PC,algarrobo,algarrobo,Prosopis chilensis,Prosopis chilensis,Prosopis,sin_cambio,alta,Sin observaciones
+PP,PP,algarrobo del norte,algarrobo del norte,Prosopis alba,Prosopis alba,Prosopis,sin_cambio,alta,Sin observaciones
+AG,AG,aliso,aliso,Alnus glutinosa,Alnus glutinosa,Alnus,sin_cambio,alta,Sin observaciones
+Fa,Fa,alma tola,alma tola,Fabiana denudata,Fabiana denudata,Fabiana,sin_cambio,alta,Sin observaciones
+mn,mn,almizcle,almizcle,Moscharia pinnatifida,Moscharia pinnatifida,Moscharia,sin_cambio,alta,Sin observaciones
+A31,A31,Alona deserticola,Alona deserticola,Alona deserticola,Alona deserticola,Alona,sin_cambio,alta,Sin observaciones
+am2,am2,Alopecurus magellanicus,Alopecurus magellanicus,Alopecurus magellanicus,Alopecurus magellanicus,Alopecurus,sin_cambio,alta,Sin observaciones
+a38,a38,Alopecurus pratensis,Alopecurus pratensis,Alopecurus pratensis,Alopecurus pratensis,Alopecurus,sin_cambio,alta,Sin observaciones
+a62,a62,Alopecurus sp.,Alopecurus sp.,Alopecurus sp.,Alopecurus sp.,Alopecurus,sin_cambio,alta,Sin observaciones
+A13,A13,Aloysia deserticola,Aloysia deserticola,Aloysia deserticola,Aloysia deserticola,Aloysia,sin_cambio,alta,Sin observaciones
+Bd,Bd,Amancae,Amancae,Balbisia microphylla,Balbisia microphylla,Balbisia,sin_cambio,alta,Sin observaciones
+Ba,Ba,amancay,amancay,Balbisia peduncularis,Balbisia peduncularis,Balbisia,sin_cambio,alta,Sin observaciones
+ay,ay,Amblyopappus pusillus,Amblyopappus pusillus,Amblyopappus pusillus,Amblyopappus pusillus,Amblyopappus,sin_cambio,alta,Sin observaciones
+Ak,Ak,Ambrosia,Ambrosia,Ambrosia artemisioides,Ambrosia artemisioides,Ambrosia,sin_cambio,alta,Sin observaciones
+a21,a21,Ambrosia chamissonis,Ambrosia chamissonis,Ambrosia chamissonis,Ambrosia chamissonis,Ambrosia,sin_cambio,alta,Sin observaciones
+tf,tf,amores secos,amores secos,Acaena sericea,Acaena sericea,Acaena,sin_cambio,alta,Sin observaciones
+a22,a22,Amphiscirpus nevadensis,Amphiscirpus nevadensis,Amphiscirpus nevadensis,Amphiscirpus nevadensis,Amphiscirpus,sin_cambio,alta,Sin observaciones
+a23,a23,Amsinckia calycina,Amsinckia calycina,Amsinckia calycina,Amsinckia calycina,Amsinckia,sin_cambio,alta,Sin observaciones
+Au,Au,anahua,anahua,Adesmia horrida,Adesmia horrida,Adesmia,sin_cambio,alta,Sin observaciones
+Zx,Zx,anahuilla,anahuilla,Adesmia spinosissima,Adesmia spinosissima,Adesmia,sin_cambio,alta,Sin observaciones
+Ni,Ni,Anarthrophyllum andicolum,Anarthrophyllum andicolum,Anarthrophyllum andicolum,Anarthrophyllum andicolum,Anarthrophyllum,sin_cambio,alta,Sin observaciones
+A26,A26,Anarthrophyllum cumingii,Anarthrophyllum cumingii,Anarthrophyllum cumingii,Anarthrophyllum cumingii,Anarthrophyllum,sin_cambio,alta,Sin observaciones
+A33,A33,Anarthrophyllum desideratum,Anarthrophyllum desideratum,Anarthrophyllum desideratum,Anarthrophyllum desideratum,Anarthrophyllum,sin_cambio,alta,Sin observaciones
+Ng,Ng,Anarthrophyllum gayanum,Anarthrophyllum gayanum,Anarthrophyllum gayanum,Anarthrophyllum gayanum,Anarthrophyllum,sin_cambio,alta,Sin observaciones
+T3,T3,Añawaya,Añawaya,Tetraglochin cristatum,Tetraglochin cristatum,Tetraglochin,sin_cambio,alta,Sin observaciones
+af,af,Anemone multifida,Anemone multifida,Anemone multifida,Anemone multifida,Anemone,sin_cambio,alta,Sin observaciones
+ni,ni,Antennaria chilensis,Antennaria chilensis,Antennaria chilensis,Antennaria chilensis,Antennaria,sin_cambio,alta,Sin observaciones
+a24,a24,Anthemis cotula,Anthemis cotula,Anthemis cotula,Anthemis cotula,Anthemis,sin_cambio,alta,Sin observaciones
+aj,aj,Anthemis inodora,Anthemis inodora,Anthemis inodora,Anthemis inodora,Anthemis,sin_cambio,alta,Sin observaciones
+a39,a39,Anthoxanthum redolens,Anthoxanthum redolens,Anthoxanthum redolens,Anthoxanthum redolens,Anthoxanthum,sin_cambio,alta,Sin observaciones
+ac3,ac3,Anthriscus caucalis,Anthriscus caucalis,Anthriscus caucalis,Anthriscus caucalis,Anthriscus,sin_cambio,alta,Sin observaciones
+Ze,Ze,Aphyllocladus denticulatus,Aphyllocladus denticulatus,Aphyllocladus denticulatus,Aphyllocladus denticulatus,Aphyllocladus,sin_cambio,alta,Sin observaciones
+iu,iu,apium,apium,Apium australe,Apium australe,Apium,sin_cambio,alta,Sin observaciones
+ac4,ac4,Apodasmia chilensis,Apodasmia chilensis,Apodasmia chilensis,Apodasmia chilensis,Apodasmia,sin_cambio,alta,Sin observaciones
+LL,LL,arce,arce,Acer sp.,Acer sp.,Acer,sin_cambio,alta,Sin observaciones
+as2,as2,Arenaria serpens,Arenaria serpens,Arenaria serpens,Arenaria serpens,Arenaria,sin_cambio,alta,Sin observaciones
+a14,a14,Aristida adscensionis,Aristida adscensionis,Aristida adscensionis,Aristida adscensionis,Aristida,sin_cambio,alta,Sin observaciones
+ar,ar,Armeria maritima,Armeria maritima,Armeria maritima,Armeria maritima,Armeria,sin_cambio,alta,Sin observaciones
+AR,AR,aromo,aromo,Acacia melanoxylon,Acacia melanoxylon,Acacia,sin_cambio,alta,Sin observaciones
+AD,AD,aromo,aromo,Acacia dealbata,Acacia dealbata,Acacia,sin_cambio,alta,Sin observaciones
+Al,Al,aromo,aromo,Azara lanceolata,Azara lanceolata,Azara,sin_cambio,alta,Sin observaciones
+LA,LA,arrayán,arrayán,Luma apiculata,Luma apiculata,Luma,sin_cambio,alta,Sin observaciones
+Rs,Rs,arrayán macho,arrayán macho,Rhaphithamnus spinosus,Rhaphithamnus spinosus,Rhaphithamnus,sin_cambio,alta,Sin observaciones
+a15,a15,Arundo donax,Arundo donax,Arundo donax,Arundo donax,Arundo,sin_cambio,alta,Sin observaciones
+ae,ae,arvejilla,arvejilla,Adesmia tenella,Adesmia tenella,Adesmia,sin_cambio,alta,Sin observaciones
+at,at,arvejilla,arvejilla,Avena barbata,Avena barbata,Avena,sin_cambio,alta,Sin observaciones
+v13,v13,arvejilla,arvejilla,Vicia sativa,Vicia sativa,Vicia,sin_cambio,alta,Sin observaciones
+a41,a41,Astelia pumila,Astelia pumila,Astelia pumila,Astelia pumila,Astelia,sin_cambio,alta,Sin observaciones
+so,so,Asteranthera ovata,Asteranthera ovata,Asteranthera ovata,Asteranthera ovata,Asteranthera,sin_cambio,alta,Sin observaciones
+A32,A32,Atriplex clivicola,Atriplex clivicola,Atriplex clivicola,Atriplex clivicola,Atriplex,sin_cambio,alta,Sin observaciones
+A14,A14,Atriplex madariagae,Atriplex madariagae,Atriplex madariagae,Atriplex madariagae,Atriplex,sin_cambio,alta,Sin observaciones
+An,An,Atriplex nummularia,Atriplex nummularia,Atriplex nummularia,Atriplex nummularia,Atriplex,sin_cambio,alta,Sin observaciones
+a27,a27,Atriplex semibaccata,Atriplex semibaccata,Atriplex semibaccata,Atriplex semibaccata,Atriplex,sin_cambio,alta,Sin observaciones
+A35,A35,Atriplex vulgatissima,Atriplex vulgatissima,Atriplex vulgatissima,Atriplex vulgatissima,Atriplex,sin_cambio,alta,Sin observaciones
+LD,LD,avellanillo,avellanillo,Lomatia dentata,Lomatia dentata,Lomatia,sin_cambio,alta,Sin observaciones
+GA,GA,avellano,avellano,Gevuina avellana,Gevuina avellana,Gevuina,sin_cambio,alta,Sin observaciones
+vf,vf,avena,avena,Avena fatua,Avena fatua,Avena,sin_cambio,alta,Sin observaciones
+a42,a42,Avena sativa,Avena sativa,Avena sativa,Avena sativa,Avena,sin_cambio,alta,Sin observaciones
+of,of,Azolla filiculoides,Azolla filiculoides,Azolla filiculoides,Azolla filiculoides,Azolla,sin_cambio,alta,Sin observaciones
+a59,a59,Azorella atacamensis,Azorella atacamensis,Azorella atacamensis,Azorella atacamensis,Azorella,sin_cambio,alta,Sin observaciones
+a28,a28,Azorella cryptantha,Azorella cryptantha,Azorella cryptantha,Azorella cryptantha,Azorella,sin_cambio,alta,Sin observaciones
+a29,a29,Azorella monantha,Azorella monantha,Azorella monantha,Azorella monantha,Azorella,sin_cambio,alta,Sin observaciones
+Ar1,Ar1,Azorella ruizii,Azorella ruizii,Azorella ruizii,Azorella ruizii,Azorella,sin_cambio,alta,Sin observaciones
+a30,a30,Azorella trifoliolata,Azorella trifoliolata,Azorella trifoliolata,Azorella trifoliolata,Azorella,sin_cambio,alta,Sin observaciones
+a45,a45,Azorella trifurcata,Azorella trifurcata,Azorella trifurcata,Azorella trifurcata,Azorella,sin_cambio,alta,Sin observaciones
+b19,b19,Baccharis acaulis,Baccharis acaulis,Baccharis acaulis,Baccharis acaulis,Baccharis,sin_cambio,alta,Sin observaciones
+B1,B1,Baccharis alnifolia,Baccharis alnifolia,Baccharis alnifolia,Baccharis alnifolia,Baccharis,sin_cambio,alta,Sin observaciones
+B8,B8,Baccharis glutinosa,Baccharis glutinosa,Baccharis glutinosa,Baccharis glutinosa,Baccharis,sin_cambio,alta,Sin observaciones
+b20,b20,Baccharis juncea,Baccharis juncea,Baccharis juncea,Baccharis juncea,Baccharis,sin_cambio,alta,Sin observaciones
+Rk,Rk,Baccharis macraei,Baccharis macraei,Baccharis macraei,Baccharis macraei,Baccharis,sin_cambio,alta,Sin observaciones
+Bg,Bg,Baccharis magellanica,Baccharis magellanica,Baccharis magellanica,Baccharis magellanica,Baccharis,sin_cambio,alta,Sin observaciones
+B2,B2,Baccharis neaei,Baccharis neaei,Baccharis neaei,Baccharis neaei,Baccharis,sin_cambio,alta,Sin observaciones
+Bv,Bv,Baccharis obovata,Baccharis obovata,Baccharis obovata,Baccharis obovata,Baccharis,sin_cambio,alta,Sin observaciones
+Ym,Ym,Baccharis paniculata,Baccharis paniculata,Baccharis paniculata,Baccharis paniculata,Baccharis,sin_cambio,alta,Sin observaciones
+Bp,Bp,Baccharis patagonica,Baccharis patagonica,Baccharis patagonica,Baccharis patagonica,Baccharis,sin_cambio,alta,Sin observaciones
+b13,b13,Baccharis pingraea,Baccharis pingraea,Baccharis pingraea,Baccharis pingraea,Baccharis,sin_cambio,alta,Sin observaciones
+Bk,Bk,Baccharis scandens,Baccharis scandens,Baccharis scandens,Baccharis scandens,Baccharis,sin_cambio,alta,Sin observaciones
+Bq,Bq,Baccharis sp.,Baccharis sp.,Baccharis sp.,Baccharis sp.,Baccharis,sin_cambio,alta,Sin observaciones
+B3,B3,Baccharis spartioides,Baccharis spartioides,Baccharis spartioides,Baccharis spartioides,Baccharis,sin_cambio,alta,Sin observaciones
+B11,B11,Baccharis tricuneata,Baccharis tricuneata,Baccharis tricuneata,Baccharis tricuneata,Baccharis,sin_cambio,alta,Sin observaciones
+B12,B12,Baccharis zoellneri,Baccharis zoellneri,Baccharis zoellneri,Baccharis zoellneri,Baccharis,sin_cambio,alta,Sin observaciones
+Hb,Hb,bailahuén,bailahuén,Haplopappus baylahuen,Haplopappus baylahuen,Haplopappus,sin_cambio,alta,Sin observaciones
+Hg,Hg,bailahuén,bailahuén,Haplopappus remyanus,Haplopappus remyanus,Haplopappus,sin_cambio,alta,Sin observaciones
+bk,bk,Bakerolimon plumosum,Bakerolimon plumosum,Bakerolimon plumosum,Bakerolimon plumosum,Bakerolimon,sin_cambio,alta,Sin observaciones
+EH,EH,barraco,barraco,Escallonia illinita,Escallonia illinita,Escallonia,sin_cambio,alta,Sin observaciones
+b24,b24,Bellis perennis,Bellis perennis,Bellis perennis,Bellis perennis,Bellis,sin_cambio,alta,Sin observaciones
+BM,BM,belloto del norte,belloto del norte,Beilschmiedia miersii,Beilschmiedia miersii,Beilschmiedia,sin_cambio,alta,Sin observaciones
+BB,BB,belloto del sur,belloto del sur,Beilschmiedia berteroana,Beilschmiedia berteroana,Beilschmiedia,sin_cambio,alta,Sin observaciones
+B13,B13,Berberis microphylla,Berberis microphylla,Berberis microphylla,Berberis microphylla,Berberis,sin_cambio,alta,Sin observaciones
+Bm,Bm,Berberis montana,Berberis montana,Berberis montana,Berberis montana,Berberis,sin_cambio,alta,Sin observaciones
+Gi,Gi,bio bio,bio bio,Gymnophyton isatidicarpum,Gymnophyton isatidicarpum,Gymnophyton,sin_cambio,alta,Sin observaciones
+b23,b23,Bolax caespitosa,Bolax caespitosa,Bolax caespitosa,Bolax caespitosa,Bolax,sin_cambio,alta,Sin observaciones
+bg,bg,Bolax gummifera,Bolax gummifera,Bolax gummifera,Bolax gummifera,Bolax,sin_cambio,alta,Sin observaciones
+b26,b26,Bolboschoenus maritimus,Bolboschoenus maritimus,Bolboschoenus maritimus,Bolboschoenus maritimus,Bolboschoenus,sin_cambio,alta,Sin observaciones
+PB,PB,boldo,boldo,Peumus boldus,Peumus boldus,Peumus,sin_cambio,alta,Sin observaciones
+KO,KO,bollén,bollén,Kageneckia oblonga,Kageneckia oblonga,Kageneckia,sin_cambio,alta,Sin observaciones
+b15,b15,Brassica nigra,Brassica nigra,Brassica nigra,Brassica nigra,Brassica,sin_cambio,alta,Sin observaciones
+b16,b16,Brassica rapa,Brassica rapa,Brassica rapa,Brassica rapa,Brassica,sin_cambio,alta,Sin observaciones
+b25,b25,Brassica sp.,Brassica sp.,Brassica sp.,Brassica sp.,Brassica,sin_cambio,alta,Sin observaciones
+Th,Th,brea,brea,Tessaria absinthioides,Tessaria absinthioides,Tessaria,sin_cambio,alta,Sin observaciones
+B5,B5,Bridgesia incisifolia,Bridgesia incisifolia,Bridgesia incisifolia,Bridgesia incisifolia,Bridgesia,sin_cambio,alta,Sin observaciones
+bx,bx,bromus,bromus,Bromus sp.,Bromus sp.,Bromus,sin_cambio,alta,Sin observaciones
+bh,bh,Bromus hordeaceus,Bromus hordeaceus,Bromus hordeaceus,Bromus hordeaceus,Bromus,sin_cambio,alta,Sin observaciones
+b18,b18,Bromus rigidus,Bromus rigidus,Bromus rigidus,Bromus rigidus,Bromus,sin_cambio,alta,Sin observaciones
+bs1,bs1,Bryophyta spp.,Bryophyta spp.,Bryophyta spp.,Bryophyta spp.,Bryophyta,sin_cambio,alta,Sin observaciones
+Us,Us,Buddleja suaveolens,Buddleja suaveolens,Buddleja suaveolens,Buddleja suaveolens,Buddleja,sin_cambio,alta,Sin observaciones
+Ax,Ax,cachiyuyo,cachiyuyo,Atriplex atacamensis,Atriplex atacamensis,Atriplex,sin_cambio,alta,Sin observaciones
+Xd,Xd,cachiyuyo,cachiyuyo,Atriplex deserticola,Atriplex deserticola,Atriplex,sin_cambio,alta,Sin observaciones
+Hf,Hf,cacho de cabra,cacho de cabra,Haplopappus foliosus,Haplopappus foliosus,Haplopappus,sin_cambio,alta,Sin observaciones
+az,az,cadilla,cadilla,Acaena magellanica,Acaena magellanica,Acaena,sin_cambio,alta,Sin observaciones
+ao,ao,cadilla,cadilla,Acaena ovalifolia,Acaena ovalifolia,Acaena,sin_cambio,alta,Sin observaciones
+Lg,Lg,Caesalpinia angulata,Caesalpinia angulata,Caesalpinia angulata,Caesalpinia angulata,Caesalpinia,sin_cambio,alta,Sin observaciones
+C20,C20,Caesalpinia aphylla,Caesalpinia aphylla,Caesalpinia aphylla,Caesalpinia aphylla,Caesalpinia,sin_cambio,alta,Sin observaciones
+Bb,Bb,calafate,calafate,Berberis buxifolia,Berberis buxifolia,Berberis,sin_cambio,alta,Sin observaciones
+Nx,Nx,calahuala,calahuala,Nassauvia axillaris,Nassauvia axillaris,Nassauvia,sin_cambio,alta,Sin observaciones
+wg,wg,calahuala,calahuala,Rumohra adiantiformis,Rumohra adiantiformis,Rumohra,sin_cambio,alta,Sin observaciones
+tL,tL,Calanchuca,Calanchuca,Tillandsia landbeckii,Tillandsia landbeckii,Tillandsia,sin_cambio,alta,Sin observaciones
+tM,tM,Calanchuca,Calanchuca,Tillandsia marconae,Tillandsia marconae,Tillandsia,sin_cambio,alta,Sin observaciones
+jÃ,jÃ,Calandrinia cymosa,Calandrinia cymosa,Calandrinia cymosa,Calandrinia cymosa,Calandrinia,sin_cambio,alta,Sin observaciones
+c20,c20,Calandrinia picta,Calandrinia picta,Calandrinia picta,Calandrinia picta,Calandrinia,sin_cambio,alta,Sin observaciones
+ws,ws,Calandrinia sp.,Calandrinia sp.,Calandrinia sp.,Calandrinia sp.,Calandrinia,sin_cambio,alta,Sin observaciones
+c47,c47,Calceolaria pinifolia,Calceolaria pinifolia,Calceolaria pinifolia,Calceolaria pinifolia,Calceolaria,sin_cambio,alta,Sin observaciones
+Ip,Ip,Calceolaria polifolia,Calceolaria polifolia,Calceolaria polifolia,Calceolaria polifolia,Calceolaria,sin_cambio,alta,Sin observaciones
+Pn,Pn,Calceolaria pubescens,Calceolaria pubescens,Calceolaria pubescens,Calceolaria pubescens,Calceolaria,sin_cambio,alta,Sin observaciones
+ks,ks,Calceolaria sp.,Calceolaria sp.,Calceolaria sp.,Calceolaria sp.,Calceolaria,sin_cambio,alta,Sin observaciones
+gl,gl,Calceolaria verbascifolia,Calceolaria verbascifolia,Calceolaria verbascifolia,Calceolaria verbascifolia,Calceolaria,sin_cambio,alta,Sin observaciones
+c21,c21,Calliandra chilensis,Calliandra chilensis,Calliandra chilensis,Calliandra chilensis,Calliandra,sin_cambio,alta,Sin observaciones
+c36,c36,calta de turbera,calta de turbera,Caltha appendiculata,Caltha appendiculata,Caltha,sin_cambio,alta,Sin observaciones
+c57,c57,Caltha sagittata,Caltha sagittata,Caltha sagittata,Caltha sagittata,Caltha,sin_cambio,alta,Sin observaciones
+cs,cs,Caltha sagittata,Caltha sagittata,Caltha sagittata,Caltha sagittata,Caltha,sin_cambio,alta,Sin observaciones
+bW,bW,Candelabro,Candelabro,Browningia candelaris,Browningia candelaris,Browningia,sin_cambio,alta,Sin observaciones
+DW,DW,canelo,canelo,Drimys winteri,Drimys winteri,Drimys,sin_cambio,alta,Sin observaciones
+Da,Da,canelo enano,canelo enano,Drimys andina,Drimys andina,Drimys,sin_cambio,alta,Sin observaciones
+bd,bd,Capsella bursa-pastoris,Capsella bursa-pastoris,Capsella bursa-pastoris,Capsella bursa-pastoris,Capsella,sin_cambio,alta,Sin observaciones
+CD,CD,carbonillo,carbonillo,Cordia decandra,Cordia decandra,Cordia,sin_cambio,alta,Sin observaciones
+cu,cu,cardilla,cardilla,Carthamus lanatus,Carthamus lanatus,Carthamus,sin_cambio,alta,Sin observaciones
+kn,kn,cardilla,cardilla,Carduus pycnocephalus,Carduus pycnocephalus,Carduus,sin_cambio,alta,Sin observaciones
+C5,C5,cardo,cardo,Cirsium vulgare,Cirsium vulgare,Cirsium,sin_cambio,alta,Sin observaciones
+pC,pC,cardón,cardón,Puya chilensis,Puya chilensis,Puya,sin_cambio,alta,Sin observaciones
+ca1,ca1,Carex aematorhyncha,Carex aematorhyncha,Carex aematorhyncha,Carex aematorhyncha,Carex,sin_cambio,alta,Sin observaciones
+c58,c58,Carex canescens,Carex canescens,Carex canescens,Carex canescens,Carex,sin_cambio,alta,Sin observaciones
+c59,c59,Carex darwinii,Carex darwinii,Carex darwinii,Carex darwinii,Carex,sin_cambio,alta,Sin observaciones
+kc,kc,Carex decidua,Carex decidua,Carex decidua,Carex decidua,Carex,sin_cambio,alta,Sin observaciones
+cx,cx,Carex gayana,Carex gayana,Carex gayana,Carex gayana,Carex,sin_cambio,alta,Sin observaciones
+c51,c51,Carex magellanica,Carex magellanica,Carex magellanica,Carex magellanica,Carex,sin_cambio,alta,Sin observaciones
+zk,zk,Carex maritima,Carex maritima,Carex maritima,Carex maritima,Carex,sin_cambio,alta,Sin observaciones
+c52,c52,Carex microglochin,Carex microglochin,Carex microglochin,Carex microglochin,Carex,sin_cambio,alta,Sin observaciones
+fj,fj,Carex pleioneura,Carex pleioneura,Carex pleioneura,Carex pleioneura,Carex,sin_cambio,alta,Sin observaciones
+c53,c53,Carex sorianoi,Carex sorianoi,Carex sorianoi,Carex sorianoi,Carex,sin_cambio,alta,Sin observaciones
+kx,kx,Carex sp.,Carex sp.,Carex sp.,Carex sp.,Carex,sin_cambio,alta,Sin observaciones
+c23,c23,Carex subantarctica,Carex subantarctica,Carex subantarctica,Carex subantarctica,Carex,sin_cambio,alta,Sin observaciones
+c24,c24,Carex vallis-pulchrae,Carex vallis-pulchrae,Carex vallis-pulchrae,Carex vallis-pulchrae,Carex,sin_cambio,alta,Sin observaciones
+c54,c54,Carpha schoenoides,Carpha schoenoides,Carpha schoenoides,Carpha schoenoides,Carpha,sin_cambio,alta,Sin observaciones
+Lx,Lx,carpiche,carpiche,Lycium minutifolium,Lycium minutifolium,Lycium,sin_cambio,alta,Sin observaciones
+CS,CS,castaño,castaño,Castanea sativa,Castanea sativa,Castanea,sin_cambio,alta,Sin observaciones
+fv,fv,Centipeda elatinoides,Centipeda elatinoides,Centipeda elatinoides,Centipeda elatinoides,Centipeda,sin_cambio,alta,Sin observaciones
+Nj,Nj,cepacaballo cadillo,cepacaballo cadillo,Acaena alpina,Acaena alpina,Acaena,sin_cambio,alta,Sin observaciones
+cc,cc,cepa caballo trunes,cepa caballo trunes,Acaena splendens,Acaena splendens,Acaena,sin_cambio,alta,Sin observaciones
+ea,ea,Cerastium arvense,Cerastium arvense,Cerastium arvense,Cerastium arvense,Cerastium,sin_cambio,alta,Sin observaciones
+Dt,Dt,chacay,chacay,Discaria trinervis,Discaria trinervis,Discaria,sin_cambio,alta,Sin observaciones
+Ds,Ds,chacay,chacay,Discaria serratifolia,Discaria serratifolia,Discaria,sin_cambio,alta,Sin observaciones
+Dc,Dc,chacay,chacay,Discaria chacaye,Discaria chacaye,Discaria,sin_cambio,alta,Sin observaciones
+Su,Su,Chachacoma,Chachacoma,Senecio nutans,Senecio nutans,Senecio,sin_cambio,alta,Sin observaciones
+ch,ch,Chaetanthera chilensis,Chaetanthera chilensis,Chaetanthera chilensis,Chaetanthera chilensis,Chaetanthera,sin_cambio,alta,Sin observaciones
+Cj,Cj,Chaetanthera glandulosa,Chaetanthera glandulosa,Chaetanthera glandulosa,Chaetanthera glandulosa,Chaetanthera,sin_cambio,alta,Sin observaciones
+ci,ci,Chaetanthera moenchioides,Chaetanthera moenchioides,Chaetanthera moenchioides,Chaetanthera moenchioides,Chaetanthera,sin_cambio,alta,Sin observaciones
+pB,pB,chagual,chagual,Puya berteroniana,Puya berteroniana,Puya,sin_cambio,alta,Sin observaciones
+pV,pV,chagualillo,chagualillo,Puya venusta,Puya venusta,Puya,sin_cambio,alta,Sin observaciones
+dC,dC,chaguar del jote,chaguar del jote,Deuterocohnia chrysantha,Deuterocohnia chrysantha,Deuterocohnia,sin_cambio,alta,Sin observaciones
+sk,sk,Chake,Chake,Stipa nardoides,Stipa nardoides,Stipa,sin_cambio,alta,Sin observaciones
+dy,dy,Chake,Chake,Deyeuxia breviaristata,Deyeuxia breviaristata,Deyeuxia,sin_cambio,alta,Sin observaciones
+Cz,Cz,chamiza,chamiza,Bahia ambrosioides,Bahia ambrosioides,Bahia,sin_cambio,alta,Sin observaciones
+GD,GD,chañar,chañar,Geoffroea decorticans,Geoffroea decorticans,Geoffroea,sin_cambio,alta,Sin observaciones
+g14,g14,chaura,chaura,Gaultheria pumila,Gaultheria pumila,Gaultheria,sin_cambio,alta,Sin observaciones
+Pm,Pm,chaura,chaura,Pernettya mucronata,Pernettya mucronata,Pernettya,sin_cambio,alta,Sin observaciones
+Py,Py,chaura,chaura,Pernettya pumila,Pernettya pumila,Pernettya,sin_cambio,alta,Sin observaciones
+Gp,Gp,chaura común,chaura común,Gaultheria phillyreifolia,Gaultheria phillyreifolia,Gaultheria,sin_cambio,alta,Sin observaciones
+Bi,Bi,chelia,chelia,Berberis ilicifolia,Berberis ilicifolia,Berberis,sin_cambio,alta,Sin observaciones
+c15,c15,Chenopodium petiolare,Chenopodium petiolare,Chenopodium petiolare,Chenopodium petiolare,Chenopodium,sin_cambio,alta,Sin observaciones
+cv1,cv1,Chenopodium vulvaria,Chenopodium vulvaria,Chenopodium vulvaria,Chenopodium vulvaria,Chenopodium,sin_cambio,alta,Sin observaciones
+ag,ag,chepica del sur,chepica del sur,Agrostis alba,Agrostis alba,Agrostis,sin_cambio,alta,Sin observaciones
+LZ,LZ,chequén,chequén,Luma chequen,Luma chequen,Luma,sin_cambio,alta,Sin observaciones
+Bs,Bs,chilca,chilca,Baccharis salicifolia,Baccharis salicifolia,Baccharis,sin_cambio,alta,Sin observaciones
+P2,P2,Chilca,Chilca,Pluchea chingoyo,Pluchea chingoyo,Pluchea,sin_cambio,alta,Sin observaciones
+Fm,Fm,chilco,chilco,Fuchsia magellanica,Fuchsia magellanica,Fuchsia,sin_cambio,alta,Sin observaciones
+C26,C26,Chiliotrichum fuegianum,Chiliotrichum fuegianum,Chiliotrichum fuegianum,Chiliotrichum fuegianum,Chiliotrichum,sin_cambio,alta,Sin observaciones
+fh,fh,chillagua,chillagua,Festuca hypsophila,Festuca hypsophila,Festuca,sin_cambio,alta,Sin observaciones
+A27,A27,chin chin,chin chin,Azara microphylla,Azara microphylla,Azara,sin_cambio,alta,Sin observaciones
+c30,c30,Chorizanthe commissuralis,Chorizanthe commissuralis,Chorizanthe commissuralis,Chorizanthe commissuralis,Chorizanthe,sin_cambio,alta,Sin observaciones
+Ia,Ia,Chorizanthe dasyantha,Chorizanthe dasyantha,Chorizanthe dasyantha,Chorizanthe dasyantha,Chorizanthe,sin_cambio,alta,Sin observaciones
+C17,C17,Chorizanthe deserticola,Chorizanthe deserticola,Chorizanthe deserticola,Chorizanthe deserticola,Chorizanthe,sin_cambio,alta,Sin observaciones
+Yb,Yb,Chorizanthe frankenioides,Chorizanthe frankenioides,Chorizanthe frankenioides,Chorizanthe frankenioides,Chorizanthe,sin_cambio,alta,Sin observaciones
+C24,C24,Chorizanthe intricata,Chorizanthe intricata,Chorizanthe intricata,Chorizanthe intricata,Chorizanthe,sin_cambio,alta,Sin observaciones
+Cb,Cb,Chuquiraga acicularis,Chuquiraga acicularis,Chuquiraga acicularis,Chuquiraga acicularis,Chuquiraga,sin_cambio,alta,Sin observaciones
+C22,C22,Chuquiraga atacamensis,Chuquiraga atacamensis,Chuquiraga atacamensis,Chuquiraga atacamensis,Chuquiraga,sin_cambio,alta,Sin observaciones
+C14,C14,Chuquiraga spinosa,Chuquiraga spinosa,Chuquiraga spinosa,Chuquiraga spinosa,Chuquiraga,sin_cambio,alta,Sin observaciones
+C19,C19,Chuquiraga ulicina,Chuquiraga ulicina,Chuquiraga ulicina,Chuquiraga ulicina,Chuquiraga,sin_cambio,alta,Sin observaciones
+Cq1,Cq1,Chusquea sp.,Chusquea sp.,Chusquea sp.,Chusquea sp.,Chusquea,sin_cambio,alta,Sin observaciones
+CU,CU,ciprés,ciprés,Cupressus sp.,Cupressus sp.,Cupressus,sin_cambio,alta,Sin observaciones
+CC,CC,ciprés,ciprés,Cupressus macrocarpa,Cupressus macrocarpa,Cupressus,sin_cambio,alta,Sin observaciones
+AC,AC,ciprés de la cordillera,ciprés de la cordillera,Austrocedrus chilensis,Austrocedrus chilensis,Austrocedrus,sin_cambio,alta,Sin observaciones
+PU,PU,ciprés de las guaitecas,ciprés de las guaitecas,Pilgerodendron uviferum,Pilgerodendron uviferum,Pilgerodendron,sin_cambio,alta,Sin observaciones
+Lk,Lk,ciprés enano,ciprés enano,Lepidothamnus fonkii,Lepidothamnus fonkii,Lepidothamnus,sin_cambio,alta,Sin observaciones
+c44,c44,Cistanthe salsoloides,Cistanthe salsoloides,Cistanthe salsoloides,Cistanthe salsoloides,Cistanthe,sin_cambio,alta,Sin observaciones
+P1,P1,coicopihue,coicopihue,Philesia magellanica,Philesia magellanica,Philesia,sin_cambio,alta,Sin observaciones
+ND,ND,coihue,coihue,Nothofagus dombeyi,Nothofagus dombeyi,Nothofagus,sin_cambio,alta,Sin observaciones
+PK,PK,coihue,coihue,Pinus contorta,Pinus contorta,Pinus,sin_cambio,alta,Sin observaciones
+NN,NN,coihue de chiloé,coihue de chiloé,Nothofagus nitida,Nothofagus nitida,Nothofagus,sin_cambio,alta,Sin observaciones
+NB,NB,coihue de magallanes,coihue de magallanes,Nothofagus betuloides,Nothofagus betuloides,Nothofagus,sin_cambio,alta,Sin observaciones
+wt,wt,coirón,coirón,Stipa atacamensis,Stipa atacamensis,Stipa,sin_cambio,alta,Sin observaciones
+ss,ss,coirón,coirón,Stipa speciosa,Stipa speciosa,Stipa,sin_cambio,alta,Sin observaciones
+fk,fk,coirón,coirón,Festuca kurtziana,Festuca kurtziana,Festuca,sin_cambio,alta,Sin observaciones
+fa,fa,coirón,coirón,Festuca acanthophylla,Festuca acanthophylla,Festuca,sin_cambio,alta,Sin observaciones
+fr,fr,coirón,coirón,Festuca argentina,Festuca argentina,Festuca,sin_cambio,alta,Sin observaciones
+sj,sj,coirón,coirón,Stipa patagonica,Stipa patagonica,Stipa,sin_cambio,alta,Sin observaciones
+fp,fp,coirón,coirón,Festuca pallescens,Festuca pallescens,Festuca,sin_cambio,alta,Sin observaciones
+fg,fg,coirón,coirón,Festuca gracillima,Festuca gracillima,Festuca,sin_cambio,alta,Sin observaciones
+nc,nc,coironcillo,coironcillo,Nassella chilensis,Nassella chilensis,Nassella,sin_cambio,alta,Sin observaciones
+Pe,Pe,cola de ratón,cola de ratón,Pleocarphus revolutus,Pleocarphus revolutus,Pleocarphus,sin_cambio,alta,Sin observaciones
+cr,cr,cola de zorro,cola de zorro,Cortaderia rudiuscula,Cortaderia rudiuscula,Cortaderia,sin_cambio,alta,Sin observaciones
+cz,cz,Cola de zorro,Cola de zorro,Cortaderia atacamensis,Cortaderia atacamensis,Cortaderia,sin_cambio,alta,Sin observaciones
+Ce,Ce,colihue,colihue,Chusquea coleu,Chusquea coleu,Chusquea,sin_cambio,alta,Sin observaciones
+Cf,Cf,colliguay,colliguay,Colliguaja odorifera,Colliguaja odorifera,Colliguaja,sin_cambio,alta,Sin observaciones
+Cl,Cl,colliguay,colliguay,Colliguaja salicifolia,Colliguaja salicifolia,Colliguaja,sin_cambio,alta,Sin observaciones
+Cy,Cy,colliguay,colliguay,Colliguaja dombeyana,Colliguaja dombeyana,Colliguaja,sin_cambio,alta,Sin observaciones
+Ac,Ac,copa copa,copa copa,Artemisia copa,Artemisia copa,Artemisia,sin_cambio,alta,Sin observaciones
+eU,eU,copao,copao,Eulychnia acida,Eulychnia acida,Eulychnia,sin_cambio,alta,Sin observaciones
+cB1,cB1,Copiapoa boliviana,Copiapoa boliviana,Copiapoa boliviana,Copiapoa boliviana,Copiapoa,sin_cambio,alta,Sin observaciones
+cC1,cC1,Copiapoa columna-alba,Copiapoa columna-alba,Copiapoa columna-alba,Copiapoa columna-alba,Copiapoa,sin_cambio,alta,Sin observaciones
+cM1,cM1,Copiapoa melanohystrix,Copiapoa melanohystrix,Copiapoa melanohystrix,Copiapoa melanohystrix,Copiapoa,sin_cambio,alta,Sin observaciones
+cT1,cT1,Copiapoa tenebrosa,Copiapoa tenebrosa,Copiapoa tenebrosa,Copiapoa tenebrosa,Copiapoa,sin_cambio,alta,Sin observaciones
+ng,ng,coralito,coralito,Nertera granadensis,Nertera granadensis,Nertera,sin_cambio,alta,Sin observaciones
+AN,AN,corcolén,corcolén,Azara dentata,Azara dentata,Azara,sin_cambio,alta,Sin observaciones
+cB,cB,Corryocactus brevistylus,Corryocactus brevistylus,Corryocactus brevistylus,Corryocactus brevistylus,Corryocactus,sin_cambio,alta,Sin observaciones
+os,os,cortadera,cortadera,Cortaderia speciosa,Cortaderia speciosa,Cortaderia,sin_cambio,alta,Sin observaciones
+c55,c55,cortaderia,cortaderia,Cortaderia egmontiana,Cortaderia egmontiana,Cortaderia,sin_cambio,alta,Sin observaciones
+c2,c2,Cortaderia sp.,Cortaderia sp.,Cortaderia sp.,Cortaderia sp.,Cortaderia,sin_cambio,alta,Sin observaciones
+bc,bc,costilla de vaca,costilla de vaca,Blechnum chilensis,Blechnum chilensis,Blechnum,sin_cambio,alta,Sin observaciones
+cc2,cc2,Cotula coronopifolia,Cotula coronopifolia,Cotula coronopifolia,Cotula coronopifolia,Cotula,sin_cambio,alta,Sin observaciones
+c1,c1,Cotula scariosa,Cotula scariosa,Cotula scariosa,Cotula scariosa,Cotula,sin_cambio,alta,Sin observaciones
+ka,ka,Crassula peduncularis,Crassula peduncularis,Crassula peduncularis,Crassula peduncularis,Crassula,sin_cambio,alta,Sin observaciones
+C1,C1,cratego,cratego,Crataegus monogyna,Crataegus monogyna,Crataegus,sin_cambio,alta,Sin observaciones
+Hv,Hv,crespilla,crespilla,Haplopappus parvifolius,Haplopappus parvifolius,Haplopappus,sin_cambio,alta,Sin observaciones
+xa,xa,Cristaria andicola,Cristaria andicola,Cristaria andicola,Cristaria andicola,Cristaria,sin_cambio,alta,Sin observaciones
+zs,zs,Cristaria aspera,Cristaria aspera,Cristaria aspera,Cristaria aspera,Cristaria,sin_cambio,alta,Sin observaciones
+kf,kf,Cristaria cyanea,Cristaria cyanea,Cristaria cyanea,Cristaria cyanea,Cristaria,sin_cambio,alta,Sin observaciones
+zv,zv,Cristaria glaucophylla,Cristaria glaucophylla,Cristaria glaucophylla,Cristaria glaucophylla,Cristaria,sin_cambio,alta,Sin observaciones
+kg,kg,Cristaria gracilis,Cristaria gracilis,Cristaria gracilis,Cristaria gracilis,Cristaria,sin_cambio,alta,Sin observaciones
+C25,C25,Cristaria integerrima,Cristaria integerrima,Cristaria integerrima,Cristaria integerrima,Cristaria,sin_cambio,alta,Sin observaciones
+c45,c45,Cristaria viridiluteola,Cristaria viridiluteola,Cristaria viridiluteola,Cristaria viridiluteola,Cristaria,sin_cambio,alta,Sin observaciones
+Cr,Cr,Croton chilensis,Croton chilensis,Croton chilensis,Croton chilensis,Croton,sin_cambio,alta,Sin observaciones
+Cs,Cs,crucero,crucero,Colletia spinossisima,Colletia spinossisima,Colletia,sin_cambio,alta,Sin observaciones
+Xh,Xh,"crucero, cunco rojo","crucero, cunco rojo",Colletia hystrix,Colletia hystrix,Colletia,sin_cambio,alta,Sin observaciones
+cg,cg,Cryptantha glomerata,Cryptantha glomerata,Cryptantha glomerata,Cryptantha glomerata,Cryptantha,sin_cambio,alta,Sin observaciones
+c70,c70,Cryptantha hispida,Cryptantha hispida,Cryptantha hispida,Cryptantha hispida,Cryptantha,sin_cambio,alta,Sin observaciones
+c16,c16,Cryptantha parviflora,Cryptantha parviflora,Cryptantha parviflora,Cryptantha parviflora,Cryptantha,sin_cambio,alta,Sin observaciones
+Zc,Zc,cuerno,cuerno,Adesmia aegiceras,Adesmia aegiceras,Adesmia,sin_cambio,alta,Sin observaciones
+Sk,Sk,cuerno de cabra,cuerno de cabra,Skytanthus acutus,Skytanthus acutus,Skytanthus,sin_cambio,alta,Sin observaciones
+Pg,Pg,culén,culén,Otholobium glandulosum,Otholobium glandulosum,Otholobium,sin_cambio,alta,Sin observaciones
+mB,mB,Cumulopuntia echinacea,Cumulopuntia echinacea,Cumulopuntia echinacea,Cumulopuntia echinacea,Cumulopuntia,sin_cambio,alta,Sin observaciones
+cV,cV,Cumulopuntia sphaerica,Cumulopuntia sphaerica,Cumulopuntia sphaerica,Cumulopuntia sphaerica,Cumulopuntia,sin_cambio,alta,Sin observaciones
+cT,cT,Cylindropuntia tunicata,Cylindropuntia tunicata,Cylindropuntia tunicata,Cylindropuntia tunicata,Cylindropuntia,sin_cambio,alta,Sin observaciones
+ca,ca,Cynara cardunculus,Cynara cardunculus,Cynara cardunculus,Cynara cardunculus,Cynara,sin_cambio,alta,Sin observaciones
+c49,c49,Cyperus laevigatus,Cyperus laevigatus,Cyperus laevigatus,Cyperus laevigatus,Cyperus,sin_cambio,alta,Sin observaciones
+C6,C6,Cytisus striatus,Cytisus striatus,Cytisus striatus,Cytisus striatus,Cytisus,sin_cambio,alta,Sin observaciones
+d21,d21,Datura sp.,Datura sp.,Datura sp.,Datura sp.,Datura,sin_cambio,alta,Sin observaciones
+Mn,Mn,daudapo,daudapo,Myrteola nummularia,Myrteola nummularia,Myrteola,sin_cambio,alta,Sin observaciones
+ef,ef,dedal de oro,dedal de oro,Eschscholzia californica,Eschscholzia californica,Eschscholzia,sin_cambio,alta,Sin observaciones
+du,du,dedalera,dedalera,Digitalis purpurea,Digitalis purpurea,Digitalis,sin_cambio,alta,Sin observaciones
+dw,dw,Deschampsia cordillerarum,Deschampsia cordillerarum,Deschampsia cordillerarum,Deschampsia cordillerarum,Deschampsia,sin_cambio,alta,Sin observaciones
+a43,a43,Deschampsia flexuosa,Deschampsia flexuosa,Deschampsia flexuosa,Deschampsia flexuosa,Deschampsia,sin_cambio,alta,Sin observaciones
+d12,d12,Deschampsia sp.,Deschampsia sp.,Deschampsia sp.,Deschampsia sp.,Deschampsia,sin_cambio,alta,Sin observaciones
+d3,d3,Descurainia sp.,Descurainia sp.,Descurainia sp.,Descurainia sp.,Descurainia,sin_cambio,alta,Sin observaciones
+ÃÂ,(recuperar del origen),Descurainia stricta,Descurainia stricta,Descurainia stricta,Descurainia stricta,Descurainia,codificacion,baja,Código mojibake de doble codificación. Recuperar el código real desde la capa; no inventarlo.
+dD,dD,Desfontainia fulgens,Desfontainia fulgens,Desfontainia fulgens,Desfontainia fulgens,Desfontainia,sin_cambio,alta,Sin observaciones
+d4,d4,Deyeuxia brevifolia,Deyeuxia brevifolia,Deyeuxia brevifolia,Deyeuxia brevifolia,Deyeuxia,sin_cambio,alta,Sin observaciones
+d18,d18,Deyeuxia cabrerae,Deyeuxia cabrerae,Deyeuxia cabrerae,Deyeuxia cabrerae,Deyeuxia,sin_cambio,alta,Sin observaciones
+ñq,ñq,Deyeuxia chrysostachya,Deyeuxia chrysostachya,Deyeuxia chrysostachya,Deyeuxia chrysostachya,Deyeuxia,sin_cambio,alta,Sin observaciones
+d11,d11,Deyeuxia crispa,Deyeuxia crispa,Deyeuxia crispa,Deyeuxia crispa,Deyeuxia,sin_cambio,alta,Sin observaciones
+dv,dv,Deyeuxia curvula,Deyeuxia curvula,Deyeuxia curvula,Deyeuxia curvula,Deyeuxia,sin_cambio,alta,Sin observaciones
+d1,d1,Deyeuxia deserticola,Deyeuxia deserticola,Deyeuxia deserticola,Deyeuxia deserticola,Deyeuxia,sin_cambio,alta,Sin observaciones
+dn,dn,Deyeuxia eminens,Deyeuxia eminens,Deyeuxia eminens,Deyeuxia eminens,Deyeuxia,sin_cambio,alta,Sin observaciones
+d6,d6,Deyeuxia rigescens,Deyeuxia rigescens,Deyeuxia rigescens,Deyeuxia rigescens,Deyeuxia,sin_cambio,alta,Sin observaciones
+d10,d10,Deyeuxia velutina,Deyeuxia velutina,Deyeuxia velutina,Deyeuxia velutina,Deyeuxia,sin_cambio,alta,Sin observaciones
+di,di,dicha,dicha,Cardionema ramosissima,Cardionema ramosissima,Cardionema,sin_cambio,alta,Sin observaciones
+lh,lh,dicha,dicha,Lastarriaea chilensis,Lastarriaea chilensis,Lastarriaea,sin_cambio,alta,Sin observaciones
+d14,d14,Dicranoloma sp.,Dicranoloma sp.,Dicranoloma sp.,Dicranoloma sp.,Dicranoloma,sin_cambio,alta,Sin observaciones
+Dm,Dm,Diplostephium meyenii,Diplostephium meyenii,Diplostephium meyenii,Diplostephium meyenii,Diplostephium,sin_cambio,alta,Sin observaciones
+dd,dd,Distichia muscoides,Distichia muscoides,Distichia muscoides,Distichia muscoides,Distichia,sin_cambio,alta,Sin observaciones
+dh,dh,Distichlis humilis,Distichlis humilis,Distichlis humilis,Distichlis humilis,Distichlis,sin_cambio,alta,Sin observaciones
+c25,c25,doca,doca,Carpobrotus chilensis,Carpobrotus chilensis,Carpobrotus,sin_cambio,alta,Sin observaciones
+df,df,Donatia fascicularis,Donatia fascicularis,Donatia fascicularis,Donatia fascicularis,Donatia,sin_cambio,alta,Sin observaciones
+Ci,Ci,duraznillo,duraznillo,Colliguaja integerrima,Colliguaja integerrima,Colliguaja,sin_cambio,alta,Sin observaciones
+e15,e15,Eleocharis lechleri,Eleocharis lechleri,Eleocharis lechleri,Eleocharis lechleri,Eleocharis,sin_cambio,alta,Sin observaciones
+e16,e16,Eleocharis melanomphala,Eleocharis melanomphala,Eleocharis melanomphala,Eleocharis melanomphala,Eleocharis,sin_cambio,alta,Sin observaciones
+ep1,ep1,Eleocharis pachycarpa,Eleocharis pachycarpa,Eleocharis pachycarpa,Eleocharis pachycarpa,Eleocharis,sin_cambio,alta,Sin observaciones
+el,el,Eleocharis pseudoalbibracteata,Eleocharis pseudoalbibracteata,Eleocharis pseudoalbibracteata,Eleocharis pseudoalbibracteata,Eleocharis,sin_cambio,alta,Sin observaciones
+e17,e17,Eleocharis sp.,Eleocharis sp.,Eleocharis sp.,Eleocharis sp.,Eleocharis,sin_cambio,alta,Sin observaciones
+e11,e11,Eleocharis tucumanensis,Eleocharis tucumanensis,Eleocharis tucumanensis,Eleocharis tucumanensis,Eleocharis,sin_cambio,alta,Sin observaciones
+e20,e20,Elymus magellanicus,Elymus magellanicus,Elymus magellanicus,Elymus magellanicus,Elymus,sin_cambio,alta,Sin observaciones
+QR,QR,encina,encina,Quercus robur,Quercus robur,Quercus,sin_cambio,alta,Sin observaciones
+yg,yg,Equisetum bogotense,Equisetum bogotense,Equisetum bogotense,Equisetum bogotense,Equisetum,sin_cambio,alta,Sin observaciones
+e10,e10,Eragrostis nigricans,Eragrostis nigricans,Eragrostis nigricans,Eragrostis nigricans,Eragrostis,sin_cambio,alta,Sin observaciones
+E4,E4,Eremodraba intricatissima,Eremodraba intricatissima,Eremodraba intricatissima,Eremodraba intricatissima,Eremodraba,sin_cambio,alta,Sin observaciones
+e18,e18,Erodium malacoides,Erodium malacoides,Erodium malacoides,Erodium malacoides,Erodium,sin_cambio,alta,Sin observaciones
+ep,ep,Eryngium paniculatum,Eryngium paniculatum,Eryngium paniculatum,Eryngium paniculatum,Eryngium,sin_cambio,alta,Sin observaciones
+Ep,Ep,Escallonia alpina,Escallonia alpina,Escallonia alpina,Escallonia alpina,Escallonia,sin_cambio,alta,Sin observaciones
+Eg,Eg,Escallonia angustifolia,Escallonia angustifolia,Escallonia angustifolia,Escallonia angustifolia,Escallonia,sin_cambio,alta,Sin observaciones
+Ep1,Ep1,Escallonia rosea,Escallonia rosea,Escallonia rosea,Escallonia rosea,Escallonia,sin_cambio,alta,Sin observaciones
+E5,E5,Escallonia serrata,Escallonia serrata,Escallonia serrata,Escallonia serrata,Escallonia,sin_cambio,alta,Sin observaciones
+Ep2,Ep2,Escallonia sp.,Escallonia sp.,Escallonia sp.,Escallonia sp.,Escallonia,sin_cambio,alta,Sin observaciones
+Af,Af,espinillo,espinillo,Adesmia confusa,Adesmia confusa,Adesmia,sin_cambio,alta,Sin observaciones
+ES,ES,espino,espino,Acacia caven,Acacia caven,Acacia,sin_cambio,alta,Sin observaciones
+EG,EG,eucalipto,eucalipto,Eucalyptus globulus,Eucalyptus globulus,Eucalyptus,sin_cambio,alta,Sin observaciones
+EW,EW,eucalipto,eucalipto,Eucalyptus sp.,Eucalyptus sp.,Eucalyptus,sin_cambio,alta,Sin observaciones
+EU,EU,eucalipto,eucalipto,Eucalyptus camaldulensis,Eucalyptus camaldulensis,Eucalyptus,sin_cambio,alta,Sin observaciones
+EV,EV,eucalipto,eucalipto,Eucalyptus viminalis,Eucalyptus viminalis,Eucalyptus,sin_cambio,alta,Sin observaciones
+NI,NI,eucalipto,eucalipto,Eucalyptus nitens,Eucalyptus nitens,Eucalyptus,sin_cambio,alta,Sin observaciones
+ED,ED,eucalipto,eucalipto,Eucalyptus delegatensis,Eucalyptus delegatensis,Eucalyptus,sin_cambio,alta,Sin observaciones
+AH,AH,eucalipto,eucalipto,Eucalyptus regnans,Eucalyptus regnans,Eucalyptus,sin_cambio,alta,Sin observaciones
+eX,eX,Eulychnia castanea,Eulychnia castanea,Eulychnia castanea,Eulychnia castanea,Eulychnia,sin_cambio,alta,Sin observaciones
+eC1,eC1,Eulychnia chorosensis,Eulychnia chorosensis,Eulychnia chorosensis,Eulychnia chorosensis,Eulychnia,sin_cambio,alta,Sin observaciones
+eI,eI,Eulychnia iquiquensis,Eulychnia iquiquensis,Eulychnia iquiquensis,Eulychnia iquiquensis,Eulychnia,sin_cambio,alta,Sin observaciones
+eS,eS,Eulychnia saint-pieana,Eulychnia saint-pieana,Eulychnia saint-pieana,Eulychnia saint-pieana,Eulychnia,sin_cambio,alta,Sin observaciones
+eZ,eZ,Eulychnia sp.,Eulychnia sp.,Eulychnia sp.,Eulychnia sp.,Eulychnia,sin_cambio,alta,Sin observaciones
+eT1,eT1,Eulychnia taltalensis,Eulychnia taltalensis,Eulychnia taltalensis,Eulychnia taltalensis,Eulychnia,sin_cambio,alta,Sin observaciones
+en,en,Euphorbia collina,Euphorbia collina,Euphorbia collina,Euphorbia collina,Euphorbia,sin_cambio,alta,Sin observaciones
+Fw,Fw,Fabiana ramulosa,Fabiana ramulosa,Fabiana ramulosa,Fabiana ramulosa,Fabiana,sin_cambio,alta,Sin observaciones
+F1,F1,Fabiana sp.,Fabiana sp.,Fabiana sp.,Fabiana sp.,Fabiana,sin_cambio,alta,Sin observaciones
+Fq,Fq,Fabiana squamata,Fabiana squamata,Fabiana squamata,Fabiana squamata,Fabiana,sin_cambio,alta,Sin observaciones
+Fs,Fs,Fabiana stephanii,Fabiana stephanii,Fabiana stephanii,Fabiana stephanii,Fabiana,sin_cambio,alta,Sin observaciones
+Fz,Fz,Fabiana viscosa,Fabiana viscosa,Fabiana viscosa,Fabiana viscosa,Fabiana,sin_cambio,alta,Sin observaciones
+fs,fs,Fagonia chilensis,Fagonia chilensis,Fagonia chilensis,Fagonia chilensis,Fagonia,sin_cambio,alta,Sin observaciones
+RP,RP,falsa acacia,falsa acacia,Robinia pseudoacacia,Robinia pseudoacacia,Robinia,sin_cambio,alta,Sin observaciones
+f5,f5,Festuca arundinacea,Festuca arundinacea,Festuca arundinacea,Festuca arundinacea,Festuca,sin_cambio,alta,Sin observaciones
+f14,f14,Festuca contracta,Festuca contracta,Festuca contracta,Festuca contracta,Festuca,sin_cambio,alta,Sin observaciones
+fm,fm,Festuca magellanica,Festuca magellanica,Festuca magellanica,Festuca magellanica,Festuca,sin_cambio,alta,Sin observaciones
+fn,fn,FesTuca nardifolia,FesTuca nardifolia,FesTuca nardifolia,Festuca nardifolia,Festuca,ortografia,alta,Mayúscula intercalada en el género.
+f10,f10,Festuca orthophylla,Festuca orthophylla,Festuca orthophylla,Festuca orthophylla,Festuca,sin_cambio,alta,Sin observaciones
+f12,f12,Festuca purpurascens,Festuca purpurascens,Festuca purpurascens,Festuca purpurascens,Festuca,sin_cambio,alta,Sin observaciones
+f4,f4,FesTuca rigidifolia,FesTuca rigidifolia,FesTuca rigidifolia,Festuca rigidifolia,Festuca,ortografia,alta,Mayúscula intercalada en el género.
+fb,fb,Festuca rubra,Festuca rubra,Festuca rubra,Festuca rubra,Festuca,sin_cambio,alta,Sin observaciones
+fx,fx,Festuca sp.,Festuca sp.,Festuca sp.,Festuca sp.,Festuca,sin_cambio,alta,Sin observaciones
+f7,f7,Festuca tunicata,Festuca tunicata,Festuca tunicata,Festuca tunicata,Festuca,sin_cambio,alta,Sin observaciones
+f8,f8,Festuca werdermannii,Festuca werdermannii,Festuca werdermannii,Festuca werdermannii,Festuca,sin_cambio,alta,Sin observaciones
+Ya,Ya,flor del minero,flor del minero,Centaurea floccosa,Centaurea floccosa,Centaurea,sin_cambio,alta,Sin observaciones
+KA,KA,frangel,frangel,Kageneckia angustifolia,Kageneckia angustifolia,Kageneckia,sin_cambio,alta,Sin observaciones
+f9,f9,Frankenia salina,Frankenia salina,Frankenia salina,Frankenia salina,Frankenia,sin_cambio,alta,Sin observaciones
+re,re,frutilla,frutilla,Rubus geoides,Rubus geoides,Rubus,sin_cambio,alta,Sin observaciones
+fc,fc,frutilla silvestre,frutilla silvestre,Potentilla chiloensis,Potentilla chiloensis,Potentilla,sin_cambio,alta,Sin observaciones
+fi,fi,Fuertesimalva chilensis,Fuertesimalva chilensis,Fuertesimalva chilensis,Fuertesimalva chilensis,Fuertesimalva,sin_cambio,alta,Sin observaciones
+LF,LF,fuinque,fuinque,Lomatia ferruginea,Lomatia ferruginea,Lomatia,sin_cambio,alta,Sin observaciones
+fa1,fa1,Fumaria agraria,Fumaria agraria,Fumaria agraria,Fumaria agraria,Fumaria,sin_cambio,alta,Sin observaciones
+ga,ga,galega,galega,Galega officinalis,Galega officinalis,Galega,sin_cambio,alta,Sin observaciones
+gd,gd,Galium aparine,Galium aparine,Galium aparine,Galium aparine,Galium,sin_cambio,alta,Sin observaciones
+Yñ,Yñ,Gaultheria mucronata,Gaultheria mucronata,Gaultheria mucronata,Gaultheria mucronata,Gaultheria,sin_cambio,alta,Sin observaciones
+Gp1,Gp1,Gaultheria poeppigii,Gaultheria poeppigii,Gaultheria poeppigii,Gaultheria poeppigii,Gaultheria,sin_cambio,alta,Sin observaciones
+v10,v10,Glandularia gynobasis,Glandularia gynobasis,Glandularia gynobasis,Glandularia gynobasis,Glandularia,sin_cambio,alta,Sin observaciones
+gr,gr,Gnaphalium robustum,Gnaphalium robustum,Gnaphalium robustum,Gnaphalium robustum,Gnaphalium,sin_cambio,alta,Sin observaciones
+G11,G11,Gochnatia foliolosa,Gochnatia foliolosa,Gochnatia foliolosa,Gochnatia foliolosa,Gochnatia,sin_cambio,alta,Sin observaciones
+dp,dp,grama salada,grama salada,Distichlis spicata,Distichlis spicata,Distichlis,sin_cambio,alta,Sin observaciones
+GU,GU,guayacán,guayacán,Porlieria chilensis,Porlieria chilensis,Porlieria,sin_cambio,alta,Sin observaciones
+Vt,Vt,guindilla,guindilla,Guindilia trinervis,Guindilia trinervis,Guindilia,sin_cambio,alta,Sin observaciones
+Ez,Ez,guindo santo,guindo santo,Ephedra chilensis,Ephedra chilensis,Ephedra,sin_cambio,alta,Sin observaciones
+gc,gc,Gunnera chilensis,Gunnera chilensis,Gunnera chilensis,Gunnera chilensis,Gunnera,sin_cambio,alta,Sin observaciones
+gm,gm,Gunnera magellanica,Gunnera magellanica,Gunnera magellanica,Gunnera magellanica,Gunnera,sin_cambio,alta,Sin observaciones
+G14,G14,Gutierrezia espinosae,Gutierrezia espinosae,Gutierrezia espinosae,Gutierrezia espinosae,Gutierrezia,sin_cambio,alta,Sin observaciones
+Gu,Gu,Gutierrezia gayana,Gutierrezia gayana,Gutierrezia gayana,Gutierrezia gayana,Gutierrezia,sin_cambio,alta,Sin observaciones
+G17,G17,Gutierrezia neaeana,Gutierrezia neaeana,Gutierrezia neaeana,Gutierrezia neaeana,Gutierrezia,sin_cambio,alta,Sin observaciones
+G15,G15,Guynesomia scoparia,Guynesomia scoparia,Guynesomia scoparia,Guynesomia scoparia,Guynesomia,sin_cambio,alta,Sin observaciones
+Gl,Gl,Gymnophyton foliosum,Gymnophyton foliosum,Gymnophyton foliosum,Gymnophyton foliosum,Gymnophyton,sin_cambio,alta,Sin observaciones
+Gy,Gy,Gymnophyton robustum,Gymnophyton robustum,Gymnophyton robustum,Gymnophyton robustum,Gymnophyton,sin_cambio,alta,Sin observaciones
+G16,G16,Gymnophyton sp.,Gymnophyton sp.,Gymnophyton sp.,Gymnophyton sp.,Gymnophyton,sin_cambio,alta,Sin observaciones
+Gz,Gz,Gypothamnium pinifolium,Gypothamnium pinifolium,Gypothamnium pinifolium,Gypothamnium pinifolium,Gypothamnium,sin_cambio,alta,Sin observaciones
+Ha,Ha,Haplopappus angustifolius,Haplopappus angustifolius,Haplopappus angustifolius,Haplopappus angustifolius,Haplopappus,sin_cambio,alta,Sin observaciones
+hb,hb,Haplopappus arbutoides,Haplopappus arbutoides,Haplopappus arbutoides,Haplopappus arbutoides,Haplopappus,sin_cambio,alta,Sin observaciones
+Ho,Ho,Haplopappus cerberoanus,Haplopappus cerberoanus,Haplopappus cerberoanus,Haplopappus cerberoanus,Haplopappus,sin_cambio,alta,Sin observaciones
+H2,H2,Haplopappus diplopappus,Haplopappus diplopappus,Haplopappus diplopappus,Haplopappus diplopappus,Haplopappus,sin_cambio,alta,Sin observaciones
+Hi,Hi,Haplopappus integerrimus,Haplopappus integerrimus,Haplopappus integerrimus,Haplopappus integerrimus,Haplopappus,sin_cambio,alta,Sin observaciones
+H3,H3,Haplopappus kingii,Haplopappus kingii,Haplopappus kingii,Haplopappus kingii,Haplopappus,sin_cambio,alta,Sin observaciones
+H5,H5,Haplopappus linifolius,Haplopappus linifolius,Haplopappus linifolius,Haplopappus linifolius,Haplopappus,sin_cambio,alta,Sin observaciones
+Hk,Hk,Haplopappus macraeanus,Haplopappus macraeanus,Haplopappus macraeanus,Haplopappus macraeanus,Haplopappus,sin_cambio,alta,Sin observaciones
+hm,hm,Haplopappus macrocephalus,Haplopappus macrocephalus,Haplopappus macrocephalus,Haplopappus macrocephalus,Haplopappus,sin_cambio,alta,Sin observaciones
+Uy,Uy,Haplopappus meyenii,Haplopappus meyenii,Haplopappus meyenii,Haplopappus meyenii,Haplopappus,sin_cambio,alta,Sin observaciones
+Uu,Uu,Haplopappus mucronatus,Haplopappus mucronatus,Haplopappus mucronatus,Haplopappus mucronatus,Haplopappus,sin_cambio,alta,Sin observaciones
+Hu,Hu,Haplopappus pulchellus,Haplopappus pulchellus,Haplopappus pulchellus,Haplopappus pulchellus,Haplopappus,sin_cambio,alta,Sin observaciones
+Yt,Yt,Haplopappus rengifoanus,Haplopappus rengifoanus,Haplopappus rengifoanus,Haplopappus rengifoanus,Haplopappus,sin_cambio,alta,Sin observaciones
+H9,H9,Haplopappus saxatilis,Haplopappus saxatilis,Haplopappus saxatilis,Haplopappus saxatilis,Haplopappus,sin_cambio,alta,Sin observaciones
+H10,H10,Haplopappus scrobiculatus,Haplopappus scrobiculatus,Haplopappus scrobiculatus,Haplopappus scrobiculatus,Haplopappus,sin_cambio,alta,Sin observaciones
+Jk,Jk,Haplopappus sp.,Haplopappus sp.,Haplopappus sp.,Haplopappus sp.,Haplopappus,sin_cambio,alta,Sin observaciones
+Hc,Hc,Haplopappus uncinatus,Haplopappus uncinatus,Haplopappus uncinatus,Haplopappus uncinatus,Haplopappus,sin_cambio,alta,Sin observaciones
+Hd,Hd,Haplopappus velutinus,Haplopappus velutinus,Haplopappus velutinus,Haplopappus velutinus,Haplopappus,sin_cambio,alta,Sin observaciones
+ht,ht,Helenium atacamense,Helenium atacamense,Helenium atacamense,Helenium atacamense,Helenium,sin_cambio,alta,Sin observaciones
+hn,hn,Helenium urmenetae,Helenium urmenetae,Helenium urmenetae,Helenium urmenetae,Helenium,sin_cambio,alta,Sin observaciones
+Hx,Hx,Heliotropium chenopodiaceum,Heliotropium chenopodiaceum,Heliotropium chenopodiaceum,Heliotropium chenopodiaceum,Heliotropium,sin_cambio,alta,Sin observaciones
+H19,H19,Heliotropium filifolium,Heliotropium filifolium,Heliotropium filifolium,Heliotropium filifolium,Heliotropium,sin_cambio,alta,Sin observaciones
+Hl,Hl,Heliotropium floridum,Heliotropium floridum,Heliotropium floridum,Heliotropium floridum,Heliotropium,sin_cambio,alta,Sin observaciones
+H16,H16,Heliotropium huascoense,Heliotropium huascoense,Heliotropium huascoense,Heliotropium huascoense,Heliotropium,sin_cambio,alta,Sin observaciones
+H15,H15,Heliotropium inconspicuum,Heliotropium inconspicuum,Heliotropium inconspicuum,Heliotropium inconspicuum,Heliotropium,sin_cambio,alta,Sin observaciones
+H17,H17,Heliotropium linariifolium,Heliotropium linariifolium,Heliotropium linariifolium,Heliotropium linariifolium,Heliotropium,sin_cambio,alta,Sin observaciones
+Hm,Hm,Heliotropium myosotifolium,Heliotropium myosotifolium,Heliotropium myosotifolium,Heliotropium myosotifolium,Heliotropium,sin_cambio,alta,Sin observaciones
+Hp,Hp,Heliotropium pycnophyllum,Heliotropium pycnophyllum,Heliotropium pycnophyllum,Heliotropium pycnophyllum,Heliotropium,sin_cambio,alta,Sin observaciones
+He,He,Heliotropium sinuatum,Heliotropium sinuatum,Heliotropium sinuatum,Heliotropium sinuatum,Heliotropium,sin_cambio,alta,Sin observaciones
+Hz,Hz,Heliotropium sp.,Heliotropium sp.,Heliotropium sp.,Heliotropium sp.,Heliotropium,sin_cambio,alta,Sin observaciones
+hh,hh,Herniaria hirsuta,Herniaria hirsuta,Herniaria hirsuta,Herniaria hirsuta,Herniaria,sin_cambio,alta,Sin observaciones
+h17,h17,Hieracium pilosella,Hieracium pilosella,Hieracium pilosella,Hieracium pilosella,Hieracium,sin_cambio,alta,Sin observaciones
+h18,h18,Hieracium sp.,Hieracium sp.,Hieracium sp.,Hieracium sp.,Hieracium,sin_cambio,alta,Sin observaciones
+ev,ev,hierba azul,hierba azul,Echium vulgare,Echium vulgare,Echium,sin_cambio,alta,Sin observaciones
+Co,Co,hierba blanca,hierba blanca,Chuquiraga oppositifolia,Chuquiraga oppositifolia,Chuquiraga,sin_cambio,alta,Sin observaciones
+Fc,Fc,hierba de la sal,hierba de la sal,Frankenia chilensis,Frankenia chilensis,Frankenia,sin_cambio,alta,Sin observaciones
+hr,hr,hierba del chancho,hierba del chancho,Hypochaeris radicata,Hypochaeris radicata,Hypochaeris,sin_cambio,alta,Sin observaciones
+pv,pv,hierba mora,hierba mora,Prunella vulgaris,Prunella vulgaris,Prunella,sin_cambio,alta,Sin observaciones
+sd,sd,hierba zonza,hierba zonza,Senecio adenotrichius,Senecio adenotrichius,Senecio,sin_cambio,alta,Sin observaciones
+hñ,hñ,Hierochloe redolens,Hierochloe redolens,Hierochloe redolens,Hierochloe redolens,Hierochloe,sin_cambio,alta,Sin observaciones
+h15,h15,Hoffmannseggia eremophila,Hoffmannseggia eremophila,Hoffmannseggia eremophila,Hoffmannseggia eremophila,Hoffmannseggia,sin_cambio,alta,Sin observaciones
+hj,hj,Homalocarpus nigripetalus,Homalocarpus nigripetalus,Homalocarpus nigripetalus,Homalocarpus nigripetalus,Homalocarpus,sin_cambio,alta,Sin observaciones
+hc,hc,Hordeum chilense,Hordeum chilense,Hordeum chilense,Hordeum chilense,Hordeum,sin_cambio,alta,Sin observaciones
+hs,hs,Hordeum comosum,Hordeum comosum,Hordeum comosum,Hordeum comosum,Hordeum,sin_cambio,alta,Sin observaciones
+hi,hi,Hordeum murinum,Hordeum murinum,Hordeum murinum,Hordeum murinum,Hordeum,sin_cambio,alta,Sin observaciones
+h3,h3,Hordeum pubiflorum,Hordeum pubiflorum,Hordeum pubiflorum,Hordeum pubiflorum,Hordeum,sin_cambio,alta,Sin observaciones
+h20,h20,Hordeum pubiflorum,Hordeum pubiflorum,Hordeum pubiflorum,Hordeum pubiflorum,Hordeum,sin_cambio,alta,Sin observaciones
+hx,hx,Hordeum sp.,Hordeum sp.,Hordeum sp.,Hordeum sp.,Hordeum,sin_cambio,alta,Sin observaciones
+h13,h13,Hordeum vulgare,Hordeum vulgare,Hordeum vulgare,Hordeum vulgare,Hordeum,sin_cambio,alta,Sin observaciones
+Ta,Ta,horizonte,horizonte,Tetraglochin alatum,Tetraglochin alatum,Tetraglochin,sin_cambio,alta,Sin observaciones
+NG,NG,hualo,hualo,Nothofagus glauca,Nothofagus glauca,Nothofagus,sin_cambio,alta,Sin observaciones
+my,my,hualputra,hualputra,Medicago polymorpha,Medicago polymorpha,Medicago,sin_cambio,alta,Sin observaciones
+Pc,Pc,huañil,huañil,Proustia cuneifolia,Proustia cuneifolia,Proustia,sin_cambio,alta,Sin observaciones
+Yl,Yl,Huarango,Huarango,Acacia macracantha,Acacia macracantha,Acacia,sin_cambio,alta,Sin observaciones
+Cv,Cv,huella,huella,Corynabutilon vitifolium,Corynabutilon vitifolium,Corynabutilon,sin_cambio,alta,Sin observaciones
+h4,h4,Huidobria chilensis,Huidobria chilensis,Huidobria chilensis,Huidobria chilensis,Huidobria,sin_cambio,alta,Sin observaciones
+H14,H14,Huidobria fruticosa,Huidobria fruticosa,Huidobria fruticosa,Huidobria fruticosa,Huidobria,sin_cambio,alta,Sin observaciones
+SP,SP,huingán,huingán,Schinus polygamus,Schinus polygamus,Schinus,sin_cambio,alta,Sin observaciones
+h16,h16,Hydrocotyle sp.,Hydrocotyle sp.,Hydrocotyle sp.,Hydrocotyle sp.,Hydrocotyle,sin_cambio,alta,Sin observaciones
+h22,h22,Hymenophyllum pectinatum,Hymenophyllum pectinatum,Hymenophyllum pectinatum,Hymenophyllum pectinatum,Hymenophyllum,sin_cambio,alta,Sin observaciones
+h24,h24,Hymenophyllum tortuosum,Hymenophyllum tortuosum,Hymenophyllum tortuosum,Hymenophyllum tortuosum,Hymenophyllum,sin_cambio,alta,Sin observaciones
+h31,h31,Hypochaeris sp.,Hypochaeris sp.,Hypochaeris sp.,Hypochaeris sp.,Hypochaeris,sin_cambio,alta,Sin observaciones
+Ft,Ft,incienso,incienso,Flourensia thurifera,Flourensia thurifera,Flourensia,sin_cambio,alta,Sin observaciones
+i10,i10,Isolepis cernua,Isolepis cernua,Isolepis cernua,Isolepis cernua,Isolepis,sin_cambio,alta,Sin observaciones
+i12,i12,Isolepis sp.,Isolepis sp.,Isolepis sp.,Isolepis sp.,Isolepis,sin_cambio,alta,Sin observaciones
+j2,j2,Jamesoniella sp.,Jamesoniella sp.,Jamesoniella sp.,Jamesoniella sp.,Jamesoniella,sin_cambio,alta,Sin observaciones
+ju,ju,junco,junco,Juncus sp.,Juncus sp.,Juncus,sin_cambio,alta,Sin observaciones
+jn,jn,Juncus acutus,Juncus acutus,Juncus acutus,Juncus acutus,Juncus,sin_cambio,alta,Sin observaciones
+jb,jb,Juncus balticus,Juncus balticus,Juncus balticus,Juncus balticus,Juncus,sin_cambio,alta,Sin observaciones
+jd,jd,Juncus dichotomus,Juncus dichotomus,Juncus dichotomus,Juncus dichotomus,Juncus,sin_cambio,alta,Sin observaciones
+je1,je1,Juncus effusus,Juncus effusus,Juncus effusus,Juncus effusus,Juncus,sin_cambio,alta,Sin observaciones
+ji1,ji1,Juncus involucratus,Juncus involucratus,Juncus involucratus,Juncus involucratus,Juncus,sin_cambio,alta,Sin observaciones
+jp,jp,Juncus procerus,Juncus procerus,Juncus procerus,Juncus procerus,Juncus,sin_cambio,alta,Sin observaciones
+zu,zu,Juncus stipulatus,Juncus stipulatus,Juncus stipulatus,Juncus stipulatus,Juncus,sin_cambio,alta,Sin observaciones
+J1,J1,Junellia aretioides,Junellia aretioides,Junellia aretioides,Junellia aretioides,Junellia,sin_cambio,alta,Sin observaciones
+Jb,Jb,Junellia bryoides,Junellia bryoides,Junellia bryoides,Junellia bryoides,Junellia,sin_cambio,alta,Sin observaciones
+J7,J7,Junellia hystrix,Junellia hystrix,Junellia hystrix,Junellia hystrix,Junellia,sin_cambio,alta,Sin observaciones
+Jv,Jv,Junellia lavandulaefolia,Junellia lavandulaefolia,Junellia lavandulaefolia,Junellia lavandulaefolia,Junellia,sin_cambio,alta,Sin observaciones
+J5,J5,Junellia pappigera,Junellia pappigera,Junellia pappigera,Junellia pappigera,Junellia,sin_cambio,alta,Sin observaciones
+Yw,Yw,Junellia selaginoides,Junellia selaginoides,Junellia selaginoides,Junellia selaginoides,Junellia,sin_cambio,alta,Sin observaciones
+Js,Js,Junellia spathulata,Junellia spathulata,Junellia spathulata,Junellia spathulata,Junellia,sin_cambio,alta,Sin observaciones
+M1,M1,Junellia tridens,Junellia tridens,Junellia tridens,Junellia tridens,Junellia,sin_cambio,alta,Sin observaciones
+Fb,Fb,koa,koa,Fabiana bryoides,Fabiana bryoides,Fabiana,sin_cambio,alta,Sin observaciones
+Sz,Sz,Kopa de condor,Kopa de condor,Senecio pappii,Senecio pappii,Senecio,sin_cambio,alta,Sin observaciones
+S12,S12,Koya blanca,Koya blanca,Senecio olivaceobracteatus,Senecio olivaceobracteatus,Senecio,sin_cambio,alta,Sin observaciones
+l12,l12,Lachemilla sp.,Lachemilla sp.,Lachemilla sp.,Lachemilla sp.,Lachemilla,sin_cambio,alta,Sin observaciones
+lv,lv,Lactuca virosa,Lactuca virosa,Lactuca virosa,Lactuca virosa,Lactuca,sin_cambio,alta,Sin observaciones
+Lm,Lm,Lampaya,Lampaya,Lampaya medicinalis,Lampaya medicinalis,Lampaya,sin_cambio,alta,Sin observaciones
+l1,l1,Lasthenia kunthii,Lasthenia kunthii,Lasthenia kunthii,Lasthenia kunthii,Lasthenia,sin_cambio,alta,Sin observaciones
+lx,lx,Lathyrus sp.,Lathyrus sp.,Lathyrus sp.,Lathyrus sp.,Lathyrus,sin_cambio,alta,Sin observaciones
+Sl,Sl,laura,laura,Schinus marchandii,Schinus marchandii,Schinus,sin_cambio,alta,Sin observaciones
+LS,LS,laurel,laurel,Laurelia sempervirens,Laurelia sempervirens,Laurelia,sin_cambio,alta,Sin observaciones
+L14,L14,Lebetanthus myrsinites,Lebetanthus myrsinites,Lebetanthus myrsinites,Lebetanthus myrsinites,Lebetanthus,sin_cambio,alta,Sin observaciones
+El,El,lechero,lechero,Euphorbia lactiflua,Euphorbia lactiflua,Euphorbia,sin_cambio,alta,Sin observaciones
+Bj,Bj,Lejía,Lejía,Baccharis tola,Baccharis tola,Baccharis,sin_cambio,alta,Sin observaciones
+MM,MM,leñadura,leñadura,Maytenus magellanica,Maytenus magellanica,Maytenus,sin_cambio,alta,Sin observaciones
+NP,NP,lenga,lenga,Nothofagus pumilio,Nothofagus pumilio,Nothofagus,sin_cambio,alta,Sin observaciones
+PD,PD,lenga,lenga,Pinus ponderosa,Pinus ponderosa,Pinus,sin_cambio,alta,Sin observaciones
+px,px,lengua de gallina,lengua de gallina,Pleurophora pungens,Pleurophora pungens,Pleurophora,sin_cambio,alta,Sin observaciones
+oB,oB,leoncillo,leoncillo,Opuntia sphaerica,Opuntia sphaerica,Opuntia,sin_cambio,alta,Sin observaciones
+l13,l13,Leontodon saxatilis,Leontodon saxatilis,Leontodon saxatilis,Leontodon saxatilis,Leontodon,sin_cambio,alta,Sin observaciones
+lj,lj,Lepidium angustissimum,Lepidium angustissimum,Lepidium angustissimum,Lepidium angustissimum,Lepidium,sin_cambio,alta,Sin observaciones
+ld1,ld1,Lepidium draba,Lepidium draba,Lepidium draba,Lepidium draba,Lepidium,sin_cambio,alta,Sin observaciones
+li,li,Lepidium sp.,Lepidium sp.,Lepidium sp.,Lepidium sp.,Lepidium,sin_cambio,alta,Sin observaciones
+l15,l15,Lepidium strictum,Lepidium strictum,Lepidium strictum,Lepidium strictum,Lepidium,sin_cambio,alta,Sin observaciones
+Lc,Lc,Lepidophyllum cupressiforme,Lepidophyllum cupressiforme,Lepidophyllum cupressiforme,Lepidophyllum cupressiforme,Lepidophyllum,sin_cambio,alta,Sin observaciones
+l22,l22,Leucanthemum vulgare,Leucanthemum vulgare,Leucanthemum vulgare,Leucanthemum vulgare,Leucanthemum,sin_cambio,alta,Sin observaciones
+yñ,yñ,Leucheria menana,Leucheria menana,Leucheria menana,Leucheria menana,Leucheria,sin_cambio,alta,Sin observaciones
+l25,l25,Leymus arenarius,Leymus arenarius,Leymus arenarius,Leymus arenarius,Leymus,sin_cambio,alta,Sin observaciones
+l16,l16,Lilaeopsis macloviana,Lilaeopsis macloviana,Lilaeopsis macloviana,Lilaeopsis macloviana,Lilaeopsis,sin_cambio,alta,Sin observaciones
+LI,LI,lilén,lilén,Azara celastrina,Azara celastrina,Azara,sin_cambio,alta,Sin observaciones
+AI,AI,lilén,lilén,Azara petiolaris,Azara petiolaris,Azara,sin_cambio,alta,Sin observaciones
+PL,PL,lingue,lingue,Persea lingue,Persea lingue,Persea,sin_cambio,alta,Sin observaciones
+PM,PM,lingue del norte,lingue del norte,Persea meyeniana,Persea meyeniana,Persea,sin_cambio,alta,Sin observaciones
+LC,LC,litre,litre,Lithraea caustica,Lithraea caustica,Lithraea,sin_cambio,alta,Sin observaciones
+Sp,Sp,litrecillo,litrecillo,Schinus montanus,Schinus montanus,Schinus,sin_cambio,alta,Sin observaciones
+Ll,Ll,Llareta,Llareta,Azorella compacta,Azorella compacta,Azorella,sin_cambio,alta,Sin observaciones
+Zm,Zm,llareta,llareta,Azorella madreporica,Azorella madreporica,Azorella,sin_cambio,alta,Sin observaciones
+p21,p21,Llaretilla,Llaretilla,Pycnophyllum bryoides,Pycnophyllum bryoides,Pycnophyllum,sin_cambio,alta,Sin observaciones
+Fk,Fk,llaretilla,llaretilla,Frankenia triandra,Frankenia triandra,Frankenia,sin_cambio,alta,Sin observaciones
+La,La,llaretilla,llaretilla,Laretia acaulis,Laretia acaulis,Laretia,sin_cambio,alta,Sin observaciones
+p23,p23,Llaretilla,Llaretilla,Pycnophyllum molle,Pycnophyllum molle,Pycnophyllum,sin_cambio,alta,Sin observaciones
+PA,PA,lleuque,lleuque,Prumnopitys andina,Prumnopitys andina,Prumnopitys,sin_cambio,alta,Sin observaciones
+lp2,lp2,Loasa placei,Loasa placei,Loasa placei,Loasa placei,Loasa,sin_cambio,alta,Sin observaciones
+l18,l18,Lobelia oligophylla,Lobelia oligophylla,Lobelia oligophylla,Lobelia oligophylla,Lobelia,sin_cambio,alta,Sin observaciones
+l19,l19,Lolium multiflorum,Lolium multiflorum,Lolium multiflorum,Lolium multiflorum,Lolium,sin_cambio,alta,Sin observaciones
+lr1,lr1,Lolium rigidum,Lolium rigidum,Lolium rigidum,Lolium rigidum,Lolium,sin_cambio,alta,Sin observaciones
+lr,lr,Lophochloa cristata,Lophochloa cristata,Lophochloa cristata,Lophochloa cristata,Lophochloa,sin_cambio,alta,Sin observaciones
+l20,l20,Lotus subpinnatus,Lotus subpinnatus,Lotus subpinnatus,Lotus subpinnatus,Lotus,sin_cambio,alta,Sin observaciones
+AL,AL,luma,luma,Amomyrtus luma,Amomyrtus luma,Amomyrtus,sin_cambio,alta,Sin observaciones
+EM,EM,lun,lun,Escallonia myrtoidea,Escallonia myrtoidea,Escallonia,sin_cambio,alta,Sin observaciones
+lp,lp,lupino,lupino,Lupinus luteus,Lupinus luteus,Lupinus,sin_cambio,alta,Sin observaciones
+L12,L12,Lupinus arboreus,Lupinus arboreus,Lupinus arboreus,Lupinus arboreus,Lupinus,sin_cambio,alta,Sin observaciones
+lo,lo,Lupinus microcarpus,Lupinus microcarpus,Lupinus microcarpus,Lupinus microcarpus,Lupinus,sin_cambio,alta,Sin observaciones
+L13,L13,Lupinus sp.,Lupinus sp.,Lupinus sp.,Lupinus sp.,Lupinus,sin_cambio,alta,Sin observaciones
+l23,l23,Luzuriaga marginata,Luzuriaga marginata,Luzuriaga marginata,Luzuriaga marginata,Luzuriaga,sin_cambio,alta,Sin observaciones
+Lh,Lh,Lycium chilense,Lycium chilense,Lycium chilense,Lycium chilense,Lycium,sin_cambio,alta,Sin observaciones
+l28,l28,Lycium humile,Lycium humile,Lycium humile,Lycium humile,Lycium,sin_cambio,alta,Sin observaciones
+L15,L15,Lycium leiostemum,Lycium leiostemum,Lycium leiostemum,Lycium leiostemum,Lycium,sin_cambio,alta,Sin observaciones
+Lr1,Lr1,Lycium rachidocladum,Lycium rachidocladum,Lycium rachidocladum,Lycium rachidocladum,Lycium,sin_cambio,alta,Sin observaciones
+Yy,Yy,Lycium stenophyllum,Lycium stenophyllum,Lycium stenophyllum,Lycium stenophyllum,Lycium,sin_cambio,alta,Sin observaciones
+Ly,Ly,Lycopersicon chilense,Lycopersicon chilense,Lycopersicon chilense,Lycopersicon chilense,Lycopersicon,sin_cambio,alta,Sin observaciones
+ms2,ms2,Madia sativa,Madia sativa,Madia sativa,Madia sativa,Madia,sin_cambio,alta,Sin observaciones
+mf,mf,"madi, melosa","madi, melosa",Madia chilensis,Madia chilensis,Madia,sin_cambio,alta,Sin observaciones
+EP,EP,madroño,madroño,Escallonia pulverulenta,Escallonia pulverulenta,Escallonia,sin_cambio,alta,Sin observaciones
+ER,ER,madroño,madroño,Escallonia revoluta,Escallonia revoluta,Escallonia,sin_cambio,alta,Sin observaciones
+mC1,mC1,Maihueniopsis camachoi,Maihueniopsis camachoi,Maihueniopsis camachoi,Maihueniopsis camachoi,Maihueniopsis,sin_cambio,alta,Sin observaciones
+mC2,mC2,Maihueniopsis conoidea,Maihueniopsis conoidea,Maihueniopsis conoidea,Maihueniopsis conoidea,Maihueniopsis,sin_cambio,alta,Sin observaciones
+MB,MB,maitén,maitén,Maytenus boaria,Maytenus boaria,Maytenus,sin_cambio,alta,Sin observaciones
+Md,Md,maitén chico,maitén chico,Maytenus disticha,Maytenus disticha,Maytenus,sin_cambio,alta,Sin observaciones
+zm,zm,Maíz,Maíz,Zea mays,Zea mays,Zea,sin_cambio,alta,Sin observaciones
+t11,t11,Malva,Malva,Tarasa operculata,Tarasa operculata,Tarasa,sin_cambio,alta,Sin observaciones
+ms,ms,Malva nicaeensis,Malva nicaeensis,Malva nicaeensis,Malva nicaeensis,Malva,sin_cambio,alta,Sin observaciones
+m24,m24,Malva sp.,Malva sp.,Malva sp.,Malva sp.,Malva,sin_cambio,alta,Sin observaciones
+ñm,ñm,malvavisco,malvavisco,Sphaeralcea obtusiloba,Sphaeralcea obtusiloba,Sphaeralcea,sin_cambio,alta,Sin observaciones
+cm,cm,malvilla,malvilla,Cristaria sp.,Cristaria sp.,Cristaria,sin_cambio,alta,Sin observaciones
+Xp,Xp,malvilla,malvilla,Cristaria pinnata,Cristaria pinnata,Cristaria,sin_cambio,alta,Sin observaciones
+SC,SC,mañio de hojas cortas,mañio de hojas cortas,Saxegothaea conspicua,Saxegothaea conspicua,Saxegothaea,sin_cambio,alta,Sin observaciones
+PS,PS,mañio de hojas largas,mañio de hojas largas,Podocarpus salignus,Podocarpus salignus,Podocarpus,sin_cambio,alta,Sin observaciones
+PN,PN,mañio de hojas punzantes,mañio de hojas punzantes,Podocarpus nubigenus,Podocarpus nubigenus,Podocarpus,sin_cambio,alta,Sin observaciones
+ma,ma,manzanilla del campo,manzanilla del campo,Helenium aromaticum,Helenium aromaticum,Helenium,sin_cambio,alta,Sin observaciones
+Mq,Mq,maqui,maqui,Aristotelia chilensis,Aristotelia chilensis,Aristotelia,sin_cambio,alta,Sin observaciones
+oi,oi,mariposa del campo,mariposa del campo,Alstroemeria pelegrina,Alstroemeria pelegrina,Alstroemeria,sin_cambio,alta,Sin observaciones
+mg,mg,Marsippospermum grandiflorum,Marsippospermum grandiflorum,Marsippospermum grandiflorum,Marsippospermum grandiflorum,Marsippospermum,sin_cambio,alta,Sin observaciones
+mr1,mr1,Marsippospermum reichei,Marsippospermum reichei,Marsippospermum reichei,Marsippospermum reichei,Marsippospermum,sin_cambio,alta,Sin observaciones
+Ms,Ms,"mata barrosa, neneo, panza de burro","mata barrosa, neneo, panza de burro",Azorella prolifera,Azorella prolifera,Azorella,sin_cambio,alta,Sin observaciones
+Ev,Ev,mata negra,mata negra,Escallonia virgata,Escallonia virgata,Escallonia,sin_cambio,alta,Sin observaciones
+Cd,Cd,mata verde,mata verde,Chiliotrichum diffusum,Chiliotrichum diffusum,Chiliotrichum,sin_cambio,alta,Sin observaciones
+Sm,Sm,mayo,mayo,Sophora macrocarpa,Sophora macrocarpa,Sophora,sin_cambio,alta,Sin observaciones
+AM,AM,meli,meli,Amomyrtus meli,Amomyrtus meli,Amomyrtus,sin_cambio,alta,Sin observaciones
+m16,m16,Mesembryanthemum crystallinum,Mesembryanthemum crystallinum,Mesembryanthemum crystallinum,Mesembryanthemum crystallinum,Mesembryanthemum,sin_cambio,alta,Sin observaciones
+m17,m17,Mesembryanthemum nodiflorum,Mesembryanthemum nodiflorum,Mesembryanthemum nodiflorum,Mesembryanthemum nodiflorum,Mesembryanthemum,sin_cambio,alta,Sin observaciones
+B7,B7,michay,michay,Berberis actinacantha,Berberis actinacantha,Berberis,sin_cambio,alta,Sin observaciones
+Bw,Bw,michay,michay,Berberis darwinii,Berberis darwinii,Berberis,sin_cambio,alta,Sin observaciones
+Bc,Bc,michay,michay,Berberis pearcei,Berberis pearcei,Berberis,sin_cambio,alta,Sin observaciones
+Ee,Ee,michay,michay,Berberis serratodentata,Berberis serratodentata,Berberis,sin_cambio,alta,Sin observaciones
+m25,m25,Microphyes litoralis,Microphyes litoralis,Microphyes litoralis,Microphyes litoralis,Microphyes,sin_cambio,alta,Sin observaciones
+Gf,Gf,mira mira,mira mira,Gochnatia fascicularis,Gochnatia fascicularis,Gochnatia,sin_cambio,alta,Sin observaciones
+SL,SL,molle,molle,Schinus latifolius,Schinus latifolius,Schinus,sin_cambio,alta,Sin observaciones
+mt,mt,Montiopsis trifida,Montiopsis trifida,Montiopsis trifida,Montiopsis trifida,Montiopsis,sin_cambio,alta,Sin observaciones
+rr,rr,mostacilla,mostacilla,Rapistrum rugosum,Rapistrum rugosum,Rapistrum,sin_cambio,alta,Sin observaciones
+hk,hk,mostaza yuyo,mostaza yuyo,Hirschfeldia incana,Hirschfeldia incana,Hirschfeldia,sin_cambio,alta,Sin observaciones
+m22,m22,Muhlenbergia peruviana,Muhlenbergia peruviana,Muhlenbergia peruviana,Muhlenbergia peruviana,Muhlenbergia,sin_cambio,alta,Sin observaciones
+M12,M12,Mulguraea arequipensis,Mulguraea arequipensis,Mulguraea arequipensis,Mulguraea arequipensis,Mulguraea,sin_cambio,alta,Sin observaciones
+Ub,Ub,murta blanca,murta blanca,Ugni candollei,Ugni candollei,Ugni,sin_cambio,alta,Sin observaciones
+Er,Er,murtilla,murtilla,Empetrum rubrum,Empetrum rubrum,Empetrum,sin_cambio,alta,Sin observaciones
+Um,Um,murtilla,murtilla,Ugni molinae,Ugni molinae,Ugni,sin_cambio,alta,Sin observaciones
+Xi,Xi,Myrcianthes coquimbensis,Myrcianthes coquimbensis,Myrcianthes coquimbensis,Myrcianthes coquimbensis,Myrcianthes,sin_cambio,alta,Sin observaciones
+mq,mq,Myriophyllum aquaticum,Myriophyllum aquaticum,Myriophyllum aquaticum,Myriophyllum aquaticum,Myriophyllum,sin_cambio,alta,Sin observaciones
+Nb,Nb,Nardophyllum bryoides,Nardophyllum bryoides,Nardophyllum bryoides,Nardophyllum bryoides,Nardophyllum,sin_cambio,alta,Sin observaciones
+Nl,Nl,Nardophyllum lanatum,Nardophyllum lanatum,Nardophyllum lanatum,Nardophyllum lanatum,Nardophyllum,sin_cambio,alta,Sin observaciones
+nl,nl,Nassauvia aculeata,Nassauvia aculeata,Nassauvia aculeata,Nassauvia aculeata,Nassauvia,sin_cambio,alta,Sin observaciones
+n17,n17,Nassauvia cumingii,Nassauvia cumingii,Nassauvia cumingii,Nassauvia cumingii,Nassauvia,sin_cambio,alta,Sin observaciones
+na,na,Nassauvia pyramidalis,Nassauvia pyramidalis,Nassauvia pyramidalis,Nassauvia pyramidalis,Nassauvia,sin_cambio,alta,Sin observaciones
+n18,n18,Nassella gigantea,Nassella gigantea,Nassella gigantea,Nassella gigantea,Nassella,sin_cambio,alta,Sin observaciones
+nv,nv,Nassella laevissima,Nassella laevissima,Nassella laevissima,Nassella laevissima,Nassella,sin_cambio,alta,Sin observaciones
+n19,n19,Nassella pungens,Nassella pungens,Nassella pungens,Nassella pungens,Nassella,sin_cambio,alta,Sin observaciones
+n20,n20,Nassella sp.,Nassella sp.,Nassella sp.,Nassella sp.,Nassella,sin_cambio,alta,Sin observaciones
+n28,n28,Nasturtium officinale,Nasturtium officinale,Nasturtium officinale,Nasturtium officinale,Nasturtium,sin_cambio,alta,Sin observaciones
+Mm,Mm,neneo,neneo,Mulinum ulicinum,Mulinum ulicinum,Mulinum,sin_cambio,alta,Sin observaciones
+y5,y5,Neuontobotrys lanata,Neuontobotrys lanata,Neuontobotrys lanata,Neuontobotrys lanata,Neuontobotrys,sin_cambio,alta,Sin observaciones
+n12,n12,Neuontobotrys linearifolia,Neuontobotrys linearifolia,Neuontobotrys linearifolia,Neuontobotrys linearifolia,Neuontobotrys,sin_cambio,alta,Sin observaciones
+n14,n14,Neuontobotrys tarapacana,Neuontobotrys tarapacana,Neuontobotrys tarapacana,Neuontobotrys tarapacana,Neuontobotrys,sin_cambio,alta,Sin observaciones
+nc1,nc1,Nicoraepoa chonotica,Nicoraepoa chonotica,Nicoraepoa chonotica,Nicoraepoa chonotica,Nicoraepoa,sin_cambio,alta,Sin observaciones
+n29,n29,Nicoraepoa robusta,Nicoraepoa robusta,Nicoraepoa robusta,Nicoraepoa robusta,Nicoraepoa,sin_cambio,alta,Sin observaciones
+ns1,ns1,Nicoraepoa subenervis,Nicoraepoa subenervis,Nicoraepoa subenervis,Nicoraepoa subenervis,Nicoraepoa,sin_cambio,alta,Sin observaciones
+NT,NT,ñirre,ñirre,Nothofagus antarctica,Nothofagus antarctica,Nothofagus,sin_cambio,alta,Sin observaciones
+xn,xn,Nolana acuminata,Nolana acuminata,Nolana acuminata,Nolana acuminata,Nolana,sin_cambio,alta,Sin observaciones
+Ol,Ol,Nolana albescens,Nolana albescens,Nolana albescens,Nolana albescens,Nolana,sin_cambio,alta,Sin observaciones
+n24,n24,Nolana aplocaryoides,Nolana aplocaryoides,Nolana aplocaryoides,Nolana aplocaryoides,Nolana,sin_cambio,alta,Sin observaciones
+nb,nb,Nolana baccata,Nolana baccata,Nolana baccata,Nolana baccata,Nolana,sin_cambio,alta,Sin observaciones
+N5,N5,Nolana carnosa,Nolana carnosa,Nolana carnosa,Nolana carnosa,Nolana,sin_cambio,alta,Sin observaciones
+N11,N11,Nolana clivicola,Nolana clivicola,Nolana clivicola,Nolana clivicola,Nolana,sin_cambio,alta,Sin observaciones
+N6,N6,Nolana incana,Nolana incana,Nolana incana,Nolana incana,Nolana,sin_cambio,alta,Sin observaciones
+N12,N12,Nolana inconspicua,Nolana inconspicua,Nolana inconspicua,Nolana inconspicua,Nolana,sin_cambio,alta,Sin observaciones
+n25,n25,Nolana jaffuelii,Nolana jaffuelii,Nolana jaffuelii,Nolana jaffuelii,Nolana,sin_cambio,alta,Sin observaciones
+n27,n27,Nolana mollis,Nolana mollis,Nolana mollis,Nolana mollis,Nolana,sin_cambio,alta,Sin observaciones
+n23,n23,Nolana pterocarpa,Nolana pterocarpa,Nolana pterocarpa,Nolana pterocarpa,Nolana,sin_cambio,alta,Sin observaciones
+N8,N8,Nolana ramosissima,Nolana ramosissima,Nolana ramosissima,Nolana ramosissima,Nolana,sin_cambio,alta,Sin observaciones
+On,On,Nolana salsoloides,Nolana salsoloides,Nolana salsoloides,Nolana salsoloides,Nolana,sin_cambio,alta,Sin observaciones
+N9,N9,Nolana sphaerophylla,Nolana sphaerophylla,Nolana sphaerophylla,Nolana sphaerophylla,Nolana,sin_cambio,alta,Sin observaciones
+n22,n22,Nolana tarapacana,Nolana tarapacana,Nolana tarapacana,Nolana tarapacana,Nolana,sin_cambio,alta,Sin observaciones
+N15,N15,Nolana villosa,Nolana villosa,Nolana villosa,Nolana villosa,Nolana,sin_cambio,alta,Sin observaciones
+N3,N3,Nolana werdermannii,Nolana werdermannii,Nolana werdermannii,Nolana werdermannii,Nolana,sin_cambio,alta,Sin observaciones
+EN,EN,notro,notro,Embothrium coccineum,Embothrium coccineum,Embothrium,sin_cambio,alta,Sin observaciones
+oq,oq,Oenothera coquimbensis,Oenothera coquimbensis,Oenothera coquimbensis,Oenothera coquimbensis,Oenothera,sin_cambio,alta,Sin observaciones
+Aj,Aj,ojalar,ojalar,Atriplex imbricata,Atriplex imbricata,Atriplex,sin_cambio,alta,Sin observaciones
+Px,Px,olivillo,olivillo,Proustia ilicifolia,Proustia ilicifolia,Proustia,sin_cambio,alta,Sin observaciones
+AP,AP,olivillo,olivillo,Aextoxicon punctatum,Aextoxicon punctatum,Aextoxicon,sin_cambio,alta,Sin observaciones
+Pb,Pb,olivillo,olivillo,Proustia baccharoides,Proustia baccharoides,Proustia,sin_cambio,alta,Sin observaciones
+Oy,Oy,Ophryosporus pinifolius,Ophryosporus pinifolius,Ophryosporus pinifolius,Ophryosporus pinifolius,Ophryosporus,sin_cambio,alta,Sin observaciones
+Vn,Vn,oreganillo,oreganillo,Viviania marifolia,Viviania marifolia,Viviania,sin_cambio,alta,Sin observaciones
+oo,oo,Oreobolus obtusangulus,Oreobolus obtusangulus,Oreobolus obtusangulus,Oreobolus obtusangulus,Oreobolus,sin_cambio,alta,Sin observaciones
+oL,oL,Oreocereus leucotrichus,Oreocereus leucotrichus,Oreocereus leucotrichus,Oreocereus leucotrichus,Oreocereus,sin_cambio,alta,Sin observaciones
+Mg,Mg,orocoipo,orocoipo,Myoschilos oblonga,Myoschilos oblonga,Myoschilos,sin_cambio,alta,Sin observaciones
+lq,lq,orquídea,orquídea,Chloraea cristata,Chloraea cristata,Chloraea,sin_cambio,alta,Sin observaciones
+lt,lt,ortiga brava,ortiga brava,Loasa tricolor,Loasa tricolor,Loasa,sin_cambio,alta,Sin observaciones
+ls,ls,ortiga caballuna,ortiga caballuna,Loasa triloba,Loasa triloba,Loasa,sin_cambio,alta,Sin observaciones
+Ox,Ox,Oxalis gigantea,Oxalis gigantea,Oxalis gigantea,Oxalis gigantea,Oxalis,sin_cambio,alta,Sin observaciones
+O10,O10,Oxalis virgosa,Oxalis virgosa,Oxalis virgosa,Oxalis virgosa,Oxalis,sin_cambio,alta,Sin observaciones
+o16,o16,Oxychlo� haumaniana,Oxychloë haumaniana,Oxychlo� haumaniana,Oxychloë haumaniana,Oxychloë,codificacion,alta,Carácter de reemplazo U+FFFD por pérdida de la ë. Corregir en el origen.
+O11,O11,Oxyphyllum ulicinum,Oxyphyllum ulicinum,Oxyphyllum ulicinum,Oxyphyllum ulicinum,Oxyphyllum,sin_cambio,alta,Sin observaciones
+o19,o19,Oxytheca dendroidea,Oxytheca dendroidea,Oxytheca dendroidea,Oxytheca dendroidea,Oxytheca,sin_cambio,alta,Sin observaciones
+MV,MV,Pacama,Pacama,Morella pavonis,Morella pavonis,Morella,sin_cambio,alta,Sin observaciones
+KC,KC,pacul,pacul,Krameria cistoidea,Krameria cistoidea,Krameria,sin_cambio,alta,Sin observaciones
+s14,s14,Paja amarilla,Paja amarilla,Stipa leptostachya,Stipa leptostachya,Stipa,sin_cambio,alta,Sin observaciones
+fo,fo,Paja brava,Paja brava,FesTuca orthophylla,Festuca orthophylla,Festuca,ortografia,alta,Mayúscula intercalada en el género.
+fe,fe,Paja brava,Paja brava,Festuca chrysophylla,Festuca chrysophylla,Festuca,sin_cambio,alta,Sin observaciones
+oa,oa,Pako,Pako,Oxychloë andina,Oxychloë andina,Oxychloë,sin_cambio,alta,Sin observaciones
+st,st,"pako, sinonimia con scirpus atacamensis","pako, sinonimia con scirpus atacamensis",Zameioscirpus atacamensis,Zameioscirpus atacamensis,Zameioscirpus,sin_cambio,alta,Sin observaciones
+l24,l24,paladar de chancho,paladar de chancho,Leptinella scariosa,Leptinella scariosa,Leptinella,sin_cambio,alta,Sin observaciones
+Am,Am,palhuén,palhuén,Adesmia microphylla,Adesmia microphylla,Adesmia,sin_cambio,alta,Sin observaciones
+ah,ah,palito negro,palito negro,Adiantum chilense,Adiantum chilense,Adiantum,sin_cambio,alta,Sin observaciones
+JC,JC,palma chilena,palma chilena,Jubaea chilensis,Jubaea chilensis,Jubaea,sin_cambio,alta,Sin observaciones
+kk,kk,palmilla,palmilla,Lophosoria quadripinnata,Lophosoria quadripinnata,Lophosoria,sin_cambio,alta,Sin observaciones
+bp,bp,palmita,palmita,Blechnum penna-marina,Blechnum penna-marina,Blechnum,sin_cambio,alta,Sin observaciones
+ba,ba,palmito,palmito,Blechnum magellanicum,Blechnum magellanicum,Blechnum,sin_cambio,alta,Sin observaciones
+LW,LW,"palo colorado,lúcumo silvestre","palo colorado,lúcumo silvestre",Pouteria splendens,Pouteria splendens,Pouteria,sin_cambio,alta,Sin observaciones
+Fl,Fl,palo falso,palo falso,Fuchsia lycioides,Fuchsia lycioides,Fuchsia,sin_cambio,alta,Sin observaciones
+Pa,Pa,palo negro,palo negro,Heliotropium stenophyllum,Heliotropium stenophyllum,Heliotropium,sin_cambio,alta,Sin observaciones
+Cp,Cp,palqui,palqui,Cestrum parqui,Cestrum parqui,Cestrum,sin_cambio,alta,Sin observaciones
+gt,gt,pangue,pangue,Gunnera tinctoria,Gunnera tinctoria,Gunnera,sin_cambio,alta,Sin observaciones
+p54,p54,Pappostipa sp.,Pappostipa sp.,Pappostipa sp.,Pappostipa sp.,Pappostipa,sin_cambio,alta,Sin observaciones
+Ab,Ab,paramela,paramela,Adesmia boronioides,Adesmia boronioides,Adesmia,sin_cambio,alta,Sin observaciones
+Ar,Ar,paramela de til til,paramela de til til,Adesmia resinosa,Adesmia resinosa,Adesmia,sin_cambio,alta,Sin observaciones
+P7,P7,Parastrephia phyliciformis,Parastrephia phyliciformis,Parastrephia phyliciformis,Parastrephia phyliciformis,Parastrephia,sin_cambio,alta,Sin observaciones
+Ri,Ri,parrilla falsa,parrilla falsa,Ribes integrifolium,Ribes integrifolium,Ribes,sin_cambio,alta,Sin observaciones
+tl,tl,pasto chinchillero,pasto chinchillero,Stipa plumosa,Stipa plumosa,Stipa,sin_cambio,alta,Sin observaciones
+hl,hl,pasto miel,pasto miel,Holcus lanatus,Holcus lanatus,Holcus,sin_cambio,alta,Sin observaciones
+dg,dg,pasto ovillo,pasto ovillo,Dactylis glomerata,Dactylis glomerata,Dactylis,sin_cambio,alta,Sin observaciones
+on,on,pasto piojillo,pasto piojillo,Poa annua,Poa annua,Poa,sin_cambio,alta,Sin observaciones
+vm,vm,pasto sedilla,pasto sedilla,Vulpia myuros,Vulpia myuros,Vulpia,sin_cambio,alta,Sin observaciones
+vd,vd,pasto sedilla,pasto sedilla,Vulpia bromoides,Vulpia bromoides,Vulpia,sin_cambio,alta,Sin observaciones
+ck,ck,pata de guanaco,pata de guanaco,Calandrinia longiscapa,Calandrinia longiscapa,Calandrinia,sin_cambio,alta,Sin observaciones
+cj,cj,pata de guanaco,pata de guanaco,Calandrinia grandiflora,Calandrinia grandiflora,Calandrinia,sin_cambio,alta,Sin observaciones
+CR,CR,patagua,patagua,Crinodendron patagua,Crinodendron patagua,Crinodendron,sin_cambio,alta,Sin observaciones
+pc,pc,Patosia clandestina,Patosia clandestina,Patosia clandestina,Patosia clandestina,Patosia,sin_cambio,alta,Sin observaciones
+p10,p10,Pectocarya anomala,Pectocarya anomala,Pectocarya anomala,Pectocarya anomala,Pectocarya,sin_cambio,alta,Sin observaciones
+pf,pf,Pectocarya dimorpha,Pectocarya dimorpha,Pectocarya dimorpha,Pectocarya dimorpha,Pectocarya,sin_cambio,alta,Sin observaciones
+pk,pk,Pectocarya linearis,Pectocarya linearis,Pectocarya linearis,Pectocarya linearis,Pectocarya,sin_cambio,alta,Sin observaciones
+Es,Es,pegajoso,pegajoso,Eupatorium salvium,Eupatorium salvium,Eupatorium,sin_cambio,alta,Sin observaciones
+AA,AA,"pehuen, araucaria","pehuen, araucaria",Araucaria araucana,Araucaria araucana,Araucaria,sin_cambio,alta,Sin observaciones
+wh,wh,pelo de marisma,pelo de marisma,Ruppia maritima,Ruppia maritima,Ruppia,sin_cambio,alta,Sin observaciones
+p13,p13,Pennisetum clandestinum,Pennisetum clandestinum,Pennisetum clandestinum,Pennisetum clandestinum,Pennisetum,sin_cambio,alta,Sin observaciones
+p7,p7,Perityle emoryi,Perityle emoryi,Perityle emoryi,Perityle emoryi,Perityle,sin_cambio,alta,Sin observaciones
+PA1,PA1,Persea americana,Persea americana,Persea americana,Persea americana,Persea,sin_cambio,alta,Sin observaciones
+Bx,Bx,Pesco tola,Pesco tola,Baccharis boliviensis,Baccharis boliviensis,Baccharis,sin_cambio,alta,Sin observaciones
+CA,CA,peumo,peumo,Cryptocarya alba,Cryptocarya alba,Cryptocarya,sin_cambio,alta,Sin observaciones
+p40,p40,Philippiamra amaranthoides,Philippiamra amaranthoides,Philippiamra amaranthoides,Philippiamra amaranthoides,Philippiamra,sin_cambio,alta,Sin observaciones
+p15,p15,Philippiamra celosioides,Philippiamra celosioides,Philippiamra celosioides,Philippiamra celosioides,Philippiamra,sin_cambio,alta,Sin observaciones
+pa,pa,Phleum alpinum,Phleum alpinum,Phleum alpinum,Phleum alpinum,Phleum,sin_cambio,alta,Sin observaciones
+pj,pj,Phragmites australis,Phragmites australis,Phragmites australis,Phragmites australis,Phragmites,sin_cambio,alta,Sin observaciones
+P3,P3,Phrodus microphyllus,Phrodus microphyllus,Phrodus microphyllus,Phrodus microphyllus,Phrodus,sin_cambio,alta,Sin observaciones
+y2,y2,Phylloscirpus acaulis,Phylloscirpus acaulis,Phylloscirpus acaulis,Phylloscirpus acaulis,Phylloscirpus,sin_cambio,alta,Sin observaciones
+wñ,wñ,Phylloscirpus deserticola,Phylloscirpus deserticola,Phylloscirpus deserticola,Phylloscirpus deserticola,Phylloscirpus,sin_cambio,alta,Sin observaciones
+wÃ,wñ,Phylloscirpus deserticola,Phylloscirpus deserticola,Phylloscirpus deserticola,Phylloscirpus deserticola,Phylloscirpus,codificacion,media,Mojibake de «wñ»: el código wñ existe y designa la misma especie (Phylloscirpus deserticola). Confirmar y fusionar.
+Gr,Gr,pichanilla,pichanilla,Gutierrezia resinosa,Gutierrezia resinosa,Gutierrezia,sin_cambio,alta,Sin observaciones
+MP,MP,picha picha,picha picha,Myrceugenia planipes,Myrceugenia planipes,Myrceugenia,sin_cambio,alta,Sin observaciones
+Fi,Fi,pichi,pichi,Fabiana imbricata,Fabiana imbricata,Fabiana,sin_cambio,alta,Sin observaciones
+Oi,Oi,pillo pillo,pillo pillo,Ovidia pillopillo,Ovidia pillopillo,Ovidia,sin_cambio,alta,Sin observaciones
+SO,SO,pimiento,pimiento,Schinus areira,Schinus areira,Schinus,sin_cambio,alta,Sin observaciones
+ap,ap,pimpinela,pimpinela,Acaena pinnatifida,Acaena pinnatifida,Acaena,sin_cambio,alta,Sin observaciones
+Eb,Eb,pingo pingo,pingo pingo,Ephedra breana,Ephedra breana,Ephedra,sin_cambio,alta,Sin observaciones
+Em,Em,pingo pingo,pingo pingo,Ephedra multiflora,Ephedra multiflora,Ephedra,sin_cambio,alta,Sin observaciones
+Ea,Ea,pingo pingo,pingo pingo,Ephedra andina,Ephedra andina,Ephedra,sin_cambio,alta,Sin observaciones
+PW,PW,pino escocés,pino escocés,Pinus silvestris,Pinus sylvestris,Pinus,ortografia,alta,"Epíteto mal escrito: el nombre válido es Pinus sylvestris. No hay otra entrada con esa grafía, así que no genera fusión."
+PR,PR,pino insigne,pino insigne,Pinus radiata,Pinus radiata,Pinus,sin_cambio,alta,Sin observaciones
+PE,PE,pino marítimo,pino marítimo,Pinus pinaster,Pinus pinaster,Pinus,sin_cambio,alta,Sin observaciones
+PO,PO,pino oregón,pino oregón,Pseudotsuga menziesii,Pseudotsuga menziesii,Pseudotsuga,sin_cambio,alta,Sin observaciones
+PY,PY,pino piñonero,pino piñonero,Pinus pinea,Pinus pinea,Pinus,sin_cambio,alta,Sin observaciones
+PS1,PS1,Pinus sp.,Pinus sp.,Pinus sp.,Pinus sp.,Pinus,sin_cambio,alta,Sin observaciones
+b9,b9,Piptochaetium montevidense,Piptochaetium montevidense,Piptochaetium montevidense,Piptochaetium montevidense,Piptochaetium,sin_cambio,alta,Sin observaciones
+ps1,ps1,Piptochaetium setosum,Piptochaetium setosum,Piptochaetium setosum,Piptochaetium setosum,Piptochaetium,sin_cambio,alta,Sin observaciones
+ps,ps,Piptochaetium stipoides,Piptochaetium stipoides,Piptochaetium stipoides,Piptochaetium stipoides,Piptochaetium,sin_cambio,alta,Sin observaciones
+ME,ME,pitra,pitra,Myrceugenia exsucca,Myrceugenia exsucca,Myrceugenia,sin_cambio,alta,Sin observaciones
+A12,A12,Piyaya,Piyaya,Atriplex glaucescens,Atriplex glaucescens,Atriplex,sin_cambio,alta,Sin observaciones
+p28,p28,Plantago barbata,Plantago barbata,Plantago barbata,Plantago barbata,Plantago,sin_cambio,alta,Sin observaciones
+pp,pp,Plantago hispidula,Plantago hispidula,Plantago hispidula,Plantago hispidula,Plantago,sin_cambio,alta,Sin observaciones
+pt,pt,Plantago rancaguae,Plantago rancaguae,Plantago rancaguae,Plantago rancaguae,Plantago,sin_cambio,alta,Sin observaciones
+p24,p24,Plantago sericea,Plantago sericea,Plantago sericea,Plantago sericea,Plantago,sin_cambio,alta,Sin observaciones
+p19,p19,Plantago sp.,Plantago sp.,Plantago sp.,Plantago sp.,Plantago,sin_cambio,alta,Sin observaciones
+p18,p18,Plantago tubulosa,Plantago tubulosa,Plantago tubulosa,Plantago tubulosa,Plantago,sin_cambio,alta,Sin observaciones
+p29,p29,Pleurophora pusilla,Pleurophora pusilla,Pleurophora pusilla,Pleurophora pusilla,Pleurophora,sin_cambio,alta,Sin observaciones
+pa4,pa4,Poa acinaciphylla,Poa acinaciphylla,Poa acinaciphylla,Poa acinaciphylla,Poa,sin_cambio,alta,Sin observaciones
+pa1,pa1,Poa alopecurus,Poa alopecurus,Poa alopecurus,Poa alopecurus,Poa,sin_cambio,alta,Sin observaciones
+ph,ph,Poa holciformis,Poa holciformis,Poa holciformis,Poa holciformis,Poa,sin_cambio,alta,Sin observaciones
+pr,pr,Poa pratensis,Poa pratensis,Poa pratensis,Poa pratensis,Poa,sin_cambio,alta,Sin observaciones
+ps2,ps2,Poa secunda,Poa secunda,Poa secunda,Poa secunda,Poa,sin_cambio,alta,Sin observaciones
+zx,zx,Poa sp.,Poa sp.,Poa sp.,Poa sp.,Poa,sin_cambio,alta,Sin observaciones
+p45,p45,Poa spiciformis,Poa spiciformis,Poa spiciformis,Poa spiciformis,Poa,sin_cambio,alta,Sin observaciones
+P6,P6,Polyachyrus cinereus,Polyachyrus cinereus,Polyachyrus cinereus,Polyachyrus cinereus,Polyachyrus,sin_cambio,alta,Sin observaciones
+Pf,Pf,Polyachyrus fuscus,Polyachyrus fuscus,Polyachyrus fuscus,Polyachyrus fuscus,Polyachyrus,sin_cambio,alta,Sin observaciones
+am,am,Polypogon magellanicus,Polypogon magellanicus,Polypogon magellanicus,Polypogon magellanicus,Polypogon,sin_cambio,alta,Sin observaciones
+py,py,Polystichum sp.,Polystichum sp.,Polystichum sp.,Polystichum sp.,Polystichum,sin_cambio,alta,Sin observaciones
+PX,PX,Populus x euroamericana,Populus x euroamericana,Populus x euroamericana,Populus x euroamericana,Populus,sin_cambio,alta,Sin observaciones
+pl1,pl1,Potamogeton linguatus,Potamogeton linguatus,Potamogeton linguatus,Potamogeton linguatus,Potamogeton,sin_cambio,alta,Sin observaciones
+pa2,pa2,Potentilla anserina,Potentilla anserina,Potentilla anserina,Potentilla anserina,Potentilla,sin_cambio,alta,Sin observaciones
+E1,E1,Prosopis chilensis,Prosopis chilensis,Encelia canescens,Encelia canescens,Encelia,sin_cambio,alta,Sin observaciones
+PF,PF,Prosopis flexuosa,Prosopis flexuosa,Prosopis flexuosa,Prosopis flexuosa,Prosopis,sin_cambio,alta,Sin observaciones
+P8,P8,Proustia tipia,Proustia tipia,Proustia tipia,Proustia tipia,Proustia,sin_cambio,alta,Sin observaciones
+h11,h11,Psikepsike,Psikepsike,Hypochaeris taraxacoides,Hypochaeris taraxacoides,Hypochaeris,sin_cambio,alta,Sin observaciones
+p20,p20,Puccinellia frigida,Puccinellia frigida,Puccinellia frigida,Puccinellia frigida,Puccinellia,sin_cambio,alta,Sin observaciones
+u4,u4,Puccinellia glaucescens,Puccinellia glaucescens,Puccinellia glaucescens,Puccinellia glaucescens,Puccinellia,sin_cambio,alta,Sin observaciones
+p47,p47,Puccinellia magellanica,Puccinellia magellanica,Puccinellia magellanica,Puccinellia magellanica,Puccinellia,sin_cambio,alta,Sin observaciones
+p51,p51,Puccinellia pusilla,Puccinellia pusilla,Puccinellia pusilla,Puccinellia pusilla,Puccinellia,sin_cambio,alta,Sin observaciones
+p48,p48,Puccinellia sp.,Puccinellia sp.,Puccinellia sp.,Puccinellia sp.,Puccinellia,sin_cambio,alta,Sin observaciones
+Pk,Pk,Pulika,Pulika,Parastrephia lepidophylla,Parastrephia lepidophylla,Parastrephia,sin_cambio,alta,Sin observaciones
+Pq,Pq,pulika,pulika,Parastrephia quadrangularis,Parastrephia quadrangularis,Parastrephia,sin_cambio,alta,Sin observaciones
+J2,J2,Pupusa,Pupusa,Junellia minima,Junellia minima,Junellia,sin_cambio,alta,Sin observaciones
+pP,pP,puya,puya,Puya alpestris,Puya alpestris,Puya,sin_cambio,alta,Sin observaciones
+pA,pA,Puya coerulea,Puya coerulea,Puya coerulea,Puya coerulea,Puya,sin_cambio,alta,Sin observaciones
+Sc,Sc,quebracho,quebracho,Senna candolleana,Senna candolleana,Senna,sin_cambio,alta,Sin observaciones
+QU,QU,Queñoa,Queñoa,Polylepis rugulosa,Polylepis rugulosa,Polylepis,sin_cambio,alta,Sin observaciones
+QT,QT,Queñoa de altura,Queñoa de altura,Polylepis tarapacana,Polylepis tarapacana,Polylepis,sin_cambio,alta,Sin observaciones
+Cq,Cq,quila,quila,Chusquea quila,Chusquea quila,Chusquea,sin_cambio,alta,Sin observaciones
+Cu,Cu,quila chica,quila chica,Chusquea cumingii,Chusquea cumingii,Chusquea,sin_cambio,alta,Sin observaciones
+Lr,Lr,quilineja,quilineja,Luzuriaga radicans,Luzuriaga radicans,Luzuriaga,sin_cambio,alta,Sin observaciones
+QS,QS,quillay,quillay,Quillaja saponaria,Quillaja saponaria,Quillaja,sin_cambio,alta,Sin observaciones
+sx,sx,quilloy quilloy,quilloy quilloy,Stellaria media,Stellaria media,Stellaria,sin_cambio,alta,Sin observaciones
+Mh,Mh,"quilo, mollaca","quilo, mollaca",Muehlenbeckia hastulata,Muehlenbeckia hastulata,Muehlenbeckia,sin_cambio,alta,Sin observaciones
+ff,ff,quinchamalí,quinchamalí,Quinchamalium chilense,Quinchamalium chilense,Quinchamalium,sin_cambio,alta,Sin observaciones
+eQ,eQ,quisco,quisco,Echinopsis chiloensis,Echinopsis chiloensis,Echinopsis,sin_cambio,alta,Sin observaciones
+eP,eP,quisco,quisco,Trichocereus litoralis,Trichocereus litoralis,Trichocereus,sin_cambio,alta,Sin observaciones
+tC,tC,quisco,quisco,Trichocereus chiloensis,Trichocereus chiloensis,Trichocereus,sin_cambio,alta,Sin observaciones
+cC,cC,quisco,quisco,Copiapoa cinerascens,Copiapoa cinerascens,Copiapoa,sin_cambio,alta,Sin observaciones
+cD,cD,quisco,quisco,Copiapoa dealbata,Copiapoa dealbata,Copiapoa,sin_cambio,alta,Sin observaciones
+cQ,cQ,quisco,quisco,Copiapoa coquimbana,Copiapoa coquimbana,Copiapoa,sin_cambio,alta,Sin observaciones
+cG,cG,quisco,quisco,Copiapoa gigantea,Copiapoa gigantea,Copiapoa,sin_cambio,alta,Sin observaciones
+cE,cE,quisco,quisco,Copiapoa eremophila,Copiapoa eremophila,Copiapoa,sin_cambio,alta,Sin observaciones
+cH,cH,quisco,quisco,Copiapoa haseltoniana,Copiapoa haseltoniana,Copiapoa,sin_cambio,alta,Sin observaciones
+cS,cS,quisco,quisco,Copiapoa solaris,Copiapoa solaris,Copiapoa,sin_cambio,alta,Sin observaciones
+cI,cI,quisco,quisco,Copiapoa cinerea,Copiapoa cinerea,Copiapoa,sin_cambio,alta,Sin observaciones
+cL,cL,quisco,quisco,Copiapoa longistaminea,Copiapoa longistaminea,Copiapoa,sin_cambio,alta,Sin observaciones
+Ot,Ot,rabo de zorra,rabo de zorra,Ophryosporus triangularis,Ophryosporus triangularis,Ophryosporus,sin_cambio,alta,Sin observaciones
+Op,Op,rabo de zorra,rabo de zorra,Ophryosporus paradoxus,Ophryosporus paradoxus,Ophryosporus,sin_cambio,alta,Sin observaciones
+r12,r12,Racomitrium sp.,Racomitrium sp.,Racomitrium sp.,Racomitrium sp.,Racomitrium,sin_cambio,alta,Sin observaciones
+LH,LH,radal,radal,Lomatia hirsuta,Lomatia hirsuta,Lomatia,sin_cambio,alta,Sin observaciones
+Om,Om,radal enano,radal enano,Orites myrtoidea,Orites myrtoidea,Orites,sin_cambio,alta,Sin observaciones
+Rd,Rd,raden,raden,Baccharis sphaerocephala,Baccharis sphaerocephala,Baccharis,sin_cambio,alta,Sin observaciones
+rn,rn,Ranunculus peduncularis,Ranunculus peduncularis,Ranunculus peduncularis,Ranunculus peduncularis,Ranunculus,sin_cambio,alta,Sin observaciones
+ru,ru,Ranunculus pubescens,Ranunculus pubescens,Ranunculus pubescens,Ranunculus pubescens,Ranunculus,sin_cambio,alta,Sin observaciones
+r13,r13,Ranunculus repens,Ranunculus repens,Ranunculus repens,Ranunculus repens,Ranunculus,sin_cambio,alta,Sin observaciones
+r17,r17,Ranunculus sp.,Ranunculus sp.,Ranunculus sp.,Ranunculus sp.,Ranunculus,sin_cambio,alta,Sin observaciones
+q2,q2,Raphanus sativus,Raphanus sativus,Raphanus sativus,Raphanus sativus,Raphanus,sin_cambio,alta,Sin observaciones
+nan,nan,raulí,raulí,Nothofagus alpina,Nothofagus alpina,Nothofagus,sin_cambio,alta,Sin observaciones
+Dj,Dj,retama,retama,Diostea juncea,Diostea juncea,Diostea,sin_cambio,alta,Sin observaciones
+Gm,Gm,retamilla,retamilla,Genista monspessulana,Genista monspessulana,Genista,sin_cambio,alta,Sin observaciones
+Re,Re,retamilla,retamilla,Retanilla ephedra,Retanilla ephedra,Retanilla,sin_cambio,alta,Sin observaciones
+Bu,Bu,retamo,retamo,Bulnesia chilensis,Bulnesia chilensis,Bulnesia,sin_cambio,alta,Sin observaciones
+S1,S1,retamo de olor,retamo de olor,Spartium junceum,Spartium junceum,Spartium,sin_cambio,alta,Sin observaciones
+Rq,Rq,Retanilla quinquinervia,Retanilla quinquinervia,Retanilla quinquinervia,Retanilla quinquinervia,Retanilla,sin_cambio,alta,Sin observaciones
+Rt,Rt,Retanilla stricta,Retanilla stricta,Retanilla stricta,Retanilla stricta,Retanilla,sin_cambio,alta,Sin observaciones
+Ps,Ps,"Retortón, fortuna, tamarugo enan","Retortón, fortuna, tamarugo enan",Prosopis strombulifera,Prosopis strombulifera,Prosopis,sin_cambio,alta,Sin observaciones
+Rc,Rc,Ribes cucullatum,Ribes cucullatum,Ribes cucullatum,Ribes cucullatum,Ribes,sin_cambio,alta,Sin observaciones
+Xq,Xq,Ribes trilobum,Ribes trilobum,Ribes trilobum,Ribes trilobum,Ribes,sin_cambio,alta,Sin observaciones
+A10,A10,Rica rica,Rica rica,Aloysia tarapacana,Aloysia tarapacana,Aloysia,sin_cambio,alta,Sin observaciones
+NO,NO,roble,roble,Nothofagus obliqua,Nothofagus obliqua,Nothofagus,sin_cambio,alta,Sin observaciones
+NM,NM,roble de santiago,roble de santiago,Nothofagus macrocarpa,Nothofagus macrocarpa,Nothofagus,sin_cambio,alta,Sin observaciones
+rc,rc,romaza,romaza,Rumex crispus,Rumex crispus,Rumex,sin_cambio,alta,Sin observaciones
+Rm,Rm,romerillo,romerillo,Baccharis linearis,Baccharis linearis,Baccharis,sin_cambio,alta,Sin observaciones
+Rn,Rn,rosa mosqueta,rosa mosqueta,Rosa moschata,Rosa moschata,Rosa,sin_cambio,alta,Sin observaciones
+Rh,Rh,Rosa rubiginosa,Rosa rubiginosa,Rosa rubiginosa,Rosa rubiginosa,Rosa,sin_cambio,alta,Sin observaciones
+R4,R4,Rosa sp.,Rosa sp.,Rosa sp.,Rosa sp.,Rosa,sin_cambio,alta,Sin observaciones
+r14,r14,Rostkovia magellanica,Rostkovia magellanica,Rostkovia magellanica,Rostkovia magellanica,Rostkovia,sin_cambio,alta,Sin observaciones
+NR,NR,ruil,ruil,Nothofagus alessandrii,Nothofagus alessandrii,Nothofagus,sin_cambio,alta,Sin observaciones
+r16,r16,Rumex sp.,Rumex sp.,Rumex sp.,Rumex sp.,Rumex,sin_cambio,alta,Sin observaciones
+eB,eB,rumpa,rumpa,Eulychnia breviflora,Eulychnia breviflora,Eulychnia,sin_cambio,alta,Sin observaciones
+eM,eM,rumpa,rumpa,Eulychnia morromorenoensis,Eulychnia morromorenoensis,Eulychnia,sin_cambio,alta,Sin observaciones
+r11,r11,Ruppia filifolia,Ruppia filifolia,Ruppia filifolia,Ruppia filifolia,Ruppia,sin_cambio,alta,Sin observaciones
+rq,rq,Rytidosperma sp.,Rytidosperma sp.,Rytidosperma sp.,Rytidosperma sp.,Rytidosperma,sin_cambio,alta,Sin observaciones
+rv,rv,Rytidosperma virescens,Rytidosperma virescens,Rytidosperma virescens,Rytidosperma virescens,Rytidosperma,sin_cambio,alta,Sin observaciones
+SS,SS,Salix sp.,Salix sp.,Salix sp.,Salix sp.,Salix,sin_cambio,alta,Sin observaciones
+Ls,Ls,salvia macho,salvia macho,Lepechinia salviae,Lepechinia salviae,Lepechinia,sin_cambio,alta,Sin observaciones
+R3,R3,Sarcocornia andina,Sarcocornia andina,Sarcocornia andina,Sarcocornia andina,Sarcocornia,sin_cambio,alta,Sin observaciones
+S27,S27,Sarcocornia magellanica,Sarcocornia magellanica,Sarcocornia magellanica,Sarcocornia magellanica,Sarcocornia,sin_cambio,alta,Sin observaciones
+wp,wp,Sarcocornia pulvinata,Sarcocornia pulvinata,Sarcocornia pulvinata,Sarcocornia pulvinata,Sarcocornia,sin_cambio,alta,Sin observaciones
+SH,SH,sauce amargo,sauce amargo,Salix humboldtiana,Salix humboldtiana,Salix,sin_cambio,alta,Sin observaciones
+SR,SR,sauce cabruno,sauce cabruno,Salix caprea,Salix caprea,Salix,sin_cambio,alta,Sin observaciones
+SB,SB,sauce llorón,sauce llorón,Salix babylonica,Salix babylonica,Salix,sin_cambio,alta,Sin observaciones
+SA,SA,sauce mimbre,sauce mimbre,Salix viminalis,Salix viminalis,Salix,sin_cambio,alta,Sin observaciones
+Pl,Pl,sauco del diablo,sauco del diablo,Raukaua laetevirens,Raukaua laetevirens,Raukaua,sin_cambio,alta,Sin observaciones
+So,So,Schinus patagonicus,Schinus patagonicus,Schinus patagonicus,Schinus patagonicus,Schinus,sin_cambio,alta,Sin observaciones
+SI,SI,Schinus sp.,Schinus sp.,Schinus sp.,Schinus sp.,Schinus,sin_cambio,alta,Sin observaciones
+s29,s29,Schoenoplectus californicus,Schoenoplectus californicus,Schoenoplectus californicus,Schoenoplectus californicus,Schoenoplectus,sin_cambio,alta,Sin observaciones
+s28,s28,Schoenoplectus pungens,Schoenoplectus pungens,Schoenoplectus pungens,Schoenoplectus pungens,Schoenoplectus,sin_cambio,alta,Sin observaciones
+sz,sz,Schoenus andinus,Schoenus andinus,Schoenus andinus,Schoenus andinus,Schoenus,sin_cambio,alta,Sin observaciones
+s30,s30,Schoenus antarcticus,Schoenus antarcticus,Schoenus antarcticus,Schoenus antarcticus,Schoenus,sin_cambio,alta,Sin observaciones
+sr1,sr1,Schoenus rhynchosporoides,Schoenus rhynchosporoides,Schoenus rhynchosporoides,Schoenus rhynchosporoides,Schoenus,sin_cambio,alta,Sin observaciones
+ss1,ss1,Schoenus sp.,Schoenus sp.,Schoenus sp.,Schoenus sp.,Schoenus,sin_cambio,alta,Sin observaciones
+s19,s19,Scirpus asper,Scirpus asper,Scirpus asper,Scirpus asper,Scirpus,sin_cambio,alta,Sin observaciones
+sc,sc,Scirpus californicus,Scirpus californicus,Scirpus californicus,Scirpus californicus,Scirpus,sin_cambio,alta,Sin observaciones
+s38,s38,Scirpus sp.,Scirpus sp.,Scirpus sp.,Scirpus sp.,Scirpus,sin_cambio,alta,Sin observaciones
+n2,n2,Selliera radicans,Selliera radicans,Selliera radicans,Selliera radicans,Selliera,sin_cambio,alta,Sin observaciones
+Sj,Sj,Senecio atacamensis,Senecio atacamensis,Senecio atacamensis,Senecio atacamensis,Senecio,sin_cambio,alta,Sin observaciones
+S17,S17,Senecio bahioides,Senecio bahioides,Senecio bahioides,Senecio bahioides,Senecio,sin_cambio,alta,Sin observaciones
+Xu,Xu,Senecio benaventianus,Senecio benaventianus,Senecio benaventianus,Senecio benaventianus,Senecio,sin_cambio,alta,Sin observaciones
+Sb,Sb,Senecio brunonianus,Senecio brunonianus,Senecio brunonianus,Senecio brunonianus,Senecio,sin_cambio,alta,Sin observaciones
+S25,S25,Senecio dryophyllus,Senecio dryophyllus,Senecio dryophyllus,Senecio dryophyllus,Senecio,sin_cambio,alta,Sin observaciones
+De,De,Senecio eruciformis,Senecio eruciformis,Senecio eruciformis,Senecio eruciformis,Senecio,sin_cambio,alta,Sin observaciones
+S28,S28,Senecio filaginoides,Senecio filaginoides,Senecio filaginoides,Senecio filaginoides,Senecio,sin_cambio,alta,Sin observaciones
+Fr,Fr,Senecio francisci,Senecio francisci,Senecio francisci,Senecio francisci,Senecio,sin_cambio,alta,Sin observaciones
+Nw,Nw,Senecio leucus,Senecio leucus,Senecio leucus,Senecio leucus,Senecio,sin_cambio,alta,Sin observaciones
+S31,S31,Senecio oreophyton,Senecio oreophyton,Senecio oreophyton,Senecio oreophyton,Senecio,sin_cambio,alta,Sin observaciones
+St,St,Senecio patagonicus,Senecio patagonicus,Senecio patagonicus,Senecio patagonicus,Senecio,sin_cambio,alta,Sin observaciones
+S30,S30,Senecio proteus,Senecio proteus,Senecio proteus,Senecio proteus,Senecio,sin_cambio,alta,Sin observaciones
+S26,S26,Senecio rosmarinus,Senecio rosmarinus,Senecio rosmarinus,Senecio rosmarinus,Senecio,sin_cambio,alta,Sin observaciones
+S29,S29,Senecio saxicola,Senecio saxicola,Senecio saxicola,Senecio saxicola,Senecio,sin_cambio,alta,Sin observaciones
+S22,S22,Senecio sinuatilobus,Senecio sinuatilobus,Senecio sinuatilobus,Senecio sinuatilobus,Senecio,sin_cambio,alta,Sin observaciones
+Ss,Ss,Senecio sp.,Senecio sp.,Senecio sp.,Senecio sp.,Senecio,sin_cambio,alta,Sin observaciones
+s32,s32,Senecio trifurcatus,Senecio trifurcatus,Senecio trifurcatus,Senecio trifurcatus,Senecio,sin_cambio,alta,Sin observaciones
+SQ,SQ,sequoia,sequoia,Sequoia sempervirens,Sequoia sempervirens,Sequoia,sin_cambio,alta,Sin observaciones
+Tr,Tr,sereno,sereno,Atriplex repanda,Atriplex repanda,Atriplex,sin_cambio,alta,Sin observaciones
+Eo,Eo,siete camisas,siete camisas,Escallonia rubra,Escallonia rubra,Escallonia,sin_cambio,alta,Sin observaciones
+pl,pl,siete venas,siete venas,Plantago lanceolata,Plantago lanceolata,Plantago,sin_cambio,alta,Sin observaciones
+mo,mo,Sisymbrium officinale,Sisymbrium officinale,Sisymbrium officinale,Sisymbrium officinale,Sisymbrium,sin_cambio,alta,Sin observaciones
+sb1,sb1,Solanum brachyantherum,Solanum brachyantherum,Solanum brachyantherum,Solanum brachyantherum,Solanum,sin_cambio,alta,Sin observaciones
+dx,dx,sora,sora,Deyeuxia chrysantha,Deyeuxia chrysantha,Deyeuxia,sin_cambio,alta,Sin observaciones
+Np,Np,sosa,sosa,Nolana peruviana,Nolana peruviana,Nolana,sin_cambio,alta,Sin observaciones
+Wg,Wg,sosa,sosa,Suaeda foliosa,Suaeda foliosa,Suaeda,sin_cambio,alta,Sin observaciones
+S2,S2,sosa alacranera,sosa alacranera,Sarcocornia neei,Sarcocornia neei,Sarcocornia,sin_cambio,alta,Sin observaciones
+sd1,sd1,Spartina densiflora,Spartina densiflora,Spartina densiflora,Spartina densiflora,Spartina,sin_cambio,alta,Sin observaciones
+sm,sm,Spergularia media,Spergularia media,Spergularia media,Spergularia media,Spergularia,sin_cambio,alta,Sin observaciones
+s33,s33,Sphagnum magellanicum,Sphagnum magellanicum,Sphagnum magellanicum,Sphagnum magellanicum,Sphagnum,sin_cambio,alta,Sin observaciones
+z1,z1,Sphagnum sp.,Sphagnum sp.,Sphagnum sp.,Sphagnum sp.,Sphagnum,sin_cambio,alta,Sin observaciones
+s34,s34,Sticherus quadripartitus,Sticherus quadripartitus,Sticherus quadripartitus,Sticherus quadripartitus,Sticherus,sin_cambio,alta,Sin observaciones
+s12,s12,Stipa annua,Stipa annua,Stipa annua,Stipa annua,Stipa,sin_cambio,alta,Sin observaciones
+s13,s13,Stipa bomanii,Stipa bomanii,Stipa bomanii,Stipa bomanii,Stipa,sin_cambio,alta,Sin observaciones
+sw,sw,Stipa chrysophylla,Stipa chrysophylla,Stipa chrysophylla,Stipa chrysophylla,Stipa,sin_cambio,alta,Sin observaciones
+sf,sf,Stipa frigida,Stipa frigida,Stipa frigida,Stipa frigida,Stipa,sin_cambio,alta,Sin observaciones
+sh,sh,Stipa lachnophylla,Stipa lachnophylla,Stipa lachnophylla,Stipa lachnophylla,Stipa,sin_cambio,alta,Sin observaciones
+tn,tn,Stipa pogonathera,Stipa pogonathera,Stipa pogonathera,Stipa pogonathera,Stipa,sin_cambio,alta,Sin observaciones
+s15,s15,Stipa pubiflora,Stipa pubiflora,Stipa pubiflora,Stipa pubiflora,Stipa,sin_cambio,alta,Sin observaciones
+s26,s26,Stipa pungionata,Stipa pungionata,Stipa pungionata,Stipa pungionata,Stipa,sin_cambio,alta,Sin observaciones
+zt,zt,Stipa sp.,Stipa sp.,Stipa sp.,Stipa sp.,Stipa,sin_cambio,alta,Sin observaciones
+s35,s35,Stipa sp.,Stipa sp.,Stipa sp.,Stipa sp.,Stipa,sin_cambio,alta,Sin observaciones
+N1,N1,Suaeda multiflora,Suaeda multiflora,Nolana crassulifolia,Nolana crassulifolia,Nolana,sin_cambio,alta,Sin observaciones
+S24,S24,Suaeda multiflora,Suaeda multiflora,Suaeda multiflora,Suaeda multiflora,Suaeda,sin_cambio,alta,Sin observaciones
+Nf,Nf,suspiro,suspiro,Nolana filifolia,Nolana filifolia,Nolana,sin_cambio,alta,Sin observaciones
+Ga,Ga,suspiro,suspiro,Nolana glauca,Nolana glauca,Nolana,sin_cambio,alta,Sin observaciones
+Nd,Nd,suspiro,suspiro,Nolana divaricata,Nolana divaricata,Nolana,sin_cambio,alta,Sin observaciones
+Nr,Nr,suspiro,suspiro,Nolana rostrata,Nolana rostrata,Nolana,sin_cambio,alta,Sin observaciones
+Ne,Ne,suspiro,suspiro,Nolana sedifolia,Nolana sedifolia,Nolana,sin_cambio,alta,Sin observaciones
+Ns,Ns,suspiro,suspiro,Nolana leptophylla,Nolana leptophylla,Nolana,sin_cambio,alta,Sin observaciones
+Lp,Lp,tabaco del diablo,tabaco del diablo,Lobelia polyphylla,Lobelia polyphylla,Lobelia,sin_cambio,alta,Sin observaciones
+Le,Le,tabaco del diablo,tabaco del diablo,Lobelia excelsa,Lobelia excelsa,Lobelia,sin_cambio,alta,Sin observaciones
+Dd,Dd,taique,taique,Desfontainia fulgens,Desfontainia fulgens,Desfontainia,sin_cambio,alta,Sin observaciones
+L11,L11,Tajana,Tajana,Lophopappus tarapacanus,Lophopappus tarapacanus,Lophopappus,sin_cambio,alta,Sin observaciones
+Wj,Wj,talhuén,talhuén,Trevoa quinquenervia,Trevoa quinquenervia,Trevoa,sin_cambio,alta,Sin observaciones
+T2,T2,Tamarix aphylla,Tamarix aphylla,Tamarix aphylla,Tamarix aphylla,Tamarix,sin_cambio,alta,Sin observaciones
+PT,PT,Tamarugo,Tamarugo,Prosopis tamarugo,Prosopis tamarugo,Prosopis,sin_cambio,alta,Sin observaciones
+Fd,Fd,Tara,Tara,Fabiana densa,Fabiana densa,Fabiana,sin_cambio,alta,Sin observaciones
+to,to,Taraxacum officinale,Taraxacum officinale,Taraxacum officinale,Taraxacum officinale,Taraxacum,sin_cambio,alta,Sin observaciones
+an,an,teatina,teatina,Ammophila arenaria,Ammophila arenaria,Ammophila,sin_cambio,alta,Sin observaciones
+Xo,Xo,tebo,tebo,Retanilla trinervia,Retanilla trinervia,Retanilla,sin_cambio,alta,Sin observaciones
+Tt,Tt,tebo,tebo,Trevoa trinervis,Trevoa trinervis,Trevoa,sin_cambio,alta,Sin observaciones
+To,To,teline,teline,Teline monspessulana,Teline monspessulana,Teline,sin_cambio,alta,Sin observaciones
+bf,bf,tembladeras,tembladeras,Bromus setifolius,Bromus setifolius,Bromus,sin_cambio,alta,Sin observaciones
+BC,BC,temu,temu,Blepharocalyx cruckshanksii,Blepharocalyx cruckshanksii,Blepharocalyx,sin_cambio,alta,Sin observaciones
+LP,LP,tepa,tepa,Laurelia philippiana,Laurelia philippiana,Laurelia,sin_cambio,alta,Sin observaciones
+TS,TS,tepú,tepú,Tepualia stipularis,Tepualia stipularis,Tepualia,sin_cambio,alta,Sin observaciones
+t13,t13,Tessaria sp.,Tessaria sp.,Tessaria sp.,Tessaria sp.,Tessaria,sin_cambio,alta,Sin observaciones
+Ts,Ts,Tetraglochin strictum,Tetraglochin strictum,Tetraglochin strictum,Tetraglochin strictum,Tetraglochin,sin_cambio,alta,Sin observaciones
+Tn,Tn,Tetragonia angustifolia,Tetragonia angustifolia,Tetragonia angustifolia,Tetragonia angustifolia,Tetragonia,sin_cambio,alta,Sin observaciones
+tc,tc,Tetragonia copiapina,Tetragonia copiapina,Tetragonia copiapina,Tetragonia copiapina,Tetragonia,sin_cambio,alta,Sin observaciones
+tt,tt,Tetragonia macrocarpa,Tetragonia macrocarpa,Tetragonia macrocarpa,Tetragonia macrocarpa,Tetragonia,sin_cambio,alta,Sin observaciones
+Tm,Tm,Tetragonia maritima,Tetragonia maritima,Tetragonia maritima,Tetragonia maritima,Tetragonia,sin_cambio,alta,Sin observaciones
+t19,t19,Tetragonia pedunculata,Tetragonia pedunculata,Tetragonia pedunculata,Tetragonia pedunculata,Tetragonia,sin_cambio,alta,Sin observaciones
+t26,t26,Tetroncium magellanicum,Tetroncium magellanicum,Tetroncium magellanicum,Tetroncium magellanicum,Tetroncium,sin_cambio,alta,Sin observaciones
+CP,CP,tiaca,tiaca,Caldcluvia paniculata,Caldcluvia paniculata,Caldcluvia,sin_cambio,alta,Sin observaciones
+Cm,Cm,tihuén,tihuén,Chusquea montana,Chusquea montana,Chusquea,sin_cambio,alta,Sin observaciones
+Ch,Ch,tihuén,tihuén,Chusquea uliginosa,Chusquea uliginosa,Chusquea,sin_cambio,alta,Sin observaciones
+Cg,Cg,tihuén,tihuén,Chusquea argentina,Chusquea argentina,Chusquea,sin_cambio,alta,Sin observaciones
+tS,tS,Tillandsia sp.,Tillandsia sp.,Tillandsia sp.,Tillandsia sp.,Tillandsia,sin_cambio,alta,Sin observaciones
+WT,WT,"tineo, tenio","tineo, tenio",Weinmannia trichosperma,Weinmannia trichosperma,Weinmannia,sin_cambio,alta,Sin observaciones
+T5,T5,Tiquilia atacamensis,Tiquilia atacamensis,Tiquilia atacamensis,Tiquilia atacamensis,Tiquilia,sin_cambio,alta,Sin observaciones
+T6,T6,Tiquilia grandiflora,Tiquilia grandiflora,Tiquilia grandiflora,Tiquilia grandiflora,Tiquilia,sin_cambio,alta,Sin observaciones
+Tl,Tl,Tiquilia litoralis,Tiquilia litoralis,Tiquilia litoralis,Tiquilia litoralis,Tiquilia,sin_cambio,alta,Sin observaciones
+Bt,Bt,Tola,Tola,Baccharis santelicis,Baccharis santelicis,Baccharis,sin_cambio,alta,Sin observaciones
+Pt,Pt,Tola,Tola,Parastrephia teretiuscula,Parastrephia teretiuscula,Parastrephia,sin_cambio,alta,Sin observaciones
+Pu,Pu,Tola de agua,Tola de agua,Parastrephia lucida,Parastrephia lucida,Parastrephia,sin_cambio,alta,Sin observaciones
+ab,ab,topa topa,topa topa,Calceolaria biflora,Calceolaria biflora,Calceolaria,sin_cambio,alta,Sin observaciones
+ty,ty,totora,totora,Typha angustifolia,Typha angustifolia,Typha,sin_cambio,alta,Sin observaciones
+wo,wo,Totora,Totora,Schoenoplectus pungens,Schoenoplectus pungens,Schoenoplectus,sin_cambio,alta,Sin observaciones
+Tq,Tq,tralhuén,tralhuén,Talguenea quinquenervia,Talguenea quinquenervia,Talguenea,sin_cambio,alta,Sin observaciones
+Oa,Oa,traro,traro,Ovidia andina,Ovidia andina,Ovidia,sin_cambio,alta,Sin observaciones
+tr,tr,trébol blanco,trébol blanco,Trifolium repens,Trifolium repens,Trifolium,sin_cambio,alta,Sin observaciones
+DD,DD,trevo,trevo,Dasyphyllum diacanthoides,Dasyphyllum diacanthoides,Dasyphyllum,sin_cambio,alta,Sin observaciones
+T8,T8,Trichocereus atacamensis,Trichocereus atacamensis,Trichocereus atacamensis,Trichocereus atacamensis,Trichocereus,sin_cambio,alta,Sin observaciones
+eD,eD,Trichocereus deserticola,Trichocereus deserticola,Trichocereus deserticola,Trichocereus deserticola,Trichocereus,sin_cambio,alta,Sin observaciones
+tN,tN,Trichocereus nigripilis,Trichocereus nigripilis,Trichocereus nigripilis,Trichocereus nigripilis,Trichocereus,sin_cambio,alta,Sin observaciones
+ta1,ta1,Trifolium arvense,Trifolium arvense,Trifolium arvense,Trifolium arvense,Trifolium,sin_cambio,alta,Sin observaciones
+t16,t16,Triglochin concinna,Triglochin concinna,Triglochin concinna,Triglochin concinna,Triglochin,sin_cambio,alta,Sin observaciones
+ta,ta,Triglochin palustris,Triglochin palustris,Triglochin palustris,Triglochin palustris,Triglochin,sin_cambio,alta,Sin observaciones
+t30,t30,Trisetum spicatum,Trisetum spicatum,Trisetum spicatum,Trisetum spicatum,Trisetum,sin_cambio,alta,Sin observaciones
+tp,tp,Tropaeolum polyphyllum,Tropaeolum polyphyllum,Tropaeolum polyphyllum,Tropaeolum polyphyllum,Tropaeolum,sin_cambio,alta,Sin observaciones
+t23,t23,Tropaeolum sp.,Tropaeolum sp.,Tropaeolum sp.,Tropaeolum sp.,Tropaeolum,sin_cambio,alta,Sin observaciones
+bs,bs,tuca,tuca,Bromus berteroanus,Bromus berteroanus,Bromus,sin_cambio,alta,Sin observaciones
+oM,oM,tunilla,tunilla,Opuntia miquelii,Opuntia miquelii,Opuntia,sin_cambio,alta,Sin observaciones
+tO,tO,Tunilla soehrensii,Tunilla soehrensii,Tunilla soehrensii,Tunilla soehrensii,Tunilla,sin_cambio,alta,Sin observaciones
+Lt,Lt,tupa,tupa,Lobelia tupa,Lobelia tupa,Lobelia,sin_cambio,alta,Sin observaciones
+t18,t18,Typha domingensis,Typha domingensis,Typha domingensis,Typha domingensis,Typha,sin_cambio,alta,Sin observaciones
+Ue,Ue,ulex,ulex,Ulex europaeus,Ulex europaeus,Ulex,sin_cambio,alta,Sin observaciones
+EC,EC,ulmo,ulmo,Eucryphia cordifolia,Eucryphia cordifolia,Eucryphia,sin_cambio,alta,Sin observaciones
+uu1,uu1,Urtica urens,Urtica urens,Urtica urens,Urtica urens,Urtica,sin_cambio,alta,Sin observaciones
+vn,vn,Valeriana carnosa,Valeriana carnosa,Valeriana carnosa,Valeriana carnosa,Valeriana,sin_cambio,alta,Sin observaciones
+va,va,Valeriana sp.,Valeriana sp.,Valeriana sp.,Valeriana sp.,Valeriana,sin_cambio,alta,Sin observaciones
+Za,Za,varilla,varilla,Adesmia hystrix,Adesmia hystrix,Adesmia,sin_cambio,alta,Sin observaciones
+Zs,Zs,varilla,varilla,Adesmia sp.,Adesmia sp.,Adesmia,sin_cambio,alta,Sin observaciones
+Zg,Zg,varilla,varilla,Adesmia argentea,Adesmia argentea,Adesmia,sin_cambio,alta,Sin observaciones
+Aq,Aq,varilla,varilla,Adesmia glutinosa,Adesmia glutinosa,Adesmia,sin_cambio,alta,Sin observaciones
+Va,Va,varilla,varilla,Adesmia bedwellii,Adesmia bedwellii,Adesmia,sin_cambio,alta,Sin observaciones
+Ap,Ap,varilla,varilla,Adesmia pedicellata,Adesmia pedicellata,Adesmia,sin_cambio,alta,Sin observaciones
+sa,sa,vatro,vatro,Schoenoplectus americanus,Schoenoplectus americanus,Schoenoplectus,sin_cambio,alta,Sin observaciones
+Vu,Vu,vautro,vautro,Baccharis concava,Baccharis concava,Baccharis,sin_cambio,alta,Sin observaciones
+Br,Br,vautro chilca,vautro chilca,Baccharis rhomboidalis,Baccharis rhomboidalis,Baccharis,sin_cambio,alta,Sin observaciones
+vt,vt,Verbascum thapsus,Verbascum thapsus,Verbascum thapsus,Verbascum thapsus,Verbascum,sin_cambio,alta,Sin observaciones
+Vs,Vs,Verbena sp.,Verbena sp.,Verbena sp.,Verbena sp.,Verbena,sin_cambio,alta,Sin observaciones
+ra,ra,vinagrillo,vinagrillo,Rumex acetosella,Rumex acetosella,Rumex,sin_cambio,alta,Sin observaciones
+gv,gv,vira vira,vira vira,Gnaphalium viravira,Gnaphalium viravira,Gnaphalium,sin_cambio,alta,Sin observaciones
+S11,S11,Viravira,Viravira,Senecio behnii,Senecio behnii,Senecio,sin_cambio,alta,Sin observaciones
+T4,T4,Visavisa,Visavisa,Trixis cacalioides,Trixis cacalioides,Trixis,sin_cambio,alta,Sin observaciones
+sv,sv,Vizcachera,Vizcachera,Stipa venusta,Stipa venusta,Stipa,sin_cambio,alta,Sin observaciones
+vz,vz,Vulpia sp.,Vulpia sp.,Vulpia sp.,Vulpia sp.,Vulpia,sin_cambio,alta,Sin observaciones
+f3,f3,Waiya,Waiya,Festuca deserticola,Festuca deserticola,Festuca,sin_cambio,alta,Sin observaciones
+w3,w3,Werneria incisa,Werneria incisa,Werneria incisa,Werneria incisa,Werneria,sin_cambio,alta,Sin observaciones
+w5,w5,Werneria sp.,Werneria sp.,Werneria sp.,Werneria sp.,Werneria,sin_cambio,alta,Sin observaciones
+Ye,Ye,yegua,yegua,Proustia cinerea,Proustia cinerea,Proustia,sin_cambio,alta,Sin observaciones
+G13,G13,yelmo,yelmo,Griselinia scandens,Griselinia scandens,Griselinia,sin_cambio,alta,Sin observaciones
+ex,ex,Yerba de la plata,Yerba de la plata,Equisetum giganteum,Equisetum giganteum,Equisetum,sin_cambio,alta,Sin observaciones
+z3,z3,Zameioscirpus gaimardiodes,Zameioscirpus gaimardiodes,Zameioscirpus gaimardiodes,Zameioscirpus gaimardiodes,Zameioscirpus,sin_cambio,alta,Sin observaciones
+z2,z2,Zameioscirpus muticus,Zameioscirpus muticus,Zameioscirpus muticus,Zameioscirpus muticus,Zameioscirpus,sin_cambio,alta,Sin observaciones
+Be,Be,zarcilla,zarcilla,Berberis empetrifolia,Berberis empetrifolia,Berberis,sin_cambio,alta,Sin observaciones
+Ru,Ru,zarzamora,zarzamora,Rubus ulmifolius,Rubus ulmifolius,Rubus,sin_cambio,alta,Sin observaciones

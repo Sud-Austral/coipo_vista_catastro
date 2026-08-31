@@ -1,0 +1,990 @@
+especie_cod,especie,nombre_cientifico,genero,grupo,habito,arboreo,origen,confianza_origen,monumento_natural,decreto_mn,invasora,estado_conservacion_RCE
+AB,abeto,Abies sp.,Abies,Conifera,Arbol,Sí,Exotica,media,No,No aplica,No,Sin dato - no verificado en RCE
+ES,espino,Acacia caven,Acacia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+AD,aromo,Acacia dealbata,Acacia,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+Yl,Huarango,Acacia macracantha,Acacia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+AR,aromo,Acacia melanoxylon,Acacia,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+AE,acacia azul,Acacia saligna,Acacia,Latifoliada,Arbusto,No,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+CI,acacia,Acacia sp.,Acacia,Latifoliada,Arbol,Sí,Sin determinar,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Nj,cepacaballo cadillo,Acaena alpina,Acaena,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ai,Acaena integerrima,Acaena integerrima,Acaena,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+az,cadilla,Acaena magellanica,Acaena,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ao,cadilla,Acaena ovalifolia,Acaena,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+a51,Acaena patagonica,Acaena patagonica,Acaena,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ap,pimpinela,Acaena pinnatifida,Acaena,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+tf,amores secos,Acaena sericea,Acaena,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cc,cepa caballo trunes,Acaena splendens,Acaena,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+LL,arce,Acer sp.,Acer,Latifoliada,Arbol,Sí,Exotica,media,No,No aplica,No,Sin dato - no verificado en RCE
+ac2,Adenocaulon chilense,Adenocaulon chilense,Adenocaulon,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Zc,cuerno,Adesmia aegiceras,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Zb,Adesmia aphylla,Adesmia aphylla,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Zg,varilla,Adesmia argentea,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Dy,Adesmia argyrophylla,Adesmia argyrophylla,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+At,Adesmia atacamensis,Adesmia atacamensis,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Va,varilla,Adesmia bedwellii,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ab,paramela,Adesmia boronioides,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Af,espinillo,Adesmia confusa,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ai,Adesmia echinus,Adesmia echinus,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+dm,Adesmia eremophila,Adesmia eremophila,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+A30,Adesmia erinacea,Adesmia erinacea,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Aq,varilla,Adesmia glutinosa,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Di,Adesmia gracilis,Adesmia gracilis,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Au,anahua,Adesmia horrida,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Za,varilla,Adesmia hystrix,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Dk,Adesmia kingii,Adesmia kingii,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Zl,Adesmia littoralis,Adesmia littoralis,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Am,palhuén,Adesmia microphylla,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+A18,Adesmia monosperma,Adesmia monosperma,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+A37,Adesmia pauciflora,Adesmia pauciflora,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ap,varilla,Adesmia pedicellata,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+a56,Adesmia rahmeri,Adesmia rahmeri,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ar,paramela de til til,Adesmia resinosa,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+A20,Adesmia rubroviridis,Adesmia rubroviridis,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+A38,Adesmia schneideri,Adesmia schneideri,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Zs,varilla,Adesmia sp.,Adesmia,Latifoliada,Arbusto,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Zx,anahuilla,Adesmia spinosissima,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+A21,Adesmia subterranea,Adesmia subterranea,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ae,arvejilla,Adesmia tenella,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+A11,Adesmia verrucosa,Adesmia verrucosa,Adesmia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ah,palito negro,Adiantum chilense,Adiantum,Helecho,Helecho,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+AP,olivillo,Aextoxicon punctatum,Aextoxicon,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ag,chepica del sur,Agrostis alba,Agrostis,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+a19,Agrostis capilaris,Agrostis capilaris,Agrostis,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+a35,Agrostis capillaris,Agrostis capillaris,Agrostis,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+a53,Agrostis leptotricha,Agrostis leptotricha,Agrostis,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+a20,Agrostis sp.,Agrostis sp.,Agrostis,Monocotiledonea,Graminea,No,Exotica,baja,No,No aplica,No,Sin dato - no verificado en RCE
+a54,Agrostis stolonifera,Agrostis stolonifera,Agrostis,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+ac,Aira caryophyllea,Aira caryophyllea,Aira,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+a55,Aira praecox,Aira praecox,Aira,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+vr,Aldama revoluta,Aldama revoluta,Aldama,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+AG,aliso,Alnus glutinosa,Alnus,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+A31,Alona deserticola,Alona deserticola,Alona,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+am2,Alopecurus magellanicus,Alopecurus magellanicus,Alopecurus,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+a38,Alopecurus pratensis,Alopecurus pratensis,Alopecurus,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+a62,Alopecurus sp.,Alopecurus sp.,Alopecurus,Monocotiledonea,Graminea,No,Exotica,media,No,No aplica,No,Sin dato - no verificado en RCE
+A13,Aloysia deserticola,Aloysia deserticola,Aloysia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+A10,Rica rica,Aloysia tarapacana,Aloysia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+oi,mariposa del campo,Alstroemeria pelegrina,Alstroemeria,Monocotiledonea,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ay,Amblyopappus pusillus,Amblyopappus pusillus,Amblyopappus,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ak,Ambrosia,Ambrosia artemisioides,Ambrosia,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+a21,Ambrosia chamissonis,Ambrosia chamissonis,Ambrosia,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+an,teatina,Ammophila arenaria,Ammophila,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+AL,luma,Amomyrtus luma,Amomyrtus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+AM,meli,Amomyrtus meli,Amomyrtus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+a22,Amphiscirpus nevadensis,Amphiscirpus nevadensis,Amphiscirpus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+a23,Amsinckia calycina,Amsinckia calycina,Amsinckia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ni,Anarthrophyllum andicolum,Anarthrophyllum andicolum,Anarthrophyllum,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+A26,Anarthrophyllum cumingii,Anarthrophyllum cumingii,Anarthrophyllum,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+A33,Anarthrophyllum desideratum,Anarthrophyllum desideratum,Anarthrophyllum,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ng,Anarthrophyllum gayanum,Anarthrophyllum gayanum,Anarthrophyllum,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+af,Anemone multifida,Anemone multifida,Anemone,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ni,Antennaria chilensis,Antennaria chilensis,Antennaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+a24,Anthemis cotula,Anthemis cotula,Anthemis,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+aj,Anthemis inodora,Anthemis inodora,Anthemis,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+a39,Anthoxanthum redolens,Anthoxanthum redolens,Anthoxanthum,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+ac3,Anthriscus caucalis,Anthriscus caucalis,Anthriscus,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+Ze,Aphyllocladus denticulatus,Aphyllocladus denticulatus,Aphyllocladus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+iu,apium,Apium australe,Apium,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ac4,Apodasmia chilensis,Apodasmia chilensis,Apodasmia,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+AA,"pehuen, araucaria",Araucaria araucana,Araucaria,Conifera,Arbol,Sí,Nativa,alta,Sí,D.S. 43/1990 MINAGRI,No aplica,En Peligro
+as2,Arenaria serpens,Arenaria serpens,Arenaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+a14,Aristida adscensionis,Aristida adscensionis,Aristida,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Mq,maqui,Aristotelia chilensis,Aristotelia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ar,Armeria maritima,Armeria maritima,Armeria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ac,copa copa,Artemisia copa,Artemisia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+a15,Arundo donax,Arundo donax,Arundo,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+a41,Astelia pumila,Astelia pumila,Astelia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+so,Asteranthera ovata,Asteranthera ovata,Asteranthera,Latifoliada,Trepadora,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ax,cachiyuyo,Atriplex atacamensis,Atriplex,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+A32,Atriplex clivicola,Atriplex clivicola,Atriplex,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Xd,cachiyuyo,Atriplex deserticola,Atriplex,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+A12,Piyaya,Atriplex glaucescens,Atriplex,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Aj,ojalar,Atriplex imbricata,Atriplex,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+A14,Atriplex madariagae,Atriplex madariagae,Atriplex,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+An,Atriplex nummularia,Atriplex nummularia,Atriplex,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Tr,sereno,Atriplex repanda,Atriplex,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+a27,Atriplex semibaccata,Atriplex semibaccata,Atriplex,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+A35,Atriplex vulgatissima,Atriplex vulgatissima,Atriplex,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+AC,ciprés de la cordillera,Austrocedrus chilensis,Austrocedrus,Conifera,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Casi Amenazada
+at,arvejilla,Avena barbata,Avena,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+vf,avena,Avena fatua,Avena,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+a42,Avena sativa,Avena sativa,Avena,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+LI,lilén,Azara celastrina,Azara,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+AN,corcolén,Azara dentata,Azara,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Al,aromo,Azara lanceolata,Azara,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+A27,chin chin,Azara microphylla,Azara,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+AI,lilén,Azara petiolaris,Azara,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+of,Azolla filiculoides,Azolla filiculoides,Azolla,Helecho,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+a59,Azorella atacamensis,Azorella atacamensis,Azorella,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ll,Llareta,Azorella compacta,Azorella,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+a28,Azorella cryptantha,Azorella cryptantha,Azorella,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Zm,llareta,Azorella madreporica,Azorella,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+a29,Azorella monantha,Azorella monantha,Azorella,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ms,"mata barrosa, neneo, panza de burro",Azorella prolifera,Azorella,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ar1,Azorella ruizii,Azorella ruizii,Azorella,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+a30,Azorella trifoliolata,Azorella trifoliolata,Azorella,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+a45,Azorella trifurcata,Azorella trifurcata,Azorella,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+b19,Baccharis acaulis,Baccharis acaulis,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+B1,Baccharis alnifolia,Baccharis alnifolia,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bx,Pesco tola,Baccharis boliviensis,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Vu,vautro,Baccharis concava,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+B8,Baccharis glutinosa,Baccharis glutinosa,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+b20,Baccharis juncea,Baccharis juncea,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Rm,romerillo,Baccharis linearis,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Rk,Baccharis macraei,Baccharis macraei,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bg,Baccharis magellanica,Baccharis magellanica,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+B2,Baccharis neaei,Baccharis neaei,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bv,Baccharis obovata,Baccharis obovata,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ym,Baccharis paniculata,Baccharis paniculata,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bp,Baccharis patagonica,Baccharis patagonica,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+b13,Baccharis pingraea,Baccharis pingraea,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Br,vautro chilca,Baccharis rhomboidalis,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bs,chilca,Baccharis salicifolia,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bt,Tola,Baccharis santelicis,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bk,Baccharis scandens,Baccharis scandens,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bq,Baccharis sp.,Baccharis sp.,Baccharis,Latifoliada,Arbusto,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+B3,Baccharis spartioides,Baccharis spartioides,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Rd,raden,Baccharis sphaerocephala,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bj,Lejía,Baccharis tola,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+B11,Baccharis tricuneata,Baccharis tricuneata,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+B12,Baccharis zoellneri,Baccharis zoellneri,Baccharis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Cz,chamiza,Bahia ambrosioides,Bahia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+bk,Bakerolimon plumosum,Bakerolimon plumosum,Bakerolimon,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bd,Amancae,Balbisia microphylla,Balbisia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ba,amancay,Balbisia peduncularis,Balbisia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bz,algarrobilla,Balsamocarpon brevifolium,Balsamocarpon,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+BB,belloto del sur,Beilschmiedia berteroana,Beilschmiedia,Latifoliada,Arbol,Sí,Nativa,alta,Sí,D.S. 13/1995 MINAGRI,No aplica,En Peligro
+BM,belloto del norte,Beilschmiedia miersii,Beilschmiedia,Latifoliada,Arbol,Sí,Nativa,alta,Sí,D.S. 13/1995 MINAGRI,No aplica,Vulnerable
+b24,Bellis perennis,Bellis perennis,Bellis,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+B7,michay,Berberis actinacantha,Berberis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bb,calafate,Berberis buxifolia,Berberis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bw,michay,Berberis darwinii,Berberis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Be,zarcilla,Berberis empetrifolia,Berberis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bi,chelia,Berberis ilicifolia,Berberis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+B13,Berberis microphylla,Berberis microphylla,Berberis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bm,Berberis montana,Berberis montana,Berberis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bc,michay,Berberis pearcei,Berberis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ee,michay,Berberis serratodentata,Berberis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+bc,costilla de vaca,Blechnum chilensis,Blechnum,Helecho,Helecho,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ba,palmito,Blechnum magellanicum,Blechnum,Helecho,Helecho,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+bp,palmita,Blechnum penna-marina,Blechnum,Helecho,Helecho,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+BC,temu,Blepharocalyx cruckshanksii,Blepharocalyx,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+b23,Bolax caespitosa,Bolax caespitosa,Bolax,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+bg,Bolax gummifera,Bolax gummifera,Bolax,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+b26,Bolboschoenus maritimus,Bolboschoenus maritimus,Bolboschoenus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+b15,Brassica nigra,Brassica nigra,Brassica,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+b16,Brassica rapa,Brassica rapa,Brassica,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+b25,Brassica sp.,Brassica sp.,Brassica,Latifoliada,Hierba,No,Exotica,media,No,No aplica,No,Sin dato - no verificado en RCE
+B5,Bridgesia incisifolia,Bridgesia incisifolia,Bridgesia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+bs,tuca,Bromus berteroanus,Bromus,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+bh,Bromus hordeaceus,Bromus hordeaceus,Bromus,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+b18,Bromus rigidus,Bromus rigidus,Bromus,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+bf,tembladeras,Bromus setifolius,Bromus,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+bx,bromus,Bromus sp.,Bromus,Monocotiledonea,Graminea,No,Nativa,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+bW,Candelabro,Browningia candelaris,Browningia,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+bs1,Bryophyta spp.,Bryophyta spp.,Bryophyta,Briofita,Briofita,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Us,Buddleja suaveolens,Buddleja suaveolens,Buddleja,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Bu,retamo,Bulnesia chilensis,Bulnesia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Lg,Caesalpinia angulata,Caesalpinia angulata,Caesalpinia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+C20,Caesalpinia aphylla,Caesalpinia aphylla,Caesalpinia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+jÃ,Calandrinia cymosa,Calandrinia cymosa,Calandrinia,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cj,pata de guanaco,Calandrinia grandiflora,Calandrinia,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ck,pata de guanaco,Calandrinia longiscapa,Calandrinia,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c20,Calandrinia picta,Calandrinia picta,Calandrinia,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ws,Calandrinia sp.,Calandrinia sp.,Calandrinia,Latifoliada,Suculenta,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ab,topa topa,Calceolaria biflora,Calceolaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c47,Calceolaria pinifolia,Calceolaria pinifolia,Calceolaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ip,Calceolaria polifolia,Calceolaria polifolia,Calceolaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Pn,Calceolaria pubescens,Calceolaria pubescens,Calceolaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ks,Calceolaria sp.,Calceolaria sp.,Calceolaria,Latifoliada,Hierba,No,Nativa,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+gl,Calceolaria verbascifolia,Calceolaria verbascifolia,Calceolaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+CP,tiaca,Caldcluvia paniculata,Caldcluvia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c21,Calliandra chilensis,Calliandra chilensis,Calliandra,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c36,calta de turbera,Caltha appendiculata,Caltha,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cs,Caltha sagittata,Caltha sagittata,Caltha,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c57,Caltha sagittata,Caltha sagittata,Caltha,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+bd,Capsella bursa-pastoris,Capsella bursa-pastoris,Capsella,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+di,dicha,Cardionema ramosissima,Cardionema,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+kn,cardilla,Carduus pycnocephalus,Carduus,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+ca1,Carex aematorhyncha,Carex aematorhyncha,Carex,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c58,Carex canescens,Carex canescens,Carex,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c59,Carex darwinii,Carex darwinii,Carex,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+kc,Carex decidua,Carex decidua,Carex,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cx,Carex gayana,Carex gayana,Carex,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c51,Carex magellanica,Carex magellanica,Carex,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+zk,Carex maritima,Carex maritima,Carex,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c52,Carex microglochin,Carex microglochin,Carex,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+fj,Carex pleioneura,Carex pleioneura,Carex,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c53,Carex sorianoi,Carex sorianoi,Carex,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+kx,Carex sp.,Carex sp.,Carex,Monocotiledonea,Acuatica,No,Nativa,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c23,Carex subantarctica,Carex subantarctica,Carex,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c24,Carex vallis-pulchrae,Carex vallis-pulchrae,Carex,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c54,Carpha schoenoides,Carpha schoenoides,Carpha,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c25,doca,Carpobrotus chilensis,Carpobrotus,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cu,cardilla,Carthamus lanatus,Carthamus,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+CS,castaño,Castanea sativa,Castanea,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+Ya,flor del minero,Centaurea floccosa,Centaurea,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+fv,Centipeda elatinoides,Centipeda elatinoides,Centipeda,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ea,Cerastium arvense,Cerastium arvense,Cerastium,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Cp,palqui,Cestrum parqui,Cestrum,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ch,Chaetanthera chilensis,Chaetanthera chilensis,Chaetanthera,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Cj,Chaetanthera glandulosa,Chaetanthera glandulosa,Chaetanthera,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ci,Chaetanthera moenchioides,Chaetanthera moenchioides,Chaetanthera,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c15,Chenopodium petiolare,Chenopodium petiolare,Chenopodium,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cv1,Chenopodium vulvaria,Chenopodium vulvaria,Chenopodium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+Cd,mata verde,Chiliotrichum diffusum,Chiliotrichum,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+C26,Chiliotrichum fuegianum,Chiliotrichum fuegianum,Chiliotrichum,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+lq,orquídea,Chloraea cristata,Chloraea,Monocotiledonea,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c30,Chorizanthe commissuralis,Chorizanthe commissuralis,Chorizanthe,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ia,Chorizanthe dasyantha,Chorizanthe dasyantha,Chorizanthe,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+C17,Chorizanthe deserticola,Chorizanthe deserticola,Chorizanthe,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Yb,Chorizanthe frankenioides,Chorizanthe frankenioides,Chorizanthe,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+C24,Chorizanthe intricata,Chorizanthe intricata,Chorizanthe,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Cb,Chuquiraga acicularis,Chuquiraga acicularis,Chuquiraga,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+C22,Chuquiraga atacamensis,Chuquiraga atacamensis,Chuquiraga,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Co,hierba blanca,Chuquiraga oppositifolia,Chuquiraga,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+C14,Chuquiraga spinosa,Chuquiraga spinosa,Chuquiraga,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+C19,Chuquiraga ulicina,Chuquiraga ulicina,Chuquiraga,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Cg,tihuén,Chusquea argentina,Chusquea,Monocotiledonea,Bambu,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ce,colihue,Chusquea coleu,Chusquea,Monocotiledonea,Bambu,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Cu,quila chica,Chusquea cumingii,Chusquea,Monocotiledonea,Bambu,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Cm,tihuén,Chusquea montana,Chusquea,Monocotiledonea,Bambu,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Cq,quila,Chusquea quila,Chusquea,Monocotiledonea,Bambu,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Cq1,Chusquea sp.,Chusquea sp.,Chusquea,Monocotiledonea,Bambu,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ch,tihuén,Chusquea uliginosa,Chusquea,Monocotiledonea,Bambu,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+C5,cardo,Cirsium vulgare,Cirsium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+c44,Cistanthe salsoloides,Cistanthe salsoloides,Cistanthe,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Xh,"crucero, cunco rojo",Colletia hystrix,Colletia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Cs,crucero,Colletia spinossisima,Colletia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Cy,colliguay,Colliguaja dombeyana,Colliguaja,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ci,duraznillo,Colliguaja integerrima,Colliguaja,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Cf,colliguay,Colliguaja odorifera,Colliguaja,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Cl,colliguay,Colliguaja salicifolia,Colliguaja,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cB1,Copiapoa boliviana,Copiapoa boliviana,Copiapoa,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cC,quisco,Copiapoa cinerascens,Copiapoa,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cI,quisco,Copiapoa cinerea,Copiapoa,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cC1,Copiapoa columna-alba,Copiapoa columna-alba,Copiapoa,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cQ,quisco,Copiapoa coquimbana,Copiapoa,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cD,quisco,Copiapoa dealbata,Copiapoa,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cE,quisco,Copiapoa eremophila,Copiapoa,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cG,quisco,Copiapoa gigantea,Copiapoa,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cH,quisco,Copiapoa haseltoniana,Copiapoa,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cL,quisco,Copiapoa longistaminea,Copiapoa,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cM1,Copiapoa melanohystrix,Copiapoa melanohystrix,Copiapoa,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cS,quisco,Copiapoa solaris,Copiapoa,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cT1,Copiapoa tenebrosa,Copiapoa tenebrosa,Copiapoa,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+CD,carbonillo,Cordia decandra,Cordia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cB,Corryocactus brevistylus,Corryocactus brevistylus,Corryocactus,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cz,Cola de zorro,Cortaderia atacamensis,Cortaderia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c55,cortaderia,Cortaderia egmontiana,Cortaderia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cr,cola de zorro,Cortaderia rudiuscula,Cortaderia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c2,Cortaderia sp.,Cortaderia sp.,Cortaderia,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+os,cortadera,Cortaderia speciosa,Cortaderia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Cv,huella,Corynabutilon vitifolium,Corynabutilon,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cc2,Cotula coronopifolia,Cotula coronopifolia,Cotula,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c1,Cotula scariosa,Cotula scariosa,Cotula,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ka,Crassula peduncularis,Crassula peduncularis,Crassula,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+C1,cratego,Crataegus monogyna,Crataegus,Latifoliada,Arbusto,No,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+CR,patagua,Crinodendron patagua,Crinodendron,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+xa,Cristaria andicola,Cristaria andicola,Cristaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+zs,Cristaria aspera,Cristaria aspera,Cristaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+kf,Cristaria cyanea,Cristaria cyanea,Cristaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+zv,Cristaria glaucophylla,Cristaria glaucophylla,Cristaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+kg,Cristaria gracilis,Cristaria gracilis,Cristaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+C25,Cristaria integerrima,Cristaria integerrima,Cristaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Xp,malvilla,Cristaria pinnata,Cristaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cm,malvilla,Cristaria sp.,Cristaria,Latifoliada,Hierba,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c45,Cristaria viridiluteola,Cristaria viridiluteola,Cristaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Cr,Croton chilensis,Croton chilensis,Croton,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cg,Cryptantha glomerata,Cryptantha glomerata,Cryptantha,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c70,Cryptantha hispida,Cryptantha hispida,Cryptantha,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+c16,Cryptantha parviflora,Cryptantha parviflora,Cryptantha,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+CA,peumo,Cryptocarya alba,Cryptocarya,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+mB,Cumulopuntia echinacea,Cumulopuntia echinacea,Cumulopuntia,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+cV,Cumulopuntia sphaerica,Cumulopuntia sphaerica,Cumulopuntia,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+CC,ciprés,Cupressus macrocarpa,Cupressus,Conifera,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+CU,ciprés,Cupressus sp.,Cupressus,Conifera,Arbol,Sí,Exotica,media,No,No aplica,No,Sin dato - no verificado en RCE
+cT,Cylindropuntia tunicata,Cylindropuntia tunicata,Cylindropuntia,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ca,Cynara cardunculus,Cynara cardunculus,Cynara,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+c49,Cyperus laevigatus,Cyperus laevigatus,Cyperus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+C6,Cytisus striatus,Cytisus striatus,Cytisus,Latifoliada,Arbusto,No,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+dg,pasto ovillo,Dactylis glomerata,Dactylis,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+DD,trevo,Dasyphyllum diacanthoides,Dasyphyllum,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+d21,Datura sp.,Datura sp.,Datura,Latifoliada,Hierba,No,Exotica,media,No,No aplica,No,Sin dato - no verificado en RCE
+dw,Deschampsia cordillerarum,Deschampsia cordillerarum,Deschampsia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+a43,Deschampsia flexuosa,Deschampsia flexuosa,Deschampsia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+d12,Deschampsia sp.,Deschampsia sp.,Deschampsia,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+d3,Descurainia sp.,Descurainia sp.,Descurainia,Latifoliada,Hierba,No,Nativa,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ÃÂ,Descurainia stricta,Descurainia stricta,Descurainia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Dd,taique,Desfontainia fulgens,Desfontainia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+dD,Desfontainia fulgens,Desfontainia fulgens,Desfontainia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+dC,chaguar del jote,Deuterocohnia chrysantha,Deuterocohnia,Monocotiledonea,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+dy,Chake,Deyeuxia breviaristata,Deyeuxia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+d4,Deyeuxia brevifolia,Deyeuxia brevifolia,Deyeuxia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+d18,Deyeuxia cabrerae,Deyeuxia cabrerae,Deyeuxia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+dx,sora,Deyeuxia chrysantha,Deyeuxia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ñq,Deyeuxia chrysostachya,Deyeuxia chrysostachya,Deyeuxia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+d11,Deyeuxia crispa,Deyeuxia crispa,Deyeuxia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+dv,Deyeuxia curvula,Deyeuxia curvula,Deyeuxia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+d1,Deyeuxia deserticola,Deyeuxia deserticola,Deyeuxia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+dn,Deyeuxia eminens,Deyeuxia eminens,Deyeuxia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+d6,Deyeuxia rigescens,Deyeuxia rigescens,Deyeuxia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+d10,Deyeuxia velutina,Deyeuxia velutina,Deyeuxia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+d14,Dicranoloma sp.,Dicranoloma sp.,Dicranoloma,Briofita,Briofita,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+du,dedalera,Digitalis purpurea,Digitalis,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+Dj,retama,Diostea juncea,Diostea,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Dm,Diplostephium meyenii,Diplostephium meyenii,Diplostephium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Dc,chacay,Discaria chacaye,Discaria,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ds,chacay,Discaria serratifolia,Discaria,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Dt,chacay,Discaria trinervis,Discaria,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+dd,Distichia muscoides,Distichia muscoides,Distichia,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+dh,Distichlis humilis,Distichlis humilis,Distichlis,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+dp,grama salada,Distichlis spicata,Distichlis,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+df,Donatia fascicularis,Donatia fascicularis,Donatia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Da,canelo enano,Drimys andina,Drimys,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+DW,canelo,Drimys winteri,Drimys,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+eQ,quisco,Echinopsis chiloensis,Echinopsis,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ev,hierba azul,Echium vulgare,Echium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+e15,Eleocharis lechleri,Eleocharis lechleri,Eleocharis,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+e16,Eleocharis melanomphala,Eleocharis melanomphala,Eleocharis,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ep1,Eleocharis pachycarpa,Eleocharis pachycarpa,Eleocharis,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+el,Eleocharis pseudoalbibracteata,Eleocharis pseudoalbibracteata,Eleocharis,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+e17,Eleocharis sp.,Eleocharis sp.,Eleocharis,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+e11,Eleocharis tucumanensis,Eleocharis tucumanensis,Eleocharis,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+e20,Elymus magellanicus,Elymus magellanicus,Elymus,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+EN,notro,Embothrium coccineum,Embothrium,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Er,murtilla,Empetrum rubrum,Empetrum,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+E1,Prosopis chilensis,Encelia canescens,Encelia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ea,pingo pingo,Ephedra andina,Ephedra,Gimnosperma,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Eb,pingo pingo,Ephedra breana,Ephedra,Gimnosperma,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ez,guindo santo,Ephedra chilensis,Ephedra,Gimnosperma,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Em,pingo pingo,Ephedra multiflora,Ephedra,Gimnosperma,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+yg,Equisetum bogotense,Equisetum bogotense,Equisetum,Helecho,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ex,Yerba de la plata,Equisetum giganteum,Equisetum,Helecho,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+e10,Eragrostis nigricans,Eragrostis nigricans,Eragrostis,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+E4,Eremodraba intricatissima,Eremodraba intricatissima,Eremodraba,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+eb,alfilerillo,Erodium botrys,Erodium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+ec,alfilerillo,Erodium cicutarium,Erodium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+e18,Erodium malacoides,Erodium malacoides,Erodium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+eh,alfilerillo,Erodium moschatum,Erodium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+ep,Eryngium paniculatum,Eryngium paniculatum,Eryngium,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ep,Escallonia alpina,Escallonia alpina,Escallonia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Eg,Escallonia angustifolia,Escallonia angustifolia,Escallonia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+EH,barraco,Escallonia illinita,Escallonia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+EM,lun,Escallonia myrtoidea,Escallonia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+EP,madroño,Escallonia pulverulenta,Escallonia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ER,madroño,Escallonia revoluta,Escallonia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ep1,Escallonia rosea,Escallonia rosea,Escallonia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Eo,siete camisas,Escallonia rubra,Escallonia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+E5,Escallonia serrata,Escallonia serrata,Escallonia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ep2,Escallonia sp.,Escallonia sp.,Escallonia,Latifoliada,Arbol,Sí,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ev,mata negra,Escallonia virgata,Escallonia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ef,dedal de oro,Eschscholzia californica,Eschscholzia,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+EU,eucalipto,Eucalyptus camaldulensis,Eucalyptus,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+ED,eucalipto,Eucalyptus delegatensis,Eucalyptus,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+EG,eucalipto,Eucalyptus globulus,Eucalyptus,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+NI,eucalipto,Eucalyptus nitens,Eucalyptus,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+AH,eucalipto,Eucalyptus regnans,Eucalyptus,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+EW,eucalipto,Eucalyptus sp.,Eucalyptus,Latifoliada,Arbol,Sí,Exotica,media,No,No aplica,No,Sin dato - no verificado en RCE
+EV,eucalipto,Eucalyptus viminalis,Eucalyptus,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+EC,ulmo,Eucryphia cordifolia,Eucryphia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+eU,copao,Eulychnia acida,Eulychnia,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+eB,rumpa,Eulychnia breviflora,Eulychnia,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+eX,Eulychnia castanea,Eulychnia castanea,Eulychnia,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+eC1,Eulychnia chorosensis,Eulychnia chorosensis,Eulychnia,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+eI,Eulychnia iquiquensis,Eulychnia iquiquensis,Eulychnia,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+eM,rumpa,Eulychnia morromorenoensis,Eulychnia,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+eS,Eulychnia saint-pieana,Eulychnia saint-pieana,Eulychnia,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+eZ,Eulychnia sp.,Eulychnia sp.,Eulychnia,Latifoliada,Cactacea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+eT1,Eulychnia taltalensis,Eulychnia taltalensis,Eulychnia,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Es,pegajoso,Eupatorium salvium,Eupatorium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+en,Euphorbia collina,Euphorbia collina,Euphorbia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+El,lechero,Euphorbia lactiflua,Euphorbia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Fb,koa,Fabiana bryoides,Fabiana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Fd,Tara,Fabiana densa,Fabiana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Fa,alma tola,Fabiana denudata,Fabiana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Fi,pichi,Fabiana imbricata,Fabiana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Fw,Fabiana ramulosa,Fabiana ramulosa,Fabiana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+F1,Fabiana sp.,Fabiana sp.,Fabiana,Latifoliada,Arbusto,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Fq,Fabiana squamata,Fabiana squamata,Fabiana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Fs,Fabiana stephanii,Fabiana stephanii,Fabiana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Fz,Fabiana viscosa,Fabiana viscosa,Fabiana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+fs,Fagonia chilensis,Fagonia chilensis,Fagonia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+fa,coirón,Festuca acanthophylla,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+fr,coirón,Festuca argentina,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+f5,Festuca arundinacea,Festuca arundinacea,Festuca,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+fe,Paja brava,Festuca chrysophylla,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+f14,Festuca contracta,Festuca contracta,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+f3,Waiya,Festuca deserticola,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+fg,coirón,Festuca gracillima,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+fh,chillagua,Festuca hypsophila,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+fk,coirón,Festuca kurtziana,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+fm,Festuca magellanica,Festuca magellanica,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+fn,Festuca nardifolia,Festuca nardifolia,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+f10,Festuca orthophylla,Festuca orthophylla,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+fo,Paja brava,Festuca orthophylla,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+fp,coirón,Festuca pallescens,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+f12,Festuca purpurascens,Festuca purpurascens,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+f4,Festuca rigidifolia,Festuca rigidifolia,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+fb,Festuca rubra,Festuca rubra,Festuca,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+fx,Festuca sp.,Festuca sp.,Festuca,Monocotiledonea,Graminea,No,Nativa,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+f7,Festuca tunicata,Festuca tunicata,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+f8,Festuca werdermannii,Festuca werdermannii,Festuca,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+FC,alerce,Fitzroya cupressoides,Fitzroya,Conifera,Arbol,Sí,Nativa,alta,Sí,D.S. 490/1976 MINAGRI,No aplica,En Peligro
+Ft,incienso,Flourensia thurifera,Flourensia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Fc,hierba de la sal,Frankenia chilensis,Frankenia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+f9,Frankenia salina,Frankenia salina,Frankenia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Fk,llaretilla,Frankenia triandra,Frankenia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Fl,palo falso,Fuchsia lycioides,Fuchsia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Fm,chilco,Fuchsia magellanica,Fuchsia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+fi,Fuertesimalva chilensis,Fuertesimalva chilensis,Fuertesimalva,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+fa1,Fumaria agraria,Fumaria agraria,Fumaria,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+ga,galega,Galega officinalis,Galega,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+gd,Galium aparine,Galium aparine,Galium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+Yñ,Gaultheria mucronata,Gaultheria mucronata,Gaultheria,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Gp,chaura común,Gaultheria phillyreifolia,Gaultheria,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Gp1,Gaultheria poeppigii,Gaultheria poeppigii,Gaultheria,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+g14,chaura,Gaultheria pumila,Gaultheria,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Gm,retamilla,Genista monspessulana,Genista,Latifoliada,Arbusto,No,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+GD,chañar,Geoffroea decorticans,Geoffroea,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+GA,avellano,Gevuina avellana,Gevuina,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+v10,Glandularia gynobasis,Glandularia gynobasis,Glandularia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+gr,Gnaphalium robustum,Gnaphalium robustum,Gnaphalium,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+gv,vira vira,Gnaphalium viravira,Gnaphalium,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Gf,mira mira,Gochnatia fascicularis,Gochnatia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+G11,Gochnatia foliolosa,Gochnatia foliolosa,Gochnatia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+G13,yelmo,Griselinia scandens,Griselinia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Vt,guindilla,Guindilia trinervis,Guindilia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+gc,Gunnera chilensis,Gunnera chilensis,Gunnera,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+gm,Gunnera magellanica,Gunnera magellanica,Gunnera,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+gt,pangue,Gunnera tinctoria,Gunnera,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+G14,Gutierrezia espinosae,Gutierrezia espinosae,Gutierrezia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Gu,Gutierrezia gayana,Gutierrezia gayana,Gutierrezia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+G17,Gutierrezia neaeana,Gutierrezia neaeana,Gutierrezia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Gr,pichanilla,Gutierrezia resinosa,Gutierrezia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+G15,Guynesomia scoparia,Guynesomia scoparia,Guynesomia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Gl,Gymnophyton foliosum,Gymnophyton foliosum,Gymnophyton,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Gi,bio bio,Gymnophyton isatidicarpum,Gymnophyton,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Gy,Gymnophyton robustum,Gymnophyton robustum,Gymnophyton,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+G16,Gymnophyton sp.,Gymnophyton sp.,Gymnophyton,Latifoliada,Hierba,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Gz,Gypothamnium pinifolium,Gypothamnium pinifolium,Gypothamnium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ha,Haplopappus angustifolius,Haplopappus angustifolius,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+hb,Haplopappus arbutoides,Haplopappus arbutoides,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Hb,bailahuén,Haplopappus baylahuen,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ho,Haplopappus cerberoanus,Haplopappus cerberoanus,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+H2,Haplopappus diplopappus,Haplopappus diplopappus,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Hf,cacho de cabra,Haplopappus foliosus,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Hi,Haplopappus integerrimus,Haplopappus integerrimus,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+H3,Haplopappus kingii,Haplopappus kingii,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+H5,Haplopappus linifolius,Haplopappus linifolius,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Hk,Haplopappus macraeanus,Haplopappus macraeanus,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+hm,Haplopappus macrocephalus,Haplopappus macrocephalus,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Uy,Haplopappus meyenii,Haplopappus meyenii,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Uu,Haplopappus mucronatus,Haplopappus mucronatus,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Hv,crespilla,Haplopappus parvifolius,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Hu,Haplopappus pulchellus,Haplopappus pulchellus,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Hg,bailahuén,Haplopappus remyanus,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Yt,Haplopappus rengifoanus,Haplopappus rengifoanus,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+H9,Haplopappus saxatilis,Haplopappus saxatilis,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+H10,Haplopappus scrobiculatus,Haplopappus scrobiculatus,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Jk,Haplopappus sp.,Haplopappus sp.,Haplopappus,Latifoliada,Arbusto,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Hc,Haplopappus uncinatus,Haplopappus uncinatus,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Hd,Haplopappus velutinus,Haplopappus velutinus,Haplopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ma,manzanilla del campo,Helenium aromaticum,Helenium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+ht,Helenium atacamense,Helenium atacamense,Helenium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+hn,Helenium urmenetae,Helenium urmenetae,Helenium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+Hx,Heliotropium chenopodiaceum,Heliotropium chenopodiaceum,Heliotropium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+H19,Heliotropium filifolium,Heliotropium filifolium,Heliotropium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Hl,Heliotropium floridum,Heliotropium floridum,Heliotropium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+H16,Heliotropium huascoense,Heliotropium huascoense,Heliotropium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+H15,Heliotropium inconspicuum,Heliotropium inconspicuum,Heliotropium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+H17,Heliotropium linariifolium,Heliotropium linariifolium,Heliotropium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Hm,Heliotropium myosotifolium,Heliotropium myosotifolium,Heliotropium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Hp,Heliotropium pycnophyllum,Heliotropium pycnophyllum,Heliotropium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+He,Heliotropium sinuatum,Heliotropium sinuatum,Heliotropium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Hz,Heliotropium sp.,Heliotropium sp.,Heliotropium,Latifoliada,Arbusto,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Pa,palo negro,Heliotropium stenophyllum,Heliotropium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+hh,Herniaria hirsuta,Herniaria hirsuta,Herniaria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+h17,Hieracium pilosella,Hieracium pilosella,Hieracium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+h18,Hieracium sp.,Hieracium sp.,Hieracium,Latifoliada,Hierba,No,Exotica,media,No,No aplica,No,Sin dato - no verificado en RCE
+hñ,Hierochloe redolens,Hierochloe redolens,Hierochloe,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+hk,mostaza yuyo,Hirschfeldia incana,Hirschfeldia,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+h15,Hoffmannseggia eremophila,Hoffmannseggia eremophila,Hoffmannseggia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+hl,pasto miel,Holcus lanatus,Holcus,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+hj,Homalocarpus nigripetalus,Homalocarpus nigripetalus,Homalocarpus,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+hc,Hordeum chilense,Hordeum chilense,Hordeum,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+hs,Hordeum comosum,Hordeum comosum,Hordeum,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+hi,Hordeum murinum,Hordeum murinum,Hordeum,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+h3,Hordeum pubiflorum,Hordeum pubiflorum,Hordeum,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+h20,Hordeum pubiflorum,Hordeum pubiflorum,Hordeum,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+hx,Hordeum sp.,Hordeum sp.,Hordeum,Monocotiledonea,Graminea,No,Sin determinar,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+h13,Hordeum vulgare,Hordeum vulgare,Hordeum,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+h4,Huidobria chilensis,Huidobria chilensis,Huidobria,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+H14,Huidobria fruticosa,Huidobria fruticosa,Huidobria,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+h16,Hydrocotyle sp.,Hydrocotyle sp.,Hydrocotyle,Latifoliada,Hierba,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+h22,Hymenophyllum pectinatum,Hymenophyllum pectinatum,Hymenophyllum,Helecho,Helecho,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+h24,Hymenophyllum tortuosum,Hymenophyllum tortuosum,Hymenophyllum,Helecho,Helecho,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+hr,hierba del chancho,Hypochaeris radicata,Hypochaeris,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+h31,Hypochaeris sp.,Hypochaeris sp.,Hypochaeris,Latifoliada,Hierba,No,Exotica,media,No,No aplica,No,Sin dato - no verificado en RCE
+h11,Psikepsike,Hypochaeris taraxacoides,Hypochaeris,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+i10,Isolepis cernua,Isolepis cernua,Isolepis,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+i12,Isolepis sp.,Isolepis sp.,Isolepis,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+j2,Jamesoniella sp.,Jamesoniella sp.,Jamesoniella,Briofita,Briofita,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+JC,palma chilena,Jubaea chilensis,Jubaea,Monocotiledonea,Palma,Sí,Nativa,alta,No,No aplica,No aplica,Vulnerable
+jn,Juncus acutus,Juncus acutus,Juncus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+jb,Juncus balticus,Juncus balticus,Juncus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+jd,Juncus dichotomus,Juncus dichotomus,Juncus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+je1,Juncus effusus,Juncus effusus,Juncus,Monocotiledonea,Acuatica,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+ji1,Juncus involucratus,Juncus involucratus,Juncus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+jp,Juncus procerus,Juncus procerus,Juncus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ju,junco,Juncus sp.,Juncus,Monocotiledonea,Acuatica,No,Nativa,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+zu,Juncus stipulatus,Juncus stipulatus,Juncus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+J1,Junellia aretioides,Junellia aretioides,Junellia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Jb,Junellia bryoides,Junellia bryoides,Junellia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+J7,Junellia hystrix,Junellia hystrix,Junellia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Jv,Junellia lavandulaefolia,Junellia lavandulaefolia,Junellia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+J2,Pupusa,Junellia minima,Junellia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+J5,Junellia pappigera,Junellia pappigera,Junellia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Yw,Junellia selaginoides,Junellia selaginoides,Junellia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Js,Junellia spathulata,Junellia spathulata,Junellia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+M1,Junellia tridens,Junellia tridens,Junellia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+KA,frangel,Kageneckia angustifolia,Kageneckia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+KO,bollén,Kageneckia oblonga,Kageneckia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+KC,pacul,Krameria cistoidea,Krameria,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+l12,Lachemilla sp.,Lachemilla sp.,Lachemilla,Latifoliada,Hierba,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+lv,Lactuca virosa,Lactuca virosa,Lactuca,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+Lm,Lampaya,Lampaya medicinalis,Lampaya,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+La,llaretilla,Laretia acaulis,Laretia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+lh,dicha,Lastarriaea chilensis,Lastarriaea,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+l1,Lasthenia kunthii,Lasthenia kunthii,Lasthenia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+lx,Lathyrus sp.,Lathyrus sp.,Lathyrus,Latifoliada,Trepadora,No,Sin determinar,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+LP,tepa,Laurelia philippiana,Laurelia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+LS,laurel,Laurelia sempervirens,Laurelia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+L14,Lebetanthus myrsinites,Lebetanthus myrsinites,Lebetanthus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+l13,Leontodon saxatilis,Leontodon saxatilis,Leontodon,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+Ls,salvia macho,Lepechinia salviae,Lepechinia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+lj,Lepidium angustissimum,Lepidium angustissimum,Lepidium,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ld1,Lepidium draba,Lepidium draba,Lepidium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+li,Lepidium sp.,Lepidium sp.,Lepidium,Latifoliada,Hierba,No,Nativa,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+l15,Lepidium strictum,Lepidium strictum,Lepidium,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Lc,Lepidophyllum cupressiforme,Lepidophyllum cupressiforme,Lepidophyllum,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Lk,ciprés enano,Lepidothamnus fonkii,Lepidothamnus,Conifera,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+l24,paladar de chancho,Leptinella scariosa,Leptinella,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+l22,Leucanthemum vulgare,Leucanthemum vulgare,Leucanthemum,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+yñ,Leucheria menana,Leucheria menana,Leucheria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+l25,Leymus arenarius,Leymus arenarius,Leymus,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+l16,Lilaeopsis macloviana,Lilaeopsis macloviana,Lilaeopsis,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+LC,litre,Lithraea caustica,Lithraea,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+lp2,Loasa placei,Loasa placei,Loasa,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+lt,ortiga brava,Loasa tricolor,Loasa,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ls,ortiga caballuna,Loasa triloba,Loasa,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Le,tabaco del diablo,Lobelia excelsa,Lobelia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+l18,Lobelia oligophylla,Lobelia oligophylla,Lobelia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Lp,tabaco del diablo,Lobelia polyphylla,Lobelia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Lt,tupa,Lobelia tupa,Lobelia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+l19,Lolium multiflorum,Lolium multiflorum,Lolium,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+lr1,Lolium rigidum,Lolium rigidum,Lolium,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+LD,avellanillo,Lomatia dentata,Lomatia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+LF,fuinque,Lomatia ferruginea,Lomatia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+LH,radal,Lomatia hirsuta,Lomatia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+lr,Lophochloa cristata,Lophochloa cristata,Lophochloa,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+L11,Tajana,Lophopappus tarapacanus,Lophopappus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+kk,palmilla,Lophosoria quadripinnata,Lophosoria,Helecho,Helecho,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+lc,alfalfa chilota,Lotus corniculatus,Lotus,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+l20,Lotus subpinnatus,Lotus subpinnatus,Lotus,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+LA,arrayán,Luma apiculata,Luma,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+LZ,chequén,Luma chequen,Luma,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+L12,Lupinus arboreus,Lupinus arboreus,Lupinus,Latifoliada,Arbusto,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+lp,lupino,Lupinus luteus,Lupinus,Latifoliada,Arbusto,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+lo,Lupinus microcarpus,Lupinus microcarpus,Lupinus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+L13,Lupinus sp.,Lupinus sp.,Lupinus,Latifoliada,Arbusto,No,Sin determinar,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+l23,Luzuriaga marginata,Luzuriaga marginata,Luzuriaga,Monocotiledonea,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Lr,quilineja,Luzuriaga radicans,Luzuriaga,Monocotiledonea,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Lh,Lycium chilense,Lycium chilense,Lycium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+l28,Lycium humile,Lycium humile,Lycium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+L15,Lycium leiostemum,Lycium leiostemum,Lycium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Lx,carpiche,Lycium minutifolium,Lycium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Lr1,Lycium rachidocladum,Lycium rachidocladum,Lycium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Yy,Lycium stenophyllum,Lycium stenophyllum,Lycium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ly,Lycopersicon chilense,Lycopersicon chilense,Lycopersicon,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+mf,"madi, melosa",Madia chilensis,Madia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ms2,Madia sativa,Madia sativa,Madia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+mC1,Maihueniopsis camachoi,Maihueniopsis camachoi,Maihueniopsis,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+mC2,Maihueniopsis conoidea,Maihueniopsis conoidea,Maihueniopsis,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ms,Malva nicaeensis,Malva nicaeensis,Malva,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+m24,Malva sp.,Malva sp.,Malva,Latifoliada,Hierba,No,Exotica,media,No,No aplica,No,Sin dato - no verificado en RCE
+mg,Marsippospermum grandiflorum,Marsippospermum grandiflorum,Marsippospermum,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+mr1,Marsippospermum reichei,Marsippospermum reichei,Marsippospermum,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+MB,maitén,Maytenus boaria,Maytenus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Md,maitén chico,Maytenus disticha,Maytenus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+MM,leñadura,Maytenus magellanica,Maytenus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+my,hualputra,Medicago polymorpha,Medicago,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+al,alfalfa,Medicago sativa,Medicago,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+m16,Mesembryanthemum crystallinum,Mesembryanthemum crystallinum,Mesembryanthemum,Latifoliada,Suculenta,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+m17,Mesembryanthemum nodiflorum,Mesembryanthemum nodiflorum,Mesembryanthemum,Latifoliada,Suculenta,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+m25,Microphyes litoralis,Microphyes litoralis,Microphyes,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+mt,Montiopsis trifida,Montiopsis trifida,Montiopsis,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+MV,Pacama,Morella pavonis,Morella,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+mn,almizcle,Moscharia pinnatifida,Moscharia,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Mh,"quilo, mollaca",Muehlenbeckia hastulata,Muehlenbeckia,Latifoliada,Trepadora,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+m22,Muhlenbergia peruviana,Muhlenbergia peruviana,Muhlenbergia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+M12,Mulguraea arequipensis,Mulguraea arequipensis,Mulguraea,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Mm,neneo,Mulinum ulicinum,Mulinum,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Mg,orocoipo,Myoschilos oblonga,Myoschilos,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ME,pitra,Myrceugenia exsucca,Myrceugenia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+MP,picha picha,Myrceugenia planipes,Myrceugenia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Xi,Myrcianthes coquimbensis,Myrcianthes coquimbensis,Myrcianthes,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+mq,Myriophyllum aquaticum,Myriophyllum aquaticum,Myriophyllum,Latifoliada,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Mn,daudapo,Myrteola nummularia,Myrteola,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Nb,Nardophyllum bryoides,Nardophyllum bryoides,Nardophyllum,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Nl,Nardophyllum lanatum,Nardophyllum lanatum,Nardophyllum,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+nl,Nassauvia aculeata,Nassauvia aculeata,Nassauvia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Nx,calahuala,Nassauvia axillaris,Nassauvia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+n17,Nassauvia cumingii,Nassauvia cumingii,Nassauvia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+na,Nassauvia pyramidalis,Nassauvia pyramidalis,Nassauvia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+nc,coironcillo,Nassella chilensis,Nassella,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+n18,Nassella gigantea,Nassella gigantea,Nassella,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+nv,Nassella laevissima,Nassella laevissima,Nassella,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+n19,Nassella pungens,Nassella pungens,Nassella,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+n20,Nassella sp.,Nassella sp.,Nassella,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+n28,Nasturtium officinale,Nasturtium officinale,Nasturtium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+ng,coralito,Nertera granadensis,Nertera,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+y5,Neuontobotrys lanata,Neuontobotrys lanata,Neuontobotrys,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+n12,Neuontobotrys linearifolia,Neuontobotrys linearifolia,Neuontobotrys,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+n14,Neuontobotrys tarapacana,Neuontobotrys tarapacana,Neuontobotrys,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+nc1,Nicoraepoa chonotica,Nicoraepoa chonotica,Nicoraepoa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+n29,Nicoraepoa robusta,Nicoraepoa robusta,Nicoraepoa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ns1,Nicoraepoa subenervis,Nicoraepoa subenervis,Nicoraepoa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+xn,Nolana acuminata,Nolana acuminata,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ol,Nolana albescens,Nolana albescens,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+n24,Nolana aplocaryoides,Nolana aplocaryoides,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+nb,Nolana baccata,Nolana baccata,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+N5,Nolana carnosa,Nolana carnosa,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+N11,Nolana clivicola,Nolana clivicola,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+N1,Suaeda multiflora,Nolana crassulifolia,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Nd,suspiro,Nolana divaricata,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Nf,suspiro,Nolana filifolia,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ga,suspiro,Nolana glauca,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+N6,Nolana incana,Nolana incana,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+N12,Nolana inconspicua,Nolana inconspicua,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+n25,Nolana jaffuelii,Nolana jaffuelii,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ns,suspiro,Nolana leptophylla,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+n27,Nolana mollis,Nolana mollis,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Np,sosa,Nolana peruviana,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+n23,Nolana pterocarpa,Nolana pterocarpa,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+N8,Nolana ramosissima,Nolana ramosissima,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Nr,suspiro,Nolana rostrata,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+On,Nolana salsoloides,Nolana salsoloides,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ne,suspiro,Nolana sedifolia,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+N9,Nolana sphaerophylla,Nolana sphaerophylla,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+n22,Nolana tarapacana,Nolana tarapacana,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+N15,Nolana villosa,Nolana villosa,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+N3,Nolana werdermannii,Nolana werdermannii,Nolana,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+NR,ruil,Nothofagus alessandrii,Nothofagus,Latifoliada,Arbol,Sí,Nativa,alta,Sí,D.S. 13/1995 MINAGRI,No aplica,En Peligro Crítico
+NA,raulí,Nothofagus alpina,Nothofagus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+NT,ñirre,Nothofagus antarctica,Nothofagus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+NB,coihue de magallanes,Nothofagus betuloides,Nothofagus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ND,coihue,Nothofagus dombeyi,Nothofagus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+NG,hualo,Nothofagus glauca,Nothofagus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Vulnerable
+NM,roble de santiago,Nothofagus macrocarpa,Nothofagus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Vulnerable
+NN,coihue de chiloé,Nothofagus nitida,Nothofagus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+NO,roble,Nothofagus obliqua,Nothofagus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+NP,lenga,Nothofagus pumilio,Nothofagus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+oq,Oenothera coquimbensis,Oenothera coquimbensis,Oenothera,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Op,rabo de zorra,Ophryosporus paradoxus,Ophryosporus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Oy,Ophryosporus pinifolius,Ophryosporus pinifolius,Ophryosporus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ot,rabo de zorra,Ophryosporus triangularis,Ophryosporus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+oM,tunilla,Opuntia miquelii,Opuntia,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+oB,leoncillo,Opuntia sphaerica,Opuntia,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+oo,Oreobolus obtusangulus,Oreobolus obtusangulus,Oreobolus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+oL,Oreocereus leucotrichus,Oreocereus leucotrichus,Oreocereus,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Om,radal enano,Orites myrtoidea,Orites,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Pg,culén,Otholobium glandulosum,Otholobium,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Oa,traro,Ovidia andina,Ovidia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Oi,pillo pillo,Ovidia pillopillo,Ovidia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ox,Oxalis gigantea,Oxalis gigantea,Oxalis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+O10,Oxalis virgosa,Oxalis virgosa,Oxalis,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+oa,Pako,Oxychloë andina,Oxychloë,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+o16,Oxychloë haumaniana,Oxychloë haumaniana,Oxychloë,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+O11,Oxyphyllum ulicinum,Oxyphyllum ulicinum,Oxyphyllum,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+o19,Oxytheca dendroidea,Oxytheca dendroidea,Oxytheca,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p54,Pappostipa sp.,Pappostipa sp.,Pappostipa,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Pk,Pulika,Parastrephia lepidophylla,Parastrephia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Pu,Tola de agua,Parastrephia lucida,Parastrephia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+P7,Parastrephia phyliciformis,Parastrephia phyliciformis,Parastrephia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Pq,pulika,Parastrephia quadrangularis,Parastrephia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Pt,Tola,Parastrephia teretiuscula,Parastrephia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pc,Patosia clandestina,Patosia clandestina,Patosia,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p10,Pectocarya anomala,Pectocarya anomala,Pectocarya,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pf,Pectocarya dimorpha,Pectocarya dimorpha,Pectocarya,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pk,Pectocarya linearis,Pectocarya linearis,Pectocarya,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p13,Pennisetum clandestinum,Pennisetum clandestinum,Pennisetum,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+p7,Perityle emoryi,Perityle emoryi,Perityle,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Pm,chaura,Pernettya mucronata,Pernettya,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Py,chaura,Pernettya pumila,Pernettya,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+PA1,Persea americana,Persea americana,Persea,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+PL,lingue,Persea lingue,Persea,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+PM,lingue del norte,Persea meyeniana,Persea,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+PB,boldo,Peumus boldus,Peumus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+P1,coicopihue,Philesia magellanica,Philesia,Monocotiledonea,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p40,Philippiamra amaranthoides,Philippiamra amaranthoides,Philippiamra,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p15,Philippiamra celosioides,Philippiamra celosioides,Philippiamra,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pa,Phleum alpinum,Phleum alpinum,Phleum,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+pj,Phragmites australis,Phragmites australis,Phragmites,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+P3,Phrodus microphyllus,Phrodus microphyllus,Phrodus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+y2,Phylloscirpus acaulis,Phylloscirpus acaulis,Phylloscirpus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+wÃ,Phylloscirpus deserticola,Phylloscirpus deserticola,Phylloscirpus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+wñ,Phylloscirpus deserticola,Phylloscirpus deserticola,Phylloscirpus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+PU,ciprés de las guaitecas,Pilgerodendron uviferum,Pilgerodendron,Conifera,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,En Peligro
+PK,coihue,Pinus contorta,Pinus,Conifera,Arbol,Sí,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+PE,pino marítimo,Pinus pinaster,Pinus,Conifera,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+PY,pino piñonero,Pinus pinea,Pinus,Conifera,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+PD,lenga,Pinus ponderosa,Pinus,Conifera,Arbol,Sí,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+PR,pino insigne,Pinus radiata,Pinus,Conifera,Arbol,Sí,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+PW,pino escocés,Pinus silvestris,Pinus,Conifera,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+PS1,Pinus sp.,Pinus sp.,Pinus,Conifera,Arbol,Sí,Exotica,media,No,No aplica,No,Sin dato - no verificado en RCE
+b9,Piptochaetium montevidense,Piptochaetium montevidense,Piptochaetium,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ps1,Piptochaetium setosum,Piptochaetium setosum,Piptochaetium,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ps,Piptochaetium stipoides,Piptochaetium stipoides,Piptochaetium,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p28,Plantago barbata,Plantago barbata,Plantago,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pp,Plantago hispidula,Plantago hispidula,Plantago,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pl,siete venas,Plantago lanceolata,Plantago,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+pt,Plantago rancaguae,Plantago rancaguae,Plantago,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p24,Plantago sericea,Plantago sericea,Plantago,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p19,Plantago sp.,Plantago sp.,Plantago,Latifoliada,Hierba,No,Nativa,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p18,Plantago tubulosa,Plantago tubulosa,Plantago,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Pe,cola de ratón,Pleocarphus revolutus,Pleocarphus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+px,lengua de gallina,Pleurophora pungens,Pleurophora,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p29,Pleurophora pusilla,Pleurophora pusilla,Pleurophora,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+P2,Chilca,Pluchea chingoyo,Pluchea,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pa4,Poa acinaciphylla,Poa acinaciphylla,Poa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pa1,Poa alopecurus,Poa alopecurus,Poa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+on,pasto piojillo,Poa annua,Poa,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+ph,Poa holciformis,Poa holciformis,Poa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pr,Poa pratensis,Poa pratensis,Poa,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+ps2,Poa secunda,Poa secunda,Poa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+zx,Poa sp.,Poa sp.,Poa,Monocotiledonea,Graminea,No,Nativa,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p45,Poa spiciformis,Poa spiciformis,Poa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+PN,mañio de hojas punzantes,Podocarpus nubigenus,Podocarpus,Conifera,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+PS,mañio de hojas largas,Podocarpus salignus,Podocarpus,Conifera,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Vulnerable
+P6,Polyachyrus cinereus,Polyachyrus cinereus,Polyachyrus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Pf,Polyachyrus fuscus,Polyachyrus fuscus,Polyachyrus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+QU,Queñoa,Polylepis rugulosa,Polylepis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+QT,Queñoa de altura,Polylepis tarapacana,Polylepis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+am,Polypogon magellanicus,Polypogon magellanicus,Polypogon,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+py,Polystichum sp.,Polystichum sp.,Polystichum,Helecho,Helecho,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+PH,álamo,Populus alba,Populus,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+PI,álamo,Populus nigra,Populus,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+PZ,álamo,Populus sp.,Populus,Latifoliada,Arbol,Sí,Exotica,media,No,No aplica,No,Sin dato - no verificado en RCE
+PX,Populus x euroamericana,Populus x euroamericana,Populus,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+GU,guayacán,Porlieria chilensis,Porlieria,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pl1,Potamogeton linguatus,Potamogeton linguatus,Potamogeton,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pa2,Potentilla anserina,Potentilla anserina,Potentilla,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+fc,frutilla silvestre,Potentilla chiloensis,Potentilla,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+LW,"palo colorado,lúcumo silvestre",Pouteria splendens,Pouteria,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,En Peligro
+PP,algarrobo del norte,Prosopis alba,Prosopis,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+PC,algarrobo,Prosopis chilensis,Prosopis,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+PF,Prosopis flexuosa,Prosopis flexuosa,Prosopis,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ps,"Retortón, fortuna, tamarugo enan",Prosopis strombulifera,Prosopis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+PT,Tamarugo,Prosopis tamarugo,Prosopis,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Pb,olivillo,Proustia baccharoides,Proustia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ye,yegua,Proustia cinerea,Proustia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Pc,huañil,Proustia cuneifolia,Proustia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Px,olivillo,Proustia ilicifolia,Proustia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+P8,Proustia tipia,Proustia tipia,Proustia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+PA,lleuque,Prumnopitys andina,Prumnopitys,Conifera,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Vulnerable
+pv,hierba mora,Prunella vulgaris,Prunella,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+PO,pino oregón,Pseudotsuga menziesii,Pseudotsuga,Conifera,Arbol,Sí,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+p20,Puccinellia frigida,Puccinellia frigida,Puccinellia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+u4,Puccinellia glaucescens,Puccinellia glaucescens,Puccinellia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p47,Puccinellia magellanica,Puccinellia magellanica,Puccinellia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p51,Puccinellia pusilla,Puccinellia pusilla,Puccinellia,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p48,Puccinellia sp.,Puccinellia sp.,Puccinellia,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pP,puya,Puya alpestris,Puya,Monocotiledonea,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pB,chagual,Puya berteroniana,Puya,Monocotiledonea,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pC,cardón,Puya chilensis,Puya,Monocotiledonea,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pA,Puya coerulea,Puya coerulea,Puya,Monocotiledonea,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+pV,chagualillo,Puya venusta,Puya,Monocotiledonea,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p21,Llaretilla,Pycnophyllum bryoides,Pycnophyllum,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+p23,Llaretilla,Pycnophyllum molle,Pycnophyllum,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+QR,encina,Quercus robur,Quercus,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+QS,quillay,Quillaja saponaria,Quillaja,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ff,quinchamalí,Quinchamalium chilense,Quinchamalium,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+r12,Racomitrium sp.,Racomitrium sp.,Racomitrium,Briofita,Briofita,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+rn,Ranunculus peduncularis,Ranunculus peduncularis,Ranunculus,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ru,Ranunculus pubescens,Ranunculus pubescens,Ranunculus,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+r13,Ranunculus repens,Ranunculus repens,Ranunculus,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+r17,Ranunculus sp.,Ranunculus sp.,Ranunculus,Latifoliada,Hierba,No,Sin determinar,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+q2,Raphanus sativus,Raphanus sativus,Raphanus,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+rr,mostacilla,Rapistrum rugosum,Rapistrum,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+Pl,sauco del diablo,Raukaua laetevirens,Raukaua,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Re,retamilla,Retanilla ephedra,Retanilla,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Rq,Retanilla quinquinervia,Retanilla quinquinervia,Retanilla,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Rt,Retanilla stricta,Retanilla stricta,Retanilla,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Xo,tebo,Retanilla trinervia,Retanilla,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Rs,arrayán macho,Rhaphithamnus spinosus,Rhaphithamnus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Rc,Ribes cucullatum,Ribes cucullatum,Ribes,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ri,parrilla falsa,Ribes integrifolium,Ribes,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Xq,Ribes trilobum,Ribes trilobum,Ribes,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+RP,falsa acacia,Robinia pseudoacacia,Robinia,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+Rn,rosa mosqueta,Rosa moschata,Rosa,Latifoliada,Arbusto,No,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+Rh,Rosa rubiginosa,Rosa rubiginosa,Rosa,Latifoliada,Arbusto,No,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+R4,Rosa sp.,Rosa sp.,Rosa,Latifoliada,Arbusto,No,Exotica,media,No,No aplica,No,Sin dato - no verificado en RCE
+r14,Rostkovia magellanica,Rostkovia magellanica,Rostkovia,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+re,frutilla,Rubus geoides,Rubus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ru,zarzamora,Rubus ulmifolius,Rubus,Latifoliada,Arbusto,No,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+ra,vinagrillo,Rumex acetosella,Rumex,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+rc,romaza,Rumex crispus,Rumex,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+r16,Rumex sp.,Rumex sp.,Rumex,Latifoliada,Hierba,No,Exotica,baja,No,No aplica,No,Sin dato - no verificado en RCE
+wg,calahuala,Rumohra adiantiformis,Rumohra,Helecho,Helecho,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+r11,Ruppia filifolia,Ruppia filifolia,Ruppia,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+wh,pelo de marisma,Ruppia maritima,Ruppia,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+rq,Rytidosperma sp.,Rytidosperma sp.,Rytidosperma,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+rv,Rytidosperma virescens,Rytidosperma virescens,Rytidosperma,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+SB,sauce llorón,Salix babylonica,Salix,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+SR,sauce cabruno,Salix caprea,Salix,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+SH,sauce amargo,Salix humboldtiana,Salix,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+SS,Salix sp.,Salix sp.,Salix,Latifoliada,Arbol,Sí,Sin determinar,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+SA,sauce mimbre,Salix viminalis,Salix,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+R3,Sarcocornia andina,Sarcocornia andina,Sarcocornia,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+S27,Sarcocornia magellanica,Sarcocornia magellanica,Sarcocornia,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+S2,sosa alacranera,Sarcocornia neei,Sarcocornia,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+wp,Sarcocornia pulvinata,Sarcocornia pulvinata,Sarcocornia,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+SC,mañio de hojas cortas,Saxegothaea conspicua,Saxegothaea,Conifera,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+SO,pimiento,Schinus areira,Schinus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+SL,molle,Schinus latifolius,Schinus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Sl,laura,Schinus marchandii,Schinus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Sp,litrecillo,Schinus montanus,Schinus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+So,Schinus patagonicus,Schinus patagonicus,Schinus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+SP,huingán,Schinus polygamus,Schinus,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+SI,Schinus sp.,Schinus sp.,Schinus,Latifoliada,Arbol,Sí,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+sa,vatro,Schoenoplectus americanus,Schoenoplectus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+s29,Schoenoplectus californicus,Schoenoplectus californicus,Schoenoplectus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+wo,Totora,Schoenoplectus pungens,Schoenoplectus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+s28,Schoenoplectus pungens,Schoenoplectus pungens,Schoenoplectus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+sz,Schoenus andinus,Schoenus andinus,Schoenus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+s30,Schoenus antarcticus,Schoenus antarcticus,Schoenus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+sr1,Schoenus rhynchosporoides,Schoenus rhynchosporoides,Schoenus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ss1,Schoenus sp.,Schoenus sp.,Schoenus,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+s19,Scirpus asper,Scirpus asper,Scirpus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+sc,Scirpus californicus,Scirpus californicus,Scirpus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+s38,Scirpus sp.,Scirpus sp.,Scirpus,Monocotiledonea,Acuatica,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+n2,Selliera radicans,Selliera radicans,Selliera,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+sd,hierba zonza,Senecio adenotrichius,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Sj,Senecio atacamensis,Senecio atacamensis,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+S17,Senecio bahioides,Senecio bahioides,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+S11,Viravira,Senecio behnii,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Xu,Senecio benaventianus,Senecio benaventianus,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Sb,Senecio brunonianus,Senecio brunonianus,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+S25,Senecio dryophyllus,Senecio dryophyllus,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+De,Senecio eruciformis,Senecio eruciformis,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+S28,Senecio filaginoides,Senecio filaginoides,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Fr,Senecio francisci,Senecio francisci,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Nw,Senecio leucus,Senecio leucus,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Su,Chachacoma,Senecio nutans,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+S12,Koya blanca,Senecio olivaceobracteatus,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+S31,Senecio oreophyton,Senecio oreophyton,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Sz,Kopa de condor,Senecio pappii,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+St,Senecio patagonicus,Senecio patagonicus,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+S30,Senecio proteus,Senecio proteus,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+S26,Senecio rosmarinus,Senecio rosmarinus,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+S29,Senecio saxicola,Senecio saxicola,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+S22,Senecio sinuatilobus,Senecio sinuatilobus,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ss,Senecio sp.,Senecio sp.,Senecio,Latifoliada,Arbusto,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+s32,Senecio trifurcatus,Senecio trifurcatus,Senecio,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Sc,quebracho,Senna candolleana,Senna,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Sd,alcaparra,Senna cumingii,Senna,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+SQ,sequoia,Sequoia sempervirens,Sequoia,Conifera,Arbol,Sí,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+mo,Sisymbrium officinale,Sisymbrium officinale,Sisymbrium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+Sk,cuerno de cabra,Skytanthus acutus,Skytanthus,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+sb1,Solanum brachyantherum,Solanum brachyantherum,Solanum,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Sm,mayo,Sophora macrocarpa,Sophora,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+sd1,Spartina densiflora,Spartina densiflora,Spartina,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+S1,retamo de olor,Spartium junceum,Spartium,Latifoliada,Arbusto,No,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+sm,Spergularia media,Spergularia media,Spergularia,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+ñm,malvavisco,Sphaeralcea obtusiloba,Sphaeralcea,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+s33,Sphagnum magellanicum,Sphagnum magellanicum,Sphagnum,Briofita,Briofita,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+z1,Sphagnum sp.,Sphagnum sp.,Sphagnum,Briofita,Briofita,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+sx,quilloy quilloy,Stellaria media,Stellaria,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+s34,Sticherus quadripartitus,Sticherus quadripartitus,Sticherus,Helecho,Helecho,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+s12,Stipa annua,Stipa annua,Stipa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+wt,coirón,Stipa atacamensis,Stipa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+s13,Stipa bomanii,Stipa bomanii,Stipa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+sw,Stipa chrysophylla,Stipa chrysophylla,Stipa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+sf,Stipa frigida,Stipa frigida,Stipa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+sh,Stipa lachnophylla,Stipa lachnophylla,Stipa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+s14,Paja amarilla,Stipa leptostachya,Stipa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+sk,Chake,Stipa nardoides,Stipa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+sj,coirón,Stipa patagonica,Stipa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+tl,pasto chinchillero,Stipa plumosa,Stipa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+tn,Stipa pogonathera,Stipa pogonathera,Stipa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+s15,Stipa pubiflora,Stipa pubiflora,Stipa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+s26,Stipa pungionata,Stipa pungionata,Stipa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+zt,Stipa sp.,Stipa sp.,Stipa,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+s35,Stipa sp.,Stipa sp.,Stipa,Monocotiledonea,Graminea,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ss,coirón,Stipa speciosa,Stipa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+sv,Vizcachera,Stipa venusta,Stipa,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Wg,sosa,Suaeda foliosa,Suaeda,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+S24,Suaeda multiflora,Suaeda multiflora,Suaeda,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Tq,tralhuén,Talguenea quinquenervia,Talguenea,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+T2,Tamarix aphylla,Tamarix aphylla,Tamarix,Latifoliada,Arbol,Sí,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+t11,Malva,Tarasa operculata,Tarasa,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+to,Taraxacum officinale,Taraxacum officinale,Taraxacum,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+To,teline,Teline monspessulana,Teline,Latifoliada,Arbusto,No,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+TS,tepú,Tepualia stipularis,Tepualia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Th,brea,Tessaria absinthioides,Tessaria,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+t13,Tessaria sp.,Tessaria sp.,Tessaria,Latifoliada,Arbusto,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ta,horizonte,Tetraglochin alatum,Tetraglochin,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+T3,Añawaya,Tetraglochin cristatum,Tetraglochin,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ts,Tetraglochin strictum,Tetraglochin strictum,Tetraglochin,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Tn,Tetragonia angustifolia,Tetragonia angustifolia,Tetragonia,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+tc,Tetragonia copiapina,Tetragonia copiapina,Tetragonia,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+tt,Tetragonia macrocarpa,Tetragonia macrocarpa,Tetragonia,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Tm,Tetragonia maritima,Tetragonia maritima,Tetragonia,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+t14,Aguanosa,Tetragonia microcarpa,Tetragonia,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+t19,Tetragonia pedunculata,Tetragonia pedunculata,Tetragonia,Latifoliada,Suculenta,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+t26,Tetroncium magellanicum,Tetroncium magellanicum,Tetroncium,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+tL,Calanchuca,Tillandsia landbeckii,Tillandsia,Monocotiledonea,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+tM,Calanchuca,Tillandsia marconae,Tillandsia,Monocotiledonea,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+tS,Tillandsia sp.,Tillandsia sp.,Tillandsia,Monocotiledonea,Hierba,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+T5,Tiquilia atacamensis,Tiquilia atacamensis,Tiquilia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+T6,Tiquilia grandiflora,Tiquilia grandiflora,Tiquilia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Tl,Tiquilia litoralis,Tiquilia litoralis,Tiquilia,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Wj,talhuén,Trevoa quinquenervia,Trevoa,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Tt,tebo,Trevoa trinervis,Trevoa,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+T8,Trichocereus atacamensis,Trichocereus atacamensis,Trichocereus,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+tC,quisco,Trichocereus chiloensis,Trichocereus,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+eD,Trichocereus deserticola,Trichocereus deserticola,Trichocereus,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+eP,quisco,Trichocereus litoralis,Trichocereus,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+tN,Trichocereus nigripilis,Trichocereus nigripilis,Trichocereus,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ta1,Trifolium arvense,Trifolium arvense,Trifolium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+tr,trébol blanco,Trifolium repens,Trifolium,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+t16,Triglochin concinna,Triglochin concinna,Triglochin,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ta,Triglochin palustris,Triglochin palustris,Triglochin,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+t30,Trisetum spicatum,Trisetum spicatum,Trisetum,Monocotiledonea,Graminea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+T4,Visavisa,Trixis cacalioides,Trixis,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+tp,Tropaeolum polyphyllum,Tropaeolum polyphyllum,Tropaeolum,Latifoliada,Trepadora,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+t23,Tropaeolum sp.,Tropaeolum sp.,Tropaeolum,Latifoliada,Trepadora,No,Nativa,baja,No,No aplica,No aplica,Sin dato - no verificado en RCE
+tO,Tunilla soehrensii,Tunilla soehrensii,Tunilla,Latifoliada,Cactacea,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+ty,totora,Typha angustifolia,Typha,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+t18,Typha domingensis,Typha domingensis,Typha,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ub,murta blanca,Ugni candollei,Ugni,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Um,murtilla,Ugni molinae,Ugni,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+Ue,ulex,Ulex europaeus,Ulex,Latifoliada,Arbusto,No,Exotica,alta,No,No aplica,Sí,Sin dato - no verificado en RCE
+uu1,Urtica urens,Urtica urens,Urtica,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+vn,Valeriana carnosa,Valeriana carnosa,Valeriana,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+va,Valeriana sp.,Valeriana sp.,Valeriana,Latifoliada,Hierba,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+vt,Verbascum thapsus,Verbascum thapsus,Verbascum,Latifoliada,Hierba,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+Vs,Verbena sp.,Verbena sp.,Verbena,Latifoliada,Hierba,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+v13,arvejilla,Vicia sativa,Vicia,Latifoliada,Trepadora,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+Vn,oreganillo,Viviania marifolia,Viviania,Latifoliada,Arbusto,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+vd,pasto sedilla,Vulpia bromoides,Vulpia,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+vm,pasto sedilla,Vulpia myuros,Vulpia,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE
+vz,Vulpia sp.,Vulpia sp.,Vulpia,Monocotiledonea,Graminea,No,Exotica,media,No,No aplica,No,Sin dato - no verificado en RCE
+WT,"tineo, tenio",Weinmannia trichosperma,Weinmannia,Latifoliada,Arbol,Sí,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+w3,Werneria incisa,Werneria incisa,Werneria,Latifoliada,Hierba,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+w5,Werneria sp.,Werneria sp.,Werneria,Latifoliada,Hierba,No,Nativa,media,No,No aplica,No aplica,Sin dato - no verificado en RCE
+st,"pako, sinonimia con scirpus atacamensis",Zameioscirpus atacamensis,Zameioscirpus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+z3,Zameioscirpus gaimardiodes,Zameioscirpus gaimardiodes,Zameioscirpus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+z2,Zameioscirpus muticus,Zameioscirpus muticus,Zameioscirpus,Monocotiledonea,Acuatica,No,Nativa,alta,No,No aplica,No aplica,Sin dato - no verificado en RCE
+zm,Maíz,Zea mays,Zea,Monocotiledonea,Graminea,No,Exotica,alta,No,No aplica,No,Sin dato - no verificado en RCE

@@ -23,9 +23,23 @@ tipo. Romper ese orden lanza RangeError al construir la vista tipada.
     offset 22N   altura  Uint8Array[N]     indice en manifest.alturas, 255 = sin dato
     offset 23N   stifo   Uint8Array[N]     indice en manifest.subtipos_forestales (sin
                                            centinela: «no aplica» es una clase)
-                                           total = 24 bytes por fila
+    offset 24N   region  Uint8Array[N]     indice en manifest.regiones (sin centinela: reg_cod
+                                           esta poblado en las 1.827.933 filas)
+                                           total = 25 bytes por fila
 
-LAS ETIQUETAS SALEN DEL CODIGO, NUNCA DEL TEXTO. Medido sobre las 1.827.933
+LA REGION VA EN COLUMNA PROPIA, y no se deriva de la comuna. Se derivaba, y esa
+indireccion publico cifras NACIONALES bajo el rotulo «Los Rios» durante meses:
+las 79.727 filas de esa region llegaban sin comuna, el conjunto de comunas del
+ambito salia vacio, y un conjunto vacio significa «todas» en el cliente. Con
+columna propia el nivel region filtra directo, y los 4 poligonos de Magallanes
+que no tienen comuna --«Areas no Reconocidas», 127.168,89 ha-- vuelven a contar
+en su region, que es el hallazgo H4 del informe de la Unidad.
+
+LAS ETIQUETAS SALEN DEL CODIGO SIEMPRE QUE HAYA CODIGO, y donde no lo hay, de
+una TABLA DE HOMOLOGACION revisada --ETL/homologacion/--, nunca de una
+heuristica sobre el texto. Cinco dimensiones no tienen codigo utilizable
+(altura, subtipo forestal, especie, SNASPE, comuna) y para esas manda la tabla.
+Decia «nunca del texto», a secas, y era falso desde el primer dia. Medido sobre las 1.827.933
 filas: agregando por codigo, las cuatro estructuras del bosque nativo suman
 15.536.329,01 ha, que es EXACTAMENTE su total -- diferencia +0,00. Agregando por
 texto faltaban 95.626 ha, que resultaron ser Coquimbo entera (48.474,86, escrita
@@ -89,6 +103,8 @@ import sys
 import unicodedata
 
 import duckdb
+
+import homologacion as H
 import numpy as np
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -141,6 +157,25 @@ REGION_NOMBRE = {
     "11": ("Aysén", "Región de Aysén del General Carlos Ibáñez del Campo"),
     "12": ("Magallanes", "Región de Magallanes y de la Antártica Chilena"),
 }
+
+# Los seis ejes con los que se puede filtrar la VEGETACION, y no el poligono.
+# Salen de la hoja 15 del libro de homologacion, que clasifica las 989 especies
+# del Catastro. No son columnas del .bin y no engordan la descarga: son funcion
+# del codigo de especie, que ya viaja, asi que se derivan --aqui para las cifras
+# del manifest, y en el cliente para filtrar--. Mandarlas en el .bin serian
+# ~9 MB por un dato que cabe en 989 filas de manifest.
+#
+# EL ORDEN DEL DOMINIO LO FIJA ESTE SCRIPT y el cliente lo lee del manifest. No
+# se ordena en los dos sitios: 'Si' y 'En Peligro Critico' llevan tilde, y el
+# orden de JS y el de Python no tienen por que coincidir en eso.
+DERIVADAS_ESPECIE = (
+    ("grupos", "grupo"),
+    ("habitos", "habito"),
+    ("arboreas", "arboreo"),
+    ("origenes", "origen"),
+    ("invasoras", "invasora"),
+    ("conservaciones", "conservacion"),
+)
 
 CATEGORIAS_SNASPE = ("Parque Nacional", "Reserva Nacional", "Monumento Natural")
 
@@ -367,7 +402,13 @@ def construir():
         # 'Denso' podria acabar rotulando lo que el catastro llama 'Escaso'.
         raise SystemExit(f"cobertura: el orden de la guia no cuadra: {desajuste_cober}")
 
-    lbl_altura = {c: etiqueta_mayoritaria(g) for c, g in graf_altura.items()}
+    # El separador decimal a coma, que es el del resto del visor: las clases
+    # llegaban como «0 - 0.5» junto a cifras escritas «1.835.307,15».
+    hom_alt = H.mapa("07_altura", norm=canon)
+    H.exigir("07_altura", (etiqueta_mayoritaria(g) for g in graf_altura.values()),
+             "clase de altura", norm=canon)
+    lbl_altura = {c: hom_alt.get(canon(etiqueta_mayoritaria(g)), etiqueta_mayoritaria(g))
+                  for c, g in graf_altura.items()}
     for c in lbl_altura:
         if c not in ESCALA_ALTURA:
             raise SystemExit(f"clase de altura sin escala declarada: {c!r}")
@@ -375,22 +416,61 @@ def construir():
     # Subtipo forestal: por TEXTO canonico. idx traduce cada GRAFIA CRUDA al
     # indice de su grupo, que es justo lo que codificar() necesita para traducir
     # el diccionario de Arrow sin materializar 1,8 M de cadenas.
-    graf_stifo, crudas_stifo = {}, {}
-    for txt, cuenta in con.execute("""
+    filas_stifo = con.execute("""
         SELECT SUBTIPOFOR, count(*) FROM cbn_nacional_atributos
         WHERE SUBTIPOFOR IS NOT NULL AND centroide_lon IS NOT NULL GROUP BY 1
-    """).fetchall():
-        k = canon(txt)
-        # Dos diccionarios y no uno: la ETIQUETA se elige entre grafias
-        # recortadas (nadie quiere ver 'Roble ' con su espacio), pero el INDICE
-        # tiene que ir contra el valor CRUDO, que es el que trae el diccionario
-        # de Arrow. Recortar en los dos sitios deja fuera del vocabulario justo
-        # a las filas con espacio sobrante.
-        graf_stifo.setdefault(k, {})[txt.strip()] = \
-            graf_stifo.get(k, {}).get(txt.strip(), 0) + cuenta
-        crudas_stifo.setdefault(k, []).append(txt)
+    """).fetchall()
+
+    # DOS ETAPAS DE AGRUPACION, y hacen falta las dos.
+    #
+    # Etapa 1, la de siempre: `canon` funde mayusculas, tildes, guiones
+    # tipograficos y saltos de linea, y la etiqueta del grupo es la grafia
+    # mayoritaria. De ahi salen las 37 clases que el visor publica hoy.
+    #
+    # Etapa 2, la nueva: esas 37 etiquetas pasan por la tabla de homologacion,
+    # que funde cuatro pares que `canon` NO funde porque solo se diferencian en
+    # los espacios alrededor del guion --«Roble-Hualo» y «Roble - Hualo»--. Son
+    # 75.918,86 ha en la variante minoritaria, y quien consultaba una de las dos
+    # obtenia poco mas de la mitad de la superficie de su clase.
+    #
+    # La tabla se consulta con la ETIQUETA PUBLICADA, no con cada grafia cruda:
+    # sus `valor_origen` son lo que se ve en el visor. Aplicarla sobre el crudo
+    # reventaba el catalogo con 'No aplica' y 'Roble-Rauli-Coihue', que son
+    # grafias que la etapa 1 ya habia absorbido.
+    graf0, crudas0 = {}, {}
+    for txt, cuenta in filas_stifo:
+        k0 = canon(txt)
+        # `crudas0` guarda el valor CRUDO --sin recortar-- porque es el que trae
+        # el diccionario de Arrow, y `idx_stf` tiene que traducir eso. Recortar
+        # tambien aqui deja fuera del vocabulario a las filas con espacio
+        # sobrante.
+        graf0.setdefault(k0, {})[txt.strip()] =             graf0.get(k0, {}).get(txt.strip(), 0) + cuenta
+        crudas0.setdefault(k0, []).append(txt)
+    lbl0 = {k0: etiqueta_mayoritaria(g) for k0, g in graf0.items()}
+
+    hom_stf = H.mapa("05_subtipo_forestal", norm=canon)
+    H.exigir("05_subtipo_forestal", lbl0.values(), "subtipo forestal", norm=canon)
+
+    graf_stifo, crudas_stifo, lbl_stifo_canon = {}, {}, {}
+    alias_stf = {}
+    for k0, etq0 in lbl0.items():
+        etq = hom_stf.get(canon(etq0), etq0)
+        k = canon(etq)
+        # EL CODIGO PUBLICADO DE ESTA DIMENSION ES SU TEXTO CANONIZADO, y al
+        # fundir dos clases el de la minoritaria deja de existir. `filtrosAURL`
+        # escribe ese codigo en la URL, asi que un enlace ya compartido con
+        # ?stifo=roble-hualo filtraria NADA, en silencio. El alias lo traduce.
+        if k0 != k:
+            alias_stf[k0] = k
+        lbl_stifo_canon[k] = etq
+        graf_stifo[k] = graf_stifo.get(k, 0) + sum(graf0[k0].values())
+        crudas_stifo.setdefault(k, []).extend(crudas0[k0])
+
     ord_stf = sorted(graf_stifo)
-    lbl_stifo = {k: etiqueta_mayoritaria(graf_stifo[k]) for k in ord_stf}
+    # La etiqueta la manda la TABLA, no la grafia mayoritaria: cuando dos
+    # variantes se funden, la mayoritaria seria una de las dos y la tabla ya
+    # eligio cual, con el criterio de la grafia oficial del tipo forestal.
+    lbl_stifo = {k: lbl_stifo_canon[k] for k in ord_stf}
     idx_stf = {raw: i for i, k in enumerate(ord_stf) for raw in crudas_stifo[k]}
 
     # A que tipo forestal pertenece cada subtipo, para poder agrupar los 37 bajo
@@ -403,7 +483,10 @@ def construir():
         WHERE SUBTIPOFOR IS NOT NULL AND ID_TIFO IS NOT NULL
           AND centroide_lon IS NOT NULL GROUP BY 1, 2
     """).fetchall():
-        bajo_tifo.setdefault(canon(txt), set()).add(tifo)
+        # Por el canon del texto HOMOLOGADO, igual que el dominio. Agrupando por
+        # el crudo, los cuatro subtipos fundidos quedarian sin tipo forestal en
+        # el manifest y el frontend los listaria sueltos.
+        bajo_tifo.setdefault(canon(hom_stf.get(canon(txt), txt.strip())), set()).add(tifo)
     tifo_de_stifo = {k: (sorted(v)[0] if len(v) == 1 else None)
                      for k, v in bajo_tifo.items()}
 
@@ -412,15 +495,52 @@ def construir():
     # nombre cientifico, que es como agrega la planilla oficial ('Eucalyptus sp.').
     graf_esp_ci = por_codigo("ID_ESP1", "ESPECI1_CI")
     graf_esp_co = por_codigo("ID_ESP1", "ESPECI1_CO")
+    # LA HOMOLOGACION DE ESPECIE SE APLICA A LAS ETIQUETAS Y NUNCA AL CODIGO, y
+    # esto es una frontera deliberada, no una omision. La hoja 12 propone dos
+    # cambios de codigo y ninguno de los dos puede aplicarse a ciegas:
+    #
+    #   - 'ÃÂ' -> '(recuperar del origen)'. Es un MARCADOR DE POSICION, no un
+    #     codigo: aplicarlo crearia una especie llamada asi.
+    #   - 'wÃ' -> 'wñ'. Es una FUSION de dos codigos, y la propia hoja 14 la
+    #     manda a decision. Cambiar un codigo re-enlaza 1,83 M de filas.
+    #
+    # El codigo es ademas la unica clave de union valida --53 nombres comunes
+    # designan mas de una especie, «alamo» son tres Populus-- y distingue caja:
+    # 'AB' es Abies, 'Ab' es Adesmia boronioides y 'ab' es Calceolaria biflora.
+    # Ver 13_NO_FUSIONAR.csv.
+    hom_esp = H.tabla("12_especie", clave="cod_origen")
+    clas_esp = H.tabla("15_especie_clasificada", clave="especie_cod")
+
     esp_meta = {}
     for cod in sorted(set(graf_esp_ci) | set(graf_esp_co)):
         ci = etiqueta_mayoritaria(graf_esp_ci[cod]) if cod in graf_esp_ci else None
         co = etiqueta_mayoritaria(graf_esp_co[cod]) if cod in graf_esp_co else None
+        h = hom_esp.get(cod)
+        if h and h["accion"] in H.APLICABLES:
+            ci = h["cientifico_canonico"] or ci
+            co = h["especie_canonica"] or co
+        k = clas_esp.get(cod, {})
         esp_meta[cod] = {
             "cientifico": ci,
             "comun": co,
-            "genero": ci.split()[0] if ci else None,
+            # El genero lo manda la tabla cuando lo trae: la primera palabra del
+            # cientifico se cuela con el mojibake de 'Oxychlo�'.
+            "genero": (h or {}).get("genero_canonico") or (ci.split()[0] if ci else None),
+            # Los siete atributos de la hoja 15. No son del poligono sino de la
+            # ESPECIE, asi que viajan aqui --989 filas-- y el cliente deriva de
+            # ellos sus columnas de filtro. Mandarlos en el .bin serian ~9 MB.
+            "grupo": k.get("grupo"),
+            "habito": k.get("habito"),
+            "arboreo": k.get("arboreo"),
+            "origen": k.get("origen"),
+            "monumento_natural": k.get("monumento_natural"),
+            "decreto_mn": k.get("decreto_mn"),
+            "invasora": k.get("invasora"),
+            "conservacion": k.get("estado_conservacion_RCE"),
         }
+    H.exigir("12_especie", esp_meta, "especie", clave="cod_origen")
+    H.exigir("15_especie_clasificada", esp_meta, "clasificacion de especie",
+             clave="especie_cod")
 
     # ---- metadatos territoriales (agregados chicos: se resuelven en SQL) -----
     regiones = {}
@@ -448,24 +568,61 @@ def construir():
                         "anio": per, "n": nn, "ha": round(float(hh), 2),
                         "bbox": [round(x0, 5), round(y0, 5), round(x1, 5), round(y1, 5)]}
 
+    # COALESCE(CODCOM, Codcomun) Y NO SOLO CODCOM. La Region de Los Rios trae su
+    # codigo de comuna en OTRA columna: `Codcomun` esta poblada en sus 79.727
+    # filas y es NULL en las otras quince regiones -- es el complemento exacto de
+    # `CODCOM`. Leyendo solo CODCOM, las doce comunas de Los Rios no existian
+    # para el visor y la region entera se quedaba sin desglose territorial.
+    # Medido: count(COALESCE(CODCOM, Codcomun)) = 1.827.929 de 1.827.933, y las
+    # 4 que faltan son los poligonos de Magallanes sin ningun dato territorial.
+    hom_com = H.mapa("09_comuna")
+    hom_prov = H.mapa("10_provincia")
+    crudos_com, crudos_prov = set(), set()
     com_meta = {}
     for cc, cn, pn, rc, x0, y0, x1, y1 in con.execute("""
-        SELECT CODCOM, any_value(NOM_COM), any_value(NOM_PROV), any_value(reg_cod),
+        SELECT COALESCE(CODCOM, Codcomun) AS cod,
+               any_value(NOM_COM), any_value(NOM_PROV), any_value(reg_cod),
                min(centroide_lon), min(centroide_lat),
                max(centroide_lon), max(centroide_lat)
         FROM cbn_nacional_atributos
-        WHERE CODCOM IS NOT NULL AND centroide_lon IS NOT NULL GROUP BY CODCOM
+        WHERE COALESCE(CODCOM, Codcomun) IS NOT NULL AND centroide_lon IS NOT NULL
+        GROUP BY cod
     """).fetchall():
-        com_meta[cc] = {"nombre": cn, "provincia": pn, "region": rc,
+        crudos_com.add(cn)
+        crudos_prov.add(pn)
+        com_meta[cc] = {"nombre": hom_com.get(cn, cn),
+                        "provincia": hom_prov.get(pn, pn), "region": rc,
                         "bbox": [round(x0, 5), round(y0, 5), round(x1, 5), round(y1, 5)]}
+    # `revisar` NO se aplica: la tabla marca asi las grafias que difieren del
+    # nombre oficial por algo mas que un acento --Calera/La Calera,
+    # Coihaique/Coyhaique, Mariquina/San Jose de la Mariquina-- y dice
+    # expresamente «confirmar antes de aplicar». Decidirlo aqui seria que el ETL
+    # zanjara un asunto de nomenclatura oficial. Quedan abiertas en 14_REVISAR.
+    H.exigir("09_comuna", crudos_com, "comuna")
+    H.exigir("10_provincia", crudos_prov, "provincia")
 
     # SNASPE: la categoria se deriva de la UNIDAD, no al reves.
-    cat_por_unidad = {}
-    for u, cat, cuenta in con.execute("""
+    # Cuatro unidades llegaban PARTIDAS EN DOS por la grafia: el Parque Nacional
+    # Bernardo O'Higgins figuraba como «Ohiggins» (2.849.820,93 ha) y como
+    # «OHiggins» (962.126,98 ha), y lo mismo la Reserva Nacional Ñuble, el Parque
+    # Nacional Pan de Azucar y el Nahuelbuta. La tabla ademas antepone la
+    # categoria a los 16 rotulos que no la traian, y eso NO es cosmetico: el
+    # Parque Nacional Villarrica y la Reserva Nacional Villarrica son dos
+    # unidades distintas que comparten toponimo, y la categoria es lo unico que
+    # las distingue. Por eso no se pueden fundir por nombre pelado.
+    hom_sna = H.mapa("08_snaspe")
+    filas_sna = con.execute("""
         SELECT NOM_SNASPE, TIPO_SNASP, count(*) FROM cbn_nacional_atributos
         WHERE NOM_SNASPE IS NOT NULL AND centroide_lon IS NOT NULL GROUP BY 1,2
-    """).fetchall():
-        cat_por_unidad.setdefault(u, {})[cat] = cuenta
+    """).fetchall()
+    H.exigir("08_snaspe", (u for u, _, _ in filas_sna), "unidad del SNASPE")
+    cat_por_unidad, crudas_sna, alias_sna = {}, {}, {}
+    for u_crudo, cat, cuenta in filas_sna:
+        u = hom_sna.get(u_crudo, u_crudo)
+        cat_por_unidad.setdefault(u, {})[cat] = cat_por_unidad.get(u, {}).get(cat, 0) + cuenta
+        crudas_sna.setdefault(u, set()).add(u_crudo)
+        if u_crudo != u:
+            alias_sna[u_crudo] = u
 
     # Las cuentas por categoria se REORDENAN antes de publicarse: se serializan
     # en el manifest, y su orden de insercion sale del GROUP BY, que DuckDB no
@@ -483,21 +640,37 @@ def construir():
             elegida = max(validas.items(), key=lambda x: x[1])[0]
             motivo = "la unidad figura con dos categorias; se usa la mayoritaria"
         else:
-            elegida = CORRECCION_SNASPE.get(u)
+            # La correccion esta escrita contra el nombre CRUDO de la capa
+            # --«Mon. Natural Islotes de Punihuil», «Monumentro Nacional Lahuen
+            # Nadi»--, que es justo el que la homologacion acaba de sustituir.
+            # Se busca por los crudos del grupo, no por el canonico.
+            elegida = next((CORRECCION_SNASPE[c] for c in sorted(crudas_sna.get(u, ()))
+                            if c in CORRECCION_SNASPE), None)
             if elegida is None:
                 raise SystemExit(f"SNASPE sin categoria valida ni correccion: {u!r} {cuentas}")
             motivo = "la capa de origen trae una categoria que no existe en el SNASPE"
         canon_cat[u] = elegida
         if len(cuentas) > 1 or not validas:
             corregidas.append({"unidad": u, "en_la_capa": cuentas,
+                               "grafias_de_origen": sorted(crudas_sna.get(u, ())),
                                "usada": elegida, "motivo": motivo})
+
+    # La region se indexa en ORDEN GEOGRAFICO norte-sur, que es como se piensa
+    # Chile y como el manifest ya publicaba `regiones`. Asi la lista del dominio
+    # y la del manifest son LA MISMA, y no dos que puedan discrepar.
+    ord_reg = [r["cod"] for r in sorted(regiones.values(), key=lambda r: r["orden"])]
+    idx_reg = {v: i for i, v in enumerate(ord_reg)}
 
     idx_uso, ord_uso = {v: i for i, v in enumerate(USOS)}, USOS
     idx_sub, ord_sub = indexar(lbl_subuso)
     idx_est, ord_est = indexar(lbl_estruc)
     idx_tif, ord_tif = indexar(d_tifo)
     idx_com, ord_com = indexar(com_meta)
-    idx_sna, ord_sna = indexar(cat_por_unidad)
+    # El indice va del nombre CRUDO al de su grupo: `codificar` traduce el
+    # diccionario de Arrow, que trae los valores tal como estan en la capa.
+    idx_sna_canon, ord_sna = indexar(cat_por_unidad)
+    idx_sna = {u: idx_sna_canon[hom_sna.get(u, u)]
+               for u, _, _ in filas_sna if hom_sna.get(u, u) in idx_sna_canon}
     idx_cob, ord_cob = indexar(lbl_cober)
     idx_alt, ord_alt = indexar(lbl_altura)
     idx_esp, ord_esp = indexar(esp_meta)
@@ -516,9 +689,10 @@ def construir():
                CASE WHEN ID_USO IS NOT NULL AND ID_SUBUSO IS NOT NULL
                          AND ID_ESTRUC IS NOT NULL
                     THEN ID_USO || ID_SUBUSO || ID_ESTRUC END AS c_est,
-               ID_TIFO AS c_tif, CODCOM AS c_com, NOM_SNASPE AS c_sna,
+               ID_TIFO AS c_tif, COALESCE(CODCOM, Codcomun) AS c_com,
+               NOM_SNASPE AS c_sna,
                ID_COBER AS c_cob, ID_ALTU AS c_alt, ID_ESP1 AS c_esp,
-               SUBTIPOFOR AS c_stf
+               SUBTIPOFOR AS c_stf, reg_cod AS c_reg
         FROM cbn_nacional_atributos
         WHERE centroide_lon IS NOT NULL AND centroide_lat IS NOT NULL
     """).to_arrow_table()
@@ -548,6 +722,11 @@ def construir():
     c_alt, sin_alt, dsc_alt = codificar(t, "c_alt", idx_alt, SIN_U8, "altura", False)
     c_esp, sin_esp, dsc_esp = codificar(t, "c_esp", idx_esp, SIN_U16, "especie", False)
     c_stf, sin_stf, dsc_stf = codificar(t, "c_stf", idx_stf, SIN_U8, "subtipo forestal", False)
+    # Estricto: una region nueva o un codigo cambiado tiene que reventar aqui, no
+    # aparecer como centinela en el visor.
+    c_reg, sin_reg, _ = codificar(t, "c_reg", idx_reg, SIN_U8, "reg_cod")
+    if sin_reg:
+        raise SystemExit(f"{sin_reg} filas sin region: reg_cod dejo de estar completo")
 
     # --- «No aplica» deja de decirse de dos formas -------------------------
     #
@@ -607,10 +786,10 @@ def construir():
         # que un error aqui de un fallo visible: un .bin con dos columnas de un
         # byte intercambiadas pesa exactamente lo mismo y se pinta sin error.
         for a in (lon, lat, ha32, c_com, c_esp,
-                  c_uso, c_sub, c_est, c_tif, c_sna, c_cob, c_alt, c_stf):
+                  c_uso, c_sub, c_est, c_tif, c_sna, c_cob, c_alt, c_stf, c_reg):
             fh.write(a.tobytes())
 
-    esperado = n * (4 * 3 + 2 * 2 + 1 * 8)
+    esperado = n * (4 * 3 + 2 * 2 + 1 * 9)
     real = os.path.getsize(ruta_bin)
     if real != esperado:
         raise SystemExit(f"tamano inesperado: {real} != {esperado}")
@@ -627,8 +806,37 @@ def construir():
             filas.append(fila)
         return filas
 
+    # El cruce SQL vs columna. Si difiere, algo se perdio entre la consulta de
+    # metadatos y la pasada de datos, y mas vale enterarse aqui que en pantalla.
+    regiones_dom = []
+    for fila in dominio(c_reg, ord_reg, lambda c: regiones[c]["nombre"]):
+        meta = regiones[fila["cod"]]
+        if fila["n"] != meta["n"]:
+            raise SystemExit(
+                f"region {fila['cod']}: la columna cuenta {fila['n']} y el SQL {meta['n']}")
+        regiones_dom.append({**meta, "n": fila["n"], "ha": fila["ha"]})
+
+    # Las derivadas: se traduce el indice de especie al de su clase y se agrega
+    # con la misma maquinaria que las demas. Las 284.279 filas sin especie
+    # heredan el centinela, que es lo correcto: «no se sabe la especie» no es
+    # «no es nativa».
+    derivadas = {}
+    for clave, campo in DERIVADAS_ESPECIE:
+        valores = sorted({esp_meta[c][campo] for c in ord_esp if esp_meta[c][campo]})
+        pos = {v: i for i, v in enumerate(valores)}
+        trad = np.full(len(ord_esp) + 1, SIN_U8, dtype=np.uint8)
+        for i, c in enumerate(ord_esp):
+            v = esp_meta[c][campo]
+            if v is not None:
+                trad[i] = pos[v]
+        idx_esp_o_cent = np.where(c_esp == SIN_U16, len(ord_esp), c_esp).astype(np.intp)
+        derivadas[clave] = dominio(trad[idx_esp_o_cent], valores, lambda x: x)
+
     manifest = {
-        "esquema": 3,
+        # 4 y no 3: la columna `region` cambia el largo de la fila, asi que un
+        # visor viejo leeria offsets validos con datos corridos. binario.js
+        # rechaza cualquier esquema que no sea el suyo.
+        "esquema": 4,
         "fuente": "Catastro de Usos de la Tierra y Recursos Vegetacionales, CONAF",
         # Sin marca de tiempo: es lo que permite commitear datos y que un
         # `git status` limpio signifique "nada cambio".
@@ -652,10 +860,21 @@ def construir():
                     "cober":   {"tipo": "u8",  "offset": 21 * n, "centinela": SIN_U8},
                     "altura":  {"tipo": "u8",  "offset": 22 * n, "centinela": SIN_U8},
                     "stifo":   {"tipo": "u8",  "offset": 23 * n, "centinela": SIN_U8},
+                    "region":  {"tipo": "u8",  "offset": 24 * n, "centinela": SIN_U8},
                 },
                 "sin_dato": {"comuna": sin_com, "subuso": sin_sub, "estruc": sin_est,
                              "tifo": sin_tif, "snaspe": sin_sna, "cober": sin_cob,
-                             "altura": sin_alt, "especie": sin_esp, "stifo": sin_stf},
+                             "altura": sin_alt, "especie": sin_esp, "stifo": sin_stf,
+                             "region": sin_reg},
+                # APARTE DE `sin_dato`, y no dentro. Las seis derivadas SI tienen
+                # filas sin dato --las mismas que especie, porque de ahi salen--,
+                # pero `sin_dato` esta reservado a las columnas del .bin: D13
+                # comprueba que sus claves sean exactamente las columnas con
+                # centinela, y meter aqui algo que no es columna rompe esa
+                # comprobacion. Se intento y D13 se puso roja, con razon.
+                "sin_dato_derivado": {c: sin_esp for c in
+                                      ("grupo", "habito", "arboreo", "origen",
+                                       "invasora", "conservacion")},
                 "bbox": [float(lon.min()), float(lat.min()),
                          float(lon.max()), float(lat.max())],
             }
@@ -690,26 +909,50 @@ def construir():
         "especies": dominio(c_esp, ord_esp, lambda c: (esp_meta[c]["comun"]
                                                        or esp_meta[c]["cientifico"] or c),
                             SIN_U16,
-                            extra=lambda c: {"cientifico": esp_meta[c]["cientifico"],
-                                             "comun": esp_meta[c]["comun"],
-                                             "genero": esp_meta[c]["genero"]}),
+                            extra=lambda c: {k: esp_meta[c][k] for k in (
+                                "cientifico", "comun", "genero", "grupo", "habito",
+                                "arboreo", "origen", "monumento_natural", "decreto_mn",
+                                "invasora", "conservacion")}),
         # De donde sale el vocabulario de cada dimension. Va en el manifest para
         # que el visor pueda decirlo en pantalla: 'oficial' se cita, 'datos' no.
         "vocabulario": {
             "usos": "guia", "subusos": "guia", "estructuras": "guia",
             "tipos_forestales": "guia", "coberturas": "guia+datos",
             "alturas": "datos", "subtipos_forestales": "datos",
-            "especies": "datos", "snaspe": "datos", "comunas": "datos",
+            "especies": "datos+homologacion", "snaspe": "datos+homologacion",
+            "comunas": "datos+homologacion",
+            # Las seis derivadas NO salen del dato: salen enteras de la tabla de
+            # clasificacion de especies de la Unidad. Decir «deducido de los
+            # propios datos» al pie de esos filtros seria atribuirle al Catastro
+            # una clasificacion que no hace.
+            **{c: "homologacion" for c in ("grupos", "habitos", "arboreas",
+                                           "origenes", "invasoras", "conservaciones")},
         },
+        # CODIGOS QUE DEJARON DE EXISTIR, y a que se traducen. Las dimensiones
+        # cuyo vocabulario sale del texto usan el propio texto como codigo, asi
+        # que homologar dos grafias en una borra un codigo que ya viaja en
+        # enlaces compartidos. Sin esta tabla, esos enlaces filtrarian nada y
+        # nadie lo notaria: el visor no distingue «filtro que no encuentra» de
+        # «filtro vacio». `filtrosDesdeURL` la consulta antes de rendirse.
+        "alias": {"snaspe": dict(sorted(alias_sna.items())),
+                  "stifo": dict(sorted(alias_stf.items()))},
         # La lista literal de la guia, publicada para que el contraste de orden
         # se pueda repetir desde FUERA de este script. Comprobarlo solo aqui
         # dejaria la asercion encerrada en el proceso que produce el dato.
         "vocabulario_guia_cobertura": voc_guia_cober,
+        **derivadas,
         "comunas": dominio(c_com, ord_com, lambda c: com_meta[c]["nombre"], SIN_U16,
                            extra=lambda c: {"provincia": com_meta[c]["provincia"],
                                             "region": com_meta[c]["region"],
                                             "bbox": com_meta[c]["bbox"]}),
-        "regiones": sorted(regiones.values(), key=lambda r: r["orden"]),
+        # LAS CIFRAS REGIONALES SALEN DE LA COLUMNA que el visor usa para
+        # filtrar, no de un GROUP BY aparte. Antes salian de SQL sobre reg_cod
+        # mientras el visor filtraba derivando la region de las comunas, y las
+        # dos cuentas podian discrepar --y discrepaban: el manifest declaraba
+        # 286.529 poligonos en Magallanes y el visor mostraba 286.525--. Ahora
+        # coinciden por construccion. `regiones_dom` cruza el dominio con los
+        # metadatos (nombre, romana, anio, bbox) que si vienen de SQL.
+        "regiones": regiones_dom,
         "snaspe_categoria_corregida": corregidas,
         "codigos_desconocidos": {"subuso": dsc_sub, "estructura": dsc_est,
                                  "cobertura": dsc_cob, "altura": dsc_alt,

@@ -1,0 +1,2 @@
+cod_origen,cod_canonico,especie_origen,especie_canonica,cientifico_origen,cientifico_canonico,genero_canonico,accion,confianza,nota
+NA,NA,raulí,raulí,Nothofagus alpina,Nothofagus alpina,Nothofagus,sin_cambio,alta,"Repone el codigo del rauli. La hoja 12 del libro lo trae como la cadena literal «nan»: el codigo es «NA» y pandas lo leyo como nulo al construir el libro, que es exactamente lo que advierte 14_REVISAR. Son 3.654 poligonos y 89.994,21 ha de una especie comercial del tipo forestal Roble-Rauli-Coihue. La hoja 15 si lo conserva bien."
