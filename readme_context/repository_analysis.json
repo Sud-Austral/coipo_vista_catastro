@@ -1,0 +1,2456 @@
+{
+  "repository": "target",
+  "generated_at": "2026-08-31T00:42:03.224001",
+  "analysis": {
+    "ETL/build_bin.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "argparse",
+            "line": 83
+          },
+          {
+            "value": "hashlib",
+            "line": 84
+          },
+          {
+            "value": "json",
+            "line": 85
+          },
+          {
+            "value": "os",
+            "line": 86
+          },
+          {
+            "value": "re",
+            "line": 87
+          },
+          {
+            "value": "sys",
+            "line": 88
+          },
+          {
+            "value": "unicodedata",
+            "line": 89
+          },
+          {
+            "value": "duckdb",
+            "line": 91
+          },
+          {
+            "value": "numpy",
+            "line": 92
+          }
+        ],
+        "functions": [
+          {
+            "name": "sha256",
+            "line": 159
+          },
+          {
+            "name": "indexar",
+            "line": 167
+          },
+          {
+            "name": "canon",
+            "line": 174
+          },
+          {
+            "name": "etiqueta_mayoritaria",
+            "line": 194
+          },
+          {
+            "name": "orden_altura",
+            "line": 218
+          },
+          {
+            "name": "codificar",
+            "line": 237
+          },
+          {
+            "name": "agregados",
+            "line": 268
+          },
+          {
+            "name": "construir",
+            "line": 281
+          },
+          {
+            "name": "main",
+            "line": 727
+          },
+          {
+            "name": "por_codigo",
+            "line": 325
+          },
+          {
+            "name": "dominio",
+            "line": 619
+          }
+        ],
+        "classes": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "ETL/cifras_oficiales.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "argparse",
+            "line": 19
+          },
+          {
+            "value": "json",
+            "line": 20
+          },
+          {
+            "value": "os",
+            "line": 21
+          },
+          {
+            "value": "re",
+            "line": 22
+          },
+          {
+            "value": "sys",
+            "line": 23
+          },
+          {
+            "value": "unicodedata",
+            "line": 24
+          },
+          {
+            "value": "duckdb",
+            "line": 26
+          }
+        ],
+        "functions": [
+          {
+            "name": "canon",
+            "line": 57
+          },
+          {
+            "name": "numero",
+            "line": 65
+          },
+          {
+            "name": "plantacion_por_especie",
+            "line": 91
+          },
+          {
+            "name": "construir",
+            "line": 136
+          },
+          {
+            "name": "main",
+            "line": 235
+          },
+          {
+            "name": "es_especie",
+            "line": 112
+          }
+        ],
+        "classes": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "ETL/build_simef.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "argparse",
+            "line": 22
+          },
+          {
+            "value": "hashlib",
+            "line": 23
+          },
+          {
+            "value": "json",
+            "line": 24
+          },
+          {
+            "value": "os",
+            "line": 25
+          },
+          {
+            "value": "re",
+            "line": 26
+          },
+          {
+            "value": "sys",
+            "line": 27
+          },
+          {
+            "value": "duckdb",
+            "line": 29
+          },
+          {
+            "value": "build_bin",
+            "line": 62
+          }
+        ],
+        "functions": [
+          {
+            "name": "sigla_a_anio",
+            "line": 47
+          },
+          {
+            "name": "construir",
+            "line": 54
+          },
+          {
+            "name": "main",
+            "line": 158
+          }
+        ],
+        "classes": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "ETL/leer_bin.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "argparse",
+            "line": 63
+          },
+          {
+            "value": "hashlib",
+            "line": 64
+          },
+          {
+            "value": "json",
+            "line": 65
+          },
+          {
+            "value": "os",
+            "line": 66
+          },
+          {
+            "value": "sys",
+            "line": 67
+          },
+          {
+            "value": "numpy",
+            "line": 69
+          },
+          {
+            "value": "pandas",
+            "line": 70
+          }
+        ],
+        "functions": [
+          {
+            "name": "leer_manifest",
+            "line": 98
+          },
+          {
+            "name": "_categoria",
+            "line": 111
+          },
+          {
+            "name": "_levantar",
+            "line": 137
+          },
+          {
+            "name": "cargar",
+            "line": 156
+          },
+          {
+            "name": "es",
+            "line": 259
+          },
+          {
+            "name": "resumen",
+            "line": 269
+          },
+          {
+            "name": "main",
+            "line": 298
+          }
+        ],
+        "classes": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "ETL/verificar_datos.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "argparse",
+            "line": 14
+          },
+          {
+            "value": "copy",
+            "line": 15
+          },
+          {
+            "value": "hashlib",
+            "line": 16
+          },
+          {
+            "value": "json",
+            "line": 17
+          },
+          {
+            "value": "os",
+            "line": 18
+          },
+          {
+            "value": "re",
+            "line": 19
+          },
+          {
+            "value": "sys",
+            "line": 20
+          },
+          {
+            "value": "unicodedata",
+            "line": 21
+          }
+        ],
+        "functions": [
+          {
+            "name": "TOL_TABLA",
+            "line": 42
+          },
+          {
+            "name": "_canon",
+            "line": 52
+          },
+          {
+            "name": "sha256",
+            "line": 59
+          },
+          {
+            "name": "suma_ha",
+            "line": 67
+          },
+          {
+            "name": "comprobar",
+            "line": 72
+          },
+          {
+            "name": "leer_oficiales",
+            "line": 314
+          },
+          {
+            "name": "leer",
+            "line": 325
+          },
+          {
+            "name": "_cap",
+            "line": 338
+          },
+          {
+            "name": "_off",
+            "line": 344
+          },
+          {
+            "name": "_uso",
+            "line": 350
+          },
+          {
+            "name": "_sub",
+            "line": 356
+          },
+          {
+            "name": "_permutar_cobertura",
+            "line": 362
+          },
+          {
+            "name": "_especie_cero",
+            "line": 377
+          },
+          {
+            "name": "_altura_desordenada",
+            "line": 385
+          },
+          {
+            "name": "_quitar_clase",
+            "line": 392
+          },
+          {
+            "name": "_sin_dato",
+            "line": 402
+          },
+          {
+            "name": "_sin_clase_na",
+            "line": 409
+          },
+          {
+            "name": "main",
+            "line": 466
+          }
+        ],
+        "classes": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "ETL/analisis_codigos.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "argparse",
+            "line": 16
+          },
+          {
+            "value": "os",
+            "line": 17
+          },
+          {
+            "value": "re",
+            "line": 18
+          },
+          {
+            "value": "sys",
+            "line": 19
+          },
+          {
+            "value": "unicodedata",
+            "line": 20
+          },
+          {
+            "value": "collections",
+            "line": 21
+          },
+          {
+            "value": "duckdb",
+            "line": 23
+          }
+        ],
+        "functions": [
+          {
+            "name": "canon",
+            "line": 31
+          },
+          {
+            "name": "cargar_oficial",
+            "line": 44
+          },
+          {
+            "name": "comparar",
+            "line": 83
+          },
+          {
+            "name": "bloque",
+            "line": 100
+          },
+          {
+            "name": "informe",
+            "line": 107
+          },
+          {
+            "name": "_semantico",
+            "line": 121
+          },
+          {
+            "name": "analizar_cbn",
+            "line": 133
+          },
+          {
+            "name": "analizar_simef",
+            "line": 183
+          },
+          {
+            "name": "analizar_conjuntos",
+            "line": 212
+          },
+          {
+            "name": "main",
+            "line": 231
+          }
+        ],
+        "classes": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "spike/diag.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "json",
+            "line": 8
+          },
+          {
+            "value": "os",
+            "line": 9
+          },
+          {
+            "value": "shutil",
+            "line": 10
+          },
+          {
+            "value": "sys",
+            "line": 11
+          },
+          {
+            "value": "time",
+            "line": 12
+          },
+          {
+            "value": "requests",
+            "line": 15
+          },
+          {
+            "value": "medir",
+            "line": 16
+          }
+        ],
+        "functions": [
+          {
+            "name": "main",
+            "line": 55
+          }
+        ],
+        "classes": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "spike/medir.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "argparse",
+            "line": 23
+          },
+          {
+            "value": "functools",
+            "line": 24
+          },
+          {
+            "value": "http.server",
+            "line": 25
+          },
+          {
+            "value": "json",
+            "line": 26
+          },
+          {
+            "value": "os",
+            "line": 27
+          },
+          {
+            "value": "shutil",
+            "line": 28
+          },
+          {
+            "value": "socketserver",
+            "line": 29
+          },
+          {
+            "value": "subprocess",
+            "line": 30
+          },
+          {
+            "value": "sys",
+            "line": 31
+          },
+          {
+            "value": "tempfile",
+            "line": 32
+          },
+          {
+            "value": "threading",
+            "line": 33
+          },
+          {
+            "value": "time",
+            "line": 34
+          },
+          {
+            "value": "numpy",
+            "line": 36
+          },
+          {
+            "value": "requests",
+            "line": 37
+          },
+          {
+            "value": "websocket",
+            "line": 38
+          },
+          {
+            "value": "PIL",
+            "line": 39
+          },
+          {
+            "value": "base64",
+            "line": 233
+          }
+        ],
+        "functions": [
+          {
+            "name": "servir",
+            "line": 52
+          },
+          {
+            "name": "lanzar_chrome",
+            "line": 100
+          },
+          {
+            "name": "contar_pixeles",
+            "line": 135
+          },
+          {
+            "name": "main",
+            "line": 162
+          },
+          {
+            "name": "_ms",
+            "line": 291
+          },
+          {
+            "name": "_f",
+            "line": 295
+          },
+          {
+            "name": "__init__",
+            "line": 65
+          },
+          {
+            "name": "enviar",
+            "line": 75
+          },
+          {
+            "name": "evaluar",
+            "line": 86
+          },
+          {
+            "name": "cerrar",
+            "line": 93
+          }
+        ],
+        "classes": [
+          {
+            "name": "Cdp",
+            "line": 62
+          }
+        ],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "spike/gen_bin.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "json",
+            "line": 15
+          },
+          {
+            "value": "os",
+            "line": 16
+          },
+          {
+            "value": "sys",
+            "line": 17
+          },
+          {
+            "value": "time",
+            "line": 18
+          },
+          {
+            "value": "duckdb",
+            "line": 20
+          },
+          {
+            "value": "numpy",
+            "line": 21
+          }
+        ],
+        "functions": [
+          {
+            "name": "main",
+            "line": 35
+          }
+        ],
+        "classes": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "scripts/update_readme.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "argparse",
+            "line": 3
+          },
+          {
+            "value": "subprocess",
+            "line": 4
+          },
+          {
+            "value": "pathlib",
+            "line": 5
+          }
+        ],
+        "functions": [
+          {
+            "name": "run_model",
+            "line": 40
+          },
+          {
+            "name": "clean_response",
+            "line": 75
+          },
+          {
+            "name": "main",
+            "line": 92
+          }
+        ],
+        "classes": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/vite.config.js": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "vite",
+            "line": 1
+          },
+          {
+            "value": "@vitejs/plugin-react",
+            "line": 2
+          }
+        ],
+        "exports": [
+          {
+            "value": "defineConfig",
+            "line": 15
+          }
+        ],
+        "components": [],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": [
+          {
+            "value": "BASE_URL",
+            "line": 7,
+            "file": "frontend/vite.config.js"
+          }
+        ]
+      }
+    },
+    "frontend/src/urlState.js": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "./config",
+            "line": 17
+          },
+          {
+            "value": "./filtros",
+            "line": 18
+          }
+        ],
+        "exports": [
+          {
+            "value": "leerURL",
+            "line": 28
+          },
+          {
+            "value": "escribirURL",
+            "line": 67
+          },
+          {
+            "value": "flush",
+            "line": 112
+          }
+        ],
+        "components": [
+          {
+            "value": "PARAMS_FILTRO",
+            "line": 23
+          },
+          {
+            "value": "RESERVADAS",
+            "line": 25
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/indicadores.js": {
+      "javascript": {
+        "imports": [],
+        "exports": [
+          {
+            "value": "DIMENSIONES",
+            "line": 35
+          },
+          {
+            "value": "resumenNacional",
+            "line": 81
+          },
+          {
+            "value": "SIN_DATO_POR_COL",
+            "line": 121
+          },
+          {
+            "value": "resumenYMarginales",
+            "line": 207
+          },
+          {
+            "value": "composicionBosque",
+            "line": 394
+          },
+          {
+            "value": "estructurasBosqueNativo",
+            "line": 415
+          },
+          {
+            "value": "resumenSnaspe",
+            "line": 428
+          },
+          {
+            "value": "ambitoTexto",
+            "line": 453
+          },
+          {
+            "value": "anioDelAmbito",
+            "line": 466
+          }
+        ],
+        "components": [
+          {
+            "value": "DIMENSIONES",
+            "line": 35
+          },
+          {
+            "value": "SIN_DATO_POR_COL",
+            "line": 121
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/filtros.js": {
+      "javascript": {
+        "imports": [],
+        "exports": [
+          {
+            "value": "NINGUNO",
+            "line": 26
+          },
+          {
+            "value": "FILTROS",
+            "line": 28
+          },
+          {
+            "value": "TOPE_LISTA",
+            "line": 118
+          },
+          {
+            "value": "opciones",
+            "line": 140
+          },
+          {
+            "value": "alternar",
+            "line": 209
+          },
+          {
+            "value": "cuentaSeleccion",
+            "line": 224
+          },
+          {
+            "value": "filtrosAURL",
+            "line": 234
+          },
+          {
+            "value": "filtrosDesdeURL",
+            "line": 247
+          }
+        ],
+        "components": [
+          {
+            "value": "NINGUNO",
+            "line": 26
+          },
+          {
+            "value": "FILTROS",
+            "line": 28
+          },
+          {
+            "value": "TOPE_LISTA",
+            "line": 118
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/App.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          },
+          {
+            "value": "leaflet",
+            "line": 2
+          },
+          {
+            "value": "./config",
+            "line": 3
+          },
+          {
+            "value": "./datos/binario",
+            "line": 20
+          },
+          {
+            "value": "./indicadores",
+            "line": 21
+          },
+          {
+            "value": "./filtros",
+            "line": 22
+          },
+          {
+            "value": "./preferencias",
+            "line": 23
+          },
+          {
+            "value": "./urlState",
+            "line": 24
+          },
+          {
+            "value": "./mapa/CapaPuntos",
+            "line": 25
+          },
+          {
+            "value": "./components/EtiquetaImagen",
+            "line": 26
+          },
+          {
+            "value": "./components/ModalFicha",
+            "line": 27
+          },
+          {
+            "value": "./components/Banner",
+            "line": 28
+          },
+          {
+            "value": "./components/CartelContexto",
+            "line": 29
+          },
+          {
+            "value": "./components/PaginaMetodologia",
+            "line": 30
+          },
+          {
+            "value": "./components/PanelIndicadores",
+            "line": 31
+          },
+          {
+            "value": "./components/PanelLateral",
+            "line": 32
+          },
+          {
+            "value": "./components/Reporte",
+            "line": 33
+          },
+          {
+            "value": "./components/SeccionDescargas",
+            "line": 34
+          },
+          {
+            "value": "./components/Tirador",
+            "line": 35
+          },
+          {
+            "value": "./components/graficos",
+            "line": 36
+          },
+          {
+            "value": "./hooks/useFechaImagen",
+            "line": 37
+          },
+          {
+            "value": "./formato",
+            "line": 38
+          }
+        ],
+        "exports": [
+          {
+            "value": "App",
+            "line": 86
+          }
+        ],
+        "components": [
+          {
+            "value": "MAX_ZOOM_ENCUADRE",
+            "line": 76
+          },
+          {
+            "value": "PADDING_ENCUADRE",
+            "line": 78
+          },
+          {
+            "value": "HOLGURA_ENCUADRE",
+            "line": 84
+          },
+          {
+            "value": "App",
+            "line": 86
+          }
+        ],
+        "api_calls": [
+          {
+            "method": "FETCH",
+            "target": "${DATA}/simef.json",
+            "line": 114,
+            "file": "frontend/src/App.jsx"
+          },
+          {
+            "method": "FETCH",
+            "target": "${DATA}/oficiales.json",
+            "line": 118,
+            "file": "frontend/src/App.jsx"
+          }
+        ],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/descargas.js": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "./config",
+            "line": 21
+          }
+        ],
+        "exports": [
+          {
+            "value": "aCSV",
+            "line": 47
+          },
+          {
+            "value": "slug",
+            "line": 57
+          },
+          {
+            "value": "hoy",
+            "line": 68
+          },
+          {
+            "value": "nombreArchivo",
+            "line": 70
+          },
+          {
+            "value": "guardar",
+            "line": 78
+          },
+          {
+            "value": "csvCifras",
+            "line": 104
+          },
+          {
+            "value": "geojsonPuntos",
+            "line": 161
+          },
+          {
+            "value": "urlPublicada",
+            "line": 223
+          }
+        ],
+        "components": [
+          {
+            "value": "SEP",
+            "line": 27
+          },
+          {
+            "value": "BOM",
+            "line": 28
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/territorio.js": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          }
+        ],
+        "exports": [
+          {
+            "value": "useTerritorio",
+            "line": 21
+          }
+        ],
+        "components": [],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/formato.js": {
+      "javascript": {
+        "imports": [],
+        "exports": [
+          {
+            "value": "fmt",
+            "line": 20
+          },
+          {
+            "value": "fmt1",
+            "line": 21
+          },
+          {
+            "value": "fmt2",
+            "line": 22
+          },
+          {
+            "value": "ha",
+            "line": 25
+          },
+          {
+            "value": "haExacta",
+            "line": 32
+          },
+          {
+            "value": "pct",
+            "line": 37
+          },
+          {
+            "value": "numero",
+            "line": 42
+          },
+          {
+            "value": "titular",
+            "line": 51
+          }
+        ],
+        "components": [],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/config.js": {
+      "javascript": {
+        "imports": [],
+        "exports": [
+          {
+            "value": "DATA",
+            "line": 5
+          },
+          {
+            "value": "VISTA_INICIAL",
+            "line": 9
+          },
+          {
+            "value": "LIMITES",
+            "line": 10
+          },
+          {
+            "value": "CORTE_KPI",
+            "line": 27
+          },
+          {
+            "value": "CORTE_PANEL",
+            "line": 29
+          },
+          {
+            "value": "MIN_PANEL",
+            "line": 31
+          },
+          {
+            "value": "MAX_PANEL",
+            "line": 32
+          },
+          {
+            "value": "ANCHO_PANEL",
+            "line": 42
+          },
+          {
+            "value": "ANCHO_KPI",
+            "line": 43
+          },
+          {
+            "value": "MAX_KPI",
+            "line": 44
+          },
+          {
+            "value": "MIN_MAPA",
+            "line": 52
+          },
+          {
+            "value": "DIACRITICOS",
+            "line": 61
+          },
+          {
+            "value": "BASEMAPS",
+            "line": 123
+          },
+          {
+            "value": "COLOR_USO",
+            "line": 389
+          },
+          {
+            "value": "paletaRGB",
+            "line": 417
+          },
+          {
+            "value": "fmt",
+            "line": 427
+          },
+          {
+            "value": "fmt1",
+            "line": 428
+          },
+          {
+            "value": "fechaLarga",
+            "line": 437
+          },
+          {
+            "value": "AVISO_PUNTOS",
+            "line": 451
+          },
+          {
+            "value": "AVISO_SERIE",
+            "line": 455
+          }
+        ],
+        "components": [
+          {
+            "value": "DATA",
+            "line": 5
+          },
+          {
+            "value": "VISTA_INICIAL",
+            "line": 9
+          },
+          {
+            "value": "LIMITES",
+            "line": 10
+          },
+          {
+            "value": "CORTE_KPI",
+            "line": 27
+          },
+          {
+            "value": "CORTE_PANEL",
+            "line": 29
+          },
+          {
+            "value": "MIN_PANEL",
+            "line": 31
+          },
+          {
+            "value": "MAX_PANEL",
+            "line": 32
+          },
+          {
+            "value": "ANCHO_PANEL",
+            "line": 42
+          },
+          {
+            "value": "ANCHO_KPI",
+            "line": 43
+          },
+          {
+            "value": "MAX_KPI",
+            "line": 44
+          },
+          {
+            "value": "MIN_MAPA",
+            "line": 52
+          },
+          {
+            "value": "DIACRITICOS",
+            "line": 61
+          },
+          {
+            "value": "BASEMAPS",
+            "line": 123
+          },
+          {
+            "value": "COLOR_USO",
+            "line": 389
+          },
+          {
+            "value": "AVISO_PUNTOS",
+            "line": 451
+          },
+          {
+            "value": "AVISO_SERIE",
+            "line": 455
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": [
+          {
+            "value": "BASE_URL",
+            "line": 5,
+            "file": "frontend/src/config.js"
+          }
+        ]
+      }
+    },
+    "frontend/src/preferencias.js": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "./config",
+            "line": 27
+          }
+        ],
+        "exports": [
+          {
+            "value": "POR_OMISION",
+            "line": 36
+          },
+          {
+            "value": "leerDisposicion",
+            "line": 61
+          },
+          {
+            "value": "guardarDisposicion",
+            "line": 88
+          }
+        ],
+        "components": [
+          {
+            "value": "CLAVE",
+            "line": 34
+          },
+          {
+            "value": "POR_OMISION",
+            "line": 36
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/main.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          },
+          {
+            "value": "react-dom/client",
+            "line": 2
+          },
+          {
+            "value": "./App.jsx",
+            "line": 7
+          }
+        ],
+        "exports": [],
+        "components": [],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/datos/binario.js": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "../config",
+            "line": 1
+          }
+        ],
+        "exports": [
+          {
+            "value": "async",
+            "line": 19
+          },
+          {
+            "value": "tablaColor",
+            "line": 82
+          },
+          {
+            "value": "mascaraTodo",
+            "line": 108
+          }
+        ],
+        "components": [
+          {
+            "value": "CONSTRUCTOR",
+            "line": 16
+          },
+          {
+            "value": "ANCHO",
+            "line": 17
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/hooks/useFechaImagen.js": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          }
+        ],
+        "exports": [
+          {
+            "value": "useFechaImagen",
+            "line": 52
+          }
+        ],
+        "components": [
+          {
+            "value": "SERVICIO",
+            "line": 29
+          }
+        ],
+        "api_calls": [
+          {
+            "method": "FETCH",
+            "target": "${SERVICIO}?${q}",
+            "line": 80,
+            "file": "frontend/src/hooks/useFechaImagen.js"
+          }
+        ],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/mapa/CapaPuntos.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          },
+          {
+            "value": "leaflet",
+            "line": 2
+          },
+          {
+            "value": "@deck.gl/core",
+            "line": 3
+          },
+          {
+            "value": "@deck.gl/layers",
+            "line": 4
+          },
+          {
+            "value": "@deck.gl/extensions",
+            "line": 5
+          }
+        ],
+        "exports": [
+          {
+            "value": "CapaPuntos",
+            "line": 67
+          }
+        ],
+        "components": [
+          {
+            "value": "K",
+            "line": 60
+          },
+          {
+            "value": "CapaPuntos",
+            "line": 67
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/components/GrupoFiltro.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          },
+          {
+            "value": "../formato",
+            "line": 2
+          },
+          {
+            "value": "../filtros",
+            "line": 3
+          }
+        ],
+        "exports": [
+          {
+            "value": "BotonControl",
+            "line": 58
+          },
+          {
+            "value": "CajaModal",
+            "line": 113
+          },
+          {
+            "value": "BotonFiltro",
+            "line": 167
+          },
+          {
+            "value": "ModalFiltro",
+            "line": 188
+          }
+        ],
+        "components": [
+          {
+            "value": "BotonControl",
+            "line": 58
+          },
+          {
+            "value": "CajaModal",
+            "line": 113
+          },
+          {
+            "value": "BotonFiltro",
+            "line": 167
+          },
+          {
+            "value": "ModalFiltro",
+            "line": 188
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/components/Reporte.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          },
+          {
+            "value": "../config",
+            "line": 2
+          },
+          {
+            "value": "../formato",
+            "line": 3
+          },
+          {
+            "value": "../filtros",
+            "line": 4
+          },
+          {
+            "value": "../indicadores",
+            "line": 5
+          }
+        ],
+        "exports": [
+          {
+            "value": "Reporte",
+            "line": 151
+          }
+        ],
+        "components": [
+          {
+            "value": "Donut",
+            "line": 41
+          },
+          {
+            "value": "C",
+            "line": 42
+          },
+          {
+            "value": "Tabla",
+            "line": 97
+          },
+          {
+            "value": "Reporte",
+            "line": 151
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/components/SeccionDescargas.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          },
+          {
+            "value": "../formato",
+            "line": 2
+          },
+          {
+            "value": "../descargas",
+            "line": 3
+          }
+        ],
+        "exports": [
+          {
+            "value": "SeccionDescargas",
+            "line": 16
+          }
+        ],
+        "components": [
+          {
+            "value": "TOPE_GEOJSON",
+            "line": 5
+          },
+          {
+            "value": "SeccionDescargas",
+            "line": 16
+          },
+          {
+            "value": "SEP",
+            "line": 96
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/components/ModalFicha.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          }
+        ],
+        "exports": [
+          {
+            "value": "ModalFicha",
+            "line": 14
+          }
+        ],
+        "components": [
+          {
+            "value": "ModalFicha",
+            "line": 14
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/components/PanelLateral.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          },
+          {
+            "value": "../config",
+            "line": 2
+          },
+          {
+            "value": "../formato",
+            "line": 3
+          },
+          {
+            "value": "../indicadores",
+            "line": 4
+          },
+          {
+            "value": "../urlState",
+            "line": 5
+          },
+          {
+            "value": "../filtros",
+            "line": 6
+          },
+          {
+            "value": "./GrupoFiltro",
+            "line": 7
+          },
+          {
+            "value": "./ControlesPanel",
+            "line": 8
+          },
+          {
+            "value": "../territorio",
+            "line": 9
+          }
+        ],
+        "exports": [
+          {
+            "value": "PanelLateral",
+            "line": 38
+          }
+        ],
+        "components": [
+          {
+            "value": "SIN_DATO",
+            "line": 16
+          },
+          {
+            "value": "PanelLateral",
+            "line": 38
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/components/Tirador.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          }
+        ],
+        "exports": [
+          {
+            "value": "Tirador",
+            "line": 24
+          }
+        ],
+        "components": [
+          {
+            "value": "PASO",
+            "line": 3
+          },
+          {
+            "value": "PASO_GRANDE",
+            "line": 4
+          },
+          {
+            "value": "Tirador",
+            "line": 24
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/components/graficos.jsx": {
+      "javascript": {
+        "imports": [],
+        "exports": [
+          {
+            "value": "BarraFila",
+            "line": 39
+          },
+          {
+            "value": "Cifra",
+            "line": 79
+          },
+          {
+            "value": "Composicion",
+            "line": 100
+          },
+          {
+            "value": "Columnas",
+            "line": 128
+          },
+          {
+            "value": "TablaKpi",
+            "line": 179
+          },
+          {
+            "value": "Advertencia",
+            "line": 215
+          },
+          {
+            "value": "IconoIndicadores",
+            "line": 225
+          },
+          {
+            "value": "BarraApilada",
+            "line": 245
+          },
+          {
+            "value": "Discontinuidad",
+            "line": 269
+          }
+        ],
+        "components": [
+          {
+            "value": "W",
+            "line": 28
+          },
+          {
+            "value": "BarraFila",
+            "line": 39
+          },
+          {
+            "value": "Elemento",
+            "line": 53
+          },
+          {
+            "value": "Cifra",
+            "line": 79
+          },
+          {
+            "value": "Composicion",
+            "line": 100
+          },
+          {
+            "value": "Columnas",
+            "line": 128
+          },
+          {
+            "value": "EJE",
+            "line": 130
+          },
+          {
+            "value": "TECHO",
+            "line": 131
+          },
+          {
+            "value": "TablaKpi",
+            "line": 179
+          },
+          {
+            "value": "Advertencia",
+            "line": 215
+          },
+          {
+            "value": "IconoIndicadores",
+            "line": 225
+          },
+          {
+            "value": "BarraApilada",
+            "line": 245
+          },
+          {
+            "value": "Discontinuidad",
+            "line": 269
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/components/PanelIndicadores.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          },
+          {
+            "value": "../config",
+            "line": 2
+          },
+          {
+            "value": "../formato",
+            "line": 3
+          },
+          {
+            "value": "../indicadores",
+            "line": 4
+          },
+          {
+            "value": "./graficos",
+            "line": 11
+          }
+        ],
+        "exports": [
+          {
+            "value": "PanelIndicadores",
+            "line": 44
+          }
+        ],
+        "components": [
+          {
+            "value": "PanelIndicadores",
+            "line": 44
+          },
+          {
+            "value": "Seccion",
+            "line": 634
+          },
+          {
+            "value": "SeccionSimef",
+            "line": 667
+          },
+          {
+            "value": "SeccionAnios",
+            "line": 793
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/components/PaginaMetodologia.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          },
+          {
+            "value": "../formato",
+            "line": 2
+          }
+        ],
+        "exports": [
+          {
+            "value": "PaginaMetodologia",
+            "line": 19
+          }
+        ],
+        "components": [
+          {
+            "value": "PaginaMetodologia",
+            "line": 19
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/components/EtiquetaImagen.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          },
+          {
+            "value": "leaflet",
+            "line": 2
+          },
+          {
+            "value": "../config",
+            "line": 3
+          }
+        ],
+        "exports": [
+          {
+            "value": "EtiquetaImagen",
+            "line": 19
+          }
+        ],
+        "components": [
+          {
+            "value": "EtiquetaImagen",
+            "line": 19
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/components/CartelContexto.jsx": {
+      "javascript": {
+        "imports": [],
+        "exports": [
+          {
+            "value": "CartelContexto",
+            "line": 19
+          }
+        ],
+        "components": [
+          {
+            "value": "CartelContexto",
+            "line": 19
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/components/ControlesPanel.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "../config",
+            "line": 1
+          },
+          {
+            "value": "../formato",
+            "line": 2
+          },
+          {
+            "value": "../territorio",
+            "line": 3
+          },
+          {
+            "value": "./GrupoFiltro",
+            "line": 4
+          }
+        ],
+        "exports": [
+          {
+            "value": "ModalTerritorio",
+            "line": 49
+          },
+          {
+            "value": "ModalMapaBase",
+            "line": 176
+          }
+        ],
+        "components": [
+          {
+            "value": "Opcion",
+            "line": 24
+          },
+          {
+            "value": "ModalTerritorio",
+            "line": 49
+          },
+          {
+            "value": "ModalMapaBase",
+            "line": 176
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/components/Banner.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "../assets/banner-conaf-fiscalizacion.jpg",
+            "line": 1
+          }
+        ],
+        "exports": [
+          {
+            "value": "Banner",
+            "line": 45
+          }
+        ],
+        "components": [
+          {
+            "value": "Banner",
+            "line": 45
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/verificacion/mutaciones-visor.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "argparse",
+            "line": 28
+          },
+          {
+            "value": "functools",
+            "line": 29
+          },
+          {
+            "value": "http.server",
+            "line": 30
+          },
+          {
+            "value": "json",
+            "line": 31
+          },
+          {
+            "value": "math",
+            "line": 32
+          },
+          {
+            "value": "os",
+            "line": 33
+          },
+          {
+            "value": "re",
+            "line": 34
+          },
+          {
+            "value": "shutil",
+            "line": 35
+          },
+          {
+            "value": "socketserver",
+            "line": 36
+          },
+          {
+            "value": "subprocess",
+            "line": 37
+          },
+          {
+            "value": "sys",
+            "line": 38
+          },
+          {
+            "value": "tempfile",
+            "line": 39
+          },
+          {
+            "value": "threading",
+            "line": 40
+          },
+          {
+            "value": "time",
+            "line": 41
+          },
+          {
+            "value": "numpy",
+            "line": 43
+          },
+          {
+            "value": "requests",
+            "line": 44
+          },
+          {
+            "value": "medir",
+            "line": 53
+          },
+          {
+            "value": "importlib.util",
+            "line": 60
+          }
+        ],
+        "functions": [
+          {
+            "name": "compilar",
+            "line": 79
+          },
+          {
+            "name": "abrir",
+            "line": 86
+          },
+          {
+            "name": "ir",
+            "line": 115
+          },
+          {
+            "name": "sonda_botones",
+            "line": 128
+          },
+          {
+            "name": "sonda_anclaje",
+            "line": 138
+          },
+          {
+            "name": "sonda_uso",
+            "line": 154
+          },
+          {
+            "name": "sonda_territorio",
+            "line": 168
+          },
+          {
+            "name": "sonda_base",
+            "line": 190
+          },
+          {
+            "name": "sonda_radio",
+            "line": 211
+          },
+          {
+            "name": "_abrir_ficha",
+            "line": 238
+          },
+          {
+            "name": "sonda_enlaces",
+            "line": 250
+          },
+          {
+            "name": "sonda_ficha_correcta",
+            "line": 264
+          },
+          {
+            "name": "sonda_tolerancia",
+            "line": 277
+          },
+          {
+            "name": "sonda_ancho",
+            "line": 295
+          },
+          {
+            "name": "sonda_orden",
+            "line": 305
+          },
+          {
+            "name": "sonda_reporte",
+            "line": 313
+          },
+          {
+            "name": "sonda_impresion",
+            "line": 331
+          },
+          {
+            "name": "main",
+            "line": 451
+          },
+          {
+            "name": "translate_path",
+            "line": 69
+          },
+          {
+            "name": "log_message",
+            "line": 75
+          }
+        ],
+        "classes": [
+          {
+            "name": "Manejador",
+            "line": 68
+          }
+        ],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/verificacion/verificar.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "argparse",
+            "line": 13
+          },
+          {
+            "value": "base64",
+            "line": 14
+          },
+          {
+            "value": "functools",
+            "line": 15
+          },
+          {
+            "value": "http.server",
+            "line": 16
+          },
+          {
+            "value": "json",
+            "line": 17
+          },
+          {
+            "value": "math",
+            "line": 18
+          },
+          {
+            "value": "os",
+            "line": 19
+          },
+          {
+            "value": "re",
+            "line": 20
+          },
+          {
+            "value": "shutil",
+            "line": 21
+          },
+          {
+            "value": "socketserver",
+            "line": 22
+          },
+          {
+            "value": "sys",
+            "line": 23
+          },
+          {
+            "value": "threading",
+            "line": 24
+          },
+          {
+            "value": "time",
+            "line": 25
+          },
+          {
+            "value": "numpy",
+            "line": 27
+          },
+          {
+            "value": "requests",
+            "line": 28
+          },
+          {
+            "value": "PIL",
+            "line": 29
+          },
+          {
+            "value": "medir",
+            "line": 34
+          }
+        ],
+        "functions": [
+          {
+            "name": "servir",
+            "line": 65
+          },
+          {
+            "name": "esperar",
+            "line": 72
+          },
+          {
+            "name": "abrir_grupo",
+            "line": 116
+          },
+          {
+            "name": "cerrar_grupo",
+            "line": 138
+          },
+          {
+            "name": "grupo_filtro",
+            "line": 167
+          },
+          {
+            "name": "marcar_clase",
+            "line": 176
+          },
+          {
+            "name": "leer_fila",
+            "line": 196
+          },
+          {
+            "name": "clic",
+            "line": 208
+          },
+          {
+            "name": "pulsar_enter",
+            "line": 215
+          },
+          {
+            "name": "enfocar_mapa",
+            "line": 226
+          },
+          {
+            "name": "metros_por_pixel",
+            "line": 246
+          },
+          {
+            "name": "puntos_bajo_el_clic",
+            "line": 253
+          },
+          {
+            "name": "regiones_ofrecidas",
+            "line": 291
+          },
+          {
+            "name": "diametro_del_disco",
+            "line": 308
+          },
+          {
+            "name": "punto_aislado",
+            "line": 347
+          },
+          {
+            "name": "punto_con_hueco",
+            "line": 415
+          },
+          {
+            "name": "coord_de_la_ficha",
+            "line": 480
+          },
+          {
+            "name": "centro_del_mapa",
+            "line": 492
+          },
+          {
+            "name": "capturar",
+            "line": 498
+          },
+          {
+            "name": "pintados",
+            "line": 505
+          },
+          {
+            "name": "main",
+            "line": 520
+          },
+          {
+            "name": "translate_path",
+            "line": 55
+          },
+          {
+            "name": "log_message",
+            "line": 61
+          },
+          {
+            "name": "prueba",
+            "line": 557
+          },
+          {
+            "name": "vista",
+            "line": 1248
+          }
+        ],
+        "classes": [
+          {
+            "name": "Manejador",
+            "line": 54
+          }
+        ],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/verificacion/mutaciones.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "os",
+            "line": 28
+          },
+          {
+            "value": "shutil",
+            "line": 29
+          },
+          {
+            "value": "subprocess",
+            "line": 30
+          },
+          {
+            "value": "sys",
+            "line": 31
+          },
+          {
+            "value": "tempfile",
+            "line": 32
+          }
+        ],
+        "functions": [
+          {
+            "name": "main",
+            "line": 59
+          }
+        ],
+        "classes": [],
+        "routes": [],
+        "env_vars": []
+      }
+    }
+  }
+}
