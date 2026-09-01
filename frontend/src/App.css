@@ -986,6 +986,25 @@
 .rep-ficha dt { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--tinta-3); }
 .rep-ficha dd { margin: 2px 0 0; font-size: 13px; font-weight: 600; }
 
+/* LA LÁMINA DEL MAPA. `break-inside: avoid` para que no la parta una página,
+   y un alto acotado porque la captura tiene la proporción de la ventana de quien
+   la generó —puede ser una tira alta y estrecha si tenía los dos paneles
+   abiertos— y sin techo se comería una página entera. */
+.rep-mapa { margin: 16px 0 0; break-inside: avoid; }
+/* SE ACOTA POR ALTO Y SE CENTRA, no se estira al ancho. La captura tiene la
+   proporción de la ventana de quien la generó: con los dos paneles abiertos es
+   una tira alta y estrecha, y forzarla al ancho de la página dejaba dos barras
+   grises enormes a los lados. Centrada a su alto real ocupa lo que necesita. */
+.rep-mapa img {
+  display: block; margin: 0 auto;
+  width: auto; max-width: 100%; height: auto; max-height: 110mm;
+  border: 1px solid var(--borde); border-radius: 6px; background: var(--superficie-2);
+}
+.rep-mapa figcaption {
+  margin-top: 5px; font-size: 10px; line-height: 1.4; color: var(--tinta-3);
+  text-align: center;
+}
+
 .rep-kpis {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 10px; margin: 12px 0;
@@ -1059,7 +1078,11 @@
     width: auto; max-width: none; overflow: visible; padding: 0;
     background: #fff; color: #111; font-size: 10.5pt;
   }
-  .rep-kpi, .rep-tabla, .rep-donut-fila, .rep-pie { break-inside: avoid; }
+  .rep-kpi, .rep-tabla, .rep-donut-fila, .rep-pie, .rep-mapa { break-inside: avoid; }
+  /* La imagen del mapa es lo único del documento que DEBE imprimirse con sus
+     colores: es una copia de lo que se veía, y Chrome descarta los fondos al
+     imprimir salvo que se le diga. */
+  .rep-mapa img { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .reporte-doc h2 { break-after: avoid; }
   .reporte-doc table { break-inside: auto; }
   .rep-tabla thead { display: table-header-group; }

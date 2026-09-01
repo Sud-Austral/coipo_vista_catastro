@@ -119,6 +119,19 @@ export default function CapaPuntos({ map, datos, paleta, filtro, onPunto, onFall
 
     const deckgl = new Deck({
       canvas,
+      // SIN ESTO EL REPORTE IMPRIME UN MAPA EN BLANCO, y no es una suposición:
+      // se puso en `false` y se midió. `toDataURL()` devolvió un PNG de 18 KB
+      // con CERO píxeles pintados, sin lanzar ningún error. Con `true`, 703 KB
+      // y el 27,8 % de la imagen con contenido.
+      //
+      // El motivo es que el navegador puede vaciar el búfer de dibujo en cuanto
+      // compone el fotograma. deck.gl 9.3.10 lo pone en `true` por su cuenta
+      // —comprobado leyendo `getContextAttributes()`—, así que hoy funcionaría
+      // igual sin esta línea; se declara de todos modos porque el reporte
+      // DEPENDE de ello y un valor por omisión de una dependencia no es un
+      // contrato. Una imagen en blanco dentro de un PDF con identidad
+      // institucional es el peor fallo silencioso que puede tener este visor.
+      deviceProps: { webgl: { preserveDrawingBuffer: true } },
       views: new MapView({ repeat: false }),
       // El controlador sigue siendo Leaflet: arrastre, zoom, inercia y teclado
       // los maneja el, y deck solo obedece la vista resultante.

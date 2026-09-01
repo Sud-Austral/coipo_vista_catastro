@@ -41,7 +41,10 @@ import tempfile
 import threading
 import time
 
+import base64
+
 import numpy as np
+from PIL import Image
 import requests
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
@@ -483,6 +486,32 @@ def sonda_reporte(cdp, url):
     return pasa, f"{len(texto)} caracteres · {len(secciones)} secciones · {len(tablas)} tablas"
 
 
+def sonda_mapa_del_reporte(cdp, url):
+    """La lamina del mapa del reporte trae contenido de verdad.
+
+    Se DECODIFICA la imagen y se cuentan pixeles contra el color mas repetido.
+    Mirar que exista el <img> no serviria: un lienzo WebGL sin
+    preserveDrawingBuffer devuelve un PNG valido y completamente transparente
+    sin lanzar nada --medido: 18 KB y cero pixeles-- y el reporte imprimiria un
+    recuadro en blanco con identidad institucional encima.
+    """
+    ir(cdp, url + "?reg=10")
+    V.abrir_grupo(cdp, "Descargar")
+    cdp.evaluar("[...document.querySelectorAll('.modal-filtro button')]"
+                ".find(b => /Reporte del/.test(b.textContent))?.click()")
+    V.esperar(cdp, "!!document.querySelector('.reporte-doc')", segundos=25)
+    src = str(cdp.evaluar("document.querySelector('.rep-mapa img')?.src") or "")
+    if not src.startswith("data:image/png;base64,"):
+        return False, "no hay lamina en el reporte"
+    ruta = os.path.join(AQUI, "mutacion-mapa-reporte.png")
+    with open(ruta, "wb") as fh:
+        fh.write(base64.b64decode(src.split(",", 1)[1]))
+    im = np.array(Image.open(ruta).convert("RGB"))
+    vals, cuentas = np.unique(im.reshape(-1, 3), axis=0, return_counts=True)
+    frac = float((np.abs(im - vals[cuentas.argmax()]).sum(axis=2) > 20).mean())
+    return frac > 0.002, f"{len(src):,} B · {frac:.1%} con contenido"
+
+
 def sonda_impresion(cdp, url):
     ir(cdp, url + "?reg=10")
     # El reporte vive dentro del modal de Descargar desde que el panel se quedo
@@ -656,6 +685,12 @@ MUTACIONES = [
      sonda_alias,
      [(os.path.join(FRONTEND, "src", "filtros.js"),
        "      const buscado = alias[cod] ?? cod", "      const buscado = cod")]),
+
+    ("V-57d · el lienzo de deck deja de conservar su bufer",
+     sonda_mapa_del_reporte,
+     [(os.path.join(FRONTEND, "src", "mapa", "CapaPuntos.jsx"),
+       "deviceProps: { webgl: { preserveDrawingBuffer: true } },",
+       "deviceProps: { webgl: { preserveDrawingBuffer: false } },")]),
 
     ("V-57 · el reporte deja de nombrar el ambito que imprime",
      sonda_reporte,

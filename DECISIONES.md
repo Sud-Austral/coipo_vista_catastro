@@ -295,6 +295,37 @@ estar a la vista. Queda anotado en el componente para que no se lea como descuid
 de descargas como `children`: el panel sigue sin saber nada de exportar ni de la guía de códigos, y
 App no reenvía `datos`, `filtro`, `resumen`, `oficiales` y `simef` por dos niveles.
 
+## K. El reporte lleva una copia del mapa, y por qué se pudo
+
+El PDF ahora abre con **una lámina del mapa tal como estaba al emitirlo**: mismo encuadre, mismo
+fondo, mismos filtros. Se compone en un `<canvas>` 2D a partir de las dos capas que forman el mapa
+—las teselas, que son `<img>` colocadas por Leaflet, y el lienzo WebGL de deck.gl— y se inserta
+como PNG.
+
+**Las teselas se dibujan por su rectángulo en pantalla** y no reconstruyendo la proyección:
+`getBoundingClientRect()` ya trae resueltas todas las transformaciones que Leaflet encadena.
+Replicar esa aritmética sería una segunda fuente de verdad para la misma pregunta.
+
+**Hizo falta pedirlas en modo CORS.** Sin `crossOrigin`, dibujar una tesela en un canvas lo
+**mancha** y `toDataURL()` lanza `SecurityError` — medido. Se comprobaron **los siete fondos uno a
+uno**: todos mandan `Access-Control-Allow-Origin`, incluido eox.at, que refleja el origen y
+funciona también desde `localhost`. Sin eso, la lámina se habría quedado sin mapa base.
+
+**Y el fallo silencioso que esto podía introducir, visto de frente.** Un lienzo WebGL sin
+`preserveDrawingBuffer` devuelve un PNG **perfectamente válido y completamente transparente, sin
+lanzar nada**. Se midió poniéndolo en `false`: **18 KB y cero píxeles**, contra 703 KB y 27,8 % con
+él. deck.gl 9.3.10 lo pone en `true` por su cuenta —comprobado leyendo `getContextAttributes()`—,
+pero un valor por omisión de una dependencia no es un contrato cuando el PDF depende de él, así que
+se declara. Un recuadro en blanco rotulado «mapa» dentro de un documento con identidad
+institucional es el peor fallo que puede tener este visor.
+
+**La guarda en tiempo de ejecución NO descarta la imagen por salir vacía**, y esto se pensó dos
+veces. «Vacía por un fallo» y «vacía porque el filtro no deja nada» se ven igual: con `?uso=09`
+quedan cinco polígonos en todo Chile. Descartar esa copia sería llamar error a un mapa correcto.
+Se devuelve siempre lo compuesto, con la fracción de contenido medida, y la lámina se rotula. Del
+fallo sistemático se encargan la declaración explícita y **V-57d**, que decodifica la imagen y
+cuenta píxeles en cada verificación: separa 0,0 % de 1,1-17 %.
+
 ## Fallos propios cometidos al establecer todo esto
 
 Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse.
@@ -321,3 +352,13 @@ Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse
 6. **Borré una sonda del mutador con un corte por índices y me llevé cinco por delante.** El
    archivo dejó de importar con `NameError`. Un `s[:a] + s[b:]` sobre un archivo grande no es una
    edición, es una apuesta.
+7. **Escribí una guarda que no podía fallar.** La que decide si la copia del mapa salió vacía
+   contaba píxeles con alfa > 0 — y como la propia función rellena el fondo antes de dibujar, el
+   alfa vale 1 en toda la imagen y la medida daba 100 % siempre, también sobre un lienzo en blanco.
+   Ahora compara contra el color más repetido.
+8. **Y la arreglé mal a la primera:** muestreaba una rejilla de 9 px sobre discos de 1,2 px, así
+   que encontraba el 0,48 % de lo que había y descartaba capturas correctas. Una malla más gruesa
+   que aquello que busca no mide, sortea. Se muestrean filas enteras.
+9. **Puse el botón del reporte dentro de un modal y no comprobé qué pasaba al abrirlo.** Un
+   `<dialog>` modal pinta en la top layer: el reporte salía debajo del modal que lo había abierto,
+   por mucho z-index que llevara.

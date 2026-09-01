@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { COLOR_USO } from '../config'
+import { BASEMAPS, COLOR_USO } from '../config'
 import { fmt, fmt1, ha, haExacta, pct } from '../formato'
 import { FILTROS } from '../filtros'
 import {
@@ -150,6 +150,7 @@ function filtrosEnTexto(filtros, usosActivos, manifest) {
 
 export default function Reporte({
   abierto, onCerrar, manifest, resumen, ambito, filtros, usosActivos, oscuro,
+  mapa, base,
 }) {
   const ref = useRef(null)
   const cerrar = useRef(null)
@@ -276,6 +277,42 @@ export default function Reporte({
             </div>
           </dl>
         </header>
+
+        {/* LA LÁMINA DEL MAPA, y va en la portada por lo mismo que la ficha de
+            arriba: es la respuesta a «¿de qué estamos hablando?» antes de la
+            primera cifra. Es una copia del mapa TAL COMO ESTABA al abrir el
+            reporte —mismo encuadre, mismo fondo, mismos filtros—, compuesta de
+            las teselas y del lienzo de puntos.
+
+            Y SI NO SE PUDO COPIAR, SE DICE. Un lienzo WebGL devuelve un PNG
+            válido y completamente transparente sin lanzar nada, así que un
+            recuadro vacío rotulado «mapa» es un fallo perfectamente silencioso.
+            `capturarMapa` devuelve null antes que eso, y aquí se escribe el
+            motivo en vez de imprimir el hueco. */}
+        <figure className="rep-mapa">
+          {mapa ? (
+            <img src={mapa.url} alt={`Mapa del Catastro para ${ambitoTxt}`}
+                 width={mapa.ancho} height={mapa.alto} />
+          ) : (
+            <p className="nota">
+              No se pudo copiar el mapa en pantalla. Las cifras de este documento no dependen de
+              esa imagen: salen del atributo de superficie.
+            </p>
+          )}
+          <figcaption>
+            {mapa
+              ? `El mapa tal como estaba al emitir este reporte: ${ambitoTxt}`
+              : 'Mapa no disponible en esta copia'}
+            {mapa && !mapa.teselas && ' · sin imagen de fondo'}
+            {/* Si el encuadre no tenía nada que enseñar se dice, en vez de dejar
+                un rectángulo liso que el lector interpretará como quiera. */}
+            {mapa && mapa.contenido < 0.002 && ' · el encuadre no contenía datos visibles'}
+            {mapa && mapa.teselas > 0 && base && BASEMAPS[base]?.attribution && (
+              <> · Fondo {base}: {BASEMAPS[base].attribution.replace(/&middot;/g, '·')
+                                   .replace(/&copy;/g, '©')}</>
+            )}
+          </figcaption>
+        </figure>
 
         {/* SECCIÓN 0, y va antes que ninguna cifra: qué recorte se está
             imprimiendo. Sin esto, dos reportes con el mismo título y cifras

@@ -23,6 +23,7 @@ import { alternar, filtrosAURL, filtrosDesdeURL } from './filtros'
 import { guardarDisposicion, leerDisposicion } from './preferencias'
 import { escribirURL, leerURL } from './urlState'
 import CapaPuntos from './mapa/CapaPuntos'
+import { capturarMapa } from './mapa/capturaMapa'
 import EtiquetaImagen from './components/EtiquetaImagen'
 import ModalFicha from './components/ModalFicha'
 import Banner from './components/Banner'
@@ -104,6 +105,21 @@ export default function App() {
   const [simef, setSimef] = useState(null)
   const [cartel, setCartel] = useState(true)
   const [reporte, setReporte] = useState(false)
+  // La copia del mapa se toma AL ABRIR el reporte y no al montarlo: tiene que
+  // ser el mapa que está en pantalla en ese momento, con sus filtros y su
+  // encuadre. Guardarla en estado además la congela, así que reordenar el
+  // documento o imprimirlo no vuelve a leer el lienzo.
+  const [mapaDelReporte, setMapaDelReporte] = useState(null)
+  const abrirReporte = useCallback(() => {
+    // SE CIERRA EL MODAL QUE LO ABRIÓ. El botón del reporte vive dentro del
+    // modal de Descargar, y un <dialog> modal pinta en la TOP LAYER: por muy
+    // alto que sea el z-index del reporte, el modal se le queda encima. Se
+    // cierra por su propia vía —`close()` dispara su `onClose`— para que el
+    // estado de React siga cuadrando con el DOM.
+    document.querySelector('dialog.modal-filtro[open]')?.close()
+    setMapaDelReporte(capturarMapa(contenedor.current))
+    setReporte(true)
+  }, [])
   const [oficiales, setOficiales] = useState(null)
 
   // SIMEF es OTRA FUENTE y se carga aparte a proposito: si su archivo falta o
@@ -190,6 +206,13 @@ export default function App() {
       attribution: cfg.attribution,
       maxZoom: cfg.maxZoom,
       maxNativeZoom: cfg.maxNativeZoom,
+      // EN MODO CORS, y hace falta para que el reporte pueda copiar el mapa: una
+      // tesela pedida sin esto MANCHA cualquier canvas donde se dibuje, y el
+      // `toDataURL` posterior lanza SecurityError en vez de devolver la imagen.
+      // Se comprobaron los siete fondos uno a uno —incluido eox.at, que refleja
+      // el origen— y todos mandan Access-Control-Allow-Origin, también desde un
+      // origen local, así que pedirlas así no rompe ninguno.
+      crossOrigin: 'anonymous',
     })
     capa.addTo(map)
     return () => capa.remove()
@@ -795,7 +818,7 @@ export default function App() {
             manifest={manifest}
             ambitoTxt={manifest ? ambitoTexto(ambito, manifest) : 'todo Chile'}
             nFiltrado={resumen?.n ?? 0}
-            onReporte={() => setReporte(true)}
+            onReporte={abrirReporte}
           />
         }
         metodologia={
@@ -886,6 +909,8 @@ export default function App() {
       <Reporte
         abierto={reporte}
         onCerrar={() => setReporte(false)}
+        mapa={mapaDelReporte}
+        base={base}
         manifest={manifest}
         resumen={resumen}
         ambito={ambito}

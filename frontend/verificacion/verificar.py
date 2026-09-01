@@ -1655,6 +1655,66 @@ def main():
                len(tablas) >= 9 and all(t > 0 for t in tablas),
                f"{len(tablas)} tablas · filas {tablas}")
 
+        # V-57d: EL REPORTE TRAE UNA COPIA DEL MAPA, Y NO ESTÁ EN BLANCO.
+        #
+        # Esto no se puede comprobar mirando que exista el <img>: un lienzo WebGL
+        # sin `preserveDrawingBuffer` devuelve un PNG perfectamente válido y
+        # COMPLETAMENTE TRANSPARENTE, sin lanzar ningún error. Se midió poniendo
+        # la opción en false: 18 KB y cero píxeles pintados, contra 703 KB y un
+        # 27,8 % con ella. Un recuadro vacío rotulado «mapa» dentro de un PDF con
+        # identidad institucional es el fallo silencioso más caro que puede tener
+        # este visor, así que aquí se DECODIFICA la imagen y se cuentan píxeles.
+        datos_img = str(cdp.evaluar(
+            "document.querySelector('.rep-mapa img')?.src ?? ''") or "")
+        pie_mapa = str(cdp.evaluar(
+            "document.querySelector('.rep-mapa figcaption')?.textContent") or "")
+        pintado_mapa = 0.0
+        if datos_img.startswith("data:image/png;base64,"):
+            crudo = base64.b64decode(datos_img.split(",", 1)[1])
+            ruta_m = os.path.join(AQUI, "captura-reporte-mapa.png")
+            with open(ruta_m, "wb") as fh:
+                fh.write(crudo)
+            im = np.array(Image.open(ruta_m).convert("RGB"))
+            # CONTRA EL COLOR MÁS REPETIDO, no contra la transparencia. La
+            # primera versión contaba alfa y daba 100 % siempre: la captura
+            # rellena el fondo antes de dibujar, así que no hay un solo píxel
+            # transparente ni aunque el mapa salga vacío. Medir así no medía
+            # nada, y una aserción que no puede fallar no protege.
+            vals, cuentas = np.unique(im.reshape(-1, 3), axis=0, return_counts=True)
+            fondo_m = vals[cuentas.argmax()]
+            pintado_mapa = float((np.abs(im - fondo_m).sum(axis=2) > 20).mean())
+        # El ámbito lo dice el PROPIO documento, no una constante escrita aquí:
+        # el reporte de esta tanda es el de otra región y la aserción se cayó por
+        # eso, midiendo bien y comparando contra un nombre equivocado.
+        ambito_doc = str(cdp.evaluar(
+            "document.querySelector('.rep-ficha dd')?.textContent") or "")
+        # EL UMBRAL SEPARA «NADA» DE «ALGO», no policía cobertura. El fallo que
+        # busca da EXACTAMENTE 0,0 % --lienzo transparente-- y una copia legítima
+        # da desde 1,9 % (una región a z7, medido) hasta 17 % (una ciudad a z13).
+        # Ponerlo en el 1 % dejaba a la aserción a menos del doble del umbral y a
+        # merced de que una máquina lenta capture el vuelo a medias.
+        prueba("V-57d el reporte copia el mapa y la copia tiene contenido",
+               pintado_mapa > 0.002 and ambito_doc and ambito_doc in pie_mapa,
+               f"{len(datos_img):,} B de data URI · {pintado_mapa:.1%} con contenido · "
+               f"ámbito {ambito_doc!r}")
+
+        # V-57e: LAS TESELAS SE PIDEN EN MODO CORS. Sin `crossOrigin`, dibujar
+        # una en un canvas lo MANCHA y el `toDataURL` de la copia lanza
+        # SecurityError — medido. Aquí las teselas están bloqueadas a propósito,
+        # así que no se puede comprobar la composición; lo que sí se comprueba es
+        # la propiedad que la hace posible, que vive en el elemento aunque la
+        # petición no llegue.
+        cors = cdp.evaluar("""
+          (() => {
+            const t = [...document.querySelectorAll('img.leaflet-tile')]
+            if (!t.length) return 'sin teselas en el DOM'
+            const malas = t.filter(i => i.crossOrigin !== 'anonymous').length
+            return malas ? malas + ' de ' + t.length + ' sin crossOrigin' : 'las ' + t.length
+          })()
+        """)
+        prueba("V-57e las teselas se piden en modo CORS, o la copia se mancha",
+               str(cors).startswith("las "), str(cors))
+
         # V-57b: LO QUE SE IMPRIME. Un reporte que en pantalla se ve perfecto y
         # sale con el mapa detrás —o con la barra de botones dentro— no sirve, y
         # es exactamente el fallo silencioso que dejó el reporte de referencia en
