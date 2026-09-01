@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react'
 import { fmt, haExacta } from '../formato'
 
 /**
@@ -16,30 +15,22 @@ import { fmt, haExacta } from '../formato'
  * TODO lo que se afirma aquí sale del manifest o está marcado como pendiente de
  * validación. Nada de cifras escritas a mano: si el ETL cambia, esto cambia.
  */
-export default function PaginaMetodologia({ abierta, onCerrar, manifest, oficiales, simef }) {
-  const ref = useRef(null)
-
-  useEffect(() => {
-    const d = ref.current
-    if (!d) return
-    if (abierta && !d.open) d.showModal()
-    else if (!abierta && d.open) d.close()
-  }, [abierta])
-
+/**
+ * DEJO DE SER UN <dialog> PROPIO y pasa a ser el cuerpo del modal de
+ * Información, que es el único sitio del panel donde vive la prosa.
+ *
+ * Antes eran dos superficies de información —este diálogo y las notas sueltas
+ * del panel— y había que saber cuál abrir para cada duda. La caja, el foco
+ * atrapado, Escape y el anclaje a la izquierda los pone ahora `CajaModal`, la
+ * misma de los otros veinte controles: aquí sólo quedan las secciones.
+ */
+export function CuerpoMetodologia({ manifest, oficiales, simef }) {
   const cap = manifest?.capas?.cbn_puntos
   const total = manifest?.total
   const oficialTotal = oficiales?.total_pais?.total
 
   return (
-    <dialog className="metodologia" ref={ref} aria-labelledby="met-titulo" onClose={onCerrar}>
-      <div className="met-caja">
-        <header>
-          <h2 id="met-titulo">Metodología y definiciones</h2>
-          <button type="button" className="cerrar" onClick={onCerrar} aria-label="Cerrar">
-            ×
-          </button>
-        </header>
-
+    <>
         <section>
           <h3>Qué cuenta el Catastro como bosque</h3>
           {/* Sin esto, 18,9 M ha no es comparable con nada. Los umbrales son los
@@ -79,13 +70,29 @@ export default function PaginaMetodologia({ abierta, onCerrar, manifest, oficial
           <h3>Qué es un punto en este mapa</h3>
           <p>
             Cada punto es el <strong>centroide</strong> del polígono que el Catastro dibujó, no
-            una parcela, ni un predio, ni un árbol. Su tamaño sí es{' '}
-            <em>proporcional a la superficie</em>: el disco cubre la misma área que el polígono,
-            centrada en ese centroide. Lo que no reproduce es su <em>forma</em> — una faja
-            estrecha de diez kilómetros y un cuadrado compacto de la misma superficie se dibujan
-            igual. Y el disco está acotado por abajo para que no desaparezca a escala de país, y
-            por arriba para que uno enorme no tape a sus vecinos: en esos dos extremos deja de
-            ser proporcional, y la cifra exacta está siempre en el atributo.
+            una parcela, ni un predio, ni un árbol. El disco que lo representa{' '}
+            <strong>ocupa la superficie que el polígono declara</strong> —el círculo de igual
+            área, centrado en ese centroide—, <strong>salvo donde no cabe</strong>: ahí se recorta
+            hasta tocar a su vecino sin invadirlo.
+          </p>
+          {/* LA REGLA CAMBIÓ Y EL TEXTO CON ELLA. Decía «el disco cubre la misma
+              área que el polígono», a secas. Era cierto y hacía el mapa
+              ilegible: círculos de la misma área que celdas que TESELAN el
+              territorio tienen que solaparse, y medido, el 56 % de los puntos
+              invadía a su vecino. Recortar es lo que lo resuelve; decir que no
+              se recorta sería más simple y falso. */}
+          <p>
+            Ese recorte afecta al <strong>56 % de los puntos</strong>, así que en zonas densas{' '}
+            <strong>el tamaño ya no se puede leer como superficie</strong>: la cifra exacta está
+            siempre en el atributo, en los filtros y en las descargas. A cambio, a partir del zoom
+            11 ningún disco tapa a otro. Alejando el mapa vuelven a tocarse, y eso no tiene
+            arreglo: son 1,8 millones de polígonos sobre unos 700.000 píxeles.
+          </p>
+          <p>
+            Lo que el disco no reproduce nunca es la <em>forma</em>: una faja estrecha de diez
+            kilómetros y un cuadrado compacto de la misma superficie se dibujan igual. Y está
+            acotado por abajo para que no desaparezca a escala de país y por arriba para que uno
+            enorme no ocupe la pantalla entera.
           </p>
           <p>
             El centroide de un polígono muy irregular <strong>puede caer fuera de él</strong>.
@@ -354,7 +361,6 @@ export default function PaginaMetodologia({ abierta, onCerrar, manifest, oficial
             </li>
           </ul>
         </section>
-      </div>
-    </dialog>
+    </>
   )
 }

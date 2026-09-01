@@ -27,7 +27,7 @@ import EtiquetaImagen from './components/EtiquetaImagen'
 import ModalFicha from './components/ModalFicha'
 import Banner from './components/Banner'
 import CartelContexto from './components/CartelContexto'
-import PaginaMetodologia from './components/PaginaMetodologia'
+import { CuerpoMetodologia } from './components/PaginaMetodologia'
 import PanelIndicadores from './components/PanelIndicadores'
 import PanelLateral from './components/PanelLateral'
 import Reporte from './components/Reporte'
@@ -103,7 +103,6 @@ export default function App() {
   const [aviso, setAviso] = useState(null)
   const [simef, setSimef] = useState(null)
   const [cartel, setCartel] = useState(true)
-  const [metodologia, setMetodologia] = useState(false)
   const [reporte, setReporte] = useState(false)
   const [oficiales, setOficiales] = useState(null)
 
@@ -784,18 +783,25 @@ export default function App() {
         abierto={panelVisible}
         onCerrar={cerrarPanel}
         oscuro={oscuro}
-        onMetodologia={() => setMetodologia(true)}
-      >
-        <SeccionDescargas
-          datos={datos}
-          filtro={filtro}
-          resumen={resumen}
-          manifest={manifest}
-          ambitoTxt={manifest ? ambitoTexto(ambito, manifest) : 'todo Chile'}
-          nFiltrado={resumen?.n ?? 0}
-          onReporte={() => setReporte(true)}
-        />
-      </PanelLateral>
+        // Los dos van como ELEMENTOS, igual que antes iba la sección de
+        // descargas como `children`: el panel los coloca dentro de su modal sin
+        // saber qué llevan, y App no tiene que reenviar `datos`, `filtro`,
+        // `resumen`, `oficiales` y `simef` a través suyo.
+        descargas={
+          <SeccionDescargas
+            datos={datos}
+            filtro={filtro}
+            resumen={resumen}
+            manifest={manifest}
+            ambitoTxt={manifest ? ambitoTexto(ambito, manifest) : 'todo Chile'}
+            nFiltrado={resumen?.n ?? 0}
+            onReporte={() => setReporte(true)}
+          />
+        }
+        metodologia={
+          <CuerpoMetodologia manifest={manifest} oficiales={oficiales} simef={simef} />
+        }
+      />
 
       {/* Hermano del panel y no hijo suyo: .panel scrollea, y dentro quedaba
           recortado por su overflow y se iba con el scroll. */}
@@ -872,13 +878,6 @@ export default function App() {
       </p>
       {cartel && <CartelContexto texto={AVISO_PUNTOS} onCerrar={() => setCartel(false)} />}
       <EtiquetaImagen map={map} info={imagen} />
-      <PaginaMetodologia
-        abierta={metodologia}
-        onCerrar={() => setMetodologia(false)}
-        manifest={manifest}
-        oficiales={oficiales}
-        simef={simef}
-      />
       <ModalFicha ficha={ficha} onCerrar={() => setFicha(null)} />
       {/* EL REPORTE, con el mismo resumen que ya alimenta el panel de
           indicadores. No recalcula nada: si las dos cifras pudieran salir de

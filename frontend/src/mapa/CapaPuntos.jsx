@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import L from 'leaflet'
 import { Deck, MapView } from '@deck.gl/core'
 import { ScatterplotLayer } from '@deck.gl/layers'
@@ -34,38 +34,40 @@ import { DataFilterExtension } from '@deck.gl/extensions'
  * visor de referencia.
  */
 /**
- * Radio EN METROS: el del circulo que tiene la misma area que el poligono.
+ * EL RADIO YA NO SE CALCULA AQUI: viene en su propia columna del .bin, en
+ * metros, y este componente solo la pasa a deck.gl.
  *
- * ha -> m2 son 10.000, y de area a radio, r = raiz(area/PI). Con eso el disco
- * que se pinta ocupa exactamente el terreno que el poligono declara, y el
- * tamano pasa a ser PROPORCIONAL de verdad, no "crece con".
+ * Se calculaba, y era `sqrt(ha * 10000 / PI)` -- el radio del circulo de igual
+ * area que el poligono. Esa regla es correcta y esta mal: circulos de la misma
+ * area que celdas que TESELAN el territorio tienen que solaparse. Medido sobre
+ * las 1.827.933 filas, el 56 % de los puntos invadia a su vecino mas cercano, y
+ * en Valdivia a z13 el 45 % de los centros quedaba debajo de un disco mayor,
+ * con la suma de areas en el 86 % de la pantalla.
  *
- * ANTES ESTABA EN PIXELES, y ese era el defecto: un punto media lo mismo a z=4
- * que a z=18, asi que al acercarse no crecia y el mapa quedaba en viruela.
- * Medido sobre las 1.827.933 filas con la formula vieja
- * --min(12, max(0,9, 0,65*raiz(ha)))--: la mediana daba 1,09 px y el 40,85 %
- * de los puntos estaba clavado en el suelo de 0,9 px. Cuatro de cada diez no
- * codificaban nada, a ningun zoom.
+ * NINGUNA ESCALA UNIFORME LO ARREGLA, y se probaron: al 0,7 seguian solapando
+ * 718.110 puntos; al 0,5, 456.162; al 0,1 --un decimo-- todavia 28.718. No era
+ * un problema de calibracion.
  *
- * En metros, ese poligono mediano de 2,83 ha mide 95 m de radio: 0,2 px a z8,
- * 12 px a z14 y unos 200 px a z18. Deja de ser viruela en cuanto te acercas, y
- * a nivel pais sigue siendo un punto porque lo acota radiusMinPixels.
+ * La regla nueva la aplica el ETL, que es donde se puede hacer:
  *
- * Se calcula UNA vez por conjunto de datos, no por fotograma: es un atributo
- * binario mas, del mismo tamano que el canal de filtro. Que crezca con el zoom
- * ya no cuesta nada aqui -- lo hace la GPU al proyectar.
+ *     r = min( sqrt(ha * 10000 / PI) , distancia al vecino mas cercano / 2 )
+ *
+ * Si r_i <= d_ij/2 y r_j <= d_ij/2 para todo par, entonces r_i + r_j <= d_ij:
+ * cero solape, demostrable. Exige una consulta espacial sobre 1,8 M de puntos
+ * --cKDTree, 0,9 s-- que no tiene sentido repetir en cada navegador, y que D26
+ * comprueba desde fuera sobre el .bin publicado.
+ *
+ * EL PRECIO, que la interfaz dice: para el 56 % de los puntos el disco ya no
+ * cubre el area de su poligono sino el sitio que tiene libre.
+ *
+ * Y EL LIMITE: por debajo de z11 la separacion mediana entre vecinos (185 m)
+ * baja de los 2,4 px que necesitan dos discos en el suelo de radiusMinPixels,
+ * asi que ahi vuelven a tocarse. Con 1,8 M de puntos sobre 733.000 pixeles eso
+ * no es una decision de diseno, es una division.
  */
-function radiosDesdeSuperficie(ha, n) {
-  const r = new Float32Array(n)
-  const K = Math.sqrt(10000 / Math.PI)   // ha -> radio equivalente en metros
-  for (let i = 0; i < n; i++) {
-    r[i] = K * Math.sqrt(ha[i])
-  }
-  return r
-}
 
 export default function CapaPuntos({ map, datos, paleta, filtro, onPunto, onFallo }) {
-  const radio = useMemo(() => radiosDesdeSuperficie(datos.ha, datos.n), [datos])
+  const radio = datos.radio
 
   const deckRef = useRef(null)
   const contRef = useRef(null)

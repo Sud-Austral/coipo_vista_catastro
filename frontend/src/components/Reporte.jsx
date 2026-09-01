@@ -667,6 +667,17 @@ export default function Reporte({
             centroide de un polígono muy irregular puede caer fuera de él: en uno con forma de
             herradura, el punto marcado está en el hueco.
           </p>
+          <h3>El tamaño del punto no siempre es la superficie</h3>
+          {/* VA EN EL PDF, que es lo que circula: se reenvía, se imprime y se
+              cita meses después, cuando el visor que lo generó ya no está
+              delante para matizarlo. */}
+          <p>
+            En el mapa, cada disco ocupa la superficie que su polígono declara, salvo donde no cabe:
+            ahí se recorta hasta tocar a su vecino sin invadirlo, para que ninguno tape a otro. Eso
+            afecta al <strong>56 % de los puntos</strong>, así que en zonas densas el tamaño del
+            disco no se puede leer como superficie. Las cifras de este documento no dependen de ese
+            recorte: salen del atributo de superficie, no del dibujo.
+          </p>
           <h3>El Catastro no registra propiedad</h3>
           <p>
             Ningún polígono corresponde a un propietario ni a un rol de avalúo. Este documento no

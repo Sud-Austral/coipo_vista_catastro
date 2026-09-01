@@ -114,10 +114,11 @@ TECHO_PINTADO_MS = 6000
 MODAL_FILTRO = "!!document.querySelector('dialog.modal-filtro[open]')"
 
 # Cuantos botones tiene el panel: Territorio + las quince dimensiones de FILTROS
-# + Imagen de fondo. EL NUMERO SE ACTUALIZA A MANO Y A PROPOSITO. Es la cuenta
-# que caza que un control desaparezca en silencio --que es como se pierde uno--,
-# asi que derivarla de la propia pagina la volveria una tautologia.
-CONTROLES = 17
+# + Imagen de fondo + Informacion, Descargar y Compartir. EL NUMERO SE ACTUALIZA
+# A MANO Y A PROPOSITO. Es la cuenta que caza que un control desaparezca en
+# silencio --que es como se pierde uno--, asi que derivarla de la propia pagina
+# la volveria una tautologia.
+CONTROLES = 20
 
 
 def abrir_grupo(cdp, titulo):
@@ -257,6 +258,29 @@ def metros_por_pixel(lat, z):
     return 156543.03392 * math.cos(math.radians(lat)) / (2 ** z)
 
 
+def columnas(*nombres):
+    """Lee columnas del .bin COMPILADO con los offsets que declara su manifest.
+
+    EL RADIO SE LEE, NO SE CALCULA, y eso es el cambio que importa aqui. El
+    arnes reproducia la formula del visor --`sqrt(ha*10000/pi)`-- para saber de
+    que tamano deberia salir cada disco, y esa duplicacion ya dejo a V-22b
+    pasando en verde contra una formula muerta. Ahora el radio viene en su
+    propia columna, recortado por el vecino mas cercano, y una consulta espacial
+    no se reproduce a mano: se lee lo que se publica.
+    """
+    man = json.load(open(os.path.join(DIST, "datos", "manifest.json"), encoding="utf-8"))
+    capa = man["capas"]["cbn_puntos"]
+    n = capa["filas"]
+    out = {}
+    with open(os.path.join(DIST, "datos", capa["archivo"]), "rb") as fh:
+        for nombre in nombres:
+            c = capa["campos"][nombre]
+            fh.seek(c["offset"])
+            out[nombre] = np.frombuffer(fh.read(ANCHO_BIN[c["tipo"]] * n),
+                                        dtype=NP_BIN[c["tipo"]]).astype(np.float64)
+    return n, out
+
+
 def puntos_bajo_el_clic(lat0, lon0, z, tol_px=6.0):
     """Toda fila del .bin cuyo disco DIBUJADO cubre el pixel pulsado.
 
@@ -270,16 +294,7 @@ def puntos_bajo_el_clic(lat0, lon0, z, tol_px=6.0):
     Devuelve (indices, lat, lon, ha) para poder contar cuantos candidatos habia:
     si sale uno solo, la asercion vuelve a ser tan estrecha como la vieja.
     """
-    man = json.load(open(os.path.join(DIST, "datos", "manifest.json"), encoding="utf-8"))
-    capa = man["capas"]["cbn_puntos"]
-    n = capa["filas"]
-    col = {}
-    with open(os.path.join(DIST, "datos", capa["archivo"]), "rb") as fh:
-        for nombre in ("lat", "lon", "ha"):
-            c = capa["campos"][nombre]
-            fh.seek(c["offset"])
-            col[nombre] = np.frombuffer(fh.read(ANCHO_BIN[c["tipo"]] * n),
-                                        dtype=NP_BIN[c["tipo"]]).astype(np.float64)
+    n, col = columnas("lat", "lon", "radio")
 
     mpp = metros_por_pixel(lat0, z)
     # Equirectangular local: a estas distancias el error frente a la geodesica
@@ -287,12 +302,13 @@ def puntos_bajo_el_clic(lat0, lon0, z, tol_px=6.0):
     dx = (col["lon"] - lon0) * math.cos(math.radians(lat0)) * 111320.0
     dy = (col["lat"] - lat0) * 110540.0
     dist_px = np.hypot(dx, dy) / mpp
-    # Los MISMOS topes que CapaPuntos: radio de area equivalente, con suelo y
-    # techo en pixeles. Copiarlos aqui es deliberado --es un oraculo, no puede
-    # importar el codigo que juzga--, y por eso mutaciones.py los toca.
-    r_px = np.clip(np.sqrt(col["ha"] * 10000.0 / math.pi) / mpp, 1.2, 120.0)
+    # Los MISMOS topes que CapaPuntos, aplicados sobre el radio PUBLICADO. El
+    # suelo y el techo se copian aqui a proposito --es un oraculo y no puede
+    # importar el codigo que juzga--; el radio, en cambio, se lee, porque
+    # reproducir el recorte por vecino seria reproducir un KD-tree.
+    r_px = np.clip(col["radio"] / mpp, 1.2, 120.0)
     idx = np.nonzero(dist_px <= r_px + tol_px)[0]
-    return idx, col["lat"], col["lon"], col["ha"]
+    return idx, col["lat"], col["lon"], col["radio"]
 
 
 def regiones_ofrecidas(cdp):
@@ -375,18 +391,9 @@ def punto_aislado(z_lejos=11, z_cerca=13, tope=6000):
     se van a medir: por debajo del suelo, o por encima del techo, la razón entre
     los dos zooms deja de ser 4 y la medición ya no diría nada del radio.
     """
-    man = json.load(open(os.path.join(DIST, "datos", "manifest.json"), encoding="utf-8"))
-    capa = man["capas"]["cbn_puntos"]
-    n = capa["filas"]
-    col = {}
-    with open(os.path.join(DIST, "datos", capa["archivo"]), "rb") as fh:
-        for nombre in ("lat", "lon", "ha"):
-            c = capa["campos"][nombre]
-            fh.seek(c["offset"])
-            col[nombre] = np.frombuffer(fh.read(ANCHO_BIN[c["tipo"]] * n),
-                                        dtype=NP_BIN[c["tipo"]]).astype(np.float64)
+    n, col = columnas("lat", "lon", "ha", "radio")
     lat, lon, hax = col["lat"], col["lon"], col["ha"]
-    r_m = np.sqrt(hax * 10000.0 / math.pi)
+    r_m = col["radio"]
     PISO_VECINO_M = 100.0
     r_ef = np.maximum(r_m, PISO_VECINO_M)
 
@@ -415,7 +422,7 @@ def punto_aislado(z_lejos=11, z_cerca=13, tope=6000):
         choca = ((dx < r_ef[cerca] + holgura_x)
                  & (dy < r_m[i] + r_ef[cerca] + holgura_y))
         if not choca.any():
-            return float(lat[i]), float(lon[i]), float(hax[i])
+            return float(lat[i]), float(lon[i]), float(hax[i]), float(r_m[i])
     return None
 
 
@@ -436,19 +443,10 @@ def punto_con_hueco(z, tope=400):
 
     Devuelve (lat, lon, ha, rumbo) con el rumbo ya comprobado contra el oráculo.
     """
-    man = json.load(open(os.path.join(DIST, "datos", "manifest.json"), encoding="utf-8"))
-    capa = man["capas"]["cbn_puntos"]
-    n = capa["filas"]
-    col = {}
-    with open(os.path.join(DIST, "datos", capa["archivo"]), "rb") as fh:
-        for nombre in ("lat", "lon", "ha"):
-            c = capa["campos"][nombre]
-            fh.seek(c["offset"])
-            col[nombre] = np.frombuffer(fh.read(ANCHO_BIN[c["tipo"]] * n),
-                                        dtype=NP_BIN[c["tipo"]]).astype(np.float64)
+    n, col = columnas("lat", "lon", "ha", "radio")
     lat, lon, hax = col["lat"], col["lon"], col["ha"]
     mpp = 156543.03392 * np.cos(np.radians(lat)) / (2 ** z)
-    r_px = np.clip(np.sqrt(hax * 10000.0 / math.pi) / mpp, 1.2, 120.0)
+    r_px = np.clip(col["radio"] / mpp, 1.2, 120.0)
 
     # Rejilla de 0,01° (~1,1 km): un punto cuya celda y las ocho de alrededor no
     # tengan a nadie más está a más de un kilómetro del vecino, y a z10 eso son
@@ -477,7 +475,8 @@ def punto_con_hueco(z, tope=400):
             lat_c = lat[i] - sy * desvio * mpp[i] / 110540.0
             lon_c = lon[i] + sx * desvio * mpp[i] / (math.cos(math.radians(lat[i])) * 111320.0)
             if len(puntos_bajo_el_clic(lat_c, lon_c, z, tol_px=0)[0]) == 0:
-                return float(lat[i]), float(lon[i]), float(hax[i]), (nombre, sx, sy)
+                return (float(lat[i]), float(lon[i]), float(hax[i]),
+                        float(col["radio"][i]), (nombre, sx, sy))
         vistos += 1
         if vistos >= tope:
             break
@@ -689,11 +688,17 @@ def main():
         grupos = cdp.evaluar("document.querySelectorAll('.grupo-filtro').length")
         prueba(f"V-17 los {CONTROLES} controles se dibujan", grupos == CONTROLES, f"{grupos}")
 
-        # Cada grupo declara cuántas clases tiene. Si alguno sale con cero, su
-        # dimensión no llegó del manifest y el filtro sería una lista vacía.
+        # Cada dimensión declara cuántas clases tiene. Si alguna sale con cero, no
+        # llegó del manifest y el filtro sería una lista vacía.
+        #
+        # Se miran SÓLO los botones que traen cuenta: Información, Descargar y
+        # Compartir no son dimensiones y no tienen clases que contar. Antes esto
+        # los leía como dimensiones a cero y se ponía rojo — el fallo era del
+        # selector, no del panel.
         vacios = cdp.evaluar("""
             [...document.querySelectorAll('.grupo-filtro')]
-              .filter(g => (parseInt(g.querySelector('.gf-total')?.textContent) || 0) === 0)
+              .filter(g => g.querySelector('.gf-total'))
+              .filter(g => (parseInt(g.querySelector('.gf-total').textContent) || 0) === 0)
               .map(g => g.querySelector('.gf-titulo')?.textContent).join(', ') || 'ninguno'
         """)
         prueba("V-17b ningún grupo llega vacío", vacios == "ninguno", str(vacios))
@@ -896,9 +901,8 @@ def main():
             fallos.append("V-22b no encontró un punto con hueco alrededor")
             print("    V-22b SIN MEDIR: ningún disco pequeño tiene los alrededores libres")
         else:
-            lat_h, lon_h, ha_h, (nombre_r, sx, sy) = hueco
-            r_dib = max(1.2, min(120.0, ((ha_h * 10000 / math.pi) ** 0.5)
-                                / metros_por_pixel(lat_h, Z_TOLERANCIA)))
+            lat_h, lon_h, ha_h, r_pub_h, (nombre_r, sx, sy) = hueco
+            r_dib = max(1.2, min(120.0, r_pub_h / metros_por_pixel(lat_h, Z_TOLERANCIA)))
             desvio = r_dib + 2.5
             cdp.enviar("Page.navigate", url="about:blank")
             esperar(cdp, "document.readyState === 'complete'", segundos=30)
@@ -917,8 +921,9 @@ def main():
             suya = (coord_t is not None
                     and abs(coord_t[0] - lat_h) < 1e-5 and abs(coord_t[1] - lon_h) < 1e-5)
             prueba("V-22b la tolerancia rescata un clic FUERA del disco", suya,
-                   f"{ha_h:.1f} ha a z{Z_TOLERANCIA} · {desvio:.1f} px al {nombre_r} "
-                   f"de un disco de r={r_dib:.1f} px · devolvió {coord_t}")
+                   f"{ha_h:.1f} ha (radio publicado {r_pub_h:.0f} m) a z{Z_TOLERANCIA} · "
+                   f"{desvio:.1f} px al {nombre_r} de un disco de r={r_dib:.1f} px · "
+                   f"devolvió {coord_t}")
             if cdp.evaluar(FICHA_ABIERTA):
                 cdp.evaluar("document.querySelector('dialog.ficha[open]').close()")
                 esperar(cdp, f"!({FICHA_ABIERTA})", segundos=10)
@@ -1406,16 +1411,25 @@ def main():
 
         capturar(cdp, os.path.join(AQUI, "captura-botonera.png"))
 
-        # V-50: el orden del panel, que no es decorativo. Primero se acota el
-        # ámbito, luego se filtra y se elige el fondo, después se saca algo fuera
-        # —Compartir y Descargar— y al final la Simbología, que no es un control
-        # sino la glosa de cómo leer el mapa: se lee una vez.
+        # V-50: EL PANEL NO TIENE PROSA. Tenía seis párrafos de nota, una sección
+        # de simbología y un pie con cuatro atribuciones compitiendo por el sitio
+        # con los diecisiete controles que son su razón de estar. Todo eso vive
+        # ahora en el modal de Información — pero «vive en otro sitio» y «se
+        # borró» se parecen mucho desde fuera, así que V-65 comprueba que sigue
+        # ahí. Esta sólo comprueba que no volvió.
         secciones = json.loads(cdp.evaluar(
             "JSON.stringify([...document.querySelectorAll('.panel > section h2')]"
             ".map(h => h.textContent.trim()))"))
-        prueba("V-50 el panel cierra con Compartir, Descargar y Simbología",
-               secciones[-3:] == ["Compartir", "Descargar", "Simbología"],
-               " · ".join(secciones))
+        prosa = cdp.evaluar(
+            "document.querySelectorAll("
+            "'.panel > section > p, .panel > footer, .panel > section > .nota'"
+            ").length")
+        acciones = json.loads(cdp.evaluar(
+            "JSON.stringify([...document.querySelectorAll('.filtro-botonera.tres .gf-titulo')]"
+            ".map(e => e.textContent))"))
+        prueba("V-50 el panel no tiene prosa y cierra con los tres botones",
+               prosa == 0 and acciones == ["Información", "Descargar", "Compartir"],
+               f"{prosa} párrafos sueltos · {' · '.join(secciones)} · {' | '.join(acciones)}")
 
         # V-58: EL MODAL MIDE LO MISMO QUE EL PANEL. Es lo único que distingue
         # «se abre encima» de «el panel se ensancha»: con el panel a 320 y el
@@ -1535,8 +1549,7 @@ def main():
             fallos.append("V-54 no encontró un punto aislado que medir")
             print("    V-54 SIN MEDIR: no hay ningún disco medible sin vecino pegado")
         else:
-            lat_a, lon_a, ha_a = aislado
-            r_m = (ha_a * 10000 / math.pi) ** 0.5
+            lat_a, lon_a, ha_a, r_m = aislado
             medido = {}
             for z in (11, 13):
                 cdp.enviar("Page.navigate", url="about:blank")
@@ -1566,7 +1579,8 @@ def main():
                    0.6 * previsto[11] < medido[11] < 1.6 * previsto[11] + 3
                    and 0.6 * previsto[13] < medido[13] < 1.6 * previsto[13] + 3
                    and 3.0 < razon < 5.2,
-                   f"{ha_a:.0f} ha · z11 {medido[11]} px (previsto {previsto[11]:.0f}) · "
+                   f"{ha_a:.0f} ha, radio publicado {r_m:.0f} m · "
+                   f"z11 {medido[11]} px (previsto {previsto[11]:.0f}) · "
                    f"z13 {medido[13]} px (previsto {previsto[13]:.0f}) · razón {razon:.1f}")
 
         # V-55: EL COSTE DEL PINTADO, que no tenía techo. Todas las mediciones de
@@ -1609,8 +1623,11 @@ def main():
         esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
         esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
         titular_panel = cdp.evaluar("document.querySelector('.cifra-num b').textContent")
+        # El botón del reporte se mudó DENTRO del modal de Descargar cuando el
+        # panel se quedó sin prosa: hay que abrirlo antes.
+        abrir_grupo(cdp, "Descargar")
         cdp.evaluar(
-            "[...document.querySelectorAll('.panel button')]"
+            "[...document.querySelectorAll('.modal-filtro button')]"
             ".find(b => /Reporte del/.test(b.textContent))?.click()")
         abrio = esperar(cdp, "!!document.querySelector('.reporte-doc')", segundos=20)
         texto = str(cdp.evaluar("document.querySelector('.reporte-doc')?.innerText") or "")
@@ -1655,6 +1672,64 @@ def main():
         prueba("V-57b al imprimir sale el documento y nada más",
                fuera["doc"] and not fuera["mapa"] and not fuera["panel"] and not fuera["barra"],
                json.dumps(fuera))
+
+        # --- los tres botones que se llevaron la prosa ------------------------
+        # V-50 comprueba que el panel se quedó sin texto. Estas tres comprueban
+        # LO OTRO, que es lo que de verdad importa: que el texto no se perdió por
+        # el camino. «Se mudó» y «se borró» se ven igual desde el panel.
+        print("")
+        print("=== información, descargas y compartir")
+
+        # V-65: Información trae la prosa del panel Y la Metodología entera, que
+        # era un diálogo aparte. Se exige que estén las dos cosas: sólo la mitad
+        # sería un modal que parece completo.
+        abrir_grupo(cdp, "Información")
+        texto_info = str(cdp.evaluar(
+            "document.querySelector('.modal-filtro .mf-cuerpo')?.innerText") or "")
+        h3_info = json.loads(cdp.evaluar(
+            "JSON.stringify([...document.querySelectorAll('.modal-filtro .mf-cuerpo h3')]"
+            ".map(e => e.textContent))"))
+        met_dentro = cdp.evaluar(
+            "!!document.querySelector('.modal-filtro .met-cuerpo')")
+        cerrar_grupo(cdp)
+        prueba("V-65 Información trae la prosa del panel y la Metodología",
+               len(texto_info) > 6000 and met_dentro
+               and "Qué cuenta el Catastro como bosque" in h3_info
+               and any("tamaño de los puntos" in x for x in h3_info),
+               f"{len(texto_info)} caracteres · {len(h3_info)} apartados · "
+               f"metodología dentro: {met_dentro}")
+
+        # V-66: Compartir enseña el enlace DE ESTA VISTA. Que lo enseñe y no sólo
+        # lo copie es deliberado: el enlace lleva el ámbito y los filtros, así que
+        # quien lo abra recibe cifras recortadas, y un botón que copia en silencio
+        # no da ocasión de leer esa advertencia.
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=f"{url}?reg=10")
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+        abrir_grupo(cdp, "Compartir")
+        enlace = str(cdp.evaluar(
+            "document.querySelector('.modal-filtro input[readonly]')?.value") or "")
+        aviso_c = str(cdp.evaluar(
+            "document.querySelector('.modal-filtro .nota')?.textContent") or "")
+        cerrar_grupo(cdp)
+        prueba("V-66 Compartir enseña el enlace del ámbito activo y avisa",
+               "reg=10" in enlace and "no son las nacionales" in aviso_c,
+               f"{enlace[-60:]!r}")
+
+        # V-67: Descargar lleva dentro lo que estaba suelto en el panel. Se mira
+        # que estén los TRES botones: el reporte, las cifras y los polígonos.
+        abrir_grupo(cdp, "Descargar")
+        botones_d = json.loads(cdp.evaluar(
+            "JSON.stringify([...document.querySelectorAll('.modal-filtro button')]"
+            ".map(b => b.textContent.trim()))"))
+        cerrar_grupo(cdp)
+        prueba("V-67 Descargar trae el reporte y los dos formatos",
+               any("Reporte" in b for b in botones_d)
+               and any("Cifras" in b for b in botones_d)
+               and "CSV" in botones_d and "GeoJSON" in botones_d,
+               " | ".join(botones_d))
 
         # --- el ámbito territorial contra el manifest -------------------------
         print("")

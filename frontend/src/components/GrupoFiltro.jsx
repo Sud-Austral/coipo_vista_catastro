@@ -86,7 +86,11 @@ export function BotonControl({ col, corto, valor, total, activas = 0, chips, tit
         </span>
       )}
       {activas > 0 && <span className="gf-activas">{activas}</span>}
-      <span className="gf-total">{total}</span>
+      {/* SÓLO SI HAY CUENTA QUE DAR. Información, Descargar y Compartir no son
+          dimensiones: no tienen clases que contar, y un `.gf-total` vacío los
+          hacía parecer dimensiones con cero opciones — la verificación los leyó
+          así y se puso roja, con razón. */}
+      {total != null && <span className="gf-total">{total}</span>}
       {/* El valor va EL ÚLTIMO en el DOM y salta a su propia línea: en la
           primera no cabe «Los Lagos › Chiloé › Ancud» junto al título sin
           empujar la cuenta fuera del botón. */}

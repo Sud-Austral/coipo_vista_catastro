@@ -22,12 +22,12 @@ export async function cargarPuntos(señal) {
   // arrastra consigo la versión equivocada de todo lo demás.
   const man = await pedir(`${DATA}/manifest.json`, señal, { cache: 'no-cache' })
     .then((r) => r.json())
-  if (man.esquema !== 4) {
+  if (man.esquema !== 5) {
     // Ruidoso a proposito: un manifest de otra version abriria vistas tipadas
     // perfectamente validas sobre offsets equivocados, y el mapa saldria
     // PLAUSIBLE, con los puntos desplazados. Es el peor fallo posible.
     throw new Error(
-      `manifest.json declara esquema ${man.esquema} y este visor lee el 4. ` +
+      `manifest.json declara esquema ${man.esquema} y este visor lee el 5. ` +
         'Vuelve a generar los datos con `python ETL/build_bin.py`.',
     )
   }

@@ -1,12 +1,12 @@
 {
-  "esquema": 4,
+  "esquema": 5,
   "fuente": "Catastro de Usos de la Tierra y Recursos Vegetacionales, CONAF",
   "capas": {
     "cbn_puntos": {
       "archivo": "cbn_puntos.bin",
       "filas": 1827933,
-      "bytes": 45698325,
-      "sha256": "72d82bc91ae56d40afebb1d9fda55939ec7d0583766ad38d5cf852049e5e8ea7",
+      "bytes": 49354191,
+      "sha256": "f17f8dec271e39a537ce9d36169d592c5a3b07dd32dcd437f00d9fc78825a6f5",
       "campos": {
         "lon": {
           "tipo": "f32",
@@ -33,49 +33,54 @@
           "offset": 25591062,
           "centinela": 65535
         },
+        "radio": {
+          "tipo": "u16",
+          "offset": 29246928,
+          "centinela": null
+        },
         "uso": {
           "tipo": "u8",
-          "offset": 29246928,
+          "offset": 32902794,
           "centinela": null
         },
         "subuso": {
           "tipo": "u8",
-          "offset": 31074861,
+          "offset": 34730727,
           "centinela": 255
         },
         "estruc": {
           "tipo": "u8",
-          "offset": 32902794,
+          "offset": 36558660,
           "centinela": 255
         },
         "tifo": {
           "tipo": "u8",
-          "offset": 34730727,
+          "offset": 38386593,
           "centinela": 255
         },
         "snaspe": {
           "tipo": "u8",
-          "offset": 36558660,
+          "offset": 40214526,
           "centinela": 255
         },
         "cober": {
           "tipo": "u8",
-          "offset": 38386593,
+          "offset": 42042459,
           "centinela": 255
         },
         "altura": {
           "tipo": "u8",
-          "offset": 40214526,
+          "offset": 43870392,
           "centinela": 255
         },
         "stifo": {
           "tipo": "u8",
-          "offset": 42042459,
+          "offset": 45698325,
           "centinela": 255
         },
         "region": {
           "tipo": "u8",
-          "offset": 43870392,
+          "offset": 47526258,
           "centinela": 255
         }
       },
@@ -90,6 +95,11 @@
         "especie": 284279,
         "stifo": 0,
         "region": 0
+      },
+      "radio": {
+        "mediana_m": 67,
+        "max_m": 13130,
+        "recortados": 1019786
       },
       "sin_dato_derivado": {
         "grupo": 284279,

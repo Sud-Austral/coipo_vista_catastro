@@ -26,7 +26,7 @@ RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATOS = os.path.join(RAIZ, "frontend", "public", "datos")
 
 FILAS_CBN = 1_827_933
-BYTES_POR_FILA = 25          # 3 f32 + 2 u16 + 9 u8
+BYTES_POR_FILA = 27          # 3 f32 + 3 u16 + 9 u8
 
 # Las cifras oficiales NO se escriben aqui: se leen de oficiales.json, que
 # `ETL/cifras_oficiales.py` parsea de la planilla que CONAF publico dentro de la
@@ -75,11 +75,11 @@ def comprobar(man, crudo, tam, hashes):
     fallos = []
     cap = man["capas"]["cbn_puntos"]
 
-    # 4 desde que la region va en columna propia. El numero vive tambien en
-    # build_bin.py y en binario.js: los tres tienen que subir a la vez, y esta
-    # asercion es la que caza que uno se quede atras.
-    if man.get("esquema") != 4:
-        fallos.append(f"D1 esquema {man.get('esquema')} != 4")
+    # 5 desde que el radio del disco viaja en columna propia. El numero vive
+    # tambien en build_bin.py y en binario.js: los tres tienen que subir a la
+    # vez, y esta asercion es la que caza que uno se quede atras.
+    if man.get("esquema") != 5:
+        fallos.append(f"D1 esquema {man.get('esquema')} != 5")
 
     # Ninguna marca de tiempo. Es lo que permite commitear datos: si el manifest
     # llevara fecha, cada regeneracion ensuciaria git aunque los datos fueran
@@ -571,6 +571,70 @@ NEGATIVAS = [
 ]
 
 
+def discos_que_se_solapan(man):
+    """D26 · NINGUN PAR DE DISCOS SE SOLAPA. Recalculado sobre el .bin publicado.
+
+    Es la asercion que convierte «que no se superpongan» en algo comprobable, y
+    la unica forma honesta de comprobarlo: el radio se recorta en el ETL a la
+    mitad de la distancia al vecino mas cercano, asi que si la regla se aplico
+    bien, para todo par vale r_i + r_j <= d_ij. Se rehace desde fuera, sobre los
+    bytes que recibe la gente, y no se fia del resumen que publica el manifest.
+
+    NUMPY Y SCIPY SON OPCIONALES AQUI, y su ausencia NO se cuenta como que pasa.
+    El resto de este archivo es solo biblioteca estandar a proposito --corre en
+    cualquier sitio y en el CI sin instalar nada-- y una consulta espacial sobre
+    1,8 M de puntos en Python puro costaria mas de lo que vale. Si faltan, esto
+    lo DICE y se suma a los fallos: un gate que se salta en silencio no es un
+    gate. El workflow las instala.
+    """
+    try:
+        import numpy as np
+        from scipy.spatial import cKDTree
+    except ImportError:
+        return ["D26 SIN COMPROBAR: falta numpy o scipy. "
+                "`pip install numpy scipy` — el solape de los discos se queda sin verificar"]
+
+    cap = man["capas"]["cbn_puntos"]
+    n = cap["filas"]
+    anchos = {"f32": 4, "u16": 2, "u8": 1}
+    tipos = {"f32": "<f4", "u16": "<u2", "u8": "u1"}
+    col = {}
+    with open(os.path.join(DATOS, cap["archivo"]), "rb") as fh:
+        for nombre in ("lat", "lon", "radio"):
+            c = cap["campos"].get(nombre)
+            if c is None:
+                return [f"D26 el manifest no declara la columna {nombre}"]
+            fh.seek(c["offset"])
+            col[nombre] = np.frombuffer(fh.read(anchos[c["tipo"]] * n),
+                                        dtype=tipos[c["tipo"]]).astype(np.float64)
+
+    x = col["lon"] * np.cos(np.radians(col["lat"])) * 111320.0
+    y = col["lat"] * 110540.0
+    dist, idx = cKDTree(np.column_stack([x, y])).query(
+        np.column_stack([x, y]), k=2, workers=-1)
+    r = col["radio"]
+    # TOLERANCIA DE 1 m, y no es holgura gratuita: el radio se publica en metros
+    # enteros y la proyeccion local mete unos centimetros. Sin ella, la asercion
+    # naceria roja sobre datos correctos, que es como se acaba desactivando una.
+    invasion = r + r[idx[:, 1]] - dist[:, 1]
+    malos = int((invasion > 1.0).sum())
+    fallos = []
+    if malos:
+        peor = float(invasion.max())
+        fallos.append(f"D26 {malos:,} discos invaden a su vecino "
+                      f"(el peor, {peor:,.0f} m dentro)")
+
+    # D26b - EL RECORTE NO SE PUEDE COMER LOS DISCOS. Recortar a cero cumpliria
+    # D26 de forma perfecta y dejaria el mapa en blanco: una asercion que se
+    # satisface haciendo desaparecer el dato no protege nada. La mediana medida
+    # es 67 m.
+    mediana = float(np.percentile(r, 50))
+    if mediana < 50.0:
+        fallos.append(f"D26b el radio mediano cayo a {mediana:.0f} m (suelo 50): "
+                      "el recorte se esta comiendo los discos")
+    return fallos
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--negativas", action="store_true")
@@ -594,11 +658,21 @@ def main():
     print(f"  bosque nativo {bn['ha']:,.2f} ha · plantación {pl['ha']:,.2f} ha" + (
         f" ({pl['ha'] - oficial_pl:+.2f} contra la oficial)" if oficial_pl else ""))
     print(f"  filas sin dato: {cap['sin_dato']}")
+    r = cap.get("radio", {})
+    if r:
+        print(f"  radio de los discos: mediana {r.get('mediana_m')} m · "
+              f"recortados por el vecino {r.get('recortados', 0):,} "
+              f"({100 * r.get('recortados', 0) / cap['filas']:.0f} %)")
     for campo, vals in man["codigos_desconocidos"].items():
         if vals:
             print(f"  códigos de {campo} que la guía no nombra: {vals}")
 
     fallos = comprobar(man, crudo, tam, hashes)
+    # D26 va aparte de `comprobar` porque necesita los BYTES del .bin, no el
+    # manifest, y porque su control negativo no es una cirugia sobre el manifest
+    # sino la mutacion del ETL en mutaciones-visor.py: quitar el recorte y ver
+    # esto rojo.
+    fallos += discos_que_se_solapan(man)
     if fallos:
         print("\nFALLA:")
         for f in fallos:

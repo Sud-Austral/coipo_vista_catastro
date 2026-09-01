@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { AVISO_PUNTOS, BASEMAPS, COLOR_USO } from '../config'
-import { fmt } from '../formato'
+import { BASEMAPS, COLOR_USO } from '../config'
 import { ambitoTexto } from '../indicadores'
-import { flush } from '../urlState'
 import { FILTROS, NINGUNO, cuentaSeleccion } from '../filtros'
 import { BotonControl, BotonFiltro, ModalFiltro } from './GrupoFiltro'
 import { ModalMapaBase, ModalTerritorio } from './ControlesPanel'
+import { ModalCompartir, ModalDescargas, ModalInformacion } from './ModalesPanel'
 import { useTerritorio } from '../territorio'
 
 /**
@@ -28,9 +27,15 @@ const SIN_DATO = {
  * respondían a la misma pregunta: qué se está mirando. Ahora son once botones
  * iguales, y lo elegido se lee en el propio botón sin abrir nada.
  *
+ * Y NO TIENE UNA SOLA LÍNEA DE PROSA. Tenía seis párrafos de nota, una sección
+ * de simbología y un pie con cuatro atribuciones, todo compitiendo por el sitio
+ * con los diecisiete controles que son la razón de estar aquí. Nada se ha
+ * borrado: está entero en el modal de Información, junto con la Metodología, y
+ * se lee cuando se busca en vez de cada vez que se filtra.
+ *
  * Orden de las secciones, y no es casual: ÁMBITO primero. Es lo primero que
- * busca cualquiera que abre el visor —«¿y mi región?»—, y lo que se saca fuera
- * (compartir, descargar) va al fondo, que es cuando se hace.
+ * busca cualquiera que abre el visor —«¿y mi región?»—, y los tres botones que
+ * sacan algo fuera —información, descargas y enlace— van al fondo.
  *
  * NADA está hardcodeado: las regiones, provincias, comunas y clases salen del
  * manifest con sus cifras. Si el ETL cambia el vocabulario, esto cambia solo.
@@ -52,12 +57,15 @@ export default function PanelLateral({
   abierto,
   onCerrar,
   oscuro,
-  onMetodologia,
-  children,
+  // ELEMENTOS y no veinte props. Es lo que ya hacía la sección de descargas
+  // cuando llegaba como `children`: el panel sigue sin saber nada de exportar
+  // ni de la guía oficial de códigos, y App no reenvía `datos`, `filtro`,
+  // `resumen`, `oficiales` y `simef` por dos niveles de componente.
+  descargas,
+  metodologia,
 }) {
   const cabecera = useRef(null)
   const montado = useRef(false)
-  const [aviso, setAviso] = useState('')
   // El control cuyo modal está abierto, o null. UNO solo: montar los once
   // <dialog> a la vez sería montar once listas, y la de especies tiene 989
   // clases.
@@ -95,11 +103,6 @@ export default function PanelLateral({
     if (abierto) cabecera.current?.focus()
   }, [abierto])
 
-  useEffect(() => {
-    if (!aviso) return
-    const t = setTimeout(() => setAviso(''), 2000)
-    return () => clearTimeout(t)
-  }, [aviso])
 
   // Sólo para rotular el botón: las tres listas las arma el modal con el mismo
   // hook, así que el botón y el modal cuentan lo mismo por construcción.
@@ -126,27 +129,6 @@ export default function PanelLateral({
   const limpiarTodo = () => {
     onLimpiarFiltros()
     onLimpiarUsos()
-  }
-
-  const compartir = async () => {
-    // flush PRIMERO: la URL se escribe con 250 ms de retraso, así que sin esto
-    // pulsar el botón justo después de mover el mapa copia el encuadre ANTERIOR.
-    flush()
-    const url = window.location.href
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: document.title, url })
-        return
-      } catch {
-        /* cancelado: se sigue por el portapapeles */
-      }
-    }
-    try {
-      await navigator.clipboard.writeText(url)
-      setAviso('Enlace copiado')
-    } catch {
-      setAviso(url)
-    }
   }
 
   return (
@@ -188,23 +170,6 @@ export default function PanelLateral({
           Filtros
           {activas > 0 && <span className="cuenta-filtros">{activas}</span>}
         </h2>
-        <p className="nota">
-          Se cruzan entre sí y con el ámbito: el mapa y todas las cifras del panel de
-          indicadores muestran sólo lo que pasa todos los filtros a la vez.
-        </p>
-        {/* QUÉ MIDEN LAS CIFRAS DE ESTAS LISTAS, que ya no es lo mismo que el
-            mapa. Cada lista cuenta ignorando SU PROPIO filtro y aplicando los
-            demás, que es lo único que permite marcar una segunda clase de la
-            misma dimensión: contando con su propio filtro puesto, las hermanas
-            de la clase marcada valen cero por construcción. Decirlo aquí evita
-            que alguien reste dos cifras que no son del mismo conjunto. */}
-        {hayRecorte && (
-          <p className="nota">
-            Dentro de cada lista, la cifra es lo que quedaría <strong>al elegir esa clase</strong>,
-            cruzada con los demás filtros. Por eso pueden sumar más que el total del mapa.
-          </p>
-        )}
-
         {/* La botonera. Dos columnas: las nueve dimensiones caben en cinco
             filas, y el estado de todas se lee de una vez en vez de tener que
             desplegarlas una a una. Uso va la PRIMERA porque es la dimensión que
@@ -244,90 +209,22 @@ export default function PanelLateral({
             titulo={`Fondo actual: ${base}`}
           />
         </div>
-        {/* La advertencia del fondo ACTIVO se queda fuera del modal además de
-            dentro: es lo único que explica un mapa con huecos sin tener que
-            abrir nada. La nota sale de config.js y no de una comparación con el
-            literal del nombre: cada capa declara la suya junto a su URL, que es
-            donde vive el motivo. */}
-        {BASEMAPS[base]?.nota && <p className="nota">{BASEMAPS[base].nota}</p>}
       </section>
 
-      {/* COMPARTIR Y DESCARGAR VAN AL FONDO, y el orden del panel no es
-          decorativo: primero se acota el ámbito, luego se filtra y se configura
-          el fondo, y sólo al final se saca algo fuera. */}
+      {/* LOS TRES QUE SACAN ALGO FUERA, y lo único que queda debajo de los
+          controles. Antes eran dos secciones con su prosa y un pie de cuatro
+          párrafos; ahora son tres botones de la misma forma que los otros
+          diecisiete, y lo que decían está dentro. */}
       <section>
-        <h2>Compartir</h2>
-        <button type="button" className="compartir" onClick={compartir}>
-          Compartir esta vista
-        </button>
-        {/* No es opcional: un enlace con ?reg= entrega cifras REGIONALES, y sin
-            avisarlo se citan como nacionales. */}
-        <p className="nota">
-          El enlace guarda el ámbito, todos los filtros activos y el mapa base. Quien lo abra
-          verá exactamente estas cifras, que no son las nacionales.
-        </p>
-        <span className="aviso-copia" aria-live="polite">{aviso}</span>
+        <div className="filtro-botonera tres">
+          <BotonControl col="info" corto="Información" total={null}
+                        onAbrir={setAbierta} titulo="Cómo leer este visor, metodología y fuentes" />
+          <BotonControl col="descargas" corto="Descargar" total={null}
+                        onAbrir={setAbierta} titulo="CSV, GeoJSON y el reporte en PDF" />
+          <BotonControl col="compartir" corto="Compartir" total={null}
+                        onAbrir={setAbierta} titulo="El enlace de esta vista exacta" />
+        </div>
       </section>
-
-      {/* La sección de descargas llega como children y no como diez props más:
-          este panel sigue sin saber nada de exportar. */}
-      {children}
-
-      {/* SIMBOLOGÍA VA LA ÚLTIMA, y es deliberado: no es un control, es la
-          glosa de cómo leer el mapa. Estaba en segundo lugar —donde había
-          estado la leyenda, que sí era un control— y se comía la parte alta del
-          panel empujando los filtros hacia abajo. Se lee una vez y se vuelve a
-          ella cuando surge la duda, así que su sitio es el pie. */}
-      <section>
-        <h2>Simbología</h2>
-        {/* LA LEYENDA YA NO ESTÁ EN EL PANEL, y hay que decir qué se perdió con
-            ella: era uno de los mecanismos que hacían que el color no fuera la
-            única codificación. Los nombres y las superficies siguen, pero
-            dentro del modal de Uso, o sea a un clic. La tira de color del botón
-            no es un sustituto: ordena los tonos, no los nombra.
-            config.js documenta cuáles de aquellos mecanismos quedan vivos. */}
-        <p className="nota">
-          Los nueve colores del mapa se nombran en <strong>Uso</strong>, con su superficie al
-          lado. El color no es la única marca, pero sí la única que está a la vista sin abrirlo.
-        </p>
-        {/* AHORA SÍ ES PROPORCIONAL, y por eso este texto cambió. El radio pasó
-            de píxeles a METROS —el del círculo de igual área que el polígono—,
-            así que el disco ocupa el terreno que el dato declara y crece con el
-            zoom. Antes decía «no es proporcional», que era cierto y ahora sería
-            falso: el rigor de esta línea es lo que la hace útil, en los dos
-            sentidos. */}
-        <p className="nota">
-          El tamaño del punto es <strong>proporcional a la superficie</strong> del polígono: el
-          disco cubre la misma área que él, así que crece al acercarse. Se acota por abajo para
-          que no desaparezca a escala de país, y por arriba para que un polígono enorme no tape
-          a sus vecinos.
-        </p>
-      </section>
-
-
-      <footer>
-        <p className="procedencia">{AVISO_PUNTOS}</p>
-        {/* Las DOS unidades, porque el banner nombra a las dos: la Unidad de
-            Información y Análisis construye este visor para la Gerencia de
-            Fiscalización. Si la imagen del banner no carga, este pie es la única
-            atribución en texto que queda en la página. */}
-        <p className="procedencia">
-          Publica: CONAF · Gerencia de Fiscalización Forestal y Evaluación Ambiental
-        </p>
-        <p className="procedencia">Desarrolla: Unidad de Información y Análisis</p>
-        {/* El enlace a la metodología va en el pie Y en el aviso del mapa: es
-            donde alguien lo busca cuando ya tiene una cifra delante y quiere
-            saber qué significa. */}
-        <button type="button" className="enlace-met" onClick={onMetodologia}>
-          Metodología, definiciones y qué no dice este visor
-        </button>
-        {manifest && (
-          <p className="procedencia">
-            Datos <code>{manifest.capas.cbn_puntos.sha256.slice(0, 12)}</code> ·{' '}
-            {fmt.format(manifest.total.filas)} polígonos
-          </p>
-        )}
-      </footer>
 
       {/* UN SOLO modal a la vez, y montado sólo cuando hay uno abierto. Se monta
           con `key` para que cada control estrene su estado: sin ella, React
@@ -359,6 +256,19 @@ export default function PanelLateral({
       {abierta === 'base' && (
         <ModalMapaBase base={base} onBase={onBase} onCerrar={cerrarFiltro} />
       )}
+      {abierta === 'info' && (
+        <ModalInformacion
+          manifest={manifest}
+          base={base}
+          hayRecorte={hayRecorte}
+          metodologia={metodologia}
+          onCerrar={cerrarFiltro}
+        />
+      )}
+      {abierta === 'descargas' && (
+        <ModalDescargas descargas={descargas} onCerrar={cerrarFiltro} />
+      )}
+      {abierta === 'compartir' && <ModalCompartir onCerrar={cerrarFiltro} />}
     </aside>
   )
 }

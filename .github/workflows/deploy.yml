@@ -37,6 +37,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      # numpy y scipy SOLO para D26, que recalcula el solape de los discos sobre
+      # el .bin publicado con un KD-tree. El resto de verificar_datos.py es
+      # biblioteca estandar a proposito --corre en cualquier sitio sin instalar
+      # nada-- y si estas faltan, D26 lo DICE y cuenta como fallo, no se salta en
+      # silencio. Aqui se instalan para que el gate sea real en cada despliegue.
+      - run: pip install --quiet numpy scipy
       - name: Comprobar manifest, tamanos, sha256 y cifras
         # Las aserciones viven en ETL/verificar_datos.py y no aqui dentro: una
         # asercion que solo existe en el YAML no se puede correr en local ni,

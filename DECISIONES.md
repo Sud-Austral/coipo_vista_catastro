@@ -227,6 +227,74 @@ y el visor no distingue «el filtro no encuentra» de «no hay filtro»: un enla
 `?snaspe=Nuble` habría mostrado el país entero bajo el nombre de una reserva. El manifest publica
 un mapa `alias` (37 en SNASPE, 4 en subtipos) que `filtrosDesdeURL` consulta antes de rendirse.
 
+## I. Los discos de igual área tienen que solaparse, y por eso se recortan
+
+**El síntoma.** Al acercarse, los puntos se tapaban unos a otros. Medido sobre las 1.827.933
+filas: **el 56 % de los puntos invadía a su vecino más cercano**, y en Valdivia a z13 el **45 % de
+los centros quedaba debajo de un disco mayor**, con la suma de áreas en el **86 % de la pantalla**.
+Y como el `.bin` no está ordenado —correlación índice·superficie −0,009—, cuál disco quedaba
+encima era azar.
+
+**Encoger no servía.** Se midió qué escala uniforme haría falta:
+
+| escala | puntos que siguen solapando |
+|---|---:|
+| 1,0 | 1.019.786 (56 %) |
+| 0,7 | 718.110 (39 %) |
+| 0,5 | 456.162 (25 %) |
+| **0,1** | **28.718 (2 %)** |
+
+Ni al décimo. No era calibración: los polígonos **teselan** el territorio, y círculos de la misma
+área que celdas que teselan tienen que solaparse. Cualquier factor uniforme era un parche.
+
+**La regla que sí lo resuelve, y es demostrable:**
+
+```
+r = min( √(ha · 10.000 / π) , distancia al vecino más cercano / 2 )
+```
+
+Si `r_i ≤ d_ij/2` y `r_j ≤ d_ij/2` para todo par, entonces `r_i + r_j ≤ d_ij`. Cero solape, no
+estimado. Se calcula en el ETL con `cKDTree` —**0,9 s** para 1,83 M de puntos— y viaja en una
+columna `u16` de metros: el máximo recortado es 13.131 m, así que cabe. El `.bin` pasa de 45,7 a
+**49,4 MB** (+8 %) y el esquema de 4 a 5.
+
+**Efecto medido, Valdivia a z13:** centros tapados **45 % → 0 %**, superficie pintada
+**86 % → 16 %**.
+
+**Lo que cuesta.** Para el **56 %** de los puntos el disco ya no cubre el área del polígono sino el
+sitio disponible; la mediana de los recortados baja al 54 % de su radio, o sea al 29 % de su área.
+El tamaño deja de leerse como superficie en zonas densas, y los tres textos que prometían «la misma
+área» —panel, metodología y el Anexo C del reporte impreso— lo dicen ahora.
+
+**Y el límite que no se puede saltar.** Por debajo de z11 la separación mediana entre vecinos
+(185 m) cae bajo los 2,4 px que necesitan dos discos en el suelo de `radiusMinPixels`. A escala de
+país hay 1,8 M de puntos sobre unos 700.000 píxeles: no es una decisión de diseño, es una división.
+La garantía se enuncia como lo que es —**sin solape a partir de z11**— y no como una promesa
+general.
+
+**Lo verifica D26**, que rehace el KD-tree sobre el `.bin` publicado y exige `r_i + r_j ≤ d_ij` con
+1 m de tolerancia por el redondeo. No es vacía: con la regla anterior reporta **1.112.479 discos
+invadiendo, el peor 55.969 m dentro**. Y **D26b** exige que el radio mediano no baje de 50 m
+(medido: 67), porque recortar a cero cumpliría D26 de forma perfecta dejando el mapa en blanco.
+
+## J. El panel se quedó sin una sola línea de prosa
+
+Tenía seis párrafos de nota, una sección de simbología y un pie con cuatro atribuciones,
+compitiendo por el sitio con los diecisiete controles que son su razón de estar. Todo eso pasó a
+tres botones —**Información, Descargar y Compartir**— de la misma forma que los demás, usando
+`BotonControl` y `CajaModal` sin piezas nuevas.
+
+**Información absorbió también la Metodología**, que era un `<dialog>` aparte: eran dos superficies
+de información y había que saber cuál abrir para cada duda.
+
+**El efecto que se acepta a sabiendas:** con el pie dentro de un modal, si la imagen del banner no
+carga la página se queda **sin atribución institucional visible**, y el hash de los datos deja de
+estar a la vista. Queda anotado en el componente para que no se lea como descuido.
+
+`descargas` y `metodologia` llegan al panel como **elementos**, igual que antes llegaba la sección
+de descargas como `children`: el panel sigue sin saber nada de exportar ni de la guía de códigos, y
+App no reenvía `datos`, `filtro`, `resumen`, `oficiales` y `simef` por dos niveles.
+
 ## Fallos propios cometidos al establecer todo esto
 
 Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse.
@@ -247,3 +315,9 @@ Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse
    `verificar_datos.py`. D13 declara que las claves de `sin_dato` son exactamente las columnas
    del `.bin` con centinela, y se puso roja con razón. Lo cazó el control positivo del mutador,
    no yo. Van en `sin_dato_derivado`.
+5. **Al limpiar el panel dejé tres botones sin cuenta con un `.gf-total` vacío**, y V-17b los leyó
+   como dimensiones con cero clases. El fallo era del componente, no de la aserción: Información,
+   Descargar y Compartir no tienen clases que contar y ahora no dibujan ese hueco.
+6. **Borré una sonda del mutador con un corte por índices y me llevé cinco por delante.** El
+   archivo dejó de importar con `NameError`. Un `s[:a] + s[b:]` sobre un archivo grande no es una
+   edición, es una apuesta.

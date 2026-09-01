@@ -145,10 +145,12 @@ def sonda_botones(cdp, url):
     sel = cdp.evaluar("document.querySelectorAll('.panel select').length")
     tit = json.loads(cdp.evaluar(
         "JSON.stringify([...document.querySelectorAll('.gf-titulo')].map(e => e.textContent))"))
-    # 17 desde que entraron las seis dimensiones derivadas de la especie. El
+    # 20: 17 controles mas Informacion, Descargar y Compartir. El
     # numero se actualiza a mano, igual que CONTROLES en verificar.py: es la
     # cuenta que caza que un control desaparezca sin que nadie lo note.
-    pasa = n == 17 and sel == 0 and {"Territorio", "Uso", "Imagen de fondo"} <= set(tit)
+    pasa = (n == 20 and sel == 0
+            and {"Territorio", "Uso", "Imagen de fondo",
+                 "Información", "Descargar", "Compartir"} <= set(tit))
     return pasa, f"{n} botones · {sel} <select>"
 
 
@@ -229,8 +231,9 @@ def sonda_radio(cdp, url):
     aislado = V.punto_aislado()
     if not aislado:
         return False, "sin punto aislado"
-    lat, lon, hah = aislado
-    r_m = (hah * 10000 / math.pi) ** 0.5
+    # El radio PUBLICADO, no el de igual área: desde que se recorta por el vecino
+    # más cercano, la fórmula ya no describe lo que se dibuja.
+    lat, lon, hah, r_m = aislado
     medido = {}
     for z in (11, 13):
         ir(cdp, f"{url}?lat={lat:.6f}&lon={lon:.6f}&z={z}")
@@ -295,8 +298,8 @@ def sonda_tolerancia(cdp, url):
     hueco = V.punto_con_hueco(10)
     if not hueco:
         return False, "ningun punto con hueco alrededor"
-    lat, lon, hah, (nombre, sx, sy) = hueco
-    r_dib = max(1.2, min(120.0, ((hah * 10000 / math.pi) ** 0.5) / V.metros_por_pixel(lat, 10)))
+    lat, lon, hah, r_pub, (nombre, sx, sy) = hueco
+    r_dib = max(1.2, min(120.0, r_pub / V.metros_por_pixel(lat, 10)))
     desvio = r_dib + 2.5
     ir(cdp, f"{url}?lat={lat:.6f}&lon={lon:.6f}&z=10")
     cx, cy = V.centro_del_mapa(cdp)
@@ -319,14 +322,6 @@ def sonda_ancho(cdp, url):
     return abs(modal - panel) <= 1, f"panel {panel:.0f} px · modal {modal:.0f} px"
 
 
-def sonda_orden(cdp, url):
-    ir(cdp, url)
-    sec = json.loads(cdp.evaluar(
-        "JSON.stringify([...document.querySelectorAll('.panel > section h2')]"
-        ".map(h => h.textContent.trim()))"))
-    return sec[-3:] == ["Compartir", "Descargar", "Simbología"], " · ".join(sec)
-
-
 def sonda_datos(cdp, url):
     """Corre `ETL/verificar_datos.py` y exige que pase.
 
@@ -345,8 +340,8 @@ def sonda_datos(cdp, url):
          mal.
 
     Quien lo caza es D22 en el verificador de datos, que no compara el visor con
-    el manifest sino el manifest CONSIGO MISMO: toda region tiene que tener al
-    menos una comuna. Ese es el emparejamiento correcto.
+    el manifest sino el manifest CONSIGO MISMO. Lo mismo vale para D26: el
+    solape de los discos se comprueba sobre el .bin publicado, no en pantalla.
     """
     r = subprocess.run([sys.executable, os.path.join(RAIZ, "ETL", "verificar_datos.py")],
                        cwd=RAIZ, capture_output=True, text=True)
@@ -394,6 +389,7 @@ def sonda_ambito_vacio(cdp, url):
 
 def sonda_homologacion(cdp, url):
     ir(cdp, url)
+
     def plano(x):
         x = unicodedata.normalize("NFKD", str(x))
         return re.sub(r"[^a-z0-9]", "",
@@ -424,10 +420,55 @@ def sonda_alias(cdp, url):
     return leido == esperado, f"{viejo!r} -> {leido:,} (esperado {esperado:,})"
 
 
+def sonda_panel_limpio(cdp, url):
+    """El panel no tiene prosa y cierra con los tres botones."""
+    ir(cdp, url)
+    prosa = cdp.evaluar(
+        "document.querySelectorAll("
+        "'.panel > section > p, .panel > footer, .panel > section > .nota'"
+        ").length")
+    acciones = json.loads(cdp.evaluar(
+        "JSON.stringify([...document.querySelectorAll('.filtro-botonera.tres .gf-titulo')]"
+        ".map(e => e.textContent))"))
+    pasa = prosa == 0 and acciones == ["Información", "Descargar", "Compartir"]
+    return pasa, f"{prosa} parrafos sueltos · {' | '.join(acciones)}"
+
+
+def sonda_informacion(cdp, url):
+    """Informacion trae la prosa del panel Y la Metodologia entera."""
+    ir(cdp, url)
+    V.abrir_grupo(cdp, "Información")
+    texto = str(cdp.evaluar(
+        "document.querySelector('.modal-filtro .mf-cuerpo')?.innerText") or "")
+    h3 = json.loads(cdp.evaluar(
+        "JSON.stringify([...document.querySelectorAll('.modal-filtro .mf-cuerpo h3')]"
+        ".map(e => e.textContent))"))
+    met = cdp.evaluar("!!document.querySelector('.modal-filtro .met-cuerpo')")
+    V.cerrar_grupo(cdp)
+    pasa = (len(texto) > 6000 and met
+            and "Qué cuenta el Catastro como bosque" in h3
+            and any("tamaño de los puntos" in x for x in h3))
+    return pasa, f"{len(texto)} caracteres · {len(h3)} apartados · metodologia: {met}"
+
+
+def sonda_compartir(cdp, url):
+    ir(cdp, url + "?reg=10")
+    V.abrir_grupo(cdp, "Compartir")
+    enlace = str(cdp.evaluar(
+        "document.querySelector('.modal-filtro input[readonly]')?.value") or "")
+    aviso = str(cdp.evaluar(
+        "document.querySelector('.modal-filtro .nota')?.textContent") or "")
+    V.cerrar_grupo(cdp)
+    return ("reg=10" in enlace and "no son las nacionales" in aviso), enlace[-52:]
+
+
 def sonda_reporte(cdp, url):
     ir(cdp, url + "?reg=10")
     titular = cdp.evaluar("document.querySelector('.cifra-num b').textContent")
-    cdp.evaluar("[...document.querySelectorAll('.panel button')]"
+    # El reporte vive dentro del modal de Descargar desde que el panel se quedo
+    # sin prosa.
+    V.abrir_grupo(cdp, "Descargar")
+    cdp.evaluar("[...document.querySelectorAll('.modal-filtro button')]"
                 ".find(b => /Reporte del/.test(b.textContent))?.click()")
     abrio = V.esperar(cdp, "!!document.querySelector('.reporte-doc')", segundos=20)
     texto = str(cdp.evaluar("document.querySelector('.reporte-doc')?.innerText") or "")
@@ -444,7 +485,10 @@ def sonda_reporte(cdp, url):
 
 def sonda_impresion(cdp, url):
     ir(cdp, url + "?reg=10")
-    cdp.evaluar("[...document.querySelectorAll('.panel button')]"
+    # El reporte vive dentro del modal de Descargar desde que el panel se quedo
+    # sin prosa.
+    V.abrir_grupo(cdp, "Descargar")
+    cdp.evaluar("[...document.querySelectorAll('.modal-filtro button')]"
                 ".find(b => /Reporte del/.test(b.textContent))?.click()")
     V.esperar(cdp, "!!document.querySelector('.reporte-doc')", segundos=20)
     cdp.enviar("Emulation.setEmulatedMedia", media="print")
@@ -533,22 +577,46 @@ MUTACIONES = [
       (os.path.join(FRONTEND, "src", "config.js"),
        "export const ANCHO_PANEL = MAX_PANEL", "export const ANCHO_PANEL = 320")]),
 
-    # `hidden` NO valia como mutacion: el elemento sigue en el DOM y
-    # querySelectorAll lo encuentra igual, asi que la sonda no notaba nada. El
-    # fallo era del mutador, no de la asercion. Se reordena de verdad: Descargar
-    # sube por delante de Compartir, que es la regresion que V-50 vigila.
-    ("V-50 · Descargar se cuela por delante de Compartir",
-     sonda_orden,
-     [(os.path.join(JSX, "PanelLateral.jsx"), "      {children}\n", ""),
-      (os.path.join(JSX, "PanelLateral.jsx"),
-       "      <section>\n        <h2>Compartir</h2>",
-       "      {children}\n      <section>\n        <h2>Compartir</h2>")]),
-
     ("V-57c · una tabla del reporte se queda sin filas",
      sonda_reporte,
      [(os.path.join(JSX, "Reporte.jsx"),
        "filas={[...resumen.coberturas]",
        "filas={[] || [...resumen.coberturas]")]),
+
+    # --- el radio recortado y el panel limpio --------------------------------
+    ("D26 · el ETL deja de recortar el radio por el vecino",
+     sonda_datos,
+     [(os.path.join(RAIZ, "ETL", "build_bin.py"),
+       "    radio = np.floor(np.minimum(r_area, dist[:, 1] / 2.0)).astype(np.uint16)",
+       "    radio = np.floor(r_area).astype(np.uint16)")],
+     True),
+
+    # El reverso: recortar de mas cumple D26 de forma perfecta y deja el mapa en
+    # blanco. Sin D26b, «que no se superpongan» se satisface borrandolos.
+    ("D26b · el recorte se come los discos (al 5 % en vez de a la mitad)",
+     sonda_datos,
+     [(os.path.join(RAIZ, "ETL", "build_bin.py"),
+       "    radio = np.floor(np.minimum(r_area, dist[:, 1] / 2.0)).astype(np.uint16)",
+       "    radio = np.floor(np.minimum(r_area, dist[:, 1] / 2.0) * 0.05).astype(np.uint16)")],
+     True),
+
+    ("V-50 · vuelve una nota suelta al panel",
+     sonda_panel_limpio,
+     [(os.path.join(JSX, "PanelLateral.jsx"),
+       "      <section>\n        <h2>Mapa base</h2>",
+       "      <section>\n        <h2>Mapa base</h2>\n"
+       "        <p className=\"nota\">Una nota que no deberia estar aqui.</p>")]),
+
+    ("V-65 · Informacion se queda sin la Metodologia",
+     sonda_informacion,
+     [(os.path.join(JSX, "ModalesPanel.jsx"),
+       '      <div className="met-cuerpo">{metodologia}</div>', "")]),
+
+    ("V-66 · Compartir deja de ensenar el enlace",
+     sonda_compartir,
+     [(os.path.join(JSX, "ModalesPanel.jsx"),
+       '        <input type="text" readOnly value={url} onFocus={(e) => e.target.select()} />',
+       '        <input type="text" readOnly value="" />')]),
 
     # --- las cuatro del arreglo de datos -------------------------------------
     # La primera rompe el DATO y no el codigo: hay que regenerar el .bin, y por

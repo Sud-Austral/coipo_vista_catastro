@@ -693,6 +693,12 @@
    de 320 px se parte en tres lineas. Reusan `.filtro-botonera` para no tener
    dos formas de colocar botones identicos. */
 .filtro-botonera.una { grid-template-columns: 1fr; }
+/* TRES EN FILA para Información, Descargar y Compartir. No llevan cifra ni
+   valor, así que caben en un tercio de panel y se leen como lo que son: las tres
+   salidas, agrupadas, debajo de todo lo que filtra. */
+.filtro-botonera.tres { grid-template-columns: repeat(3, 1fr); }
+.filtro-botonera.tres .grupo-filtro { justify-content: center; }
+.filtro-botonera.tres .gf-titulo { flex: 0 1 auto; text-align: center; }
 
 .gf-titulo { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
 /* LO ELEGIDO, en el propio boton. Es la razon de ser de estos dos controles:
@@ -900,6 +906,27 @@
   letter-spacing: 0.04em; color: var(--tinta-3);
 }
 .bloque-escala:first-child .rotulo-escala { padding-top: 0; border-top: 0; }
+
+/* ---------- la metodología, ahora dentro del modal de Información ----------
+   Era un <dialog class="metodologia"> propio con su .met-caja. Al mudarse al
+   modal, la caja la pone `CajaModal` y aquí sólo queda la tipografía de sus
+   secciones, que son largas y necesitan más aire que una nota suelta. */
+.met-cuerpo { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--borde); }
+.met-cuerpo section { margin-top: 16px; }
+.met-cuerpo h3 {
+  margin: 0 0 6px; font-size: 13px; color: var(--tinta);
+  text-transform: none; letter-spacing: normal;
+}
+.met-cuerpo p, .met-cuerpo li { font-size: 12px; line-height: 1.5; color: var(--tinta-2); }
+.met-cuerpo ul { margin: 6px 0 0; padding-left: 18px; }
+.met-cuerpo table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+.met-cuerpo th, .met-cuerpo td {
+  padding: 3px 6px; border-bottom: 1px solid var(--borde); text-align: left;
+}
+.met-cuerpo .pendiente {
+  padding: 8px 10px; border-radius: 6px; background: var(--superficie-2);
+  border-left: 3px solid var(--acento);
+}
 
 /* ---------- el reporte imprimible ----------
    Capa fija dentro de `.app` y NO un <dialog>: la impresión tiene que poder

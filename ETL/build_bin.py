@@ -23,9 +23,26 @@ tipo. Romper ese orden lanza RangeError al construir la vista tipada.
     offset 22N   altura  Uint8Array[N]     indice en manifest.alturas, 255 = sin dato
     offset 23N   stifo   Uint8Array[N]     indice en manifest.subtipos_forestales (sin
                                            centinela: «no aplica» es una clase)
-    offset 24N   region  Uint8Array[N]     indice en manifest.regiones (sin centinela: reg_cod
+    offset 16N   radio   Uint16Array[N]    radio del disco EN METROS, ya recortado
+    offset 18N   uso …                        (las nueve columnas de 1 byte corridas 2N)
+    offset 26N   region  Uint8Array[N]     indice en manifest.regiones (sin centinela: reg_cod
                                            esta poblado en las 1.827.933 filas)
-                                           total = 25 bytes por fila
+                                           total = 27 bytes por fila
+
+EL RADIO SE PUBLICA, no se calcula en el cliente, y la razon es que YA NO ES
+FUNCION DE UNA SOLA FILA. Era `sqrt(ha*10000/pi)` --el circulo de igual area-- y
+eso se calculaba en el navegador sin costar nada. Pero circulos de la misma area
+que celdas que TESELAN el territorio tienen que solaparse: medido, el 56 % de los
+puntos invadia a su vecino, y en Valdivia a z13 el 45 % de los centros quedaba
+debajo de un disco mayor. Ninguna escala uniforme lo arregla -- ni al decimo:
+al 0,1 seguian solapando 28.718 puntos.
+
+Lo que si lo arregla, y de forma demostrable, es recortar cada radio a la MITAD
+de la distancia a su vecino mas cercano: si r_i <= d_ij/2 y r_j <= d_ij/2 para
+todo par, entonces r_i + r_j <= d_ij y no hay solape. Eso exige una consulta
+espacial sobre 1,8 M de puntos --cKDTree, 0,9 s medido-- que no tiene sentido
+repetir en cada navegador, y que ademas D26 comprueba desde fuera sobre lo
+publicado.
 
 LA REGION VA EN COLUMNA PROPIA, y no se deriva de la comuna. Se derivaba, y esa
 indireccion publico cifras NACIONALES bajo el rotulo «Los Rios» durante meses:
@@ -97,12 +114,14 @@ Uso:  python ETL/build_bin.py [--check]
 import argparse
 import hashlib
 import json
+import math
 import os
 import re
 import sys
 import unicodedata
 
 import duckdb
+from scipy.spatial import cKDTree
 
 import homologacion as H
 import numpy as np
@@ -728,6 +747,42 @@ def construir():
     if sin_reg:
         raise SystemExit(f"{sin_reg} filas sin region: reg_cod dejo de estar completo")
 
+    # --- el radio de cada disco, recortado para que NINGUNO invada a su vecino
+    #
+    # r = min( radio del circulo de igual area , distancia al vecino / 2 )
+    #
+    # En castellano: cada punto ocupa la superficie que declara, salvo donde no
+    # cabe; ahi se recorta hasta tocar a su vecino sin invadirlo.
+    #
+    # LO QUE ESTO CUESTA, y hay que decirlo porque cambia lo que el mapa
+    # significa: para el 56 % de los puntos el disco deja de cubrir el area del
+    # poligono y pasa a cubrir el sitio disponible. La mediana de los recortados
+    # baja al 54 % de su radio, o sea al 29 % de su area. La superficie exacta
+    # sigue en la ficha, en los modales y en las descargas.
+    #
+    # Y HAY UN LIMITE QUE NO SE PUEDE SALTAR: por debajo de z11 la separacion
+    # mediana entre vecinos (185 m) cae por debajo de los 2,4 px que necesitan
+    # dos discos en el suelo de radiusMinPixels. A escala de pais hay 1,8 M de
+    # puntos sobre 733.000 pixeles: no es una decision de diseno, es una
+    # division. La garantia es «sin solape a partir de z11», no una promesa
+    # general, y asi esta escrita en la interfaz.
+    #
+    # Proyeccion local a metros y no geodesica: a la escala del vecino mas
+    # cercano --mediana 185 m-- el error es de centimetros, y lo que se compara
+    # son metros enteros.
+    xm = lon.astype(np.float64) * np.cos(np.radians(lat.astype(np.float64))) * 111320.0
+    ym = lat.astype(np.float64) * 110540.0
+    dist, _ = cKDTree(np.column_stack([xm, ym])).query(
+        np.column_stack([xm, ym]), k=2, workers=-1)
+    r_area = np.sqrt(ha64 * 10000.0 / math.pi)
+    # `floor` y no `round`: al redondear a metro entero hacia arriba, dos discos
+    # que se tocaban exactamente pasarian a invadirse por medio metro y D26 se
+    # pondria roja sobre datos correctos.
+    radio = np.floor(np.minimum(r_area, dist[:, 1] / 2.0)).astype(np.uint16)
+    n_recortados = int((r_area > dist[:, 1] / 2.0).sum())
+    if radio.max() >= SIN_U16:
+        raise SystemExit(f"radio de {radio.max()} m: no cabe en u16 sin chocar con el centinela")
+
     # --- «No aplica» deja de decirse de dos formas -------------------------
     #
     # En tipo forestal y subtipo forestal, la fuente escribe la MISMA cosa de
@@ -785,11 +840,11 @@ def construir():
         # offsets del manifest y con el docstring de arriba, y no hay forma de
         # que un error aqui de un fallo visible: un .bin con dos columnas de un
         # byte intercambiadas pesa exactamente lo mismo y se pinta sin error.
-        for a in (lon, lat, ha32, c_com, c_esp,
+        for a in (lon, lat, ha32, c_com, c_esp, radio,
                   c_uso, c_sub, c_est, c_tif, c_sna, c_cob, c_alt, c_stf, c_reg):
             fh.write(a.tobytes())
 
-    esperado = n * (4 * 3 + 2 * 2 + 1 * 9)
+    esperado = n * (4 * 3 + 2 * 3 + 1 * 9)
     real = os.path.getsize(ruta_bin)
     if real != esperado:
         raise SystemExit(f"tamano inesperado: {real} != {esperado}")
@@ -833,10 +888,10 @@ def construir():
         derivadas[clave] = dominio(trad[idx_esp_o_cent], valores, lambda x: x)
 
     manifest = {
-        # 4 y no 3: la columna `region` cambia el largo de la fila, asi que un
-        # visor viejo leeria offsets validos con datos corridos. binario.js
+        # 5 y no 4: la columna `radio` vuelve a cambiar el largo de la fila, asi
+        # que un visor viejo leeria offsets validos con datos corridos. binario.js
         # rechaza cualquier esquema que no sea el suyo.
-        "esquema": 4,
+        "esquema": 5,
         "fuente": "Catastro de Usos de la Tierra y Recursos Vegetacionales, CONAF",
         # Sin marca de tiempo: es lo que permite commitear datos y que un
         # `git status` limpio signifique "nada cambio".
@@ -852,15 +907,19 @@ def construir():
                     "ha":      {"tipo": "f32", "offset": 8 * n,  "centinela": None},
                     "comuna":  {"tipo": "u16", "offset": 12 * n, "centinela": SIN_U16},
                     "especie": {"tipo": "u16", "offset": 14 * n, "centinela": SIN_U16},
-                    "uso":     {"tipo": "u8",  "offset": 16 * n, "centinela": None},
-                    "subuso":  {"tipo": "u8",  "offset": 17 * n, "centinela": SIN_U8},
-                    "estruc":  {"tipo": "u8",  "offset": 18 * n, "centinela": SIN_U8},
-                    "tifo":    {"tipo": "u8",  "offset": 19 * n, "centinela": SIN_U8},
-                    "snaspe":  {"tipo": "u8",  "offset": 20 * n, "centinela": SIN_U8},
-                    "cober":   {"tipo": "u8",  "offset": 21 * n, "centinela": SIN_U8},
-                    "altura":  {"tipo": "u8",  "offset": 22 * n, "centinela": SIN_U8},
-                    "stifo":   {"tipo": "u8",  "offset": 23 * n, "centinela": SIN_U8},
-                    "region":  {"tipo": "u8",  "offset": 24 * n, "centinela": SIN_U8},
+                    # Sin centinela: el radio 0 es un radio, no una ausencia. Son
+                    # las 9.693 filas con superficie 0, que el suelo de pixeles
+                    # del visor sigue dibujando.
+                    "radio":   {"tipo": "u16", "offset": 16 * n, "centinela": None},
+                    "uso":     {"tipo": "u8",  "offset": 18 * n, "centinela": None},
+                    "subuso":  {"tipo": "u8",  "offset": 19 * n, "centinela": SIN_U8},
+                    "estruc":  {"tipo": "u8",  "offset": 20 * n, "centinela": SIN_U8},
+                    "tifo":    {"tipo": "u8",  "offset": 21 * n, "centinela": SIN_U8},
+                    "snaspe":  {"tipo": "u8",  "offset": 22 * n, "centinela": SIN_U8},
+                    "cober":   {"tipo": "u8",  "offset": 23 * n, "centinela": SIN_U8},
+                    "altura":  {"tipo": "u8",  "offset": 24 * n, "centinela": SIN_U8},
+                    "stifo":   {"tipo": "u8",  "offset": 25 * n, "centinela": SIN_U8},
+                    "region":  {"tipo": "u8",  "offset": 26 * n, "centinela": SIN_U8},
                 },
                 "sin_dato": {"comuna": sin_com, "subuso": sin_sub, "estruc": sin_est,
                              "tifo": sin_tif, "snaspe": sin_sna, "cober": sin_cob,
@@ -872,6 +931,13 @@ def construir():
                 # comprueba que sus claves sean exactamente las columnas con
                 # centinela, y meter aqui algo que no es columna rompe esa
                 # comprobacion. Se intento y D13 se puso roja, con razon.
+                # El resumen del recorte, publicado para que la interfaz pueda
+                # decir cuantos discos NO cubren el area de su poligono sin que
+                # nadie escriba la cifra a mano, y para que se pueda contrastar
+                # desde fuera. D26 NO se fia de esto: recalcula del .bin.
+                "radio": {"mediana_m": int(np.percentile(radio, 50)),
+                          "max_m": int(radio.max()),
+                          "recortados": n_recortados},
                 "sin_dato_derivado": {c: sin_esp for c in
                                       ("grupo", "habito", "arboreo", "origen",
                                        "invasora", "conservacion")},
@@ -1005,6 +1071,10 @@ def main():
           " · ".join(f"{e['etiqueta']} {e['ha']/1e3:,.0f}k"
                      for e in sorted(man["especies"], key=lambda e: -e["ha"])[:6]))
     print(f"  filas sin dato: {cap['sin_dato']}")
+    r = cap.get("radio", {})
+    print(f"  radio de los discos: mediana {r.get('mediana_m')} m · max {r.get('max_m')} m · "
+          f"recortados por el vecino {r.get('recortados', 0):,} de {cap['filas']:,} "
+          f"({100 * r.get('recortados', 0) / cap['filas']:.0f} %)")
     for d in man["snaspe_categoria_corregida"]:
         print(f"  SNASPE {d['unidad']!r}: {d['en_la_capa']} -> {d['usada']!r}")
     for campo, vals in man["codigos_desconocidos"].items():
