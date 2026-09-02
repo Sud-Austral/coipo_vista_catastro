@@ -159,6 +159,41 @@ export const FILTROS = [
     // como un inventario de especies amenazadas sería exactamente al revés.
     nota: 'El Catastro NO registra estado de conservación. Esta columna viene de una tabla auxiliar SIN validar contra el Reglamento de Clasificación de Especies, y 976 de las 989 especies figuran como «Sin dato». Eso no es ausencia de amenaza.',
   },
+  // --- las tres que responden preguntas que el visor no dejaba hacer --------
+  {
+    col: 'proteccion',
+    clave: 'protecciones',
+    resumen: 'protecciones',
+    titulo: '¿Dentro o fuera del SNASPE?',
+    corto: 'Protección',
+    porOrden: true,
+    // La dimensión SNASPE lista las 90 unidades, así que se podía pedir «el
+    // Parque Nacional Villarrica» pero no «todo lo protegido» ni, sobre todo,
+    // «todo lo que NO lo está» — que es el 79 % de la superficie del país.
+    nota: 'Se deduce de la unidad del SNASPE: un polígono está dentro si el Catastro le asigna una. «Fuera» no es un dato que falte, es una respuesta: son 59,8 M ha.',
+  },
+  {
+    col: 'tamano',
+    clave: 'tamanos',
+    resumen: 'tamanos',
+    titulo: 'Tamaño del polígono',
+    corto: 'Tamaño',
+    porOrden: true,
+    // Ninguna de las otras dimensiones tocaba la superficie, que es justo lo que
+    // suman TODAS las cifras del visor.
+    nota: 'Tramos de superficie del polígono, en escala logarítmica porque así se reparte el dato: el 1 % que llega a 500 ha concentra el 59,6 % de la superficie del país, y el 62 % que no llega a 5 ha suma el 2,4 %. Los 9.693 polígonos con superficie cero caen en el primer tramo.',
+  },
+  {
+    col: 'anio',
+    clave: 'anios',
+    resumen: 'anios',
+    titulo: 'Año del catastro',
+    corto: 'Año',
+    porOrden: true,
+    // El visor lleva advirtiendo en tres sitios que cada región se levantó en un
+    // año distinto, y no había forma de USAR ese aviso.
+    nota: 'El año lo trae la REGIÓN, no el polígono: todos los de una región comparten fecha. Cinco regiones traen un periodo —«2017-2019», «2020-2022»— y se conserva tal cual, porque elegir uno de sus extremos sería inventar una fecha que el Catastro no da.',
+  },
   {
     col: 'snaspe',
     clave: 'snaspe',

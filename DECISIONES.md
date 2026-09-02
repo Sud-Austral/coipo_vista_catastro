@@ -326,6 +326,49 @@ Se devuelve siempre lo compuesto, con la fracción de contenido medida, y la lá
 fallo sistemático se encargan la declaración explícita y **V-57d**, que decodifica la imagen y
 cuenta píxeles en cada verificación: separa 0,0 % de 1,1-17 %.
 
+## L. Tres filtros que responden preguntas que el visor no dejaba hacer
+
+Ninguno cuesta un byte: los tres se derivan de columnas que ya viajan, igual que los seis de la
+clasificación de especies.
+
+**¿Dentro o fuera del SNASPE?** — de `snaspe`. El centinela de esa columna no significa «no
+sabemos» sino **«fuera del Sistema»**, y por eso `SIN_DATO_POR_COL` lo excluye a propósito. Pero
+esa respuesta no se podía **filtrar**: la dimensión SNASPE lista las 90 unidades, así que se podía
+pedir «el Parque Nacional Villarrica» y no «todo lo protegido» ni, sobre todo, «todo lo que no lo
+está» — que son **1.431.130 polígonos y 59,8 M ha, el 79 % de la superficie**.
+
+**Tamaño del polígono** — de `ha`. Ninguna de las veintiuna dimensiones tocaba la superficie, que
+es justo la variable que suman **todas** las cifras del visor. Los tramos son logarítmicos porque
+así se reparte el dato, y el reparto dice algo por sí solo:
+
+| tramo | polígonos | superficie |
+|---|---:|---:|
+| menos de 1 ha | 465.613 (25,5 %) | 237.883 ha (0,3 %) |
+| 1 – 5 ha | 668.115 (36,6 %) | 1,6 M ha (2,1 %) |
+| 5 – 20 ha | 384.796 (21,1 %) | 3,9 M ha (5,1 %) |
+| 20 – 100 ha | 217.491 (11,9 %) | 9,5 M ha (12,6 %) |
+| 100 – 500 ha | 73.201 (4,0 %) | 15,3 M ha (20,2 %) |
+| **500 ha o más** | **18.717 (1,0 %)** | **45,1 M ha (59,6 %)** |
+
+El 1 % de los polígonos concentra el 59,6 % del país, y el 62 % que no llega a 5 ha suma el 2,4 %.
+
+**Año del catastro** — de `region`. El visor llevaba meses advirtiendo en tres sitios que cada
+región se levantó en un año distinto, y no había forma de **usar** ese aviso: para ver lo
+catastrado desde 2020 había que ir región por región. **Los periodos no se colapsan a un año**:
+cinco regiones traen «2017-2019» o «2020-2022» y elegir uno de sus extremos sería inventar una
+fecha que el Catastro no da.
+
+**Los cortes de superficie viven en el ETL y se publican** con `desde`/`hasta` en cada clase; el
+cliente los aplica en vez de repetirlos. Dos listas de números iguales en dos lenguajes son dos
+listas que se desincronizan.
+
+**Lo que costó, medido.** La pasada del cruce recorre TODAS las dimensiones por cada fila que pasa
+el filtro, y pasó de diez a veinte. En el navegador, la mediana subió de ~85 ms a **195-218**, con
+un peor caso de 337. El techo de `verificar.py` estaba en 400 y se subió a **900**: dejarlo habría
+garantizado un rojo intermitente, y una aserción que parpadea acaba desactivada. Sigue siendo un
+gate de orden de magnitud, que es para lo que está; el fino sigue en Node, con techo de 500 y
+medida de 128-197 ms.
+
 ## Fallos propios cometidos al establecer todo esto
 
 Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse.
@@ -362,3 +405,10 @@ Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse
 9. **Puse el botón del reporte dentro de un modal y no comprobé qué pasaba al abrirlo.** Un
    `<dialog>` modal pinta en la top layer: el reporte salía debajo del modal que lo había abierto,
    por mucho z-index que llevara.
+10. **Inicialicé la columna de tramos con ceros.** Cualquier fila fuera de todos los cortes caía en
+    silencio en la primera clase —«menos de 1 ha»—, el reparto seguía sumando 1.827.933 y las
+    cifras seguían cuadrando entre sí. Lo destapó una mutación que acortaba el último tramo y pasó
+    en VERDE con los polígonos de más de 10.000 ha metidos entre los de menos de una hectárea.
+    Ahora el ETL revienta si queda una fila sin tramo, y **D27** exige además que las hectáreas de
+    cada clase quepan entre sus propios cortes: comprobar que se reparte TODO no basta, hay que
+    comprobar que se reparte DONDE TOCA.

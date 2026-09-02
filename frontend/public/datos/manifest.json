@@ -19160,6 +19160,150 @@
       "ha": 172103.33
     }
   ],
+  "protecciones": [
+    {
+      "cod": "Dentro del SNASPE",
+      "etiqueta": "Dentro del SNASPE",
+      "n": 396803,
+      "ha": 15849737.6,
+      "orden": 0
+    },
+    {
+      "cod": "Fuera del SNASPE",
+      "etiqueta": "Fuera del SNASPE",
+      "n": 1431130,
+      "ha": 59811462.81,
+      "orden": 1
+    }
+  ],
+  "tamanos": [
+    {
+      "cod": "menos de 1 ha",
+      "etiqueta": "menos de 1 ha",
+      "n": 465613,
+      "ha": 237883.09,
+      "orden": 0,
+      "desde": 0.0,
+      "hasta": 1.0
+    },
+    {
+      "cod": "1 - 5 ha",
+      "etiqueta": "1 - 5 ha",
+      "n": 668115,
+      "ha": 1620138.15,
+      "orden": 1,
+      "desde": 1.0,
+      "hasta": 5.0
+    },
+    {
+      "cod": "5 - 20 ha",
+      "etiqueta": "5 - 20 ha",
+      "n": 384796,
+      "ha": 3887078.22,
+      "orden": 2,
+      "desde": 5.0,
+      "hasta": 20.0
+    },
+    {
+      "cod": "20 - 100 ha",
+      "etiqueta": "20 - 100 ha",
+      "n": 217491,
+      "ha": 9524668.32,
+      "orden": 3,
+      "desde": 20.0,
+      "hasta": 100.0
+    },
+    {
+      "cod": "100 - 500 ha",
+      "etiqueta": "100 - 500 ha",
+      "n": 73201,
+      "ha": 15320604.85,
+      "orden": 4,
+      "desde": 100.0,
+      "hasta": 500.0
+    },
+    {
+      "cod": "500 ha o más",
+      "etiqueta": "500 ha o más",
+      "n": 18717,
+      "ha": 45070827.78,
+      "orden": 5,
+      "desde": 500.0,
+      "hasta": null
+    }
+  ],
+  "anios": [
+    {
+      "cod": "2014",
+      "etiqueta": "2014",
+      "n": 42025,
+      "ha": 4061627.69,
+      "orden": 0
+    },
+    {
+      "cod": "2015",
+      "etiqueta": "2015",
+      "n": 5946,
+      "ha": 1694479.65,
+      "orden": 1
+    },
+    {
+      "cod": "2016",
+      "etiqueta": "2016",
+      "n": 15345,
+      "ha": 4228804.18,
+      "orden": 2
+    },
+    {
+      "cod": "2017-2019",
+      "etiqueta": "2017-2019",
+      "n": 286529,
+      "ha": 13469451.39,
+      "orden": 3
+    },
+    {
+      "cod": "2018",
+      "etiqueta": "2018",
+      "n": 181930,
+      "ha": 12403217.79,
+      "orden": 4
+    },
+    {
+      "cod": "2018-2019",
+      "etiqueta": "2018-2019",
+      "n": 16724,
+      "ha": 12605963.98,
+      "orden": 5
+    },
+    {
+      "cod": "2019",
+      "etiqueta": "2019",
+      "n": 114060,
+      "ha": 3137168.3,
+      "orden": 6
+    },
+    {
+      "cod": "2020",
+      "etiqueta": "2020",
+      "n": 99286,
+      "ha": 1634462.97,
+      "orden": 7
+    },
+    {
+      "cod": "2020-2022",
+      "etiqueta": "2020-2022",
+      "n": 344808,
+      "ha": 10667217.8,
+      "orden": 8
+    },
+    {
+      "cod": "2024",
+      "etiqueta": "2024",
+      "n": 721280,
+      "ha": 11758806.66,
+      "orden": 9
+    }
+  ],
   "comunas": [
     {
       "cod": "01101",

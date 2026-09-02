@@ -187,6 +187,23 @@ REGION_NOMBRE = {
 # EL ORDEN DEL DOMINIO LO FIJA ESTE SCRIPT y el cliente lo lee del manifest. No
 # se ordena en los dos sitios: 'Si' y 'En Peligro Critico' llevan tilde, y el
 # orden de JS y el de Python no tienen por que coincidir en eso.
+# Tramos de superficie del poligono. LOS CORTES VIVEN AQUI Y SE PUBLICAN en el
+# manifest, para que el cliente los aplique en vez de repetirlos: dos listas de
+# numeros iguales en dos lenguajes son dos listas que se desincronizan.
+#
+# Escala logaritmica porque la distribucion lo es: la mediana son 2,8 ha y el
+# maximo 1.295.122. Medido con estos cortes, el reparto dice algo por si solo --
+# el 1 % de los poligonos de 500 ha o mas concentra el 59,6 % de la superficie,
+# y el 62 % que baja de 5 ha apenas suma el 2,4 %.
+TRAMOS_HA = (
+    (0.0, 1.0, "menos de 1 ha"),
+    (1.0, 5.0, "1 - 5 ha"),
+    (5.0, 20.0, "5 - 20 ha"),
+    (20.0, 100.0, "20 - 100 ha"),
+    (100.0, 500.0, "100 - 500 ha"),
+    (500.0, float("inf"), "500 ha o más"),
+)
+
 DERIVADAS_ESPECIE = (
     ("grupos", "grupo"),
     ("habitos", "habito"),
@@ -886,6 +903,62 @@ def construir():
                 trad[i] = pos[v]
         idx_esp_o_cent = np.where(c_esp == SIN_U16, len(ord_esp), c_esp).astype(np.intp)
         derivadas[clave] = dominio(trad[idx_esp_o_cent], valores, lambda x: x)
+
+    # --- las tres derivadas que no salen de la especie ------------------------
+    #
+    # DENTRO / FUERA DEL SNASPE. El centinela de la columna `snaspe` no significa
+    # «no sabemos» sino «fuera del Sistema», y es el 78 % del pais: por eso
+    # `SIN_DATO_POR_COL` lo excluye a proposito. Pero esa respuesta no se podia
+    # FILTRAR --la dimension SNASPE lista las 90 unidades y nada mas--, asi que
+    # «ensename lo que esta protegido» no tenia forma de pedirse.
+    ord_pro = ["Dentro del SNASPE", "Fuera del SNASPE"]
+    c_pro = np.where(c_sna == SIN_U8, 1, 0).astype(np.uint8)
+    derivadas["protecciones"] = dominio(c_pro, ord_pro, lambda x: x,
+                                        extra=lambda x: {"orden": ord_pro.index(x)})
+
+    # TRAMO DE SUPERFICIE. Ninguna de las veintiuna dimensiones tocaba el tamano
+    # del poligono, que es justo la variable que suman TODAS las cifras del
+    # visor: no habia forma de preguntar «cuanto de esto son poligonos grandes».
+    ord_tam = [e for _, _, e in TRAMOS_HA]
+    # SE EMPIEZA CON UN VALOR IMPOSIBLE Y SE EXIGE QUE NO QUEDE NINGUNO. Empezaba
+    # en ceros, y eso convertia cualquier hueco en los cortes en un fallo
+    # perfectamente silencioso: una fila fuera de todo tramo se iba a la clase 0
+    # --«menos de 1 ha»--, el reparto seguia sumando 1.827.933 y las cifras
+    # seguian cuadrando entre si. Lo encontro una mutacion que acortaba el ultimo
+    # tramo y pasaba en VERDE con los poligonos de mas de 10.000 ha metidos entre
+    # los de menos de una hectarea.
+    c_tam = np.full(n, SIN_U8, dtype=np.uint8)
+    for i, (desde, hasta, _) in enumerate(TRAMOS_HA):
+        c_tam[(ha64 >= desde) & (ha64 < hasta)] = i
+    sin_tramo = int((c_tam == SIN_U8).sum())
+    if sin_tramo:
+        peor = float(ha64[c_tam == SIN_U8].max())
+        raise SystemExit(f"{sin_tramo} filas fuera de todo tramo de superficie "
+                         f"(la mayor, {peor:,.2f} ha): TRAMOS_HA no cubre el rango")
+    derivadas["tamanos"] = dominio(
+        c_tam, ord_tam, lambda x: x,
+        extra=lambda x: {"orden": ord_tam.index(x),
+                         "desde": TRAMOS_HA[ord_tam.index(x)][0],
+                         "hasta": (None if TRAMOS_HA[ord_tam.index(x)][1] == float("inf")
+                                   else TRAMOS_HA[ord_tam.index(x)][1])})
+
+    # ANO DEL CATASTRO. El visor lleva meses advirtiendo que cada region se
+    # levanto en un ano distinto --lo dice el panel, la metodologia y el reporte
+    # impreso-- y no habia manera de USAR ese aviso: para ver lo catastrado desde
+    # 2020 habia que ir region por region. Sale de la columna de region, asi que
+    # no cuesta un byte.
+    #
+    # LOS TRAMOS NO SE COLAPSAN A UN ANO. Cinco regiones traen periodos --
+    # «2017-2019», «2020-2022»-- y elegir uno de los extremos seria inventar una
+    # fecha que el Catastro no da.
+    anio_de_reg = {r["cod"]: r["anio"] for r in regiones.values()}
+    ord_anio = sorted({a for a in anio_de_reg.values()},
+                      key=lambda a: (int(str(a).split("-")[0]), str(a)))
+    pos_anio = {a: i for i, a in enumerate(ord_anio)}
+    trad_anio = np.array([pos_anio[anio_de_reg[c]] for c in ord_reg], dtype=np.uint8)
+    c_anio = trad_anio[c_reg.astype(np.intp)]
+    derivadas["anios"] = dominio(c_anio, ord_anio, lambda x: x,
+                                 extra=lambda x: {"orden": ord_anio.index(x)})
 
     manifest = {
         # 5 y no 4: la columna `radio` vuelve a cambiar el largo de la fila, asi

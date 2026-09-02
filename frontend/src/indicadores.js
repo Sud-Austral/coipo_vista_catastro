@@ -61,6 +61,13 @@ export const DIMENSIONES = [
   { col: 'origen', dominio: 'origenes', resumen: 'origenes', centinela: 255 },
   { col: 'invasora', dominio: 'invasoras', resumen: 'invasoras', centinela: 255 },
   { col: 'conservacion', dominio: 'conservaciones', resumen: 'conservaciones', centinela: 255 },
+  // LAS TRES QUE NO SALEN DE LA ESPECIE, y ninguna cuesta un byte: se derivan
+  // de columnas que ya viajan. `proteccion` del centinela de `snaspe` —que
+  // significa «fuera del Sistema», no «no se sabe»—, `tamano` de `ha` y `anio`
+  // de `region`. Ninguna tiene centinela: toda fila cae en una clase.
+  { col: 'proteccion', dominio: 'protecciones', resumen: 'protecciones', centinela: 255 },
+  { col: 'tamano', dominio: 'tamanos', resumen: 'tamanos', centinela: 255 },
+  { col: 'anio', dominio: 'anios', resumen: 'anios', centinela: 255 },
 ]
 
 /**
@@ -125,6 +132,9 @@ export function resumenNacional(manifest) {
     origenes: conPct(manifest.origenes),
     invasoras: conPct(manifest.invasoras),
     conservaciones: conPct(manifest.conservaciones),
+    protecciones: conPct(manifest.protecciones),
+    tamanos: conPct(manifest.tamanos),
+    anios: conPct(manifest.anios),
     // El manifest YA trae las filas sin dato por dimensión y aquí no se leían,
     // así que sin ningún filtro activo el panel decía que no había ninguna. Son
     // 1.114.688 polígonos sin tipo forestal y 1.431.130 fuera del SNASPE: justo

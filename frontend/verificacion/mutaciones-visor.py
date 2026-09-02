@@ -148,11 +148,11 @@ def sonda_botones(cdp, url):
     sel = cdp.evaluar("document.querySelectorAll('.panel select').length")
     tit = json.loads(cdp.evaluar(
         "JSON.stringify([...document.querySelectorAll('.gf-titulo')].map(e => e.textContent))"))
-    # 20: 17 controles mas Informacion, Descargar y Compartir. El
+    # 23: 20 controles mas Informacion, Descargar y Compartir. El
     # numero se actualiza a mano, igual que CONTROLES en verificar.py: es la
     # cuenta que caza que un control desaparezca sin que nadie lo note.
-    pasa = (n == 20 and sel == 0
-            and {"Territorio", "Uso", "Imagen de fondo",
+    pasa = (n == 23 and sel == 0
+            and {"Territorio", "Uso", "Imagen de fondo", "Protección", "Tamaño", "Año",
                  "Información", "Descargar", "Compartir"} <= set(tit))
     return pasa, f"{n} botones · {sel} <select>"
 
@@ -465,6 +465,41 @@ def sonda_compartir(cdp, url):
     return ("reg=10" in enlace and "no son las nacionales" in aviso), enlace[-52:]
 
 
+def sonda_tres_nuevas(cdp, url):
+    """Proteccion, tamano y ano existen, reparten TODO y filtran de verdad.
+
+    Se exige que cada una sume las 1.827.933 filas: ninguna tiene centinela, asi
+    que una fila fuera de toda clase significa que la derivacion se dejo casos.
+    Y que MUEVAN la cifra, porque una lista con clases y cifras plausibles que no
+    filtra nada pasa cualquier prueba de presencia.
+    """
+    man = json.load(open(os.path.join(DIST, "datos", "manifest.json"), encoding="utf-8"))
+    ir(cdp, url)
+    problemas = []
+    for titulo, clave in (("Protección", "protecciones"), ("Tamaño", "tamanos"),
+                          ("Año", "anios")):
+        dom = man.get(clave, [])
+        if not dom or sum(d["n"] for d in dom) != man["total"]["filas"]:
+            problemas.append(f"{titulo}: reparte {sum(d['n'] for d in dom):,}")
+            continue
+        g = V.grupo_filtro(cdp, titulo)
+        if not g or not g["filas"]:
+            problemas.append(f"{titulo}: sin clases")
+            continue
+        antes = cdp.evaluar("document.querySelector('.cifra-num b').textContent")
+        V.marcar_clase(cdp, titulo, g["filas"][0]["etq"])
+        movio = V.esperar(cdp, "document.querySelector('.cifra-num b').textContent !== %r"
+                          % antes, segundos=30)
+        if movio is None:
+            problemas.append(f"{titulo}: no mueve la cifra")
+        cdp.evaluar("[...document.querySelectorAll('.limpiar')]"
+                    ".find(b => /Quitar/.test(b.textContent))?.click()")
+        V.esperar(cdp, "document.querySelector('.cifra-num b').textContent === %r" % antes,
+                  segundos=30)
+    return not problemas, (" · ".join(problemas) if problemas
+                           else "protección, tamaño y año reparten todo y filtran")
+
+
 def sonda_reporte(cdp, url):
     ir(cdp, url + "?reg=10")
     titular = cdp.evaluar("document.querySelector('.cifra-num b').textContent")
@@ -685,6 +720,25 @@ MUTACIONES = [
      sonda_alias,
      [(os.path.join(FRONTEND, "src", "filtros.js"),
        "      const buscado = alias[cod] ?? cod", "      const buscado = cod")]),
+
+    # Las tres nuevas. La primera rompe el DATO --el reparto deja de cubrir todas
+    # las filas-- y por eso regenera el .bin.
+    # Esta mutacion paso en VERDE la primera vez, y el hallazgo fue del ETL: las
+    # filas fuera de todo tramo caian en silencio en la primera clase. Ahora el
+    # ETL revienta al construir --que es enterarse, y antes-- y D27 comprueba
+    # ademas que las hectareas de cada tramo quepan entre sus cortes.
+    ("D27 · el tramo de superficie deja fuera los poligonos grandes",
+     sonda_datos,
+     [(os.path.join(RAIZ, "ETL", "build_bin.py"),
+       '    (500.0, float("inf"), "500 ha o más"),',
+       '    (500.0, 10000.0, "500 ha o más"),')],
+     True),
+
+    ("V-63 · proteccion mira el centinela al reves",
+     sonda_tres_nuevas,
+     [(os.path.join(FRONTEND, "src", "datos", "derivadas.js"),
+       "for (let i = 0; i < n; i++) col[i] = datos.snaspe[i] === centinela ? fuera : dentro",
+       "for (let i = 0; i < n; i++) col[i] = dentro")]),
 
     ("V-57d · el lienzo de deck deja de conservar su bufer",
      sonda_mapa_del_reporte,

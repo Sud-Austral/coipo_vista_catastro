@@ -1,5 +1,5 @@
 import { DATA } from '../config'
-import { derivarDeEspecie } from './derivadas'
+import { derivarDeColumnas, derivarDeEspecie } from './derivadas'
 
 /**
  * Carga la capa de render: manifest.json (el contrato) + cbn_puntos.bin.
@@ -76,7 +76,9 @@ export async function cargarPuntos(señal) {
     pos[i * 3 + 1] = col.lat[i]
   }
 
-  return { n, ...col, ...derivarDeEspecie(col.especie, n, man), pos, manifest: man, capa }
+  const derivadas = { ...derivarDeEspecie(col.especie, n, man),
+                      ...derivarDeColumnas(col, n, man) }
+  return { n, ...col, ...derivadas, pos, manifest: man, capa }
 }
 
 /** RGBA por punto a partir del indice de uso. Se recalcula al cambiar de tema. */

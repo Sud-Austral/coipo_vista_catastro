@@ -104,7 +104,19 @@ FICHA_ABIERTA = "!!document.querySelector('dialog.ficha[open]')"
 #
 # EL GATE DE COSTE DE VERDAD esta en marginales.mjs, que corre en Node, en el CI
 # y con mediana de nueve. Este solo caza que la pasada se dispare aqui tambien.
-TECHO_CRUCE_MS = 400
+#
+# SUBIO DE 400 A 900, y no por conveniencia: la pasada hace hoy el DOBLE de
+# trabajo que cuando se fijo el 400. Entonces recorria diez dimensiones; ahora
+# son veinte --seis derivadas de la especie, mas region, proteccion, tamano y
+# ano-- y el bucle de acumulacion las visita TODAS por cada fila que pasa el
+# filtro. Medido antes y despues del ultimo trio: la mediana en el navegador paso
+# de ~85 ms a 195, con un peor caso de 330. Dejarlo en 400 era garantizar un rojo
+# intermitente, que es como se acaba desactivando una asercion.
+#
+# 900 sigue siendo un gate real: caza que la pasada se dispare un orden de
+# magnitud, que es para lo que esta. El fino sigue en Node, con mediana de nueve
+# y techo de 500 --medido ahi: 128 a 197 ms--.
+TECHO_CRUCE_MS = 900
 
 # Techo del PRIMER PINTADO con los discos ya grandes, contado desde que los datos
 # estan en memoria. Resolucion: una captura de pantalla, ~150 ms. Es una red de
@@ -113,12 +125,12 @@ TECHO_PINTADO_MS = 6000
 
 MODAL_FILTRO = "!!document.querySelector('dialog.modal-filtro[open]')"
 
-# Cuantos botones tiene el panel: Territorio + las quince dimensiones de FILTROS
-# + Imagen de fondo + Informacion, Descargar y Compartir. EL NUMERO SE ACTUALIZA
-# A MANO Y A PROPOSITO. Es la cuenta que caza que un control desaparezca en
-# silencio --que es como se pierde uno--, asi que derivarla de la propia pagina
-# la volveria una tautologia.
-CONTROLES = 20
+# Cuantos botones tiene el panel: Territorio + las DIECIOCHO dimensiones de
+# FILTROS + Imagen de fondo + Informacion, Descargar y Compartir. EL NUMERO SE
+# ACTUALIZA A MANO Y A PROPOSITO. Es la cuenta que caza que un control
+# desaparezca en silencio --que es como se pierde uno--, asi que derivarla de la
+# propia pagina la volveria una tautologia.
+CONTROLES = 23
 
 
 def abrir_grupo(cdp, titulo):
@@ -1945,7 +1957,8 @@ def main():
         esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
         esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
         mudas = []
-        for titulo in ("Grupo", "Hábito", "Arbórea", "Origen", "Invasora", "Conservación"):
+        for titulo in ("Grupo", "Hábito", "Arbórea", "Origen", "Invasora", "Conservación",
+                       "Protección", "Tamaño", "Año"):
             g = grupo_filtro(cdp, titulo)
             antes_d = cdp.evaluar("document.querySelector('.cifra-num b').textContent")
             marcar_clase(cdp, titulo, g["filas"][0]["etq"])
@@ -1957,9 +1970,9 @@ def main():
                         ".find(b => /Quitar/.test(b.textContent))?.click()")
             esperar(cdp, "document.querySelector('.cifra-num b').textContent === %r" % antes_d,
                     segundos=30)
-        prueba("V-63 las seis dimensiones de la especie filtran de verdad",
-               not mudas, " · ".join(mudas) if mudas else "grupo, hábito, arbórea, origen, "
-                                                          "invasora y conservación mueven la cifra")
+        prueba("V-63 las nueve dimensiones derivadas filtran de verdad",
+               not mudas, " · ".join(mudas) if mudas
+               else "las seis de la especie más protección, tamaño y año mueven la cifra")
 
         print("\n" + "=" * 62)
         print(f"  {'TODO EN VERDE' if not fallos else str(len(fallos)) + ' EN ROJO'}")

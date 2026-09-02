@@ -358,6 +358,26 @@ def comprobar(man, crudo, tam, hashes):
             if viejo in vivos:
                 fallos.append(f"D25 alias {dim}: {viejo!r} sigue vivo y no deberia")
 
+    # D27 - CADA TRAMO DE SUPERFICIE ES COHERENTE CON SUS PROPIOS CORTES. La
+    # superficie total de una clase tiene que caber entre `desde x n` y
+    # `hasta x n`: si «menos de 1 ha» declara 465.613 poligonos, no puede sumar
+    # mas de 465.613 ha.
+    #
+    # Existe porque una mutacion paso en verde sin ella: acortar el ultimo tramo
+    # metia los poligonos de mas de 10.000 ha en la clase de los de menos de una,
+    # y el reparto seguia sumando el total. Comprobar que se reparte TODO no
+    # basta; hay que comprobar que se reparte donde toca.
+    for f in man.get("tamanos", []):
+        desde, hasta, nn, hh = f.get("desde"), f.get("hasta"), f["n"], f["ha"]
+        if desde is None or nn == 0:
+            continue
+        if hh < desde * nn - 1:
+            fallos.append(f"D27 «{f['etiqueta']}»: {nn:,} poligonos suman {hh:,.0f} ha, "
+                          f"menos del minimo {desde * nn:,.0f}")
+        if hasta is not None and hh > hasta * nn + 1:
+            fallos.append(f"D27 «{f['etiqueta']}»: {nn:,} poligonos suman {hh:,.0f} ha, "
+                          f"mas del maximo {hasta * nn:,.0f}")
+
     # D21 - «no aplica» se dice de UNA sola forma, y solo donde toca.
     #
     # Tipo y subtipo forestal traian el mismo concepto por dos vias: el
@@ -493,6 +513,15 @@ def _sin_clase_na(man, dim):
     return m
 
 
+def _tramo_imposible(man):
+    """Mete en el tramo mas pequeno la superficie del mas grande: es lo que pasa
+    cuando los cortes dejan filas fuera y caen todas en la primera clase."""
+    m = json.loads(json.dumps(man))
+    if len(m.get("tamanos", [])) >= 2:
+        m["tamanos"][0]["ha"] += m["tamanos"][-1]["ha"]
+    return m
+
+
 def _region_sin_comunas(man, cod="14"):
     """Deja una region sin ninguna comuna: EL defecto de Los Rios, reintroducido."""
     m = json.loads(json.dumps(man))
@@ -554,6 +583,8 @@ NEGATIVAS = [
      lambda m, c, t, h: (_quitar_clase(m, "coberturas"), c, t, h)),
     ("D21 tipo forestal vuelve a tener centinela", "D21",
      lambda m, c, t, h: (_sin_dato(m, "tifo", 1_114_688), c, t, h)),
+    ("D27 un tramo de superficie con hectareas que no le caben", "D27",
+     lambda m, c, t, h: (_tramo_imposible(m), c, t, h)),
     ("D22 una region se queda sin comunas (el defecto de Los Rios)", "D22",
      lambda m, c, t, h: (_region_sin_comunas(m), c, t, h)),
     ("D24 una unidad del SNASPE se parte en dos grafias", "D24",
