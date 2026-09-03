@@ -9,13 +9,13 @@
 
 ## Estructura del proyecto
 
-- `frontend/`: Aplicación principal (68 archivos)
+- `frontend/`: Aplicación principal (71 archivos)
   - `src/`: Código fuente React
   - `package.json`: Dependencias y scripts
   - `vite.config.js`: Configuración de Vite
 - `INSUMO_GRAFICO/`: Insumos gráficos (32 archivos)
 - `spike/`: Código experimental (7 archivos)
-- `ETL/`: Scripts de procesamiento (6 archivos)
+- `ETL/`: Scripts de procesamiento (26 archivos)
 - `.github/workflows/`: Flujos de GitHub (3 archivos)
   - `deploy.yml`: Despliegue
   - `readme.yml`: Actualización README
