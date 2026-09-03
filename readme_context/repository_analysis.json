@@ -1,91 +1,103 @@
 {
   "repository": "target",
-  "generated_at": "2026-08-31T00:42:03.224001",
+  "generated_at": "2026-09-03T13:17:32.113496",
   "analysis": {
     "ETL/build_bin.py": {
       "python": {
         "imports": [
           {
             "value": "argparse",
-            "line": 83
+            "line": 114
           },
           {
             "value": "hashlib",
-            "line": 84
+            "line": 115
           },
           {
             "value": "json",
-            "line": 85
+            "line": 116
+          },
+          {
+            "value": "math",
+            "line": 117
           },
           {
             "value": "os",
-            "line": 86
+            "line": 118
           },
           {
             "value": "re",
-            "line": 87
+            "line": 119
           },
           {
             "value": "sys",
-            "line": 88
+            "line": 120
           },
           {
             "value": "unicodedata",
-            "line": 89
+            "line": 121
           },
           {
             "value": "duckdb",
-            "line": 91
+            "line": 123
+          },
+          {
+            "value": "scipy.spatial",
+            "line": 124
+          },
+          {
+            "value": "homologacion",
+            "line": 126
           },
           {
             "value": "numpy",
-            "line": 92
+            "line": 127
           }
         ],
         "functions": [
           {
             "name": "sha256",
-            "line": 159
+            "line": 230
           },
           {
             "name": "indexar",
-            "line": 167
+            "line": 238
           },
           {
             "name": "canon",
-            "line": 174
+            "line": 245
           },
           {
             "name": "etiqueta_mayoritaria",
-            "line": 194
+            "line": 265
           },
           {
             "name": "orden_altura",
-            "line": 218
+            "line": 289
           },
           {
             "name": "codificar",
-            "line": 237
+            "line": 308
           },
           {
             "name": "agregados",
-            "line": 268
+            "line": 339
           },
           {
             "name": "construir",
-            "line": 281
+            "line": 352
           },
           {
             "name": "main",
-            "line": 727
+            "line": 1109
           },
           {
             "name": "por_codigo",
-            "line": 325
+            "line": 396
           },
           {
             "name": "dominio",
-            "line": 619
+            "line": 870
           }
         ],
         "classes": [],
@@ -312,6 +324,14 @@
           {
             "value": "unicodedata",
             "line": 21
+          },
+          {
+            "value": "numpy",
+            "line": 622
+          },
+          {
+            "value": "scipy.spatial",
+            "line": 623
           }
         ],
         "functions": [
@@ -337,55 +357,75 @@
           },
           {
             "name": "leer_oficiales",
-            "line": 314
+            "line": 411
           },
           {
             "name": "leer",
-            "line": 325
+            "line": 422
           },
           {
             "name": "_cap",
-            "line": 338
+            "line": 435
           },
           {
             "name": "_off",
-            "line": 344
+            "line": 441
           },
           {
             "name": "_uso",
-            "line": 350
+            "line": 447
           },
           {
             "name": "_sub",
-            "line": 356
+            "line": 453
           },
           {
             "name": "_permutar_cobertura",
-            "line": 362
+            "line": 459
           },
           {
             "name": "_especie_cero",
-            "line": 377
+            "line": 474
           },
           {
             "name": "_altura_desordenada",
-            "line": 385
+            "line": 482
           },
           {
             "name": "_quitar_clase",
-            "line": 392
+            "line": 489
           },
           {
             "name": "_sin_dato",
-            "line": 402
+            "line": 499
           },
           {
             "name": "_sin_clase_na",
-            "line": 409
+            "line": 506
+          },
+          {
+            "name": "_tramo_imposible",
+            "line": 516
+          },
+          {
+            "name": "_region_sin_comunas",
+            "line": 525
+          },
+          {
+            "name": "_fundir_etiqueta",
+            "line": 532
+          },
+          {
+            "name": "_alias_roto",
+            "line": 542
+          },
+          {
+            "name": "discos_que_se_solapan",
+            "line": 605
           },
           {
             "name": "main",
-            "line": 466
+            "line": 669
           }
         ],
         "classes": [],
@@ -465,6 +505,80 @@
           {
             "name": "main",
             "line": 231
+          }
+        ],
+        "classes": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "ETL/homologacion/__init__.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "csv",
+            "line": 35
+          },
+          {
+            "value": "os",
+            "line": 36
+          }
+        ],
+        "functions": [
+          {
+            "name": "_leer",
+            "line": 44
+          },
+          {
+            "name": "_adiciones",
+            "line": 52
+          },
+          {
+            "name": "tabla",
+            "line": 77
+          },
+          {
+            "name": "mapa",
+            "line": 94
+          },
+          {
+            "name": "exigir",
+            "line": 110
+          }
+        ],
+        "classes": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "ETL/homologacion/desde_xlsx.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "csv",
+            "line": 26
+          },
+          {
+            "value": "os",
+            "line": 27
+          },
+          {
+            "value": "sys",
+            "line": 28
+          },
+          {
+            "value": "openpyxl",
+            "line": 30
+          }
+        ],
+        "functions": [
+          {
+            "name": "exportar",
+            "line": 45
+          },
+          {
+            "name": "main",
+            "line": 68
           }
         ],
         "classes": [],
@@ -794,35 +908,35 @@
           },
           {
             "value": "resumenNacional",
-            "line": 81
+            "line": 106
           },
           {
             "value": "SIN_DATO_POR_COL",
-            "line": 121
+            "line": 155
           },
           {
             "value": "resumenYMarginales",
-            "line": 207
+            "line": 252
           },
           {
             "value": "composicionBosque",
-            "line": 394
+            "line": 437
           },
           {
             "value": "estructurasBosqueNativo",
-            "line": 415
+            "line": 458
           },
           {
             "value": "resumenSnaspe",
-            "line": 428
+            "line": 471
           },
           {
             "value": "ambitoTexto",
-            "line": 453
+            "line": 496
           },
           {
             "value": "anioDelAmbito",
-            "line": 466
+            "line": 509
           }
         ],
         "components": [
@@ -832,7 +946,7 @@
           },
           {
             "value": "SIN_DATO_POR_COL",
-            "line": 121
+            "line": 155
           }
         ],
         "api_calls": [],
@@ -854,27 +968,27 @@
           },
           {
             "value": "TOPE_LISTA",
-            "line": 118
-          },
-          {
-            "value": "opciones",
-            "line": 140
-          },
-          {
-            "value": "alternar",
             "line": 209
           },
           {
+            "value": "opciones",
+            "line": 231
+          },
+          {
+            "value": "alternar",
+            "line": 300
+          },
+          {
             "value": "cuentaSeleccion",
-            "line": 224
+            "line": 315
           },
           {
             "value": "filtrosAURL",
-            "line": 234
+            "line": 325
           },
           {
             "value": "filtrosDesdeURL",
-            "line": 247
+            "line": 349
           }
         ],
         "components": [
@@ -888,7 +1002,7 @@
           },
           {
             "value": "TOPE_LISTA",
-            "line": 118
+            "line": 209
           }
         ],
         "api_calls": [],
@@ -936,93 +1050,97 @@
             "line": 25
           },
           {
-            "value": "./components/EtiquetaImagen",
+            "value": "./mapa/capturaMapa",
             "line": 26
           },
           {
-            "value": "./components/ModalFicha",
+            "value": "./components/EtiquetaImagen",
             "line": 27
           },
           {
-            "value": "./components/Banner",
+            "value": "./components/ModalFicha",
             "line": 28
           },
           {
-            "value": "./components/CartelContexto",
+            "value": "./components/Banner",
             "line": 29
           },
           {
-            "value": "./components/PaginaMetodologia",
+            "value": "./components/CartelContexto",
             "line": 30
           },
           {
-            "value": "./components/PanelIndicadores",
+            "value": "./components/PaginaMetodologia",
             "line": 31
           },
           {
-            "value": "./components/PanelLateral",
+            "value": "./components/PanelIndicadores",
             "line": 32
           },
           {
-            "value": "./components/Reporte",
+            "value": "./components/PanelLateral",
             "line": 33
           },
           {
-            "value": "./components/SeccionDescargas",
+            "value": "./components/Reporte",
             "line": 34
           },
           {
-            "value": "./components/Tirador",
+            "value": "./components/SeccionDescargas",
             "line": 35
           },
           {
-            "value": "./components/graficos",
+            "value": "./components/Tirador",
             "line": 36
           },
           {
-            "value": "./hooks/useFechaImagen",
+            "value": "./components/graficos",
             "line": 37
           },
           {
-            "value": "./formato",
+            "value": "./hooks/useFechaImagen",
             "line": 38
+          },
+          {
+            "value": "./formato",
+            "line": 39
           }
         ],
         "exports": [
           {
             "value": "App",
-            "line": 86
+            "line": 87
           }
         ],
         "components": [
           {
             "value": "MAX_ZOOM_ENCUADRE",
-            "line": 76
+            "line": 77
           },
           {
             "value": "PADDING_ENCUADRE",
-            "line": 78
+            "line": 79
           },
           {
             "value": "HOLGURA_ENCUADRE",
-            "line": 84
+            "line": 85
           },
           {
             "value": "App",
-            "line": 86
+            "line": 87
           }
         ],
         "api_calls": [
           {
             "method": "FETCH",
             "target": "${DATA}/simef.json",
-            "line": 114,
+            "line": 129,
             "file": "frontend/src/App.jsx"
           },
           {
             "method": "FETCH",
             "target": "${DATA}/oficiales.json",
-            "line": 118,
+            "line": 133,
             "file": "frontend/src/App.jsx"
           }
         ],
@@ -1378,30 +1496,58 @@
           {
             "value": "../config",
             "line": 1
+          },
+          {
+            "value": "./derivadas",
+            "line": 2
           }
         ],
         "exports": [
           {
             "value": "async",
-            "line": 19
+            "line": 20
           },
           {
             "value": "tablaColor",
-            "line": 82
+            "line": 85
           },
           {
             "value": "mascaraTodo",
-            "line": 108
+            "line": 111
           }
         ],
         "components": [
           {
             "value": "CONSTRUCTOR",
-            "line": 16
+            "line": 17
           },
           {
             "value": "ANCHO",
-            "line": 17
+            "line": 18
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/datos/derivadas.js": {
+      "javascript": {
+        "imports": [],
+        "exports": [
+          {
+            "value": "derivarDeColumnas",
+            "line": 48
+          },
+          {
+            "value": "derivarDeEspecie",
+            "line": 96
+          }
+        ],
+        "components": [
+          {
+            "value": "DERIVADAS",
+            "line": 27
           }
         ],
         "api_calls": [],
@@ -1441,6 +1587,21 @@
         "env_vars": []
       }
     },
+    "frontend/src/mapa/capturaMapa.js": {
+      "javascript": {
+        "imports": [],
+        "exports": [
+          {
+            "value": "capturarMapa",
+            "line": 73
+          }
+        ],
+        "components": [],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
     "frontend/src/mapa/CapaPuntos.jsx": {
       "javascript": {
         "imports": [
@@ -1468,17 +1629,13 @@
         "exports": [
           {
             "value": "CapaPuntos",
-            "line": 67
+            "line": 69
           }
         ],
         "components": [
           {
-            "value": "K",
-            "line": 60
-          },
-          {
             "value": "CapaPuntos",
-            "line": 67
+            "line": 69
           }
         ],
         "api_calls": [],
@@ -1509,15 +1666,15 @@
           },
           {
             "value": "CajaModal",
-            "line": 113
+            "line": 117
           },
           {
             "value": "BotonFiltro",
-            "line": 167
+            "line": 171
           },
           {
             "value": "ModalFiltro",
-            "line": 188
+            "line": 192
           }
         ],
         "components": [
@@ -1527,15 +1684,15 @@
           },
           {
             "value": "CajaModal",
-            "line": 113
+            "line": 117
           },
           {
             "value": "BotonFiltro",
-            "line": 167
+            "line": 171
           },
           {
             "value": "ModalFiltro",
-            "line": 188
+            "line": 192
           }
         ],
         "api_calls": [],
@@ -1674,48 +1831,44 @@
             "line": 2
           },
           {
-            "value": "../formato",
+            "value": "../indicadores",
             "line": 3
           },
           {
-            "value": "../indicadores",
+            "value": "../filtros",
             "line": 4
           },
           {
-            "value": "../urlState",
+            "value": "./GrupoFiltro",
             "line": 5
           },
           {
-            "value": "../filtros",
+            "value": "./ControlesPanel",
             "line": 6
           },
           {
-            "value": "./GrupoFiltro",
+            "value": "./ModalesPanel",
             "line": 7
           },
           {
-            "value": "./ControlesPanel",
-            "line": 8
-          },
-          {
             "value": "../territorio",
-            "line": 9
+            "line": 8
           }
         ],
         "exports": [
           {
             "value": "PanelLateral",
-            "line": 38
+            "line": 43
           }
         ],
         "components": [
           {
             "value": "SIN_DATO",
-            "line": 16
+            "line": 15
           },
           {
             "value": "PanelLateral",
-            "line": 38
+            "line": 43
           }
         ],
         "api_calls": [],
@@ -1893,15 +2046,15 @@
           },
           {
             "value": "Seccion",
-            "line": 634
+            "line": 636
           },
           {
             "value": "SeccionSimef",
-            "line": 667
+            "line": 669
           },
           {
             "value": "SeccionAnios",
-            "line": 793
+            "line": 795
           }
         ],
         "api_calls": [],
@@ -1913,24 +2066,20 @@
       "javascript": {
         "imports": [
           {
-            "value": "react",
-            "line": 1
-          },
-          {
             "value": "../formato",
-            "line": 2
+            "line": 1
           }
         ],
         "exports": [
           {
-            "value": "PaginaMetodologia",
-            "line": 19
+            "value": "CuerpoMetodologia",
+            "line": 27
           }
         ],
         "components": [
           {
-            "value": "PaginaMetodologia",
-            "line": 19
+            "value": "CuerpoMetodologia",
+            "line": 27
           }
         ],
         "api_calls": [],
@@ -1984,6 +2133,63 @@
           {
             "value": "CartelContexto",
             "line": 19
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/components/ModalesPanel.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          },
+          {
+            "value": "../config",
+            "line": 2
+          },
+          {
+            "value": "../formato",
+            "line": 3
+          },
+          {
+            "value": "../urlState",
+            "line": 4
+          },
+          {
+            "value": "./GrupoFiltro",
+            "line": 5
+          }
+        ],
+        "exports": [
+          {
+            "value": "ModalInformacion",
+            "line": 26
+          },
+          {
+            "value": "ModalDescargas",
+            "line": 126
+          },
+          {
+            "value": "ModalCompartir",
+            "line": 147
+          }
+        ],
+        "components": [
+          {
+            "value": "ModalInformacion",
+            "line": 26
+          },
+          {
+            "value": "ModalDescargas",
+            "line": 126
+          },
+          {
+            "value": "ModalCompartir",
+            "line": 147
           }
         ],
         "api_calls": [],
@@ -2097,136 +2303,192 @@
             "line": 34
           },
           {
-            "value": "shutil",
+            "value": "unicodedata",
             "line": 35
           },
           {
-            "value": "socketserver",
+            "value": "shutil",
             "line": 36
           },
           {
-            "value": "subprocess",
+            "value": "socketserver",
             "line": 37
           },
           {
-            "value": "sys",
+            "value": "subprocess",
             "line": 38
           },
           {
-            "value": "tempfile",
+            "value": "sys",
             "line": 39
           },
           {
-            "value": "threading",
+            "value": "tempfile",
             "line": 40
           },
           {
-            "value": "time",
+            "value": "threading",
             "line": 41
           },
           {
-            "value": "numpy",
-            "line": 43
+            "value": "time",
+            "line": 42
           },
           {
-            "value": "requests",
+            "value": "base64",
             "line": 44
           },
           {
+            "value": "numpy",
+            "line": 46
+          },
+          {
+            "value": "PIL",
+            "line": 47
+          },
+          {
+            "value": "requests",
+            "line": 48
+          },
+          {
             "value": "medir",
-            "line": 53
+            "line": 57
           },
           {
             "value": "importlib.util",
-            "line": 60
+            "line": 64
           }
         ],
         "functions": [
           {
             "name": "compilar",
-            "line": 79
+            "line": 83
+          },
+          {
+            "name": "construir_datos",
+            "line": 90
           },
           {
             "name": "abrir",
-            "line": 86
+            "line": 103
           },
           {
             "name": "ir",
-            "line": 115
+            "line": 132
           },
           {
             "name": "sonda_botones",
-            "line": 128
+            "line": 145
           },
           {
             "name": "sonda_anclaje",
-            "line": 138
+            "line": 160
           },
           {
             "name": "sonda_uso",
-            "line": 154
+            "line": 176
           },
           {
             "name": "sonda_territorio",
-            "line": 168
-          },
-          {
-            "name": "sonda_base",
             "line": 190
           },
           {
+            "name": "sonda_base",
+            "line": 212
+          },
+          {
             "name": "sonda_radio",
-            "line": 211
+            "line": 233
           },
           {
             "name": "_abrir_ficha",
-            "line": 238
+            "line": 261
           },
           {
             "name": "sonda_enlaces",
-            "line": 250
+            "line": 273
           },
           {
             "name": "sonda_ficha_correcta",
-            "line": 264
+            "line": 287
           },
           {
             "name": "sonda_tolerancia",
-            "line": 277
+            "line": 300
           },
           {
             "name": "sonda_ancho",
-            "line": 295
+            "line": 318
           },
           {
-            "name": "sonda_orden",
-            "line": 305
+            "name": "sonda_datos",
+            "line": 328
+          },
+          {
+            "name": "sonda_regiones",
+            "line": 356
+          },
+          {
+            "name": "sonda_ambito_vacio",
+            "line": 385
+          },
+          {
+            "name": "sonda_homologacion",
+            "line": 393
+          },
+          {
+            "name": "sonda_alias",
+            "line": 412
+          },
+          {
+            "name": "sonda_panel_limpio",
+            "line": 426
+          },
+          {
+            "name": "sonda_informacion",
+            "line": 440
+          },
+          {
+            "name": "sonda_compartir",
+            "line": 457
+          },
+          {
+            "name": "sonda_tres_nuevas",
+            "line": 468
           },
           {
             "name": "sonda_reporte",
-            "line": 313
+            "line": 503
+          },
+          {
+            "name": "sonda_mapa_del_reporte",
+            "line": 524
           },
           {
             "name": "sonda_impresion",
-            "line": 331
+            "line": 550
           },
           {
             "name": "main",
-            "line": 451
+            "line": 761
           },
           {
             "name": "translate_path",
-            "line": 69
+            "line": 73
           },
           {
             "name": "log_message",
-            "line": 75
+            "line": 79
+          },
+          {
+            "name": "plano",
+            "line": 396
           }
         ],
         "classes": [
           {
             "name": "Manejador",
-            "line": 68
+            "line": 72
           }
         ],
         "routes": [],
@@ -2289,128 +2551,140 @@
             "line": 25
           },
           {
-            "value": "numpy",
-            "line": 27
+            "value": "unicodedata",
+            "line": 26
           },
           {
-            "value": "requests",
+            "value": "numpy",
             "line": 28
           },
           {
-            "value": "PIL",
+            "value": "requests",
             "line": 29
           },
           {
+            "value": "PIL",
+            "line": 30
+          },
+          {
             "value": "medir",
-            "line": 34
+            "line": 35
           }
         ],
         "functions": [
           {
             "name": "servir",
-            "line": 65
+            "line": 66
           },
           {
             "name": "esperar",
-            "line": 72
+            "line": 73
           },
           {
             "name": "abrir_grupo",
-            "line": 116
+            "line": 136
           },
           {
             "name": "cerrar_grupo",
-            "line": 138
+            "line": 158
           },
           {
             "name": "grupo_filtro",
-            "line": 167
+            "line": 187
           },
           {
             "name": "marcar_clase",
-            "line": 176
-          },
-          {
-            "name": "leer_fila",
             "line": 196
           },
           {
+            "name": "leer_fila",
+            "line": 216
+          },
+          {
             "name": "clic",
-            "line": 208
+            "line": 228
           },
           {
             "name": "pulsar_enter",
-            "line": 215
+            "line": 235
           },
           {
             "name": "enfocar_mapa",
-            "line": 226
-          },
-          {
-            "name": "metros_por_pixel",
             "line": 246
           },
           {
+            "name": "metros_por_pixel",
+            "line": 266
+          },
+          {
+            "name": "columnas",
+            "line": 273
+          },
+          {
             "name": "puntos_bajo_el_clic",
-            "line": 253
+            "line": 296
           },
           {
             "name": "regiones_ofrecidas",
-            "line": 291
+            "line": 326
           },
           {
             "name": "diametro_del_disco",
-            "line": 308
+            "line": 343
           },
           {
             "name": "punto_aislado",
-            "line": 347
+            "line": 382
           },
           {
             "name": "punto_con_hueco",
-            "line": 415
+            "line": 441
           },
           {
             "name": "coord_de_la_ficha",
-            "line": 480
-          },
-          {
-            "name": "centro_del_mapa",
-            "line": 492
-          },
-          {
-            "name": "capturar",
             "line": 498
           },
           {
+            "name": "centro_del_mapa",
+            "line": 510
+          },
+          {
+            "name": "capturar",
+            "line": 516
+          },
+          {
             "name": "pintados",
-            "line": 505
+            "line": 523
           },
           {
             "name": "main",
-            "line": 520
+            "line": 538
           },
           {
             "name": "translate_path",
-            "line": 55
+            "line": 56
           },
           {
             "name": "log_message",
-            "line": 61
+            "line": 62
           },
           {
             "name": "prueba",
-            "line": 557
+            "line": 575
           },
           {
             "name": "vista",
-            "line": 1248
+            "line": 1273
+          },
+          {
+            "name": "sin_tilde",
+            "line": 1897
           }
         ],
         "classes": [
           {
             "name": "Manejador",
-            "line": 54
+            "line": 55
           }
         ],
         "routes": [],

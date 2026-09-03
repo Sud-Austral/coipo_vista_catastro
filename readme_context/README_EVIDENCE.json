@@ -1,16 +1,34 @@
 {
   "metadata": {
     "repository": "target",
-    "generated_at": "2026-08-31T00:42:03.219741",
+    "generated_at": "2026-09-03T13:17:32.106954",
     "analyzer": "readme3",
     "version": "2.0-evidence-first",
-    "file_count": 125
+    "file_count": 154
   },
   "policy": {
     "purpose": "Repository evidence extraction for documentation generation.",
     "important_rule": "Signals do not automatically represent confirmed product capabilities."
   },
   "files": [
+    {
+      "path": "README_CANDIDATE.md",
+      "name": "README_CANDIDATE.md",
+      "ext": ".md",
+      "language": "Markdown",
+      "size": 1270,
+      "text": true,
+      "important": false
+    },
+    {
+      "path": "CLAUDE.md",
+      "name": "CLAUDE.md",
+      "ext": ".md",
+      "language": "Markdown",
+      "size": 12157,
+      "text": true,
+      "important": false
+    },
     {
       "path": ".gitignore",
       "name": ".gitignore",
@@ -34,7 +52,7 @@
       "name": "README.md",
       "ext": ".md",
       "language": "Markdown",
-      "size": 24,
+      "size": 1270,
       "text": true,
       "important": true
     },
@@ -43,7 +61,7 @@
       "name": "mejoras.md",
       "ext": ".md",
       "language": "Markdown",
-      "size": 37834,
+      "size": 38294,
       "text": true,
       "important": false
     },
@@ -52,7 +70,7 @@
       "name": "DECISIONES.md",
       "ext": ".md",
       "language": "Markdown",
-      "size": 8175,
+      "size": 25748,
       "text": true,
       "important": false
     },
@@ -61,7 +79,7 @@
       "name": "build_bin.py",
       "ext": ".py",
       "language": "Python",
-      "size": 41589,
+      "size": 64613,
       "text": true,
       "important": false
     },
@@ -97,7 +115,7 @@
       "name": "verificar_datos.py",
       "ext": ".py",
       "language": "Python",
-      "size": 23901,
+      "size": 35022,
       "text": true,
       "important": false
     },
@@ -107,6 +125,186 @@
       "ext": ".py",
       "language": "Python",
       "size": 10268,
+      "text": true,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/__init__.py",
+      "name": "__init__.py",
+      "ext": ".py",
+      "language": "Python",
+      "size": 5674,
+      "text": true,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/14_REVISAR.csv",
+      "name": "14_REVISAR.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 2417,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/11_region.csv",
+      "name": "11_region.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 1108,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/15_especie_clasificada.csv",
+      "name": "15_especie_clasificada.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 135670,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/06_cobertura.csv",
+      "name": "06_cobertura.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 360,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/04_tipo_forestal.csv",
+      "name": "04_tipo_forestal.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 882,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/13_NO_FUSIONAR.csv",
+      "name": "13_NO_FUSIONAR.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 1524,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/09_comuna.csv",
+      "name": "09_comuna.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 18380,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/12_especie.csv",
+      "name": "12_especie.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 118638,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/01_uso.csv",
+      "name": "01_uso.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 736,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/08_snaspe.csv",
+      "name": "08_snaspe.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 9580,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/05_subtipo_forestal.csv",
+      "name": "05_subtipo_forestal.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 3052,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/10_provincia.csv",
+      "name": "10_provincia.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 2948,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/adiciones.csv",
+      "name": "adiciones.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 1328,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/07_altura.csv",
+      "name": "07_altura.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 656,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/16_genero.csv",
+      "name": "16_genero.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 26462,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/03_estructura.csv",
+      "name": "03_estructura.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 1220,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/adiciones_12_especie.csv",
+      "name": "adiciones_12_especie.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 553,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/02_subuso.csv",
+      "name": "02_subuso.csv",
+      "ext": ".csv",
+      "language": "Other",
+      "size": 2742,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "ETL/homologacion/desde_xlsx.py",
+      "name": "desde_xlsx.py",
+      "ext": ".py",
+      "language": "Python",
+      "size": 3499,
       "text": true,
       "important": false
     },
@@ -399,6 +597,33 @@
       "important": false
     },
     {
+      "path": "readme_context/README_CONTEXT_ULTRA.md",
+      "name": "README_CONTEXT_ULTRA.md",
+      "ext": ".md",
+      "language": "Markdown",
+      "size": 7494,
+      "text": true,
+      "important": false
+    },
+    {
+      "path": "readme_context/README_EVIDENCE.json",
+      "name": "README_EVIDENCE.json",
+      "ext": ".json",
+      "language": "JSON",
+      "size": 102351,
+      "text": true,
+      "important": false
+    },
+    {
+      "path": "readme_context/repository_analysis.json",
+      "name": "repository_analysis.json",
+      "ext": ".json",
+      "language": "JSON",
+      "size": 49665,
+      "text": true,
+      "important": false
+    },
+    {
       "path": "spike/spike_leaflet.html",
       "name": "spike_leaflet.html",
       "ext": ".html",
@@ -475,16 +700,7 @@
       "name": "readme.yml",
       "ext": ".yml",
       "language": "YAML",
-      "size": 221,
-      "text": true,
-      "important": false
-    },
-    {
-      "path": ".github/workflows/update-readme.yml",
-      "name": "update-readme.yml",
-      "ext": ".yml",
-      "language": "YAML",
-      "size": 2720,
+      "size": 223,
       "text": true,
       "important": false
     },
@@ -493,7 +709,7 @@
       "name": "deploy.yml",
       "ext": ".yml",
       "language": "YAML",
-      "size": 5397,
+      "size": 5842,
       "text": true,
       "important": false
     },
@@ -516,11 +732,29 @@
       "important": false
     },
     {
+      "path": "INSUMO/informe_visor_catastro.docx",
+      "name": "informe_visor_catastro.docx",
+      "ext": ".docx",
+      "language": "Other",
+      "size": 524827,
+      "text": false,
+      "important": false
+    },
+    {
       "path": "INSUMO/SICA Geo-Armonización_ Visor de Áreas y Zonas.pdf",
       "name": "SICA Geo-Armonización_ Visor de Áreas y Zonas.pdf",
       "ext": ".pdf",
       "language": "Other",
       "size": 2497888,
+      "text": false,
+      "important": false
+    },
+    {
+      "path": "INSUMO/homologacion_catastro_1.xlsx",
+      "name": "homologacion_catastro_1.xlsx",
+      "ext": ".xlsx",
+      "language": "Other",
+      "size": 175800,
       "text": false,
       "important": false
     },
@@ -646,7 +880,7 @@
       "name": "cbn_puntos.bin",
       "ext": ".bin",
       "language": "Other",
-      "size": 43870392,
+      "size": 49354191,
       "text": false,
       "important": false
     },
@@ -655,7 +889,7 @@
       "name": "manifest.json",
       "ext": ".json",
       "language": "JSON",
-      "size": 332955,
+      "size": 611498,
       "text": true,
       "important": false
     },
@@ -682,7 +916,7 @@
       "name": "indicadores.js",
       "ext": ".js",
       "language": "JavaScript",
-      "size": 18752,
+      "size": 21836,
       "text": true,
       "important": false
     },
@@ -691,7 +925,7 @@
       "name": "filtros.js",
       "ext": ".js",
       "language": "JavaScript",
-      "size": 9768,
+      "size": 14752,
       "text": true,
       "important": false
     },
@@ -700,7 +934,7 @@
       "name": "App.css",
       "ext": ".css",
       "language": "CSS",
-      "size": 47753,
+      "size": 50520,
       "text": true,
       "important": false
     },
@@ -709,7 +943,7 @@
       "name": "App.jsx",
       "ext": ".jsx",
       "language": "React",
-      "size": 36316,
+      "size": 39858,
       "text": true,
       "important": false
     },
@@ -772,7 +1006,16 @@
       "name": "binario.js",
       "ext": ".js",
       "language": "JavaScript",
-      "size": 4935,
+      "size": 5137,
+      "text": true,
+      "important": false
+    },
+    {
+      "path": "frontend/src/datos/derivadas.js",
+      "name": "derivadas.js",
+      "ext": ".js",
+      "language": "JavaScript",
+      "size": 4886,
       "text": true,
       "important": false
     },
@@ -822,11 +1065,20 @@
       "important": false
     },
     {
+      "path": "frontend/src/mapa/capturaMapa.js",
+      "name": "capturaMapa.js",
+      "ext": ".js",
+      "language": "JavaScript",
+      "size": 6843,
+      "text": true,
+      "important": false
+    },
+    {
       "path": "frontend/src/mapa/CapaPuntos.jsx",
       "name": "CapaPuntos.jsx",
       "ext": ".jsx",
       "language": "React",
-      "size": 15415,
+      "size": 16530,
       "text": true,
       "important": false
     },
@@ -835,7 +1087,7 @@
       "name": "GrupoFiltro.jsx",
       "ext": ".jsx",
       "language": "React",
-      "size": 14624,
+      "size": 15838,
       "text": true,
       "important": false
     },
@@ -844,7 +1096,7 @@
       "name": "Reporte.jsx",
       "ext": ".jsx",
       "language": "React",
-      "size": 30840,
+      "size": 33593,
       "text": true,
       "important": false
     },
@@ -871,7 +1123,7 @@
       "name": "PanelLateral.jsx",
       "ext": ".jsx",
       "language": "React",
-      "size": 15214,
+      "size": 10921,
       "text": true,
       "important": false
     },
@@ -898,7 +1150,7 @@
       "name": "PanelIndicadores.jsx",
       "ext": ".jsx",
       "language": "React",
-      "size": 36151,
+      "size": 36342,
       "text": true,
       "important": false
     },
@@ -907,7 +1159,7 @@
       "name": "PaginaMetodologia.jsx",
       "ext": ".jsx",
       "language": "React",
-      "size": 16522,
+      "size": 19576,
       "text": true,
       "important": false
     },
@@ -926,6 +1178,15 @@
       "ext": ".jsx",
       "language": "React",
       "size": 1234,
+      "text": true,
+      "important": false
+    },
+    {
+      "path": "frontend/src/components/ModalesPanel.jsx",
+      "name": "ModalesPanel.jsx",
+      "ext": ".jsx",
+      "language": "React",
+      "size": 8052,
       "text": true,
       "important": false
     },
@@ -952,7 +1213,7 @@
       "name": "captura-reporte-impreso.png",
       "ext": ".png",
       "language": "Other",
-      "size": 60635,
+      "size": 66181,
       "text": false,
       "important": false
     },
@@ -970,7 +1231,7 @@
       "name": "captura-modal-anclado.png",
       "ext": ".png",
       "language": "Other",
-      "size": 109417,
+      "size": 139261,
       "text": false,
       "important": false
     },
@@ -979,7 +1240,7 @@
       "name": "captura-botonera.png",
       "ext": ".png",
       "language": "Other",
-      "size": 121978,
+      "size": 148214,
       "text": false,
       "important": false
     },
@@ -988,7 +1249,7 @@
       "name": "captura-1050.png",
       "ext": ".png",
       "language": "Other",
-      "size": 107265,
+      "size": 72040,
       "text": false,
       "important": false
     },
@@ -997,7 +1258,7 @@
       "name": "captura-radio-z13.png",
       "ext": ".png",
       "language": "Other",
-      "size": 102432,
+      "size": 141358,
       "text": false,
       "important": false
     },
@@ -1006,7 +1267,7 @@
       "name": "captura-1440.png",
       "ext": ".png",
       "language": "Other",
-      "size": 78949,
+      "size": 88472,
       "text": false,
       "important": false
     },
@@ -1015,7 +1276,7 @@
       "name": "captura-pintado.png",
       "ext": ".png",
       "language": "Other",
-      "size": 261659,
+      "size": 248561,
       "text": false,
       "important": false
     },
@@ -1024,7 +1285,7 @@
       "name": "mutaciones-visor.py",
       "ext": ".py",
       "language": "Python",
-      "size": 22512,
+      "size": 37833,
       "text": true,
       "important": false
     },
@@ -1033,7 +1294,7 @@
       "name": "verificar.py",
       "ext": ".py",
       "language": "Python",
-      "size": 89580,
+      "size": 109401,
       "text": true,
       "important": false
     },
@@ -1042,7 +1303,7 @@
       "name": "captura-800.png",
       "ext": ".png",
       "language": "Other",
-      "size": 80810,
+      "size": 86685,
       "text": false,
       "important": false
     },
@@ -1056,11 +1317,20 @@
       "important": false
     },
     {
+      "path": "frontend/verificacion/captura-reporte-mapa.png",
+      "name": "captura-reporte-mapa.png",
+      "ext": ".png",
+      "language": "Other",
+      "size": 31849,
+      "text": false,
+      "important": false
+    },
+    {
       "path": "frontend/verificacion/marginales.mjs",
       "name": "marginales.mjs",
       "ext": ".mjs",
       "language": "Other",
-      "size": 16080,
+      "size": 16440,
       "text": false,
       "important": false
     },
@@ -1069,7 +1339,7 @@
       "name": "captura-cascada.png",
       "ext": ".png",
       "language": "Other",
-      "size": 281609,
+      "size": 295436,
       "text": false,
       "important": false
     },
@@ -1078,16 +1348,7 @@
       "name": "captura-ficha.png",
       "ext": ".png",
       "language": "Other",
-      "size": 148659,
-      "text": false,
-      "important": false
-    },
-    {
-      "path": "frontend/verificacion/captura-metodologia.png",
-      "name": "captura-metodologia.png",
-      "ext": ".png",
-      "language": "Other",
-      "size": 155744,
+      "size": 177401,
       "text": false,
       "important": false
     },
@@ -1096,7 +1357,7 @@
       "name": "captura-modal-filtro.png",
       "ext": ".png",
       "language": "Other",
-      "size": 110492,
+      "size": 140133,
       "text": false,
       "important": false
     },
@@ -1114,7 +1375,7 @@
       "name": "captura-mira.png",
       "ext": ".png",
       "language": "Other",
-      "size": 113496,
+      "size": 125767,
       "text": false,
       "important": false
     },
@@ -1123,7 +1384,7 @@
       "name": "captura-radio-z11.png",
       "ext": ".png",
       "language": "Other",
-      "size": 156237,
+      "size": 200904,
       "text": false,
       "important": false
     },
@@ -1132,26 +1393,29 @@
       "name": "captura-modal-cerrado.png",
       "ext": ".png",
       "language": "Other",
-      "size": 121999,
+      "size": 148189,
       "text": false,
       "important": false
     }
   ],
   "structure": {
+    "README_CANDIDATE.md": 1,
+    "CLAUDE.md": 1,
     ".gitignore": 1,
     ".gitattributes": 1,
     "README.md": 1,
     "mejoras.md": 1,
     "DECISIONES.md": 1,
-    "ETL": 6,
+    "ETL": 26,
     "INSUMO_GRAFICO": 32,
+    "readme_context": 3,
     "spike": 7,
     "data": 1,
-    ".github": 3,
+    ".github": 2,
     "notebooks": 1,
     "scripts": 1,
-    "INSUMO": 1,
-    "frontend": 68
+    "INSUMO": 3,
+    "frontend": 71
   },
   "important_files": [
     "frontend/package.json",
@@ -1162,13 +1426,24 @@
     ".github/workflows/deploy.yml",
     "frontend/vite.config.js",
     ".github/workflows/readme.yml",
-    ".github/workflows/update-readme.yml",
     "frontend/src/config.js"
   ],
   "technologies": {
     "React": {
       "confidence": "high",
       "evidence": [
+        {
+          "file": "README_CANDIDATE.md",
+          "line": 5,
+          "weight": 1,
+          "pattern": "\\breact\\b"
+        },
+        {
+          "file": "README.md",
+          "line": 5,
+          "weight": 1,
+          "pattern": "\\breact\\b"
+        },
         {
           "file": "mejoras.md",
           "line": 37,
@@ -1178,6 +1453,24 @@
         {
           "file": "INSUMO_GRAFICO/implementacion_banner.md",
           "line": 4,
+          "weight": 1,
+          "pattern": "\\breact\\b"
+        },
+        {
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 15,
+          "weight": 1,
+          "pattern": "\\breact\\b"
+        },
+        {
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 711,
+          "weight": 1,
+          "pattern": "\\breact\\b"
+        },
+        {
+          "file": "readme_context/repository_analysis.json",
+          "line": 724,
           "weight": 1,
           "pattern": "\\breact\\b"
         },
@@ -1258,36 +1551,6 @@
           "line": 1,
           "weight": 1,
           "pattern": "\\breact\\b"
-        },
-        {
-          "file": "frontend/src/components/SeccionDescargas.jsx",
-          "line": 1,
-          "weight": 1,
-          "pattern": "\\breact\\b"
-        },
-        {
-          "file": "frontend/src/components/ModalFicha.jsx",
-          "line": 1,
-          "weight": 1,
-          "pattern": "\\breact\\b"
-        },
-        {
-          "file": "frontend/src/components/PanelLateral.jsx",
-          "line": 1,
-          "weight": 1,
-          "pattern": "\\breact\\b"
-        },
-        {
-          "file": "frontend/src/components/Tirador.jsx",
-          "line": 1,
-          "weight": 1,
-          "pattern": "\\breact\\b"
-        },
-        {
-          "file": "frontend/src/components/graficos.jsx",
-          "line": 196,
-          "weight": 1,
-          "pattern": "\\breact\\b"
         }
       ]
     },
@@ -1295,8 +1558,26 @@
       "confidence": "high",
       "evidence": [
         {
+          "file": "README_CANDIDATE.md",
+          "line": 5,
+          "weight": 1,
+          "pattern": "\\bvite\\b"
+        },
+        {
+          "file": "CLAUDE.md",
+          "line": 31,
+          "weight": 1,
+          "pattern": "\\bvite\\b"
+        },
+        {
+          "file": "README.md",
+          "line": 5,
+          "weight": 1,
+          "pattern": "\\bvite\\b"
+        },
+        {
           "file": "mejoras.md",
-          "line": 203,
+          "line": 209,
           "weight": 1,
           "pattern": "\\bvite\\b"
         },
@@ -1309,6 +1590,24 @@
         {
           "file": "INSUMO_GRAFICO/implementacion_banner.md",
           "line": 218,
+          "weight": 1,
+          "pattern": "\\bvite\\b"
+        },
+        {
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 16,
+          "weight": 1,
+          "pattern": "\\bvite\\b"
+        },
+        {
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 537,
+          "weight": 1,
+          "pattern": "\\bvite\\b"
+        },
+        {
+          "file": "readme_context/repository_analysis.json",
+          "line": 716,
           "weight": 1,
           "pattern": "\\bvite\\b"
         },
@@ -1338,29 +1637,59 @@
         },
         {
           "file": "frontend/src/datos/binario.js",
-          "line": 40,
+          "line": 41,
+          "weight": 1,
+          "pattern": "\\bvite\\b"
+        },
+        {
+          "file": "frontend/verificacion/mutaciones-visor.py",
+          "line": 99,
           "weight": 1,
           "pattern": "\\bvite\\b"
         }
       ]
     },
     "Vue": {
-      "confidence": "low",
+      "confidence": "medium",
       "evidence": [
         {
           "file": "INSUMO_GRAFICO/implementacion_banner.md",
           "line": 4,
           "weight": 1,
           "pattern": "\\bvue\\b"
+        },
+        {
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 16,
+          "weight": 1,
+          "pattern": "\\bvue\\b"
+        },
+        {
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 1347,
+          "weight": 1,
+          "pattern": "\\bvue\\b"
         }
       ]
     },
     "Django": {
-      "confidence": "low",
+      "confidence": "medium",
       "evidence": [
         {
           "file": "INSUMO_GRAFICO/implementacion_banner.md",
           "line": 4,
+          "weight": 1,
+          "pattern": "\\bdjango\\b"
+        },
+        {
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 16,
+          "weight": 1,
+          "pattern": "\\bdjango\\b"
+        },
+        {
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 1358,
           "weight": 1,
           "pattern": "\\bdjango\\b"
         }
@@ -1370,14 +1699,50 @@
       "confidence": "high",
       "evidence": [
         {
+          "file": "README_CANDIDATE.md",
+          "line": 5,
+          "weight": 1,
+          "pattern": "\\bnode\\b"
+        },
+        {
+          "file": "CLAUDE.md",
+          "line": 79,
+          "weight": 1,
+          "pattern": "\\bnode\\b"
+        },
+        {
+          "file": "README.md",
+          "line": 5,
+          "weight": 1,
+          "pattern": "\\bnode\\b"
+        },
+        {
           "file": "mejoras.md",
-          "line": 193,
+          "line": 199,
+          "weight": 1,
+          "pattern": "\\bnode\\b"
+        },
+        {
+          "file": "DECISIONES.md",
+          "line": 369,
+          "weight": 1,
+          "pattern": "\\bnode\\b"
+        },
+        {
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 16,
+          "weight": 1,
+          "pattern": "\\bnode\\b"
+        },
+        {
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 1369,
           "weight": 1,
           "pattern": "\\bnode\\b"
         },
         {
           "file": ".github/workflows/deploy.yml",
-          "line": 55,
+          "line": 61,
           "weight": 1,
           "pattern": "\\bnode\\b"
         },
@@ -1401,13 +1766,19 @@
         },
         {
           "file": "frontend/src/datos/binario.js",
-          "line": 104,
+          "line": 107,
+          "weight": 1,
+          "pattern": "\\bnode\\b"
+        },
+        {
+          "file": "frontend/src/datos/derivadas.js",
+          "line": 5,
           "weight": 1,
           "pattern": "\\bnode\\b"
         },
         {
           "file": "frontend/verificacion/verificar.py",
-          "line": 104,
+          "line": 105,
           "weight": 1,
           "pattern": "\\bnode\\b"
         },
@@ -1423,8 +1794,50 @@
       "confidence": "high",
       "evidence": [
         {
+          "file": "README_CANDIDATE.md",
+          "line": 5,
+          "weight": 1,
+          "pattern": "\\bleaflet\\b"
+        },
+        {
+          "file": "CLAUDE.md",
+          "line": 45,
+          "weight": 1,
+          "pattern": "\\bleaflet\\b"
+        },
+        {
+          "file": "README.md",
+          "line": 5,
+          "weight": 1,
+          "pattern": "\\bleaflet\\b"
+        },
+        {
           "file": "mejoras.md",
           "line": 36,
+          "weight": 1,
+          "pattern": "\\bleaflet\\b"
+        },
+        {
+          "file": "DECISIONES.md",
+          "line": 302,
+          "weight": 1,
+          "pattern": "\\bleaflet\\b"
+        },
+        {
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 16,
+          "weight": 1,
+          "pattern": "\\bleaflet\\b"
+        },
+        {
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 1422,
+          "weight": 1,
+          "pattern": "\\bleaflet\\b"
+        },
+        {
+          "file": "readme_context/repository_analysis.json",
+          "line": 907,
           "weight": 1,
           "pattern": "\\bleaflet\\b"
         },
@@ -1478,7 +1891,7 @@
         },
         {
           "file": "frontend/src/indicadores.js",
-          "line": 387,
+          "line": 430,
           "weight": 1,
           "pattern": "\\bleaflet\\b"
         },
@@ -1499,54 +1912,24 @@
           "line": 267,
           "weight": 1,
           "pattern": "\\bleaflet\\b"
-        },
-        {
-          "file": "frontend/src/main.jsx",
-          "line": 3,
-          "weight": 1,
-          "pattern": "\\bleaflet\\b"
-        },
-        {
-          "file": "frontend/src/mapa/CapaPuntos.jsx",
-          "line": 2,
-          "weight": 1,
-          "pattern": "\\bleaflet\\b"
-        },
-        {
-          "file": "frontend/src/components/ModalFicha.jsx",
-          "line": 9,
-          "weight": 1,
-          "pattern": "\\bleaflet\\b"
-        },
-        {
-          "file": "frontend/src/components/graficos.jsx",
-          "line": 8,
-          "weight": 1,
-          "pattern": "\\bleaflet\\b"
-        },
-        {
-          "file": "frontend/src/components/PaginaMetodologia.jsx",
-          "line": 14,
-          "weight": 1,
-          "pattern": "\\bleaflet\\b"
-        },
-        {
-          "file": "frontend/src/components/EtiquetaImagen.jsx",
-          "line": 2,
-          "weight": 1,
-          "pattern": "\\bleaflet\\b"
-        },
-        {
-          "file": "frontend/src/components/Banner.jsx",
-          "line": 17,
-          "weight": 1,
-          "pattern": "\\bleaflet\\b"
         }
       ]
     },
     "Mapbox": {
-      "confidence": "low",
+      "confidence": "medium",
       "evidence": [
+        {
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 16,
+          "weight": 1,
+          "pattern": "\\bmapbox\\b"
+        },
+        {
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 1547,
+          "weight": 1,
+          "pattern": "\\bmapbox\\b"
+        },
         {
           "file": "frontend/package-lock.json",
           "line": 75,
@@ -1556,11 +1939,59 @@
       ]
     },
     "Pandas": {
-      "confidence": "low",
+      "confidence": "high",
       "evidence": [
+        {
+          "file": "README_CANDIDATE.md",
+          "line": 8,
+          "weight": 1,
+          "pattern": "\\bpandas\\b"
+        },
+        {
+          "file": "README.md",
+          "line": 8,
+          "weight": 1,
+          "pattern": "\\bpandas\\b"
+        },
+        {
+          "file": "DECISIONES.md",
+          "line": 222,
+          "weight": 1,
+          "pattern": "\\bpandas\\b"
+        },
         {
           "file": "ETL/leer_bin.py",
           "line": 1,
+          "weight": 1,
+          "pattern": "\\bpandas\\b"
+        },
+        {
+          "file": "ETL/homologacion/__init__.py",
+          "line": 30,
+          "weight": 1,
+          "pattern": "\\bpandas\\b"
+        },
+        {
+          "file": "ETL/homologacion/desde_xlsx.py",
+          "line": 16,
+          "weight": 1,
+          "pattern": "\\bpandas\\b"
+        },
+        {
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 16,
+          "weight": 1,
+          "pattern": "\\bpandas\\b"
+        },
+        {
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 1558,
+          "weight": 1,
+          "pattern": "\\bpandas\\b"
+        },
+        {
+          "file": "readme_context/repository_analysis.json",
+          "line": 242,
           "weight": 1,
           "pattern": "\\bpandas\\b"
         },
@@ -1573,23 +2004,65 @@
       ]
     },
     "NumPy": {
-      "confidence": "medium",
+      "confidence": "high",
       "evidence": [
         {
+          "file": "README_CANDIDATE.md",
+          "line": 8,
+          "weight": 1,
+          "pattern": "\\bnumpy\\b"
+        },
+        {
+          "file": "CLAUDE.md",
+          "line": 98,
+          "weight": 1,
+          "pattern": "\\bnumpy\\b"
+        },
+        {
+          "file": "README.md",
+          "line": 8,
+          "weight": 1,
+          "pattern": "\\bnumpy\\b"
+        },
+        {
           "file": "mejoras.md",
-          "line": 208,
+          "line": 214,
           "weight": 1,
           "pattern": "\\bnumpy\\b"
         },
         {
           "file": "ETL/build_bin.py",
-          "line": 92,
+          "line": 127,
           "weight": 1,
           "pattern": "\\bnumpy\\b"
         },
         {
           "file": "ETL/leer_bin.py",
           "line": 69,
+          "weight": 1,
+          "pattern": "\\bnumpy\\b"
+        },
+        {
+          "file": "ETL/verificar_datos.py",
+          "line": 614,
+          "weight": 1,
+          "pattern": "\\bnumpy\\b"
+        },
+        {
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 16,
+          "weight": 1,
+          "pattern": "\\bnumpy\\b"
+        },
+        {
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 1575,
+          "weight": 1,
+          "pattern": "\\bnumpy\\b"
+        },
+        {
+          "file": "readme_context/repository_analysis.json",
+          "line": 41,
           "weight": 1,
           "pattern": "\\bnumpy\\b"
         },
@@ -1606,14 +2079,20 @@
           "pattern": "\\bnumpy\\b"
         },
         {
+          "file": ".github/workflows/deploy.yml",
+          "line": 40,
+          "weight": 1,
+          "pattern": "\\bnumpy\\b"
+        },
+        {
           "file": "frontend/verificacion/mutaciones-visor.py",
-          "line": 43,
+          "line": 46,
           "weight": 1,
           "pattern": "\\bnumpy\\b"
         },
         {
           "file": "frontend/verificacion/verificar.py",
-          "line": 27,
+          "line": 28,
           "weight": 1,
           "pattern": "\\bnumpy\\b"
         }
@@ -1637,14 +2116,14 @@
       "method": "FETCH",
       "path": "${DATA}/simef.json",
       "file": "frontend/src/App.jsx",
-      "line": 114,
+      "line": 129,
       "type": "frontend_api_call"
     },
     {
       "method": "FETCH",
       "path": "${DATA}/oficiales.json",
       "file": "frontend/src/App.jsx",
-      "line": 118,
+      "line": 133,
       "type": "frontend_api_call"
     },
     {
@@ -1663,7 +2142,7 @@
         {
           "keyword": "token",
           "file": "mejoras.md",
-          "line": 413
+          "line": 419
         },
         {
           "keyword": "login",
@@ -1686,9 +2165,39 @@
           "line": 255
         },
         {
+          "keyword": "login",
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 35
+        },
+        {
+          "keyword": "jwt",
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 41
+        },
+        {
           "keyword": "token",
-          "file": ".github/workflows/update-readme.yml",
-          "line": 14
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 34
+        },
+        {
+          "keyword": "login",
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 1669
+        },
+        {
+          "keyword": "auth",
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 1714
+        },
+        {
+          "keyword": "jwt",
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 1699
+        },
+        {
+          "keyword": "token",
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 1664
         },
         {
           "keyword": "token",
@@ -1727,6 +2236,26 @@
       "signals": [
         {
           "keyword": "leaflet",
+          "file": "README_CANDIDATE.md",
+          "line": 5
+        },
+        {
+          "keyword": "leaflet",
+          "file": "CLAUDE.md",
+          "line": 45
+        },
+        {
+          "keyword": "mapa",
+          "file": "CLAUDE.md",
+          "line": 13
+        },
+        {
+          "keyword": "leaflet",
+          "file": "README.md",
+          "line": 5
+        },
+        {
+          "keyword": "leaflet",
           "file": "mejoras.md",
           "line": 36
         },
@@ -1734,6 +2263,21 @@
           "keyword": "mapa",
           "file": "mejoras.md",
           "line": 4
+        },
+        {
+          "keyword": "leaflet",
+          "file": "DECISIONES.md",
+          "line": 302
+        },
+        {
+          "keyword": "mapa",
+          "file": "DECISIONES.md",
+          "line": 150
+        },
+        {
+          "keyword": "mapa",
+          "file": "ETL/build_bin.py",
+          "line": 443
         },
         {
           "keyword": "mapa",
@@ -1748,88 +2292,63 @@
         {
           "keyword": "mapa",
           "file": "ETL/verificar_datos.py",
-          "line": 96
-        },
-        {
-          "keyword": "leaflet",
-          "file": "spike/spike_leaflet.html",
-          "line": 5
+          "line": 99
         },
         {
           "keyword": "mapa",
-          "file": "spike/spike_leaflet.html",
+          "file": "ETL/homologacion/__init__.py",
+          "line": 94
+        },
+        {
+          "keyword": "mapa",
+          "file": "ETL/homologacion/desde_xlsx.py",
           "line": 10
         },
         {
           "keyword": "leaflet",
-          "file": "spike/NOTAS.md",
-          "line": 151
-        },
-        {
-          "keyword": "mapa",
-          "file": "spike/NOTAS.md",
-          "line": 13
-        },
-        {
-          "keyword": "leaflet",
-          "file": "spike/diag.py",
-          "line": 44
-        },
-        {
-          "keyword": "mapa",
-          "file": "spike/medir.py",
-          "line": 48
-        },
-        {
-          "keyword": "leaflet",
-          "file": "spike/spike_hibrido.html",
-          "line": 5
-        },
-        {
-          "keyword": "mapa",
-          "file": "spike/spike_hibrido.html",
-          "line": 10
-        },
-        {
-          "keyword": "mapa",
-          "file": "spike/spike.html",
-          "line": 9
-        },
-        {
-          "keyword": "mapa",
-          "file": "spike/gen_bin.py",
-          "line": 58
-        },
-        {
-          "keyword": "leaflet",
-          "file": "frontend/index.html",
-          "line": 37
-        },
-        {
-          "keyword": "mapa",
-          "file": "frontend/index.html",
-          "line": 44
-        },
-        {
-          "keyword": "leaflet",
-          "file": "frontend/package.json",
-          "line": 18
-        },
-        {
-          "keyword": "leaflet",
-          "file": "frontend/package-lock.json",
-          "line": 14
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 16
         },
         {
           "keyword": "mapbox",
-          "file": "frontend/package-lock.json",
-          "line": 75
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 16
+        },
+        {
+          "keyword": "mapa",
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 42
+        },
+        {
+          "keyword": "leaflet",
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 402
+        },
+        {
+          "keyword": "mapbox",
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 1547
+        },
+        {
+          "keyword": "mapa",
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 825
         }
       ]
     },
     "Exportación": {
       "confidence": "medium",
       "signals": [
+        {
+          "keyword": "csv",
+          "file": "CLAUDE.md",
+          "line": 63
+        },
+        {
+          "keyword": "xlsx",
+          "file": "CLAUDE.md",
+          "line": 63
+        },
         {
           "keyword": "export",
           "file": "mejoras.md",
@@ -1838,7 +2357,7 @@
         {
           "keyword": "exportar",
           "file": "mejoras.md",
-          "line": 364
+          "line": 370
         },
         {
           "keyword": "csv",
@@ -1851,9 +2370,24 @@
           "line": 86
         },
         {
+          "keyword": "export",
+          "file": "DECISIONES.md",
+          "line": 295
+        },
+        {
+          "keyword": "exportar",
+          "file": "DECISIONES.md",
+          "line": 295
+        },
+        {
+          "keyword": "csv",
+          "file": "DECISIONES.md",
+          "line": 209
+        },
+        {
           "keyword": "csv",
           "file": "ETL/build_bin.py",
-          "line": 124
+          "line": 159
         },
         {
           "keyword": "excel",
@@ -1877,58 +2411,33 @@
         },
         {
           "keyword": "export",
-          "file": "frontend/vite.config.js",
-          "line": 15
-        },
-        {
-          "keyword": "export",
-          "file": "frontend/.oxlintrc.json",
-          "line": 6
+          "file": "ETL/homologacion/__init__.py",
+          "line": 53
         },
         {
           "keyword": "csv",
-          "file": "frontend/package-lock.json",
-          "line": 938
+          "file": "ETL/homologacion/__init__.py",
+          "line": 4
         },
         {
-          "keyword": "excel",
-          "file": "frontend/public/datos/manifest.json",
-          "line": 4402
-        },
-        {
-          "keyword": "export",
-          "file": "frontend/src/urlState.js",
-          "line": 28
+          "keyword": "xlsx",
+          "file": "ETL/homologacion/__init__.py",
+          "line": 4
         },
         {
           "keyword": "export",
-          "file": "frontend/src/indicadores.js",
-          "line": 35
+          "file": "ETL/homologacion/desde_xlsx.py",
+          "line": 45
         },
         {
-          "keyword": "export",
-          "file": "frontend/src/filtros.js",
-          "line": 26
-        },
-        {
-          "keyword": "export",
-          "file": "frontend/src/App.jsx",
-          "line": 86
-        },
-        {
-          "keyword": "export",
-          "file": "frontend/src/descargas.js",
-          "line": 47
+          "keyword": "exportar",
+          "file": "ETL/homologacion/desde_xlsx.py",
+          "line": 45
         },
         {
           "keyword": "csv",
-          "file": "frontend/src/descargas.js",
-          "line": 2
-        },
-        {
-          "keyword": "excel",
-          "file": "frontend/src/descargas.js",
-          "line": 2
+          "file": "ETL/homologacion/desde_xlsx.py",
+          "line": 1
         }
       ]
     },
@@ -1937,18 +2446,43 @@
       "signals": [
         {
           "keyword": "archivo",
+          "file": "README_CANDIDATE.md",
+          "line": 12
+        },
+        {
+          "keyword": "archivo",
+          "file": "CLAUDE.md",
+          "line": 58
+        },
+        {
+          "keyword": "document",
+          "file": "CLAUDE.md",
+          "line": 21
+        },
+        {
+          "keyword": "archivo",
+          "file": "README.md",
+          "line": 12
+        },
+        {
+          "keyword": "archivo",
           "file": "mejoras.md",
           "line": 89
         },
         {
           "keyword": "file",
           "file": "mejoras.md",
-          "line": 350
+          "line": 356
         },
         {
           "keyword": "document",
           "file": "mejoras.md",
           "line": 10
+        },
+        {
+          "keyword": "archivo",
+          "file": "DECISIONES.md",
+          "line": 396
         },
         {
           "keyword": "document",
@@ -1958,17 +2492,17 @@
         {
           "keyword": "archivo",
           "file": "ETL/build_bin.py",
-          "line": 568
+          "line": 819
         },
         {
           "keyword": "file",
           "file": "ETL/build_bin.py",
-          "line": 96
+          "line": 131
         },
         {
           "keyword": "document",
           "file": "ETL/build_bin.py",
-          "line": 39
+          "line": 70
         },
         {
           "keyword": "file",
@@ -2007,39 +2541,44 @@
         },
         {
           "keyword": "archivo",
-          "file": "INSUMO_GRAFICO/README.md",
-          "line": 12
-        },
-        {
-          "keyword": "file",
-          "file": "INSUMO_GRAFICO/README.md",
-          "line": 55
-        },
-        {
-          "keyword": "document",
-          "file": "INSUMO_GRAFICO/README.md",
-          "line": 13
-        },
-        {
-          "keyword": "archivo",
-          "file": "INSUMO_GRAFICO/implementacion_banner.md",
-          "line": 3
-        },
-        {
-          "keyword": "file",
-          "file": "INSUMO_GRAFICO/implementacion_banner.md",
-          "line": 63
-        },
-        {
-          "keyword": "document",
-          "file": "INSUMO_GRAFICO/implementacion_banner.md",
-          "line": 3
+          "file": "ETL/homologacion/__init__.py",
+          "line": 53
         }
       ]
     },
     "Reportes / analítica": {
       "confidence": "medium",
       "signals": [
+        {
+          "keyword": "report",
+          "file": "CLAUDE.md",
+          "line": 15
+        },
+        {
+          "keyword": "reporte",
+          "file": "CLAUDE.md",
+          "line": 15
+        },
+        {
+          "keyword": "report",
+          "file": "DECISIONES.md",
+          "line": 267
+        },
+        {
+          "keyword": "reporte",
+          "file": "DECISIONES.md",
+          "line": 267
+        },
+        {
+          "keyword": "report",
+          "file": "ETL/build_bin.py",
+          "line": 946
+        },
+        {
+          "keyword": "reporte",
+          "file": "ETL/build_bin.py",
+          "line": 946
+        },
         {
           "keyword": "estadistica",
           "file": "ETL/cifras_oficiales.py",
@@ -2048,77 +2587,67 @@
         {
           "keyword": "estadistica",
           "file": "ETL/verificar_datos.py",
-          "line": 225
+          "line": 228
+        },
+        {
+          "keyword": "report",
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 69
+        },
+        {
+          "keyword": "reporte",
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 69
+        },
+        {
+          "keyword": "estadistica",
+          "file": "readme_context/README_CONTEXT_ULTRA.md",
+          "line": 70
+        },
+        {
+          "keyword": "report",
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 843
+        },
+        {
+          "keyword": "reporte",
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 843
+        },
+        {
+          "keyword": "estadistica",
+          "file": "readme_context/README_EVIDENCE.json",
+          "line": 2044
+        },
+        {
+          "keyword": "report",
+          "file": "readme_context/repository_analysis.json",
+          "line": 967
+        },
+        {
+          "keyword": "reporte",
+          "file": "readme_context/repository_analysis.json",
+          "line": 967
         },
         {
           "keyword": "report",
           "file": "frontend/src/App.css",
-          "line": 904
+          "line": 931
         },
         {
           "keyword": "reporte",
           "file": "frontend/src/App.css",
-          "line": 904
+          "line": 931
         },
         {
           "keyword": "report",
           "file": "frontend/src/App.jsx",
-          "line": 33
+          "line": 34
         },
         {
           "keyword": "reporte",
           "file": "frontend/src/App.jsx",
-          "line": 33
-        },
-        {
-          "keyword": "report",
-          "file": "frontend/src/mapa/CapaPuntos.jsx",
-          "line": 272
-        },
-        {
-          "keyword": "report",
-          "file": "frontend/src/components/Reporte.jsx",
-          "line": 14
-        },
-        {
-          "keyword": "reporte",
-          "file": "frontend/src/components/Reporte.jsx",
-          "line": 14
-        },
-        {
-          "keyword": "report",
-          "file": "frontend/src/components/SeccionDescargas.jsx",
-          "line": 17
-        },
-        {
-          "keyword": "reporte",
-          "file": "frontend/src/components/SeccionDescargas.jsx",
-          "line": 17
-        },
-        {
-          "keyword": "report",
-          "file": "frontend/src/components/EtiquetaImagen.jsx",
-          "line": 60
-        },
-        {
-          "keyword": "report",
-          "file": "frontend/verificacion/mutaciones-visor.py",
-          "line": 5
-        },
-        {
-          "keyword": "reporte",
-          "file": "frontend/verificacion/mutaciones-visor.py",
-          "line": 5
-        },
-        {
-          "keyword": "report",
-          "file": "frontend/verificacion/verificar.py",
-          "line": 1591
-        },
-        {
-          "keyword": "reporte",
-          "file": "frontend/verificacion/verificar.py",
-          "line": 1591
+          "line": 34
         }
       ]
     },
@@ -2126,14 +2655,59 @@
       "confidence": "medium",
       "signals": [
         {
+          "keyword": "pandas",
+          "file": "README_CANDIDATE.md",
+          "line": 8
+        },
+        {
+          "keyword": "numpy",
+          "file": "README_CANDIDATE.md",
+          "line": 8
+        },
+        {
+          "keyword": "etl",
+          "file": "README_CANDIDATE.md",
+          "line": 6
+        },
+        {
+          "keyword": "numpy",
+          "file": "CLAUDE.md",
+          "line": 98
+        },
+        {
+          "keyword": "etl",
+          "file": "CLAUDE.md",
+          "line": 24
+        },
+        {
+          "keyword": "pandas",
+          "file": "README.md",
+          "line": 8
+        },
+        {
+          "keyword": "numpy",
+          "file": "README.md",
+          "line": 8
+        },
+        {
+          "keyword": "etl",
+          "file": "README.md",
+          "line": 6
+        },
+        {
           "keyword": "numpy",
           "file": "mejoras.md",
-          "line": 208
+          "line": 214
         },
         {
           "keyword": "etl",
           "file": "mejoras.md",
           "line": 21
+        },
+        {
+          "keyword": "pandas",
+          "file": "DECISIONES.md",
+          "line": 222
         },
         {
           "keyword": "etl",
@@ -2143,12 +2717,12 @@
         {
           "keyword": "numpy",
           "file": "ETL/build_bin.py",
-          "line": 92
+          "line": 127
         },
         {
           "keyword": "etl",
           "file": "ETL/build_bin.py",
-          "line": 80
+          "line": 56
         },
         {
           "keyword": "etl",
@@ -2179,51 +2753,6 @@
           "keyword": "etl",
           "file": "ETL/leer_bin.py",
           "line": 7
-        },
-        {
-          "keyword": "etl",
-          "file": "ETL/verificar_datos.py",
-          "line": 7
-        },
-        {
-          "keyword": "etl",
-          "file": "ETL/analisis_codigos.py",
-          "line": 13
-        },
-        {
-          "keyword": "numpy",
-          "file": "spike/medir.py",
-          "line": 36
-        },
-        {
-          "keyword": "numpy",
-          "file": "spike/gen_bin.py",
-          "line": 21
-        },
-        {
-          "keyword": "etl",
-          "file": "spike/gen_bin.py",
-          "line": 3
-        },
-        {
-          "keyword": "etl",
-          "file": ".github/workflows/update-readme.yml",
-          "line": 7
-        },
-        {
-          "keyword": "etl",
-          "file": ".github/workflows/deploy.yml",
-          "line": 3
-        },
-        {
-          "keyword": "etl",
-          "file": "frontend/public/datos/oficiales.json",
-          "line": 25
-        },
-        {
-          "keyword": "etl",
-          "file": "frontend/src/urlState.js",
-          "line": 13
         }
       ]
     }
@@ -2234,85 +2763,97 @@
         "imports": [
           {
             "value": "argparse",
-            "line": 83
+            "line": 114
           },
           {
             "value": "hashlib",
-            "line": 84
+            "line": 115
           },
           {
             "value": "json",
-            "line": 85
+            "line": 116
+          },
+          {
+            "value": "math",
+            "line": 117
           },
           {
             "value": "os",
-            "line": 86
+            "line": 118
           },
           {
             "value": "re",
-            "line": 87
+            "line": 119
           },
           {
             "value": "sys",
-            "line": 88
+            "line": 120
           },
           {
             "value": "unicodedata",
-            "line": 89
+            "line": 121
           },
           {
             "value": "duckdb",
-            "line": 91
+            "line": 123
+          },
+          {
+            "value": "scipy.spatial",
+            "line": 124
+          },
+          {
+            "value": "homologacion",
+            "line": 126
           },
           {
             "value": "numpy",
-            "line": 92
+            "line": 127
           }
         ],
         "functions": [
           {
             "name": "sha256",
-            "line": 159
+            "line": 230
           },
           {
             "name": "indexar",
-            "line": 167
+            "line": 238
           },
           {
             "name": "canon",
-            "line": 174
+            "line": 245
           },
           {
             "name": "etiqueta_mayoritaria",
-            "line": 194
+            "line": 265
           },
           {
             "name": "orden_altura",
-            "line": 218
+            "line": 289
           },
           {
             "name": "codificar",
-            "line": 237
+            "line": 308
           },
           {
             "name": "agregados",
-            "line": 268
+            "line": 339
           },
           {
             "name": "construir",
-            "line": 281
+            "line": 352
           },
           {
             "name": "main",
-            "line": 727
+            "line": 1109
           },
           {
             "name": "por_codigo",
-            "line": 325
+            "line": 396
           },
           {
             "name": "dominio",
-            "line": 619
+            "line": 870
           }
         ],
         "classes": [],
@@ -2539,6 +3080,14 @@
           {
             "value": "unicodedata",
             "line": 21
+          },
+          {
+            "value": "numpy",
+            "line": 622
+          },
+          {
+            "value": "scipy.spatial",
+            "line": 623
           }
         ],
         "functions": [
@@ -2564,55 +3113,75 @@
           },
           {
             "name": "leer_oficiales",
-            "line": 314
+            "line": 411
           },
           {
             "name": "leer",
-            "line": 325
+            "line": 422
           },
           {
             "name": "_cap",
-            "line": 338
+            "line": 435
           },
           {
             "name": "_off",
-            "line": 344
+            "line": 441
           },
           {
             "name": "_uso",
-            "line": 350
+            "line": 447
           },
           {
             "name": "_sub",
-            "line": 356
+            "line": 453
           },
           {
             "name": "_permutar_cobertura",
-            "line": 362
+            "line": 459
           },
           {
             "name": "_especie_cero",
-            "line": 377
+            "line": 474
           },
           {
             "name": "_altura_desordenada",
-            "line": 385
+            "line": 482
           },
           {
             "name": "_quitar_clase",
-            "line": 392
+            "line": 489
           },
           {
             "name": "_sin_dato",
-            "line": 402
+            "line": 499
           },
           {
             "name": "_sin_clase_na",
-            "line": 409
+            "line": 506
+          },
+          {
+            "name": "_tramo_imposible",
+            "line": 516
+          },
+          {
+            "name": "_region_sin_comunas",
+            "line": 525
+          },
+          {
+            "name": "_fundir_etiqueta",
+            "line": 532
+          },
+          {
+            "name": "_alias_roto",
+            "line": 542
+          },
+          {
+            "name": "discos_que_se_solapan",
+            "line": 605
           },
           {
             "name": "main",
-            "line": 466
+            "line": 669
           }
         ],
         "classes": [],
@@ -2692,6 +3261,80 @@
           {
             "name": "main",
             "line": 231
+          }
+        ],
+        "classes": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "ETL/homologacion/__init__.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "csv",
+            "line": 35
+          },
+          {
+            "value": "os",
+            "line": 36
+          }
+        ],
+        "functions": [
+          {
+            "name": "_leer",
+            "line": 44
+          },
+          {
+            "name": "_adiciones",
+            "line": 52
+          },
+          {
+            "name": "tabla",
+            "line": 77
+          },
+          {
+            "name": "mapa",
+            "line": 94
+          },
+          {
+            "name": "exigir",
+            "line": 110
+          }
+        ],
+        "classes": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "ETL/homologacion/desde_xlsx.py": {
+      "python": {
+        "imports": [
+          {
+            "value": "csv",
+            "line": 26
+          },
+          {
+            "value": "os",
+            "line": 27
+          },
+          {
+            "value": "sys",
+            "line": 28
+          },
+          {
+            "value": "openpyxl",
+            "line": 30
+          }
+        ],
+        "functions": [
+          {
+            "name": "exportar",
+            "line": 45
+          },
+          {
+            "name": "main",
+            "line": 68
           }
         ],
         "classes": [],
@@ -3021,35 +3664,35 @@
           },
           {
             "value": "resumenNacional",
-            "line": 81
+            "line": 106
           },
           {
             "value": "SIN_DATO_POR_COL",
-            "line": 121
+            "line": 155
           },
           {
             "value": "resumenYMarginales",
-            "line": 207
+            "line": 252
           },
           {
             "value": "composicionBosque",
-            "line": 394
+            "line": 437
           },
           {
             "value": "estructurasBosqueNativo",
-            "line": 415
+            "line": 458
           },
           {
             "value": "resumenSnaspe",
-            "line": 428
+            "line": 471
           },
           {
             "value": "ambitoTexto",
-            "line": 453
+            "line": 496
           },
           {
             "value": "anioDelAmbito",
-            "line": 466
+            "line": 509
           }
         ],
         "components": [
@@ -3059,7 +3702,7 @@
           },
           {
             "value": "SIN_DATO_POR_COL",
-            "line": 121
+            "line": 155
           }
         ],
         "api_calls": [],
@@ -3081,27 +3724,27 @@
           },
           {
             "value": "TOPE_LISTA",
-            "line": 118
-          },
-          {
-            "value": "opciones",
-            "line": 140
-          },
-          {
-            "value": "alternar",
             "line": 209
           },
           {
+            "value": "opciones",
+            "line": 231
+          },
+          {
+            "value": "alternar",
+            "line": 300
+          },
+          {
             "value": "cuentaSeleccion",
-            "line": 224
+            "line": 315
           },
           {
             "value": "filtrosAURL",
-            "line": 234
+            "line": 325
           },
           {
             "value": "filtrosDesdeURL",
-            "line": 247
+            "line": 349
           }
         ],
         "components": [
@@ -3115,7 +3758,7 @@
           },
           {
             "value": "TOPE_LISTA",
-            "line": 118
+            "line": 209
           }
         ],
         "api_calls": [],
@@ -3163,93 +3806,97 @@
             "line": 25
           },
           {
-            "value": "./components/EtiquetaImagen",
+            "value": "./mapa/capturaMapa",
             "line": 26
           },
           {
-            "value": "./components/ModalFicha",
+            "value": "./components/EtiquetaImagen",
             "line": 27
           },
           {
-            "value": "./components/Banner",
+            "value": "./components/ModalFicha",
             "line": 28
           },
           {
-            "value": "./components/CartelContexto",
+            "value": "./components/Banner",
             "line": 29
           },
           {
-            "value": "./components/PaginaMetodologia",
+            "value": "./components/CartelContexto",
             "line": 30
           },
           {
-            "value": "./components/PanelIndicadores",
+            "value": "./components/PaginaMetodologia",
             "line": 31
           },
           {
-            "value": "./components/PanelLateral",
+            "value": "./components/PanelIndicadores",
             "line": 32
           },
           {
-            "value": "./components/Reporte",
+            "value": "./components/PanelLateral",
             "line": 33
           },
           {
-            "value": "./components/SeccionDescargas",
+            "value": "./components/Reporte",
             "line": 34
           },
           {
-            "value": "./components/Tirador",
+            "value": "./components/SeccionDescargas",
             "line": 35
           },
           {
-            "value": "./components/graficos",
+            "value": "./components/Tirador",
             "line": 36
           },
           {
-            "value": "./hooks/useFechaImagen",
+            "value": "./components/graficos",
             "line": 37
           },
           {
-            "value": "./formato",
+            "value": "./hooks/useFechaImagen",
             "line": 38
+          },
+          {
+            "value": "./formato",
+            "line": 39
           }
         ],
         "exports": [
           {
             "value": "App",
-            "line": 86
+            "line": 87
           }
         ],
         "components": [
           {
             "value": "MAX_ZOOM_ENCUADRE",
-            "line": 76
+            "line": 77
           },
           {
             "value": "PADDING_ENCUADRE",
-            "line": 78
+            "line": 79
           },
           {
             "value": "HOLGURA_ENCUADRE",
-            "line": 84
+            "line": 85
           },
           {
             "value": "App",
-            "line": 86
+            "line": 87
           }
         ],
         "api_calls": [
           {
             "method": "FETCH",
             "target": "${DATA}/simef.json",
-            "line": 114,
+            "line": 129,
             "file": "frontend/src/App.jsx"
           },
           {
             "method": "FETCH",
             "target": "${DATA}/oficiales.json",
-            "line": 118,
+            "line": 133,
             "file": "frontend/src/App.jsx"
           }
         ],
@@ -3605,30 +4252,58 @@
           {
             "value": "../config",
             "line": 1
+          },
+          {
+            "value": "./derivadas",
+            "line": 2
           }
         ],
         "exports": [
           {
             "value": "async",
-            "line": 19
+            "line": 20
           },
           {
             "value": "tablaColor",
-            "line": 82
+            "line": 85
           },
           {
             "value": "mascaraTodo",
-            "line": 108
+            "line": 111
           }
         ],
         "components": [
           {
             "value": "CONSTRUCTOR",
-            "line": 16
+            "line": 17
           },
           {
             "value": "ANCHO",
-            "line": 17
+            "line": 18
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/datos/derivadas.js": {
+      "javascript": {
+        "imports": [],
+        "exports": [
+          {
+            "value": "derivarDeColumnas",
+            "line": 48
+          },
+          {
+            "value": "derivarDeEspecie",
+            "line": 96
+          }
+        ],
+        "components": [
+          {
+            "value": "DERIVADAS",
+            "line": 27
           }
         ],
         "api_calls": [],
@@ -3668,6 +4343,21 @@
         "env_vars": []
       }
     },
+    "frontend/src/mapa/capturaMapa.js": {
+      "javascript": {
+        "imports": [],
+        "exports": [
+          {
+            "value": "capturarMapa",
+            "line": 73
+          }
+        ],
+        "components": [],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
     "frontend/src/mapa/CapaPuntos.jsx": {
       "javascript": {
         "imports": [
@@ -3695,17 +4385,13 @@
         "exports": [
           {
             "value": "CapaPuntos",
-            "line": 67
+            "line": 69
           }
         ],
         "components": [
           {
-            "value": "K",
-            "line": 60
-          },
-          {
             "value": "CapaPuntos",
-            "line": 67
+            "line": 69
           }
         ],
         "api_calls": [],
@@ -3736,15 +4422,15 @@
           },
           {
             "value": "CajaModal",
-            "line": 113
+            "line": 117
           },
           {
             "value": "BotonFiltro",
-            "line": 167
+            "line": 171
           },
           {
             "value": "ModalFiltro",
-            "line": 188
+            "line": 192
           }
         ],
         "components": [
@@ -3754,15 +4440,15 @@
           },
           {
             "value": "CajaModal",
-            "line": 113
+            "line": 117
           },
           {
             "value": "BotonFiltro",
-            "line": 167
+            "line": 171
           },
           {
             "value": "ModalFiltro",
-            "line": 188
+            "line": 192
           }
         ],
         "api_calls": [],
@@ -3901,48 +4587,44 @@
             "line": 2
           },
           {
-            "value": "../formato",
+            "value": "../indicadores",
             "line": 3
           },
           {
-            "value": "../indicadores",
+            "value": "../filtros",
             "line": 4
           },
           {
-            "value": "../urlState",
+            "value": "./GrupoFiltro",
             "line": 5
           },
           {
-            "value": "../filtros",
+            "value": "./ControlesPanel",
             "line": 6
           },
           {
-            "value": "./GrupoFiltro",
+            "value": "./ModalesPanel",
             "line": 7
           },
           {
-            "value": "./ControlesPanel",
-            "line": 8
-          },
-          {
             "value": "../territorio",
-            "line": 9
+            "line": 8
           }
         ],
         "exports": [
           {
             "value": "PanelLateral",
-            "line": 38
+            "line": 43
           }
         ],
         "components": [
           {
             "value": "SIN_DATO",
-            "line": 16
+            "line": 15
           },
           {
             "value": "PanelLateral",
-            "line": 38
+            "line": 43
           }
         ],
         "api_calls": [],
@@ -4120,15 +4802,15 @@
           },
           {
             "value": "Seccion",
-            "line": 634
+            "line": 636
           },
           {
             "value": "SeccionSimef",
-            "line": 667
+            "line": 669
           },
           {
             "value": "SeccionAnios",
-            "line": 793
+            "line": 795
           }
         ],
         "api_calls": [],
@@ -4140,24 +4822,20 @@
       "javascript": {
         "imports": [
           {
-            "value": "react",
-            "line": 1
-          },
-          {
             "value": "../formato",
-            "line": 2
+            "line": 1
           }
         ],
         "exports": [
           {
-            "value": "PaginaMetodologia",
-            "line": 19
+            "value": "CuerpoMetodologia",
+            "line": 27
           }
         ],
         "components": [
           {
-            "value": "PaginaMetodologia",
-            "line": 19
+            "value": "CuerpoMetodologia",
+            "line": 27
           }
         ],
         "api_calls": [],
@@ -4211,6 +4889,63 @@
           {
             "value": "CartelContexto",
             "line": 19
+          }
+        ],
+        "api_calls": [],
+        "routes": [],
+        "env_vars": []
+      }
+    },
+    "frontend/src/components/ModalesPanel.jsx": {
+      "javascript": {
+        "imports": [
+          {
+            "value": "react",
+            "line": 1
+          },
+          {
+            "value": "../config",
+            "line": 2
+          },
+          {
+            "value": "../formato",
+            "line": 3
+          },
+          {
+            "value": "../urlState",
+            "line": 4
+          },
+          {
+            "value": "./GrupoFiltro",
+            "line": 5
+          }
+        ],
+        "exports": [
+          {
+            "value": "ModalInformacion",
+            "line": 26
+          },
+          {
+            "value": "ModalDescargas",
+            "line": 126
+          },
+          {
+            "value": "ModalCompartir",
+            "line": 147
+          }
+        ],
+        "components": [
+          {
+            "value": "ModalInformacion",
+            "line": 26
+          },
+          {
+            "value": "ModalDescargas",
+            "line": 126
+          },
+          {
+            "value": "ModalCompartir",
+            "line": 147
           }
         ],
         "api_calls": [],
@@ -4324,136 +5059,192 @@
             "line": 34
           },
           {
-            "value": "shutil",
+            "value": "unicodedata",
             "line": 35
           },
           {
-            "value": "socketserver",
+            "value": "shutil",
             "line": 36
           },
           {
-            "value": "subprocess",
+            "value": "socketserver",
             "line": 37
           },
           {
-            "value": "sys",
+            "value": "subprocess",
             "line": 38
           },
           {
-            "value": "tempfile",
+            "value": "sys",
             "line": 39
           },
           {
-            "value": "threading",
+            "value": "tempfile",
             "line": 40
           },
           {
-            "value": "time",
+            "value": "threading",
             "line": 41
           },
           {
-            "value": "numpy",
-            "line": 43
+            "value": "time",
+            "line": 42
           },
           {
-            "value": "requests",
+            "value": "base64",
             "line": 44
           },
           {
+            "value": "numpy",
+            "line": 46
+          },
+          {
+            "value": "PIL",
+            "line": 47
+          },
+          {
+            "value": "requests",
+            "line": 48
+          },
+          {
             "value": "medir",
-            "line": 53
+            "line": 57
           },
           {
             "value": "importlib.util",
-            "line": 60
+            "line": 64
           }
         ],
         "functions": [
           {
             "name": "compilar",
-            "line": 79
+            "line": 83
+          },
+          {
+            "name": "construir_datos",
+            "line": 90
           },
           {
             "name": "abrir",
-            "line": 86
+            "line": 103
           },
           {
             "name": "ir",
-            "line": 115
+            "line": 132
           },
           {
             "name": "sonda_botones",
-            "line": 128
+            "line": 145
           },
           {
             "name": "sonda_anclaje",
-            "line": 138
+            "line": 160
           },
           {
             "name": "sonda_uso",
-            "line": 154
+            "line": 176
           },
           {
             "name": "sonda_territorio",
-            "line": 168
-          },
-          {
-            "name": "sonda_base",
             "line": 190
           },
           {
+            "name": "sonda_base",
+            "line": 212
+          },
+          {
             "name": "sonda_radio",
-            "line": 211
+            "line": 233
           },
           {
             "name": "_abrir_ficha",
-            "line": 238
+            "line": 261
           },
           {
             "name": "sonda_enlaces",
-            "line": 250
+            "line": 273
           },
           {
             "name": "sonda_ficha_correcta",
-            "line": 264
+            "line": 287
           },
           {
             "name": "sonda_tolerancia",
-            "line": 277
+            "line": 300
           },
           {
             "name": "sonda_ancho",
-            "line": 295
+            "line": 318
           },
           {
-            "name": "sonda_orden",
-            "line": 305
+            "name": "sonda_datos",
+            "line": 328
+          },
+          {
+            "name": "sonda_regiones",
+            "line": 356
+          },
+          {
+            "name": "sonda_ambito_vacio",
+            "line": 385
+          },
+          {
+            "name": "sonda_homologacion",
+            "line": 393
+          },
+          {
+            "name": "sonda_alias",
+            "line": 412
+          },
+          {
+            "name": "sonda_panel_limpio",
+            "line": 426
+          },
+          {
+            "name": "sonda_informacion",
+            "line": 440
+          },
+          {
+            "name": "sonda_compartir",
+            "line": 457
+          },
+          {
+            "name": "sonda_tres_nuevas",
+            "line": 468
           },
           {
             "name": "sonda_reporte",
-            "line": 313
+            "line": 503
+          },
+          {
+            "name": "sonda_mapa_del_reporte",
+            "line": 524
           },
           {
             "name": "sonda_impresion",
-            "line": 331
+            "line": 550
           },
           {
             "name": "main",
-            "line": 451
+            "line": 761
           },
           {
             "name": "translate_path",
-            "line": 69
+            "line": 73
           },
           {
             "name": "log_message",
-            "line": 75
+            "line": 79
+          },
+          {
+            "name": "plano",
+            "line": 396
           }
         ],
         "classes": [
           {
             "name": "Manejador",
-            "line": 68
+            "line": 72
           }
         ],
         "routes": [],
@@ -4516,128 +5307,140 @@
             "line": 25
           },
           {
-            "value": "numpy",
-            "line": 27
+            "value": "unicodedata",
+            "line": 26
           },
           {
-            "value": "requests",
+            "value": "numpy",
             "line": 28
           },
           {
-            "value": "PIL",
+            "value": "requests",
             "line": 29
           },
           {
+            "value": "PIL",
+            "line": 30
+          },
+          {
             "value": "medir",
-            "line": 34
+            "line": 35
           }
         ],
         "functions": [
           {
             "name": "servir",
-            "line": 65
+            "line": 66
           },
           {
             "name": "esperar",
-            "line": 72
+            "line": 73
           },
           {
             "name": "abrir_grupo",
-            "line": 116
+            "line": 136
           },
           {
             "name": "cerrar_grupo",
-            "line": 138
+            "line": 158
           },
           {
             "name": "grupo_filtro",
-            "line": 167
+            "line": 187
           },
           {
             "name": "marcar_clase",
-            "line": 176
-          },
-          {
-            "name": "leer_fila",
             "line": 196
           },
           {
+            "name": "leer_fila",
+            "line": 216
+          },
+          {
             "name": "clic",
-            "line": 208
+            "line": 228
           },
           {
             "name": "pulsar_enter",
-            "line": 215
+            "line": 235
           },
           {
             "name": "enfocar_mapa",
-            "line": 226
-          },
-          {
-            "name": "metros_por_pixel",
             "line": 246
           },
           {
+            "name": "metros_por_pixel",
+            "line": 266
+          },
+          {
+            "name": "columnas",
+            "line": 273
+          },
+          {
             "name": "puntos_bajo_el_clic",
-            "line": 253
+            "line": 296
           },
           {
             "name": "regiones_ofrecidas",
-            "line": 291
+            "line": 326
           },
           {
             "name": "diametro_del_disco",
-            "line": 308
+            "line": 343
           },
           {
             "name": "punto_aislado",
-            "line": 347
+            "line": 382
           },
           {
             "name": "punto_con_hueco",
-            "line": 415
+            "line": 441
           },
           {
             "name": "coord_de_la_ficha",
-            "line": 480
-          },
-          {
-            "name": "centro_del_mapa",
-            "line": 492
-          },
-          {
-            "name": "capturar",
             "line": 498
           },
           {
+            "name": "centro_del_mapa",
+            "line": 510
+          },
+          {
+            "name": "capturar",
+            "line": 516
+          },
+          {
             "name": "pintados",
-            "line": 505
+            "line": 523
           },
           {
             "name": "main",
-            "line": 520
+            "line": 538
           },
           {
             "name": "translate_path",
-            "line": 55
+            "line": 56
           },
           {
             "name": "log_message",
-            "line": 61
+            "line": 62
           },
           {
             "name": "prueba",
-            "line": 557
+            "line": 575
           },
           {
             "name": "vista",
-            "line": 1248
+            "line": 1273
+          },
+          {
+            "name": "sin_tilde",
+            "line": 1897
           }
         ],
         "classes": [
           {
             "name": "Manejador",
-            "line": 54
+            "line": 55
           }
         ],
         "routes": [],
@@ -4683,7 +5486,38 @@
   "existing_readme": {
     "exists": true,
     "summary": [
-      "# coipo_vista_catastro"
+      "# coipo_vista_catastro",
+      "## Stack técnico",
+      "- Frontend: React, Vite, Node.js, Leaflet",
+      "- Backend: Python (ETL y procesamiento de datos)",
+      "- Lenguajes: JavaScript, Python, Markdown, JSON, HTML, YAML, CSS",
+      "- Librerías: NumPy, Pandas",
+      "## Estructura del proyecto",
+      "- `frontend/`: Aplicación principal (68 archivos)",
+      "- `src/`: Código fuente React",
+      "- `package.json`: Dependencias y scripts",
+      "- `vite.config.js`: Configuración de Vite",
+      "- `INSUMO_GRAFICO/`: Insumos gráficos (32 archivos)",
+      "- `spike/`: Código experimental (7 archivos)",
+      "- `ETL/`: Scripts de procesamiento (6 archivos)",
+      "- `.github/workflows/`: Flujos de GitHub (3 archivos)",
+      "- `deploy.yml`: Despliegue",
+      "- `readme.yml`: Actualización README",
+      "- `update-readme.yml`: Actualización README",
+      "- `data/`: Datos del proyecto",
+      "- `notebooks/`: Notebooks de Jupyter",
+      "- `scripts/`: Scripts auxiliares",
+      "- `INSUMO/`: Insumos adicionales",
+      "## API",
+      "Endpoints consumidos:",
+      "- `${DATA}/simef.json`: Datos del sistema SIMEF",
+      "- `${DATA}/oficiales.json`: Datos oficiales",
+      "- `${SERVICIO}?${q}`: Servicio para fechas de imágenes (con parámetro `q`)",
+      "## Configuración",
+      "Variable de entorno utilizada:",
+      "- `BASE_URL`: URL base de la aplicación",
+      "## Despliegue",
+      "Flujos de GitHub Actions para despliegue y actualización automática del README."
     ]
   }
 }
