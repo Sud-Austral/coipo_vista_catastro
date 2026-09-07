@@ -1,0 +1,173 @@
+# Manifiesto derivado del codigo. Una entrada por archivo relevante:
+# manifiestos de dependencias, datos que consume la aplicacion, tablas de
+# homologacion, insumos de origen y publicacion. El contenido de los archivos
+# no se leyo: solo su ruta, su tamano y como los consume el codigo.
+
+archivos:
+
+  - ruta: frontend/package.json
+    sha256: "d8155a16b402e318a5ef78cee5359951173837dbc63dd3d4bcf58b20b983189e"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] sin patron de dato personal detectable; conteo de coincidencias 0 en la evidencia"
+    puede_versionarse: true
+    uso: "Manifiesto de dependencias de la interfaz: 11 dependencias y 6 comandos, entre ellos dos de verificacion [frontend/package.json]"
+
+  - ruta: frontend/package-lock.json
+    sha256: "e3220cbe0545dcc344d75ac0daba46c248670cc48196fb47d6ebc706e1b01dba"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] sin patron de dato personal detectable; conteo de coincidencias 0 en la evidencia"
+    puede_versionarse: true
+    uso: "[INFERIDO] Fija las versiones exactas resueltas del manifiesto anterior; la evidencia lo lista como archivo clave [frontend/package-lock.json]"
+
+  - ruta: frontend/public/datos/cbn_puntos.bin
+    sha256: "f17f8dec271e39a537ce9d36169d592c5a3b07dd32dcd437f00d9fc78825a6f5"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] no evaluable desde la evidencia: es un binario de 49,4 MB cuyo contenido no se leyo, de modo que el conteo de patrones de dato personal es desconocido, no cero. El patron a buscar es la coordenada a nivel de punto, que puede permitir ubicar un predio. No vive en tests, fixtures, mocks ni seed, sino en el directorio de recursos publicos de la aplicacion"
+    puede_versionarse: "[VERIFICAR] hoy esta versionado y publicado; depende de que resuelva la linea anterior"
+    uso: "Fuente principal del visor: lo produce el constructor del binario [ETL/build_bin.py] y lo lee el modulo de ancho de registro fijo [frontend/src/datos/binario.js]"
+
+  - ruta: frontend/public/datos/manifest.json
+    sha256: "d57ab4c1c3d9c4c00581d07d67764054e85f1b6687c78dd6efa94a11ad1909a9"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido. Por su tamano (636 KB) es un indice de valores y no un conjunto de registros, lo que baja la probabilidad de dato personal sin descartarla"
+    puede_versionarse: "[VERIFICAR] depende de la linea anterior"
+    uso: "[INFERIDO] Describe el binario que acompana; lo escribe el constructor del binario [ETL/build_bin.py] y lo lee el lector de verificacion [ETL/leer_bin.py]"
+
+  - ruta: frontend/public/datos/simef.json
+    sha256: "f5ea8d6adb3f37402da74b672c10a625dcae1d7811d2d099f62b5343c7407822"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido. Por su tamano (22 KB) es una serie agregada, no un padron"
+    puede_versionarse: "[VERIFICAR] depende de la linea anterior"
+    uso: "Lo produce el constructor de la serie [ETL/build_simef.py] y lo carga la aplicacion al iniciar [frontend/src/App.jsx:129]"
+
+  - ruta: frontend/public/datos/oficiales.json
+    sha256: "253ce2d85fa3c0f0387a73cb58a4b6bbf62643716b8af30a460b6a5c7dd505a9"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido. Por su tamano (10 KB) es un conjunto de cifras agregadas"
+    puede_versionarse: "[VERIFICAR] depende de la linea anterior"
+    uso: "Cifras de referencia contra las que se contrasta el resultado: las produce el constructor de cifras [ETL/cifras_oficiales.py], las lee la aplicacion [frontend/src/App.jsx:133] y las usa el verificador [ETL/verificar_datos.py]"
+
+  - ruta: data/Catalogo_Datalake_GEF_singeometria.xlsx
+    sha256: "9274f0742947ee59a49682cf310cc15e08c818d8e26133b53b9ab8c64753efeb"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido. Es un libro de calculo de 137 KB entregado desde fuera del proyecto, que es justamente el caso donde mas se cuelan columnas de contacto o de titular"
+    puede_versionarse: "[VERIFICAR] hoy esta versionado; depende de la linea anterior"
+    uso: "[INFERIDO] Insumo de catalogo; candidato a ser el origen que lee el conversor de tablas de homologacion [ETL/homologacion/desde_xlsx.py]. Que sea este y no el otro libro del repositorio: [PENDIENTE]"
+
+  - ruta: INSUMO/homologacion_catastro_1.xlsx
+    sha256: "5dbe6721b23033b92b5697a09cef475fa0a08e46de4abacc44bd659f7ec5d9f4"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido, con la misma reserva que el libro anterior"
+    puede_versionarse: "[VERIFICAR] hoy esta versionado; depende de la linea anterior"
+    uso: "[INFERIDO] Segundo candidato a origen de las tablas de homologacion [ETL/homologacion/desde_xlsx.py]"
+
+  - ruta: INSUMO/informe_visor_catastro.docx
+    sha256: "7cb3633af9307648a626cf93c8fc20c2f8ec8ae13c2fd87cbddb273555fe7eaf"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido. Los informes suelen llevar nombres y correos de quien los firma, patron que aqui no se puede ni confirmar ni descartar"
+    puede_versionarse: "[VERIFICAR] hoy esta versionado; depende de la linea anterior"
+    uso: "[PENDIENTE] documento de insumo del visor; su rol en el proceso no es deducible de la evidencia, porque ningun codigo del repositorio lo consume"
+
+  - ruta: ETL/homologacion/01_uso.csv
+    sha256: "701153c6eeac148adb114dd55491c04eb39ee4859f792ec61477b35785de4487"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido. Es una tabla de equivalencia de clases de uso del suelo, no de personas"
+    puede_versionarse: true
+    uso: "Tabla de equivalencia de la primera dimension de la clasificacion; la carga el paquete de homologacion [ETL/homologacion/__init__.py]"
+
+  - ruta: ETL/homologacion/09_comuna.csv
+    sha256: "9db4f3b0e894a71327131ca5e2e19bd6a6e7e874ad43351daca9d1b191722b07"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido. Es division politico-administrativa, no dato personal"
+    puede_versionarse: true
+    uso: "Tabla de equivalencia territorial, la mayor de las tablas administrativas (19 KB); la carga el paquete de homologacion [ETL/homologacion/__init__.py]"
+
+  - ruta: ETL/homologacion/12_especie.csv
+    sha256: "68dbe1e67e1ca362321dd6cf07615618dc05e24d7fa640d8e8229cad437c7d49"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido. Es un catalogo de especies (120 KB), no de personas"
+    puede_versionarse: true
+    uso: "Tabla de equivalencia de especies; la carga el paquete de homologacion [ETL/homologacion/__init__.py] y la consume el constructor de cifras por especie [ETL/cifras_oficiales.py]"
+
+  - ruta: ETL/homologacion/15_especie_clasificada.csv
+    sha256: "e2e43f83db1f333ca508128ff1c9abf530f26fcdcdbca51ced35e33b61127327"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido. Catalogo de especies clasificadas (137 KB)"
+    puede_versionarse: true
+    uso: "[INFERIDO] Version clasificada del catalogo de especies; la carga el paquete de homologacion [ETL/homologacion/__init__.py]"
+
+  - ruta: ETL/homologacion/13_NO_FUSIONAR.csv
+    sha256: "5cbdfc684b21ed3dcbc28b76e5a187d60feb42ba68a80d62b4dfbc6e9c6d85c3"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido"
+    puede_versionarse: true
+    uso: "Decision de homologacion congelada como dato: registra los casos que no deben unificarse. Quien la tomo: [PENDIENTE]"
+
+  - ruta: ETL/homologacion/14_REVISAR.csv
+    sha256: "1c59e9ed500b2ccca7d4d9b2db96dce8d263dbb89937a8e7cb1df9adc7037c17"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido"
+    puede_versionarse: true
+    uso: "Registro de lo que quedo pendiente de revision en la homologacion. Quien debe revisarlo y en que plazo: [PENDIENTE]"
+
+  - ruta: ETL/homologacion/adiciones.csv
+    sha256: "aa59266c289e3a37ab406b669da9af6a2fd3ac637981f095a173a5cc0fece291"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido"
+    puede_versionarse: true
+    uso: "Correcciones manuales sobre las tablas de equivalencia; el paquete de homologacion las aplica aparte de las tablas base [ETL/homologacion/__init__.py]"
+
+  - ruta: ETL/homologacion/adiciones_12_especie.csv
+    sha256: "34fb674970735b3413d77e48e89ef8a6879c1dc776effab039b6084d438f91c1"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido"
+    puede_versionarse: true
+    uso: "Correcciones manuales especificas del catalogo de especies [ETL/homologacion/__init__.py]"
+
+  - ruta: notebooks/cbn.parquet
+    sha256: "51701afe9e8747acc183fa45ef5ed8e2eb224790205e653b29a3542d07c971a8"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] no evaluable desde la evidencia: archivo columnar de 31 MB cuyo contenido no se leyo; conteo desconocido, no cero. Es el candidato mas probable a contener el dato de origen sin agregar, por lo que su revision es prioritaria"
+    puede_versionarse: "[VERIFICAR] hoy esta versionado; depende de la linea anterior"
+    uso: "[PENDIENTE] su consumidor no aparece en la evidencia: ningun script del proceso lo importa por nombre. Convive con el cuaderno de analisis [notebooks/analisis_catastro.ipynb]"
+
+  - ruta: notebooks/analisis_catastro.ipynb
+    sha256: "943eaa0cc40129e8bb5779e659a93be8bef426f7d752edcba2ca28bba52b7d1d"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido. Un cuaderno de 987 KB guarda resultados junto al codigo, de modo que puede contener filas de dato reales impresas dentro"
+    puede_versionarse: "[VERIFICAR] hoy esta versionado; depende de la linea anterior"
+    uso: "[PENDIENTE] cuaderno de analisis exploratorio; ningun codigo del repositorio lo invoca"
+
+  - ruta: frontend/vite.config.js
+    sha256: "b520f7783043fe2df962b5565b3c3e24e0f57bf77f47dc69f7dfdc792660ae12"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] sin patron de dato personal detectable; conteo de coincidencias 0 en la evidencia"
+    puede_versionarse: true
+    uso: "Configuracion de construccion de la interfaz; declara la ruta base de publicacion [frontend/vite.config.js:7]"
+
+  - ruta: frontend/src/config.js
+    sha256: "650289e823b4a7b6254bcff55741226bea038206ea81de10be5d272234306de7"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] sin patron de dato personal detectable; conteo de coincidencias 0 en la evidencia"
+    puede_versionarse: true
+    uso: "Configuracion de negocio del visor: vista inicial, limites del encuadre, cortes de pantalla, paleta por uso y aviso de puntos [frontend/src/config.js]. La evidencia lo lista como archivo clave"
+
+  - ruta: .github/workflows/deploy.yml
+    sha256: "84fdaca246fe5015d35c345b2c8cfa6d7d10caad4cf66ce9e93eda1088e866b1"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido. Un flujo de publicacion puede declarar destinos y credenciales"
+    puede_versionarse: true
+    uso: "Flujo de publicacion; es el unico archivo de despliegue que la evidencia asocia con el proceso de preparacion del dato [.github/workflows/deploy.yml:3]"
+
+  - ruta: .github/workflows/readme.yml
+    sha256: "5d032b817daff7ba20c405e93bade853918a6c36008a5cb1e1c55f4725bb0745"
+    origen: "[PENDIENTE] quien lo entrego y cuando"
+    contiene_pii: "[VERIFICAR] contenido no leido; conteo desconocido"
+    puede_versionarse: true
+    uso: "Segundo flujo clasificado por la evidencia bajo archivos de despliegue [.github/workflows/readme.yml]"
+
+pendientes_del_manifiesto:
+  - "[PENDIENTE] No hay archivo de ejemplo de variables de entorno en la evidencia, pese a que la construccion usa una ruta base [frontend/vite.config.js:7] y el visor consulta un servicio externo [frontend/src/hooks/useFechaImagen.js:80]. Falta declarar donde vive esa direccion."
+  - "[PENDIENTE] No hay migraciones ni semillas de base de datos que sellar: el bloque de tablas de la evidencia viene vacio."
+  - "[PENDIENTE] Los banners y capturas de [INSUMO_GRAFICO/README.md] no se sellan aqui uno por uno: son 32 archivos de imagen sin consumo declarado por el codigo, salvo el banner que si usa la interfaz [frontend/src/assets/banner-conaf-fiscalizacion.jpg]. Falta decidir si son insumo del proyecto o material de otra area guardado aqui."
+  - "[VERIFICAR] Tres archivos pesados estan versionados y dos de ellos publicados: el binario de puntos, el archivo columnar y el cuaderno de analisis. Si alguno contuviera dato personal, corresponde revisar tanto su versionado como su exposicion. Este manifiesto no edita .gitignore ni ningun otro archivo."
