@@ -6,7 +6,7 @@
 
 ## Cuanto se recupera
 
-El detector encontro **6** candidatos (219 KB), el **3.9%** de los 153 archivos que el analizador recorre en cada corrida.
+El detector encontro **6** candidatos (218 KB), el **4.0%** de los 150 archivos que el analizador recorre en cada corrida.
 
 De ellos, **0** se proponen para borrar (0 KB) y **6** quedan para revisar.
 
@@ -16,7 +16,7 @@ Esto no es solo orden: cada archivo muerto ocupa presupuesto de contexto y empuj
 
 | Archivo | Tamaño | Por que |
 | --- | ---: | --- |
-| `readme_context/README_EVIDENCE.json` | 112 KB | El revisor no se pronuncio sobre este archivo. El detector lo marco como artefacto del generador. |
+| `readme_context/README_EVIDENCE.json` | 111 KB | El revisor no se pronuncio sobre este archivo. El detector lo marco como artefacto del generador. |
 | `readme_context/repository_analysis.json` | 54 KB | El revisor no se pronuncio sobre este archivo. El detector lo marco como artefacto del generador. |
 | `ETL/__pycache__/build_bin.cpython-313.pyc` | 24 KB | El revisor no se pronuncio sobre este archivo. El detector lo marco como resto de build o entorno. |
 | `spike/__pycache__/medir.cpython-313.pyc` | 18 KB | El revisor no se pronuncio sobre este archivo. El detector lo marco como resto de build o entorno. |
