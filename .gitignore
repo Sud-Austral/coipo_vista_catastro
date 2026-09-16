@@ -31,3 +31,8 @@ __pycache__/
 #     ROTO a proposito: versionarlas seria versionar el defecto.
 frontend/verificacion/*-sin-capa.png
 frontend/verificacion/mutacion-*.png
+
+# --- Higiene basica: dependencias, artefactos de build y secretos ---
+.env
+.env.local
+.env.*.local
