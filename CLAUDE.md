@@ -78,6 +78,7 @@ npm run dev
 npm run lint                               # oxlint. Verde en el estado base (0 avisos)
 npm run build                              # ~2 s: vite + portada horneada + validar-html
 npm run build:web                          # ~7 s: páginas por región y comuna, sitemap (DESPUÉS de build)
+python scripts/tarjetas.py                 # ~40 s: las 359 PNG de la vista previa (Pillow 12.3.0 FIJADO)
 npm run validar:paginas                    # oráculo propio sobre las 359 páginas, con negativas
 node scripts/robots.mjs                    # el robots.txt raíz (docs/robots-raiz.txt), RFC 9309
 npm run verify:cascada                     # el oráculo del cruce, en Node
@@ -92,7 +93,7 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
 **Trampas que cuestan tiempo si no las sabes:**
 
 - **`npm run build` hornea la portada en `dist/index.html`** (`scripts/prerender.mjs`) y
-  después la valida (`scripts/validar-html.mjs`, postbuild, con 18 negativas). El `<head>`
+  después la valida (`scripts/validar-html.mjs`, postbuild, con 20 negativas). El `<head>`
   de `index.html` tiene una marca `<!--cabeza-->` donde van la descripción, el canonical y la
   vista previa: **no se escriben a mano**. El grafo de `src/web/servidor.jsx` no puede
   importar leaflet, deck.gl ni `App.jsx` (en Node: «window is not defined»).
@@ -101,6 +102,10 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
 - **`npm run build` vacía `dist/`, páginas incluidas.** Después hay que correr `build:web`,
   y V-72 falla si no. `build:web` exige historia git completa (la fecha de los datos sale
   de `git log`; en un clon superficial se niega a correr).
+- **`scripts/tarjetas.py` se niega a correr con otro Pillow** que el de
+  `scripts/requirements.txt` (12.3.0): otra versión dibuja otros píxeles con el mismo sello.
+  Anaconda trae la 10.4: usa un venv (`pip install -r frontend/scripts/requirements.txt`).
+  La genérica `public/og.png` se regenera con `--generica` y SÍ se commitea.
 - **Una URL nueva** (una comuna que aparece o un nombre que cambia) exige
   `node scripts/web.mjs --registrar` y commitear `scripts/slugs-publicados.json`. El registro
   es sólo de alta: una URL publicada no desaparece, se vuelve alias.
@@ -125,11 +130,12 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
 |---|---|---|
 | Aserciones de datos (D1–D27) | 28, y **26 controles negativos** en rojo | `python ETL/verificar_datos.py --negativas` |
 | Oráculo del cruce | 21 casos + 5 negativos | `npm run verify:cascada` |
-| Cifras de la prosa, filtro del ámbito y módulos de `src/web/` | 27 pruebas, con negativas | `npm run prueba` |
+| Cifras de la prosa, filtro del ámbito y módulos de `src/web/` | 29 pruebas, con negativas | `npm run prueba` |
 | Arnés de navegador | V-1…V-72; 100 ejecuciones el 2026-09-26 (corre después de `build` y `build:web`) | `python frontend/verificacion/verificar.py` |
 | Mutaciones del visor | 34; las 5 de ETL se reportan «NO EJECUTADA» sin el `.duckdb` | `python frontend/verificacion/mutaciones-visor.py [--sin-etl]` |
-| Páginas generadas | 360 páginas, 15 negativas; generador con 8 controles negativos | `npm run build:web -- --negativas && npm run validar:paginas` |
-| Humo | 16 casos sin red | `node frontend/scripts/humo.mjs --negativas` |
+| Páginas generadas | 360 páginas, 18 negativas; generador con 8 controles negativos | `npm run build:web -- --negativas && npm run validar:paginas` |
+| Tarjetas PNG | 359 + la genérica; 4 negativas | `python frontend/scripts/tarjetas.py --negativas` |
+| Humo | 18 casos sin red | `node frontend/scripts/humo.mjs --negativas` |
 | Mutaciones de la aritmética | 7 (juzgan el oráculo y `npm run prueba`) | `python frontend/verificacion/mutaciones.py` |
 
 Todo verde el 2026-09-02.

@@ -20,6 +20,7 @@
  *   4. el sitemap publicado tiene exactamente 2 + regiones + comunas URL (la cuenta sale del
  *      manifest publicado, nunca escrita aquí), y una muestra de ellas responde 200 text/html;
  *   5. una página pedida sin la barra final responde 301 (lo hace Pages);
+ *   5b. la og:image de la portada y la de una página de la muestra: 200 image/png;
  *   6. el robots.txt de la RAÍZ del host, que es de la organización: si no existe, AVISO
  *      (ABIERTO, §M.2); si existe, se lee con RFC 9309 y un lector que cita bloqueado es ROJO.
  *
@@ -61,6 +62,9 @@ export function leerManifestPublicado(texto) {
 /** Cuántas URL tiene que tener el sitemap: portada, índice, cada región y cada comuna con polígonos. */
 export const urlsEsperadas = (man) =>
   2 + (man.regiones?.length ?? 0) + (man.comunas ?? []).filter((c) => c.n > 0).length
+
+/** La og:image de un HTML, o null. */
+export const imagenDe = (html) => html.match(/<meta property="og:image" content="([^"]+)"/)?.[1] ?? null
 
 /** Cinco URL repartidas a lo largo del sitemap, más el índice: una muestra, y siempre la misma. */
 export function muestra(locs) {
@@ -139,7 +143,8 @@ export async function humo(base, { huella: esperada, run = 'local', ...io }) {
   const clave = `humo=${run}`
   const index = await pedir(`${base}/?${clave}`, undefined, opciones)
   if (index.status !== 200) throw new Error(`la portada devolvió ${index.status}`)
-  log(`--- index.html: HTTP 200, ${(await bytesDe(index)).length} B`)
+  const htmlPortada = new TextDecoder().decode(await bytesDe(index))
+  log(`--- index.html: HTTP 200, ${Buffer.byteLength(htmlPortada)} B`)
 
   const rm = await pedir(`${base}/datos/manifest.json?${clave}`, undefined, opciones)
   if (rm.status !== 200) throw new Error(`el manifest devolvió ${rm.status}`)
@@ -159,8 +164,18 @@ export async function humo(base, { huella: esperada, run = 'local', ...io }) {
   revisarTamano(declarado, (await bytesDe(entero)).length)
   log(`--- cbn_puntos.bin: servido ${declarado} B = declarado`)
 
+  await revisarImagen(imagenDe(htmlPortada), 'la portada', clave, opciones)
   await revisarPaginas(base, man, clave, opciones)
   await revisarRobotsRaiz(base, opciones)
+}
+
+/** Una og:image tiene que servirse como PNG: si no, la vista previa sale sin tarjeta. */
+async function revisarImagen(url, de, clave, opciones) {
+  if (!url) throw new Error(`${de} no declara og:image`)
+  const r = await pedir(`${url}?${clave}`, undefined, opciones)
+  const tipo = r.headers.get('content-type') ?? ''
+  if (r.status !== 200 || !tipo.startsWith('image/png')) throw new Error(`la og:image de ${de} (${url}) devolvió ${r.status} ${tipo}`)
+  opciones.log(`--- og:image de ${de}: 200 image/png`)
 }
 
 /** Las páginas por región y comuna: el sitemap entero y una muestra servida. */
@@ -171,11 +186,15 @@ async function revisarPaginas(base, man, clave, opciones) {
   const locs = [...(await rs.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1])
   const esperadas = urlsEsperadas(man)
   if (locs.length !== esperadas) throw new Error(`el sitemap tiene ${locs.length} URL y el manifest pide ${esperadas}`)
+  let conImagen = null
   for (const u of muestra(locs)) {
     const r = await pedir(`${u}?${clave}`, undefined, opciones)
     const tipo = r.headers.get('content-type') ?? ''
     if (r.status !== 200 || !tipo.startsWith('text/html')) throw new Error(`${u} devolvió ${r.status} ${tipo}`)
+    const html = await r.text()
+    if (u.includes('/comuna/') || u.includes('/region/')) conImagen ??= [u, imagenDe(html)]
   }
+  if (conImagen) await revisarImagen(conImagen[1], conImagen[0], clave, opciones)
   log(`--- sitemap.xml: ${locs.length} URL (= manifest); muestra de ${muestra(locs).length} en 200 text/html`)
 
   const ri = await pedir(`${base}/web/indice.json?${clave}`, undefined, opciones)
@@ -239,8 +258,10 @@ const MAN = JSON.stringify({
   regiones: [{ cod: '14', nombre: 'Los Ríos' }],
   comunas: [{ cod: '14101', etiqueta: 'Valdivia', n: 5 }, { cod: '14999', etiqueta: 'Vacía', n: 0 }],
 })
-const INDEX = '<!doctype html><title>visor</title>'
 const B = 'https://ejemplo.invalid/visor'
+const INDEX = `<!doctype html><title>visor</title><meta property="og:image" content="${B}/og.png" />`
+const PAGINA = `<!doctype html><title>p</title><meta property="og:image" content="${B}/tarjetas/s/comuna-valdivia.png" />`
+const PNG = '\x89PNG'
 const LOCS = [`${B}/`, `${B}/regiones/`, `${B}/region/los-rios/`, `${B}/comuna/valdivia/`]
 const SITEMAP = LOCS.map((u) => `<url><loc>${u}</loc></url>`).join('\n')
 const ROBOTS = `User-agent: GPTBot\nUser-agent: ClaudeBot\nUser-agent: CCBot\nUser-agent: Applebot-Extended
@@ -252,8 +273,10 @@ const bueno = (extra = {}) => ({
   '/visor/datos/cbn_puntos.bin': [{ cuerpo: BIN, tipo: 'application/octet-stream' }],
   '/visor/sitemap.xml': [{ cuerpo: SITEMAP, tipo: 'application/xml' }],
   '/visor/regiones/': [{ cuerpo: INDEX }],
-  '/visor/region/los-rios/': [{ cuerpo: INDEX }],
-  '/visor/comuna/valdivia/': [{ cuerpo: INDEX }],
+  '/visor/region/los-rios/': [{ cuerpo: PAGINA }],
+  '/visor/comuna/valdivia/': [{ cuerpo: PAGINA }],
+  '/visor/og.png': [{ cuerpo: PNG, tipo: 'image/png' }],
+  '/visor/tarjetas/s/comuna-valdivia.png': [{ cuerpo: PNG, tipo: 'image/png' }],
   '/visor/comuna/valdivia': [{ status: 301, a: `${B}/comuna/valdivia/` }],
   '/visor/web/indice.json': [{ cuerpo: JSON.stringify({ esquema: 1, regiones: { 14: 'los-rios' }, comunas: { 14101: 'valdivia' } }), tipo: 'application/json' }],
   '/robots.txt': [{ cuerpo: ROBOTS, tipo: 'text/plain' }],
@@ -277,6 +300,8 @@ const CASOS = [
   ['el manifest no es JSON', bueno({ '/visor/datos/manifest.json': [{ cuerpo: '<html>404</html>' }] }), {}, false],
   ['la portada da 404', bueno({ '/visor/': [{ status: 404 }] }), {}, false],
   ['el manifest no declara el tamaño', bueno({ '/visor/datos/manifest.json': [{ cuerpo: '{}' }] }), {}, false],
+  ['la og:image de la portada no existe', bueno({ '/visor/og.png': [{ status: 404 }] }), {}, false],
+  ['la tarjeta de una página no existe', bueno({ '/visor/tarjetas/s/comuna-valdivia.png': [{ status: 404 }] }), {}, false],
   ['sin robots.txt en la raíz: aviso, no rojo', bueno({ '/robots.txt': [{ status: 404 }] }), {}, true],
   ['al sitemap le falta una comuna', bueno({ '/visor/sitemap.xml': [{ cuerpo: SITEMAP.replace(/<url><loc>[^<]*valdivia[^<]*<\/loc><\/url>/, '') }] }), {}, false],
   ['una página del sitemap da 404', bueno({ '/visor/comuna/valdivia/': [{ status: 404 }] }), {}, false],

@@ -8,6 +8,7 @@
     "build": "vite build && node scripts/prerender.mjs",
     "postbuild": "node scripts/validar-html.mjs",
     "build:web": "node scripts/web.mjs",
+    "tarjetas": "python scripts/tarjetas.py",
     "validar:paginas": "node scripts/validar-paginas.mjs",
     "lint": "oxlint",
     "preview": "vite preview",

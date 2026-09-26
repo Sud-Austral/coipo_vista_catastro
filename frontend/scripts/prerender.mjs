@@ -73,11 +73,17 @@ async function principal() {
     const srv = await construirServidor()
     const manifest = leerManifest()
     const descripcion = srv.descripcionPortada(manifest)
+    // La portada lleva la tarjeta GENÉRICA (public/og.png, versionada): esto corre en
+    // `npm run build`, antes de que existan las tarjetas por región y comuna.
+    const imagen = {
+      url: `${srv.URL_PUBLICA}og.png`, ancho: 1200, alto: 630,
+      alt: 'Catastro de Usos de la Tierra y Recursos Vegetacionales de CONAF: uso de la tierra y bosques de todo Chile',
+    }
     const cabeza = srv.cabezaPortada({
       canonical: srv.URL_PUBLICA,
       descripcion,
-      imagen: null,
-      version: versionVista(srv.TITULO, descripcion, null),
+      imagen,
+      version: versionVista(srv.TITULO, descripcion, imagen.url),
     })
     const cuerpo = srv.renderPortada({ manifest })
 

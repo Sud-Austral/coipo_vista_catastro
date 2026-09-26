@@ -43,6 +43,23 @@ const miles = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 const desescapar = (s) => s.replaceAll('&quot;', '"').replaceAll('&#x27;', "'").replaceAll('&#39;', "'")
   .replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&')
 
+/** (ancho, alto) de la cabecera IHDR de un PNG, o null si no es un PNG. */
+export function medidasPng(bytes) {
+  const firma = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
+  if (!bytes || bytes.length < 24 || firma.some((b, i) => bytes[i] !== b)) return null
+  if (bytes.toString('latin1', 12, 16) !== 'IHDR') return null
+  return [bytes.readUInt32BE(16), bytes.readUInt32BE(20)]
+}
+
+/** Lo que exige WhatsApp de una vista previa: 1200×630 y menos de 300 kB (guía §8.1). */
+export function problemaPng(bytes, nombre) {
+  const m = medidasPng(bytes)
+  if (!m) return `${nombre} no es un PNG`
+  if (m[0] !== 1200 || m[1] !== 630) return `${nombre} mide ${m[0]}×${m[1]} y no 1200×630`
+  if (bytes.length >= 300_000) return `${nombre} pesa ${bytes.length} B: WhatsApp descarta desde 300.000`
+  return null
+}
+
 export function raiz(html) {
   const i = html.indexOf('<div id="root">')
   if (i < 0) return null
@@ -71,7 +88,7 @@ export function tokens(css) {
  * Los problemas del HTML horneado. `ctx`: { manifest, existe(rutaEnDist), indexCss,
  * paginasCss }. Devuelve una lista de textos; vacía es que está bien.
  */
-export function problemas(html, { manifest, existe, indexCss, paginasCss }) {
+export function problemas(html, { manifest, existe, leer, indexCss, paginasCss }) {
   const p = []
   const r = raiz(html)
   if (r == null) return ['no hay <div id="root">']
@@ -149,6 +166,11 @@ export function problemas(html, { manifest, existe, indexCss, paginasCss }) {
     const img = ogImg[0]
     if (!img.startsWith(URL_PUBLICA)) p.push(`og:image «${img}» no es absoluta bajo ${URL_PUBLICA}`)
     else if (!existe(img.slice(URL_PUBLICA.length))) p.push(`og:image «${img}» no existe en dist/`)
+    else {
+      const malo = problemaPng(leer(img.slice(URL_PUBLICA.length)), 'og:image')
+      if (malo) p.push(malo)
+    }
+    if (metas(html, 'name', 'twitter:card')[0] !== 'summary_large_image') p.push('con og:image la tarjeta tiene que ser summary_large_image')
   } else if (metas(html, 'name', 'twitter:card')[0] !== 'summary') {
     p.push('sin og:image la tarjeta tiene que ser twitter:card=summary')
   }
@@ -199,7 +221,9 @@ function negativas(html, ctx) {
     ['og:title distinto de <title>', soloHtml((h) => h.replace(/(og:title" content=")/, '$1Otro '))],
     ['description distinta de og:description', soloHtml((h) => h.replace(/(name="description" content=")/, '$1Otra '))],
     ['marca sin reemplazar', soloHtml(reemplazo('</head>', '<!--cabeza--></head>'))],
-    ['og:image que no existe', soloHtml(reemplazo('</head>', `<meta property="og:image" content="${URL_PUBLICA}no-existe.png" /></head>`))],
+    ['og:image que no existe', soloHtml((h) => h.replace(/(og:image" content="[^"]*)og\.png/, '$1no-existe.png'))],
+    ['og:image que no es de 1200×630', (h, c) => [h, { ...c, leer: () => Buffer.concat([c.leer('og.png').subarray(0, 16), Buffer.from([0, 0, 4, 176, 0, 0, 2, 119]), c.leer('og.png').subarray(24)]) }]],
+    ['sin tarjeta grande con og:image', soloHtml((h) => h.replace('content="summary_large_image"', 'content="summary"'))],
     ['un token de paginas.css distinto', (h, c) => [h, { ...c, paginasCss: c.paginasCss.replace('--verde-institucional: #064928', '--verde-institucional: #000000') }]],
     ['Umami sin identificador', soloHtml(reemplazo('</head>', '<script defer src="https://prueba5.conaf.cl/conaf.js"></script></head>'))],
   ]
@@ -210,6 +234,7 @@ function principal() {
   const ctx = {
     manifest: leerManifest(join(DIST, 'datos')),
     existe: (ruta) => existsSync(join(DIST, ruta)),
+    leer: (ruta) => readFileSync(join(DIST, ruta)),
     indexCss: readFileSync(join(RAIZ, 'src', 'index.css'), 'utf8'),
     paginasCss: readFileSync(join(DIST, 'paginas.css'), 'utf8'),
   }

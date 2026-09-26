@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url'
 import test from 'node:test'
 import { BASE, URL_PUBLICA, UMAMI } from '../src/web/sitio.js'
 import {
-  descripcionPortada, fraseComuna, fraseNacional, fraseRegion, QUIEN, SALVEDAD, slugDePagina,
+  descripcionPortada, fraseComuna, fraseNacional, fraseRegion, QUIEN, SALVEDAD, slugDePagina, tarjetaDe,
 } from '../src/web/textos.js'
 import { escaparHtml, etiquetaUmami, jsonLd, metasVistaPrevia } from '../src/web/cabeza.js'
 import { haEntera } from '../src/formato.js'
@@ -133,6 +133,27 @@ test('frase de región: la cifra oficial va con el año de SU planilla', () => {
   assert.ok(f.startsWith('Región de Valparaíso: '))
   assert.ok(f.includes('actualización 2014 del Catastro'))
   assert.ok(f.includes('planilla de la actualización 2015, es de 4.061.628 ha'))
+})
+
+test('tarjeta: tres renglones enteros, la actualización en la franja y la URL sin protocolo', () => {
+  const t = tarjetaDe({
+    archivo: 'comuna-valdivia.png', titulo: 'Comuna de Valdivia', subtitulo: 'Región de Los Ríos', anio: '2020-2022',
+    resumen: resumenDe({ ha: 101790.23, n: 9664, bosques: 69724.6, nativo: 43309.4 }),
+    url: `${URL_PUBLICA}comuna/valdivia/`,
+  })
+  assert.deepEqual(t.renglones, [
+    '101.790 ha catastradas en 9.664 polígonos', '69.725 ha de bosques (68,5 %)', '43.309 ha de bosque nativo',
+  ])
+  assert.equal(t.franja, 'CATASTRO DE CONAF · ACTUALIZACIÓN 2020-2022')
+  assert.ok(!t.url.startsWith('http') && t.url.endsWith('/comuna/valdivia/'))
+  for (const r of t.renglones) assert.doesNotMatch(r, /\d,\d+ ha/)
+})
+
+test('tarjeta sin bosques: no dice «no hay», dice que el Catastro no lo clasifica', () => {
+  const t = tarjetaDe({ archivo: 'x.png', titulo: 'Comuna de Santiago', anio: 2019, resumen: resumenDe({ ha: 2310, n: 1 }), url: 'https://x/' })
+  assert.equal(t.renglones[0], '2.310 ha catastradas en 1 polígono')
+  assert.ok(t.renglones.some((r) => r.includes('Ningún polígono clasificado como bosque')))
+  assert.ok(!t.renglones.some((r) => /no hay bosque/i.test(r)))
 })
 
 test('Umami: sin identificador no se escribe nada', () => {

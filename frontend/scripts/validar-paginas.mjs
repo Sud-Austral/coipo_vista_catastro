@@ -28,6 +28,8 @@ import { cargarDatos } from './datos-node.mjs'
 import { BASE, ORIGEN, UMAMI, URL_PUBLICA } from '../src/web/sitio.js'
 import { QUIEN, SALVEDAD, slugDePagina } from '../src/web/textos.js'
 import { escaparHtml } from '../src/web/cabeza.js'
+import { problemaPng } from './validar-html.mjs'
+import { readdirSync } from 'node:fs'
 
 const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const DIST = join(RAIZ, 'dist')
@@ -81,7 +83,7 @@ const enDist = (ruta) => {
 }
 
 /** Los problemas de UNA página generada (región, comuna o índice). */
-export function problemasPagina(html, pag, { existe, oraculo: o }) {
+export function problemasPagina(html, pag, { existe, leer, oraculo: o }) {
   const p = []
   const canonical = ORIGEN + pag.ruta
   const canon = [...cabeza(html).matchAll(/<link rel="canonical" href="([^"]*)"/g)].map((m) => m[1])
@@ -95,7 +97,12 @@ export function problemasPagina(html, pag, { existe, oraculo: o }) {
   const d = metas(html, 'name', 'description')
   if (d.length !== 1 || d[0] !== metas(html, 'property', 'og:description')[0]) p.push('description ≠ og:description')
   const img = metas(html, 'property', 'og:image')[0]
-  if (img && (!img.startsWith(URL_PUBLICA) || !existe(enDist(img.slice(ORIGEN.length))))) p.push(`og:image «${img}» no existe`)
+  if (!img) p.push('sin og:image: la vista previa saldría sin tarjeta')
+  else if (!img.startsWith(URL_PUBLICA) || !existe(enDist(img.slice(ORIGEN.length)))) p.push(`og:image «${img}» no existe`)
+  else {
+    const malo = problemaPng(leer(enDist(img.slice(ORIGEN.length))), 'og:image')
+    if (malo) p.push(malo)
+  }
 
   // JSON-LD: parsea, sin «<», y lo que declara se ve.
   const vis = texto(html)
@@ -162,8 +169,13 @@ export function problemasPagina(html, pag, { existe, oraculo: o }) {
 }
 
 /** Los problemas del conjunto: el sitemap y el registro de URL publicadas. */
-export function problemasSitio({ man, sitemap, registro, existe }) {
+export function problemasSitio({ man, sitemap, registro, existe, tarjetas, citadas }) {
   const p = []
+  // Cada tarjeta dibujada se cita y cada citada existe: una PNG huérfana es trabajo que
+  // nadie ve, y suele delatar que las páginas citan OTRA carpeta.
+  const huerfanas = tarjetas.filter((t) => !citadas.has(t))
+  if (huerfanas.length) p.push(`${huerfanas.length} tarjetas que ninguna página cita (${huerfanas[0]})`)
+  if (!tarjetas.length) p.push('no hay tarjetas en dist/tarjetas/: ¿corriste scripts/tarjetas.py?')
   const esperadas = paginasEsperadas(man).map((x) => ORIGEN + x.ruta)
   const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1])
   if (locs.length !== esperadas.length) p.push(`el sitemap tiene ${locs.length} URL y tienen que ser ${esperadas.length}`)
@@ -205,6 +217,9 @@ function negativas(pags, ctx) {
     ['el Dataset declara un archivo que no se ve', unaPagina(indice, (h) => h.replace(/>manifest\.json<\/a>/, '>índice</a>'))],
     ['falta una comuna en el sitemap', () => problemasSitio({ ...ctx, sitemap: ctx.sitemap.replace(/<url><loc>[^<]*panguipulli[^<]*<\/loc>[^\n]*\n/, '') })],
     ['una URL publicada sin página', () => problemasSitio({ ...ctx, registro: { ...ctx.registro, 'comuna/no-existe': '99999' } })],
+    ['una tarjeta que nadie cita', () => problemasSitio({ ...ctx, tarjetas: [...ctx.tarjetas, `${BASE}tarjetas/x/huerfana.png`] })],
+    ['la página no cita su tarjeta', unaPagina(comuna, (h) => h.replace(/<meta property="og:image" [^>]*>/, ''))],
+    ['la tarjeta citada no es de 1200×630', unaPagina(comuna, (h) => h, { leer: () => Buffer.from('no es un png') })],
   ]
 }
 
@@ -220,9 +235,17 @@ function principal() {
     process.exit(1)
   }
   const pags = esperadas.map((pag) => ({ pag, html: leer(pag.ruta) }))
+  const dirTarjetas = join(DIST, 'tarjetas')
+  const tarjetas = existsSync(dirTarjetas)
+    ? readdirSync(dirTarjetas).flatMap((s) => readdirSync(join(dirTarjetas, s)).map((f) => `${BASE}tarjetas/${s}/${f}`))
+    : []
+  const citadas = new Set(pags.map(({ html }) => metas(html, 'property', 'og:image')[0]?.slice(ORIGEN.length)).filter(Boolean))
   const ctx = {
     man,
     existe,
+    leer: (r) => readFileSync(join(DIST, r)),
+    tarjetas,
+    citadas,
     oraculo: oraculo(datos),
     sitemap: readFileSync(join(DIST, 'sitemap.xml'), 'utf8'),
     registro: JSON.parse(readFileSync(join(RAIZ, 'scripts', 'slugs-publicados.json'), 'utf8')),

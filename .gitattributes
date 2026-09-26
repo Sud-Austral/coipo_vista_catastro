@@ -10,5 +10,10 @@
 *.parquet  binary -text -diff
 *.png      binary -text -diff
 *.jpg      binary -text -diff
+# La tipografia de las tarjetas y su licencia llevan sha256 catalogado
+# (frontend/scripts/fuentes/fuentes.json): sin -text, git convertiria los finales de
+# linea de la licencia en Windows y el sha dejaria de coincidir en otro clon.
+*.ttf      binary -text -diff
+frontend/scripts/fuentes/*.txt -text
 
 .github/workflows/*.lock.yml linguist-generated=true

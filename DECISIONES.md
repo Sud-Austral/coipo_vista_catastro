@@ -575,6 +575,35 @@ no exista. **Lo que no se hace**: páginas por provincia (sólo existen como nom
 estado de conservación en las páginas (sin validar contra el RCE) y `noindex` para `/datos/`
 (Pages no deja poner cabeceras, y bloquearlo impediría a Googlebot renderizar).
 
+### M.10 La tarjeta de la vista previa, por región y por comuna
+
+Un enlace a una comuna compartido por WhatsApp mostraba el título y nada más: sin `og:image`
+no hay tarjeta grande. Ahora cada página de región y de comuna cita la suya, de 1200×630:
+el nombre en grande, la región, tres renglones (superficie catastrada con sus polígonos,
+bosques con su porcentaje, bosque nativo) y, en la franja de abajo y en grande, **de qué
+actualización es la cifra**, porque la vista previa se guarda días y tiene que delatarse sola.
+La portada y el índice llevan una genérica sin cifras (`public/og.png`, versionada). Medido:
+**359 PNG, 62.649 B de media**, lejos de los 300 kB en que WhatsApp la descarta; ~40 s de
+dibujo con `optimize=True`.
+
+**Python sólo dibuja.** Los textos llegan formateados desde `scripts/web.mjs`, con las mismas
+funciones que las páginas: no hay una segunda redacción de las cifras que pueda divergir. La
+tipografía es Atkinson Hyperlegible Next (OFL), la misma de Botón Rojo con el mismo sha256,
+catalogada en `frontend/scripts/fuentes/fuentes.json` y marcada `-text` en `.gitattributes`.
+
+**El sello de la carpeta** (`dist/tarjetas/<sello>/`) es el sha256 de los textos, del dibujante,
+de la tipografía y de `requirements.txt`: cambia exactamente cuando puede cambiar un píxel, y
+con él cambian `og:image` y la versión de `og:url`, así que Facebook no se queda con la
+tarjeta vieja. Node lo calcula y lo declara; Python lo recalcula y se niega a dibujar si no
+coincide, porque las páginas citarían una carpeta vacía. **Pillow va fijado (12.3.0)** y
+`tarjetas.py` se niega a correr con otra versión: otra versión dibuja otros píxeles con el
+mismo sello. En local hay que usar un entorno con esa versión (Anaconda trae la 10.4).
+
+Las tarjetas no se commitean: se dibujan en el CI y son deterministas en la misma máquina y
+versión (dos corridas, `diff -r` vacío, medido). `validar-paginas` exige que cada `og:image`
+exista, mida 1200×630 y pese menos de 300 kB, y que cada PNG dibujada esté citada; el humo
+pide la de la portada y la de una página publicada.
+
 ## Fallos propios cometidos al establecer todo esto
 
 Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse.

@@ -131,6 +131,34 @@ export function fraseRegion(region, resumen, oficial) {
   return `${f} ${SALVEDAD}`
 }
 
+/**
+ * Lo que dice la tarjeta PNG de una región o comuna (scripts/tarjetas.py sólo la
+ * dibuja). Tres renglones que se leen de un vistazo en WhatsApp, con el mismo
+ * cuidado que la frase: hectáreas enteras, y un cero nunca se escribe como «no hay».
+ * La franja de abajo dice de qué actualización es la cifra, en grande: la vista
+ * previa se guarda días y tiene que delatarse sola.
+ */
+export function tarjetaDe({ archivo, titulo, subtitulo, anio, resumen, url }) {
+  const bosques = haDe(resumen.usos, USO_BOSQUES)
+  const nativo = haDe(resumen.subusos, '0402')
+  const renglones = [`${haEntera(resumen.ha)} catastradas en ${n(resumen.n)}`]
+  if (bosques > 0) {
+    renglones.push(`${haEntera(bosques)} de bosques (${pct(bosques, resumen.ha)})`)
+    renglones.push(nativo > 0 ? `${haEntera(nativo)} de bosque nativo` : 'Sin bosque nativo en el Catastro')
+  } else {
+    renglones.push('Ningún polígono clasificado como bosque')
+    renglones.push('(el Catastro no dibuja rodales pequeños)')
+  }
+  return {
+    archivo,
+    titulo,
+    subtitulo,
+    renglones,
+    franja: `CATASTRO DE CONAF · ACTUALIZACIÓN ${String(anio).toUpperCase()}`,
+    url: url.replace(/^https?:\/\//, ''),
+  }
+}
+
 /** <title> y og:title. Cortos a propósito: los buscadores cortan hacia los 60 caracteres. */
 export const tituloComuna = (comuna, region) =>
   `Comuna de ${comuna.etiqueta} (${region.nombre}): uso de la tierra y bosques — Catastro CONAF`
