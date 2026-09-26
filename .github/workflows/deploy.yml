@@ -6,12 +6,22 @@ name: Desplegar en GitHub Pages
 # derivados se generan en local con `python ETL/build_bin.py` y SE COMMITEAN.
 # Lo que hace este workflow es comprobar que lo commiteado es integro y coherente
 # con su manifest, y publicar.
+#
+# En un PR corren SOLO `datos` y `build`: el PR se revisa con las mismas guardas que
+# el despliegue, pero no publica. Hasta el 2026-09-26 los PR no corrian nada, asi que
+# un defecto se descubria recien en main (DECISIONES §M.6).
 on:
   push:
     branches: [main]
     paths:
       - 'frontend/**'
       - 'ETL/**'          # el gate de datos vive aqui: si cambia, hay que reejecutarlo
+      - '.github/workflows/deploy.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - 'ETL/**'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
@@ -22,8 +32,10 @@ permissions:
 
 # Un despliegue a la vez. Ademas protege el limite blando de 10 builds/hora de
 # Pages cuando se empujan varios commits seguidos.
+# Cada PR va en su PROPIO grupo: con uno solo, abrir un PR cancelaria un
+# despliegue de main a medio publicar.
 concurrency:
-  group: pages
+  group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'pages' }}
   cancel-in-progress: true
 
 jobs:
@@ -54,6 +66,8 @@ jobs:
   build:
     name: Compilar el frontend
     runs-on: ubuntu-latest
+    outputs:
+      huella: ${{ steps.huella.outputs.huella }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -97,13 +111,30 @@ jobs:
           fi
           echo "base path y datos OK"
 
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      # La prueba de humo tiene que poder ponerse ROJA. Sus negativas montan
+      # sitios rotos en memoria (503 permanente, huella que no llega, .bin que no
+      # mide lo declarado, manifest que no es JSON) y exigen que cada uno falle;
+      # y 503 -> 503 -> 200 tiene que pasar. Sin red: corre en los PR.
+      - run: node scripts/humo.mjs --negativas
+        working-directory: frontend
+
+      # Huella de lo que se va a publicar: sha256 de index.html seguido del
+      # manifest. El humo espera a que Pages sirva ESTOS bytes antes de mirar
+      # nada, asi que no puede aprobar el sitio de ayer.
+      - id: huella
+        working-directory: frontend
+        run: echo "huella=$(node scripts/humo.mjs --huella-de dist)" >> "$GITHUB_OUTPUT"
+
+      - if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: frontend/dist
 
   deploy:
     name: Publicar
+    if: github.event_name != 'pull_request'
     needs: [datos, build]
     runs-on: ubuntu-latest
     environment:
@@ -115,28 +146,28 @@ jobs:
 
   humo:
     name: Prueba de humo sobre el sitio publicado
-    needs: deploy
+    if: github.event_name != 'pull_request'
+    needs: [build, deploy]
     runs-on: ubuntu-latest
     steps:
       # Unico punto donde se observa Pages de verdad. Todo lo anterior mira
       # artefactos locales; esto mira lo que recibe una persona.
+      #
+      # Vivia aqui como un bloque de curl, y el despliegue del 2026-09-03 quedo en
+      # rojo con el sitio bien publicado: la peticion de rango del .bin tardo 60 s
+      # y devolvio un 503 de Pages un minuto despues de publicar, sin reintento.
+      # Ahora vive en frontend/scripts/humo.mjs, que reintenta ante red, 429 y
+      # 5xx, espera la huella del build y tiene negativas (job build).
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: frontend/scripts
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Pedir el sitio y sus datos
-        run: |
-          BASE="https://sud-austral.github.io/coipo_vista_catastro"
-          set -e
-          echo "--- index.html"
-          curl -fsS -o /dev/null -w "  HTTP %{http_code}  %{size_download} B\n" "$BASE/"
-          echo "--- manifest.json"
-          curl -fsS "$BASE/datos/manifest.json" | head -c 200; echo
-          echo "--- cbn_puntos.bin (cabecera)"
-          # Accept-Encoding: identity OBLIGATORIO. Pages comprime
-          # application/octet-stream, y sin esto se leen bytes gzip donde se
-          # esperan datos y se diagnostica el problema equivocado.
-          curl -fsS -H 'Accept-Encoding: identity' -r 0-15 \
-            -o /dev/null -w "  HTTP %{http_code}  %{size_download} B\n" "$BASE/datos/cbn_puntos.bin"
-          echo "--- tamano completo declarado vs servido"
-          DECL=$(curl -fsS "$BASE/datos/manifest.json" | python3 -c "import json,sys;print(json.load(sys.stdin)['capas']['cbn_puntos']['bytes'])")
-          REAL=$(curl -fsS -H 'Accept-Encoding: identity' -o /dev/null -w '%{size_download}' "$BASE/datos/cbn_puntos.bin")
-          echo "  declarado $DECL / servido $REAL"
-          [ "$DECL" = "$REAL" ] || { echo "FALLA: el .bin servido no mide lo declarado"; exit 1; }
-          echo "humo OK"
+        run: >-
+          node frontend/scripts/humo.mjs
+          --base https://sud-austral.github.io/coipo_vista_catastro
+          --huella ${{ needs.build.outputs.huella }}
+          --run ${{ github.run_id }}-${{ github.run_attempt }}
