@@ -275,7 +275,15 @@ export default function PanelLateral({
       {abierta === 'descargas' && (
         <ModalDescargas descargas={descargas} onCerrar={cerrarFiltro} />
       )}
-      {abierta === 'compartir' && <ModalCompartir onCerrar={cerrarFiltro} />}
+      {abierta === 'compartir' && (
+        <ModalCompartir
+          manifest={manifest}
+          ambito={ambito}
+          usosActivos={usosActivos}
+          filtros={filtros}
+          onCerrar={cerrarFiltro}
+        />
+      )}
     </aside>
   )
 }

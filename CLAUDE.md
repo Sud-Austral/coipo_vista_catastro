@@ -134,9 +134,9 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
 |---|---|---|
 | Aserciones de datos (D1–D27) | 28, y **26 controles negativos** en rojo | `python ETL/verificar_datos.py --negativas` |
 | Oráculo del cruce | 21 casos + 5 negativos | `npm run verify:cascada` |
-| Cifras de la prosa, filtro del ámbito y módulos de `src/web/` | 30 pruebas, con negativas | `npm run prueba` |
-| Arnés de navegador | V-1…V-73; 101 ejecuciones el 2026-09-26 (corre después de `build` y `build:web`) | `python frontend/verificacion/verificar.py` |
-| Mutaciones del visor | 35; las 5 de ETL se reportan «NO EJECUTADA» sin el `.duckdb` | `python frontend/verificacion/mutaciones-visor.py [--sin-etl]` |
+| Cifras de la prosa, filtro del ámbito y módulos de `src/web/` | 36 pruebas, con negativas | `npm run prueba` |
+| Arnés de navegador | V-1…V-73; 102 ejecuciones el 2026-09-26 (corre después de `build` y `build:web`) | `python frontend/verificacion/verificar.py` |
+| Mutaciones del visor | 36; las 5 de ETL se reportan «NO EJECUTADA» sin el `.duckdb` | `python frontend/verificacion/mutaciones-visor.py [--sin-etl]` |
 | Páginas generadas | 360 páginas, 18 negativas; generador con 8 controles negativos | `npm run build:web -- --negativas && npm run validar:paginas` |
 | Tarjetas PNG | 359 + la genérica; 4 negativas | `python frontend/scripts/tarjetas.py --negativas` |
 | Humo | 19 casos sin red | `node frontend/scripts/humo.mjs --negativas` |

@@ -316,6 +316,49 @@ def veredicto_analitica(r):
                 and "tifo=" in fil[1].get("url", "") and any(v.get("evento") == "compartir" for v in fin))
 
 
+# (consulta, página que TIENE que ofrecer Compartir, o None si no tiene que ofrecer ninguna)
+CASOS_COMPARTIR = [
+    ("?reg=14&com=14101", "comuna/valdivia/"),
+    ("?reg=14&com=14101&usos=04", None),
+    ("?reg=10", "region/los-lagos/"),
+    ("?reg=10&prov=Chilo%C3%A9&com=10202", "comuna/ancud/"),
+]
+
+
+def medir_compartir_pagina(cdp, url):
+    """V-70. Compartir ofrece la página del territorio SÓLO si la vista es
+    exactamente ese territorio: con un uso marcado, las cifras de la página no
+    serían las de la pantalla."""
+    if not os.path.exists(os.path.join(DIST, "web", "indice.json")):
+        return [("(todas)", "falta dist/web/indice.json: corre npm run build:web antes", None)]
+    salida = []
+    for consulta, esperada in CASOS_COMPARTIR:
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=url + consulta)
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+        # La URL tarda hasta un segundo en reflejar los usos restaurados: se espera.
+        esperar(cdp, "(() => { const q = new URLSearchParams(location.search); "
+                     "return [...new URLSearchParams(%s)].every(([k, v]) => q.get(k) === v) })()"
+                % json.dumps(consulta), segundos=10)
+        abrir_grupo(cdp, "Compartir")
+        # El índice se pide al abrir: se le da tiempo antes de concluir que no ofrece nada.
+        esperar(cdp, "!!document.querySelector('.compartir-pagina')", segundos=4)
+        valores = json.loads(cdp.evaluar(
+            "JSON.stringify([...document.querySelectorAll('.modal-filtro input[readonly]')].map(i => i.value))"))
+        cerrar_grupo(cdp)
+        pagina = valores[1] if len(valores) > 1 else None
+        salida.append((consulta, pagina, esperada))
+    return salida
+
+
+def veredicto_compartir_pagina(medidas):
+    malas = [f"{c}: ofrece {p} y tenía que {e or 'no ofrecer ninguna'}" for c, p, e in medidas
+             if (e is None and p is not None) or (e is not None and not (p or "").endswith(BASE + e))]
+    return not malas and len(medidas) == len(CASOS_COMPARTIR), malas
+
+
 def excepciones(cdp):
     """Las excepciones de JavaScript sin atrapar que Chrome ha reportado."""
     return [e for e in cdp.eventos if e.get("method") == "Runtime.exceptionThrown"]
@@ -2274,6 +2317,12 @@ def main():
         ok72, malas72 = veredicto_paginas(medir_paginas(cdp, base_url, capturas=True))
         prueba("V-72 las páginas se leen sin JavaScript en tres anchos", ok72,
                f"{len(PAGINAS)} páginas × {len(ANCHOS_PAGINAS)} anchos" if ok72 else " · ".join(malas72)[:300])
+
+        # --- Compartir ofrece la página (DECISIONES §M.12) ---------------------
+        print("\n=== Compartir ofrece la página del territorio")
+        ok70, malas70 = veredicto_compartir_pagina(medir_compartir_pagina(cdp, url))
+        prueba("V-70 Compartir ofrece la página sólo si la vista es el territorio", ok70,
+               f"{len(CASOS_COMPARTIR)} casos" if ok70 else " · ".join(malas70)[:300])
 
         # --- las visitas (DECISIONES §M.11) -----------------------------------
         print("\n=== las visitas que se cuentan")

@@ -514,6 +514,12 @@ def sonda_analitica(cdp, url):
                                       f"{len(r['tras_paneo'])} · filtro {len(r['tras_filtro'])}")
 
 
+def sonda_compartir_pagina(cdp, url):
+    """V-70: Compartir ofrece la pagina solo si la vista es exactamente el territorio."""
+    ok, malas = V.veredicto_compartir_pagina(V.medir_compartir_pagina(cdp, url))
+    return ok, ("los cuatro casos bien" if ok else " · ".join(malas)[:160])
+
+
 def sonda_compartir(cdp, url):
     ir(cdp, url + "?reg=10")
     V.abrir_grupo(cdp, "Compartir")
@@ -784,6 +790,16 @@ MUTACIONES = [
      [(os.path.join(FRONTEND, "src", "web", "cabeza.js"),
        "    `<link rel=\"stylesheet\" href=\"${base}paginas.css\" />`,",
        "")],
+     'web'),
+
+    # Compartir ofreceria la pagina del territorio con un uso marcado: la pagina
+    # diria otras cifras que la pantalla. Es 'web': sin web/indice.json la sonda
+    # moriria por la razon equivocada.
+    ("V-70 · Compartir ofrece la pagina aunque haya un uso marcado",
+     sonda_compartir_pagina,
+     [(os.path.join(FRONTEND, "src", "web", "enlaces.js"),
+       "const DEL_TERRITORIO = new Set(['reg', 'prov', 'com', 'base', 'lat', 'lon', 'z'])",
+       "const DEL_TERRITORIO = new Set(['reg', 'prov', 'com', 'base', 'lat', 'lon', 'z', 'usos'])")],
      'web'),
 
     # Umami contaria cada paneo si la direccion llevara el encuadre (DECISIONES §M.11).

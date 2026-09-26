@@ -632,6 +632,25 @@ dirección con su ámbito y filtros. **Pendiente**: el aviso por la Ley 21.719 q
 `coipo_umami/DEUDA.md` marca [VERIFICAR], y anotar en `coipo_umami` que este sitio es un
 segundo lugar con la URL de Umami (su conf del host se declara el único).
 
+### M.12 Compartir ofrece la página del territorio, sólo cuando la vista es ese territorio
+
+El enlace de Compartir reproduce la vista exacta (`?reg=14&com=14101&lat=…`), y por eso mismo
+muestra en WhatsApp la tarjeta de la portada: Pages no mira la query. Cuando la vista es
+**exactamente** una región o una comuna, el modal ofrece además, debajo, el enlace a su página
+(`/comuna/valdivia/`), que trae su tarjeta y su frase citable. Con un uso o un filtro marcado
+no la ofrece: las cifras de la página serían otras que las de la pantalla. La regla es una
+función pura con pruebas (`src/web/enlaces.js`), el slug se lee de `web/indice.json` y nunca se
+recalcula, y en `npm run dev` —donde ese índice no existe y el servidor responde HTML a
+cualquier ruta— simplemente no se ofrece. El enlace de la vista sigue primero (V-66).
+
+**Lo que encontró la prueba.** V-70 dio rojo la primera vez con `?reg=14&com=14101&usos=04`: el
+modal ofrecía la página de Valdivia con un uso marcado. La causa no era la regla sino la URL:
+**al cargar un enlace con usos, la URL tarda hasta un segundo en reflejarlos** (medido: en
+t+0 s no está `usos=04`; en t+1 s sí), porque un `moveend` temprano la reescribe con el cierre
+de antes de restaurarlos. Por eso la decisión sale del ESTADO de la vista (ámbito, usos y
+filtros activos) y no de la URL. La carrera en sí es anterior a este cambio y afecta al enlace
+de la vista si se comparte en ese primer segundo; no se toca aquí y queda anotada.
+
 ## Fallos propios cometidos al establecer todo esto
 
 Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse.
