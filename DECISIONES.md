@@ -651,6 +651,32 @@ de antes de restaurarlos. Por eso la decisión sale del ESTADO de la vista (ámb
 filtros activos) y no de la URL. La carrera en sí es anterior a este cambio y afecta al enlace
 de la vista si se comparte en ese primer segundo; no se toca aquí y queda anotada.
 
+### M.13 Cómo quedó, y lo que falta
+
+Frente a la línea base (M.0), medido en local sobre el artefacto el 2026-09-26, antes de
+publicar:
+
+| qué | antes | ahora |
+|---|---|---|
+| texto que recibe un lector sin JavaScript en la portada | «Cargando el Catastro nacional…» | ~2.700 caracteres de texto (5.679 de HTML): la frase con 1.827.933 polígonos, 75.661.200 ha y 15.536.329 ha de bosque nativo, «qué es», la tabla de usos y enlaces a las 16 regiones |
+| URL con las cifras de una comuna | ninguna | 343 comunas y 16 regiones, en el sitemap (361 URL) |
+| «¿cuántas ha de bosque nativo tiene Panguipulli?» | sin respuesta | «216.838 ha de bosque nativo», en la frase citable de `/comuna/panguipulli/` |
+| vista previa al compartir una comuna | la de la portada, sin imagen | la de la comuna, con su tarjeta de 1200×630 |
+| lo que queda en el DOM si Google no baja el `.bin` | la pantalla de error | la portada, con la frase y la tabla (V-69) |
+| los PR | sin ninguna guarda | `datos` y `build` completos |
+
+Las guardas nuevas, todas con sus controles negativos: `validar-html` (20), `validar-paginas`
+(18), el generador de páginas (8), `robots.mjs` (8), `tarjetas.py` (4), el humo (19),
+`npm run prueba` (36 pruebas) y el arnés de navegador (V-68 a V-73, V-8 real; 102 ejecuciones
+en verde), con siete mutaciones nuevas que ponen roja cada una.
+
+**Falta, y no es código** (el detalle y los pasos en `docs/visibilidad.md` §3): crear el
+repositorio raíz de la organización con el `robots.txt` (hasta entonces los que entrenan leen
+todo, y el humo lo avisa); el identificador de Umami; dar de alta Search Console y Bing con una
+cuenta funcional y comprobar con la Inspección de URL que Google ve la frase; confirmar la
+redacción de los ceros (M.9); y la licencia de los datos. Y, cuando esto se publique, repetir
+las mediciones de M.0 contra el sitio vivo.
+
 ## Fallos propios cometidos al establecer todo esto
 
 Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse.

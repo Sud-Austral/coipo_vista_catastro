@@ -77,7 +77,7 @@ export function ModalInformacion({ manifest, base, hayRecorte, metodologia, onCe
         </p>
         <p className="nota">
           Alejando el mapa vuelven a tocarse, y eso no tiene arreglo: a escala de país hay{' '}
-          {manifest ? fmt.format(manifest.total.filas) : '1,8 millones de'} polígonos sobre unos
+          {manifest ? fmt.format(manifest.total.filas) : 'millones de'} polígonos sobre unos
           700.000 píxeles.
         </p>
       </section>

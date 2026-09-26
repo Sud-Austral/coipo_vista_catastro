@@ -25,6 +25,9 @@ deliberado — el sitio es estático y los datos viajan en un binario columnar d
   publican esas cifras para buscadores, asistentes de IA y vistas previas. **Léelo antes de tocar `ETL/`**: casi todo lo
   que parece un error ahí está explicado y medido.
 - **`mejoras.md`** es el catálogo de mejoras pendientes y de hallazgos aún abiertos.
+- **`docs/visibilidad.md`** es la guía de operación de lo que se publica para buscadores,
+  asistentes de IA y vistas previas: qué hay, cómo se comprueba tras un despliegue y lo que
+  falta hacer fuera del repo (el `robots.txt` de la organización, Umami, Search Console).
 
 El **`README.md` no manda y no se edita a mano**: lo genera un bot
 (`.github/workflows/readme.yml` llama a un generador centralizado en otro repo) y
@@ -44,8 +47,14 @@ ETL/                     produce los datos publicados
 frontend/
   src/datos/             carga del .bin y columnas derivadas
   src/mapa/              deck.gl sobre Leaflet, y la copia del mapa para el reporte
-  verificacion/          el arnés de navegador y los dos mutadores
+  src/web/               lo que se hornea: portada, páginas por región y comuna, <head>,
+                         frases citables, rutas, Umami. Módulos puros (Node y navegador)
+  src/hechos.js          las cifras que cita la prosa, calculadas de los datos
+  scripts/               prerender, generador de páginas, tarjetas PNG (Python), validadores,
+                         humo y guarda del robots.txt raíz. Todos con --negativas
+  verificacion/          el arnés de navegador, los dos mutadores y las pruebas de Node
   public/datos/          GENERADO Y COMMITEADO. No se edita a mano.
+docs/                    visibilidad.md (operación) y robots-raiz.txt (el de la organización)
 spike/                   código de medición (se versiona; sus salidas no)
 data/                    la base de origen. NO se versiona.
 INSUMO/                  insumos de la Unidad (informe, libro de homologación, PDF modelo)
@@ -241,13 +250,21 @@ Comprobadas una a una el 2026-09-02:
    sigue visible en la Metodología. Es cierta; corresponde decidirla, no borrarla.
 7. **El `README.md` está desfasado** y se regenera solo. No lo edites: arregla el generador
    o ignóralo.
+8. **Visibilidad, lo que no es código** (2026-09-26, `docs/visibilidad.md` §3): el
+   `robots.txt` de la organización no existe (el humo lo avisa), Umami no tiene identificador,
+   Search Console y Bing no están dados de alta, y la redacción de los ceros (DECISIONES §M.9)
+   es una propuesta. **No crees el repositorio de la organización por tu cuenta**: afecta a
+   68 sitios.
+9. **La URL tarda hasta un segundo en reflejar los usos al cargar un enlace** (`mejoras.md`
+   §2.17). Compartir ya no depende de eso; el enlace de la vista sí.
 
 ---
 
 ## 8. Git y despliegue
 
 - Rama por defecto **`main`**. `.github/workflows/deploy.yml` se dispara con cada push a
-  `main` que toque `frontend/**`, `ETL/**` o el propio workflow, y publica en GitHub Pages.
+  `main` que toque `frontend/**`, `ETL/**`, `docs/robots-raiz.txt` o el propio workflow, y
+  publica en GitHub Pages.
   **Con cada PR contra `main` que toque lo mismo corren `datos` y `build`**, sin publicar
   (desde 2026-09-26; antes los PR no corrían nada). Cada PR tiene su propio grupo de
   concurrencia, para no cancelar un despliegue de `main`.
