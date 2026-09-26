@@ -29,7 +29,7 @@ export default function QueEs({ manifest, clase = 'nota' }) {
       <p className={clase}>{AVISO_PUNTOS}</p>
       {rango && (
         <p className={clase}>
-          Cada región se levantó en un año distinto, entre {rango}: el Catastro es una foto por
+          Las regiones se levantaron en años distintos, entre {rango}: el Catastro es una foto por
           región, no una serie temporal.
         </p>
       )}

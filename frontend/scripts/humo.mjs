@@ -8,10 +8,12 @@
  * tubería y dejaba un «curl: (23)» que parecía un error y no lo era.
  *
  * Qué hace:
- *   1. Si recibe --huella, ESPERA a que Pages sirva lo recién construido: pide index.html y el
- *      manifest con `?humo=<run>-<i>` (una clave nueva cada vez, así Fastly no contesta desde su
- *      caché de 600 s) hasta que el sha256 de los dos coincide con el que calculó el job build.
- *      Sin esto, el humo podía aprobar el sitio de AYER.
+ *   1. Si recibe --huella, ESPERA a que Pages sirva lo recién construido: pide web/huella.txt
+ *      con `?humo=<run>-<i>` (una clave nueva cada vez, así Fastly no contesta desde su caché de
+ *      600 s) hasta que dice la huella que calculó el job build. La huella es el sha256 de TODO
+ *      lo publicado (cada archivo de dist/ con su ruta): con sólo index.html y el manifest, un
+ *      cambio que tocara únicamente las páginas o las tarjetas daba la huella de ayer, y el humo
+ *      aprobaba el sitio de AYER (hallazgo de la revisión del 2026-09-26).
  *   2. Comprueba portada, manifest (tiene que ser JSON), una petición de rango del .bin (206 y
  *      16 B) y el .bin entero, que tiene que medir exactamente lo que declara el manifest.
  *   3. Reintenta ante error de red, 429 y 5xx. Un 404 NO se reintenta: es una respuesta.
@@ -30,11 +32,12 @@
  *
  * Uso:
  *   node scripts/humo.mjs --base https://sud-austral.github.io/coipo_vista_catastro [--huella H] [--run ID]
- *   node scripts/humo.mjs --huella-de dist     imprime la huella de un build (la usa el job build)
+ *   node scripts/humo.mjs --huella-de dist     calcula la huella de un build, la ESCRIBE en
+ *                                              dist/web/huella.txt y la imprime (job build)
  *   node scripts/humo.mjs --negativas          sin red; sale con 1 si alguna guarda no caza su defecto
  */
 import { createHash } from 'node:crypto'
-import { readFileSync } from 'node:fs'
+import { mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { problemas as problemasRobots } from './robots.mjs'
@@ -42,9 +45,28 @@ import { UMAMI } from '../src/web/sitio.js'
 
 // ------------------------------------------------------------------ comprobaciones puras
 
-/** sha256 de index.html seguido del manifest: cambia con cualquier cambio de interfaz o de datos. */
-export function huella(index, manifest) {
-  return createHash('sha256').update(index).update(manifest).digest('hex')
+/** Dónde se publica la huella del build, dentro del sitio. */
+export const ARCHIVO_HUELLA = 'web/huella.txt'
+
+/**
+ * sha256 de TODO lo publicado: cada archivo de `dir`, por su ruta relativa (con «/» y en
+ * orden), y sus bytes; salvo el propio archivo de la huella. Cambia con cualquier cambio de
+ * la app, los datos, las páginas, las tarjetas o la hoja de estilos.
+ */
+export function huellaDeDist(dir) {
+  const rutas = []
+  const recorrer = (d, rel) => {
+    for (const e of readdirSync(d, { withFileTypes: true })) {
+      const r = rel ? `${rel}/${e.name}` : e.name
+      if (e.isDirectory()) recorrer(join(d, e.name), r)
+      else if (r !== ARCHIVO_HUELLA) rutas.push(r)
+    }
+  }
+  recorrer(dir, '')
+  rutas.sort()
+  const h = createHash('sha256')
+  for (const r of rutas) h.update(r).update('\0').update(readFileSync(join(dir, r))).update('\0')
+  return h.digest('hex')
 }
 
 /** El manifest tiene que ser JSON y declarar cuánto mide el .bin. Devuelve { man, bytes }. */
@@ -118,17 +140,15 @@ async function esperarHuella(base, esperada, run, io) {
   const { intentosHuella = 30, cada = 20_000, dormir, log } = io
   let vista = ''
   for (let i = 1; i <= intentosHuella; i++) {
-    const clave = `humo=${run}-${i}`
-    const index = await pedir(`${base}/?${clave}`, undefined, io)
-    const manifest = await pedir(`${base}/datos/manifest.json?${clave}`, undefined, io)
-    if (index.status === 200 && manifest.status === 200) {
-      vista = huella(await bytesDe(index), await bytesDe(manifest))
+    const r = await pedir(`${base}/${ARCHIVO_HUELLA}?humo=${run}-${i}`, undefined, io)
+    if (r.status === 200) {
+      vista = (await r.text()).trim()
       if (vista === esperada) {
         log(`--- huella ${esperada.slice(0, 12)} servida (intento ${i})`)
         return
       }
     } else {
-      vista = `HTTP ${index.status}/${manifest.status}`
+      vista = `HTTP ${r.status}`
     }
     if (i < intentosHuella) await dormir(cada)
   }
@@ -165,7 +185,8 @@ export async function humo(base, { huella: esperada, run = 'local', ...io }) {
   revisarTamano(declarado, (await bytesDe(entero)).length)
   log(`--- cbn_puntos.bin: servido ${declarado} B = declarado`)
 
-  revisarUmami(htmlPortada)
+  // El identificador se inyecta: las negativas no pueden depender del de sitio.js.
+  revisarUmami(htmlPortada, 'umamiId' in io ? io.umamiId : UMAMI.id)
   await revisarImagen(imagenDe(htmlPortada), 'la portada', clave, opciones)
   await revisarPaginas(base, man, clave, opciones)
   await revisarRobotsRaiz(base, opciones)
@@ -185,7 +206,7 @@ export function revisarUmami(html, id = UMAMI.id) {
 /** Una og:image tiene que servirse como PNG: si no, la vista previa sale sin tarjeta. */
 async function revisarImagen(url, de, clave, opciones) {
   if (!url) throw new Error(`${de} no declara og:image`)
-  const r = await pedir(`${url}?${clave}`, undefined, opciones)
+  const r = await pedir(`${url}${url.includes('?') ? '&' : '?'}${clave}`, undefined, opciones)
   const tipo = r.headers.get('content-type') ?? ''
   if (r.status !== 200 || !tipo.startsWith('image/png')) throw new Error(`la og:image de ${de} (${url}) devolvió ${r.status} ${tipo}`)
   opciones.log(`--- og:image de ${de}: 200 image/png`)
@@ -293,11 +314,15 @@ const bueno = (extra = {}) => ({
   '/visor/comuna/valdivia': [{ status: 301, a: `${B}/comuna/valdivia/` }],
   '/visor/web/indice.json': [{ cuerpo: JSON.stringify({ esquema: 1, regiones: { 14: 'los-rios' }, comunas: { 14101: 'valdivia' } }), tipo: 'application/json' }],
   '/robots.txt': [{ cuerpo: ROBOTS, tipo: 'text/plain' }],
+  '/visor/web/huella.txt': [{ cuerpo: `${H}\n`, tipo: 'text/plain' }],
   ...extra,
 })
-const H = huella(Buffer.from(INDEX), Buffer.from(MAN))
+const H = 'a'.repeat(64)
 
-// [nombre, rutas, opciones extra, ¿tiene que pasar?]
+const CON_UMAMI = (extra) => `${INDEX}<script defer src="https://prueba5.conaf.cl/conaf.js" data-website-id="x"${extra}></script>`
+
+// [nombre, rutas, opciones extra, true si tiene que pasar o el trozo del error que TIENE que
+// salir: que un caso roto caiga por otra regla no prueba la suya]
 const CASOS = [
   ['sitio sano', bueno(), {}, true],
   ['sitio sano, esperando su huella', bueno(), { huella: H }, true],
@@ -305,41 +330,50 @@ const CASOS = [
     '/visor/datos/cbn_puntos.bin': [{ status: 503 }, { status: 503 }, { cuerpo: BIN }],
   }), {}, true],
   ['un corte de red y luego 200', bueno({ '/visor/': ['red', { cuerpo: INDEX }] }), {}, true],
-  ['503 permanente en el .bin', bueno({ '/visor/datos/cbn_puntos.bin': [{ status: 503 }] }), {}, false],
-  ['la huella nunca coincide (Pages sirve el build viejo)', bueno(), { huella: 'f'.repeat(64) }, false],
+  ['503 permanente en el .bin', bueno({ '/visor/datos/cbn_puntos.bin': [{ status: 503 }] }), {}, 'HTTP 503 tras'],
+  ['la huella nunca coincide (Pages sirve el build viejo)', bueno(), { huella: 'f'.repeat(64) }, 'sigue sin servir'],
+  ['sin archivo de huella publicado', bueno({ '/visor/web/huella.txt': [{ status: 404 }] }), { huella: H }, 'HTTP 404'],
   ['el .bin servido mide distinto de lo declarado', bueno({
     '/visor/datos/cbn_puntos.bin': [{ cuerpo: BIN.slice(1) }],
-  }), {}, false],
-  ['el manifest no es JSON', bueno({ '/visor/datos/manifest.json': [{ cuerpo: '<html>404</html>' }] }), {}, false],
-  ['la portada da 404', bueno({ '/visor/': [{ status: 404 }] }), {}, false],
-  ['el manifest no declara el tamaño', bueno({ '/visor/datos/manifest.json': [{ cuerpo: '{}' }] }), {}, false],
-  ['la og:image de la portada no existe', bueno({ '/visor/og.png': [{ status: 404 }] }), {}, false],
-  ['la tarjeta de una página no existe', bueno({ '/visor/tarjetas/s/comuna-valdivia.png': [{ status: 404 }] }), {}, false],
-  ['Umami en la portada sin identificador', bueno({ '/visor/': [{ cuerpo: INDEX + '<script src="https://prueba5.conaf.cl/conaf.js"></script>' }] }), {}, false],
+  }), {}, 'el .bin servido mide'],
+  ['el manifest no es JSON', bueno({ '/visor/datos/manifest.json': [{ cuerpo: '<html>404</html>' }] }), {}, 'no es JSON'],
+  ['la portada da 404', bueno({ '/visor/': [{ status: 404 }] }), {}, 'la portada devolvió 404'],
+  ['el manifest no declara el tamaño', bueno({ '/visor/datos/manifest.json': [{ cuerpo: '{}' }] }), {}, 'no declara capas'],
+  ['la og:image de la portada no existe', bueno({ '/visor/og.png': [{ status: 404 }] }), {}, 'og:image de la portada'],
+  ['la tarjeta de una página no existe', bueno({ '/visor/tarjetas/s/comuna-valdivia.png': [{ status: 404 }] }), {}, 'comuna-valdivia.png'],
+  ['Umami en la portada sin identificador', bueno({ '/visor/': [{ cuerpo: CON_UMAMI('') }] }), { umamiId: '' }, 'no tiene identificador'],
+  ['Umami con identificador y rastreo automático apagado', bueno({ '/visor/': [{ cuerpo: CON_UMAMI(' data-auto-track="false"') }] }), { umamiId: 'x' }, true],
+  ['Umami con identificador y rastreo automático', bueno({ '/visor/': [{ cuerpo: CON_UMAMI('') }] }), { umamiId: 'x' }, 'rastreo automático'],
+  ['Umami con identificador y sin etiqueta', bueno(), { umamiId: 'x' }, '0 etiquetas'],
   ['sin robots.txt en la raíz: aviso, no rojo', bueno({ '/robots.txt': [{ status: 404 }] }), {}, true],
-  ['al sitemap le falta una comuna', bueno({ '/visor/sitemap.xml': [{ cuerpo: SITEMAP.replace(/<url><loc>[^<]*valdivia[^<]*<\/loc><\/url>/, '') }] }), {}, false],
-  ['una página del sitemap da 404', bueno({ '/visor/comuna/valdivia/': [{ status: 404 }] }), {}, false],
-  ['sin barra final no redirige', bueno({ '/visor/comuna/valdivia': [{ cuerpo: INDEX }] }), {}, false],
-  ['el robots.txt raíz bloquea a un asistente', bueno({ '/robots.txt': [{ cuerpo: `User-agent: OAI-SearchBot\nDisallow: /\n\n${ROBOTS}`, tipo: 'text/plain' }] }), {}, false],
-  ['el robots.txt raíz deja entrenar', bueno({ '/robots.txt': [{ cuerpo: ROBOTS.replace('User-agent: GPTBot\n', ''), tipo: 'text/plain' }] }), {}, false],
+  ['al sitemap le falta una comuna', bueno({ '/visor/sitemap.xml': [{ cuerpo: SITEMAP.replace(/<url><loc>[^<]*valdivia[^<]*<\/loc><\/url>/, '') }] }), {}, 'el sitemap tiene 3 URL'],
+  ['una página del sitemap da 404', bueno({ '/visor/comuna/valdivia/': [{ status: 404 }] }), {}, 'devolvió 404 text/html'],
+  ['sin barra final no redirige', bueno({ '/visor/comuna/valdivia': [{ cuerpo: INDEX }] }), {}, 'no 301'],
+  ['el robots.txt raíz bloquea a un asistente', bueno({ '/robots.txt': [{ cuerpo: `User-agent: OAI-SearchBot\nDisallow: /\n\n${ROBOTS}`, tipo: 'text/plain' }] }), {}, 'OAI-SearchBot no puede leer'],
+  ['el robots.txt raíz deja entrenar', bueno({ '/robots.txt': [{ cuerpo: ROBOTS.replace('User-agent: GPTBot\n', ''), tipo: 'text/plain' }] }), {}, 'GPTBot (entrenamiento)'],
 ]
 
 async function negativas() {
   let rotas = 0
-  for (const [nombre, rutas, extra, debePasar] of CASOS) {
+  for (const [nombre, rutas, extra, esperado] of CASOS) {
     let error = null
     try {
       await humo(B, {
-        fetch: sitioFalso(rutas), dormir: async () => {}, intentos: 4, intentosHuella: 3, ...extra,
+        fetch: sitioFalso(rutas), dormir: async () => {}, intentos: 4, intentosHuella: 3, umamiId: '', ...extra,
       })
     } catch (e) {
       error = e
     }
+    const debePasar = esperado === true
     const paso = error === null
-    const ok = paso === debePasar
+    const porSuRegla = !debePasar && !paso && error.message.includes(esperado)
+    const ok = debePasar ? paso : porSuRegla
     if (!ok) rotas++
-    const veredicto = debePasar ? (paso ? 'VERDE, como debe' : 'ROJO sin motivo') : (paso ? 'VERDE: LA GUARDA NO SIRVE' : 'ROJO, como debe')
-    console.log(`  ${ok ? 'ok ' : 'MAL'} ${nombre}: ${veredicto}${error && !debePasar ? ` (${error.message})` : ''}`)
+    const veredicto = debePasar
+      ? (paso ? 'VERDE, como debe' : `ROJO sin motivo (${error.message})`)
+      : paso ? 'VERDE: LA GUARDA NO SIRVE'
+        : porSuRegla ? `ROJO, como debe (${error.message})` : `ROJO POR OTRA REGLA (${error.message})`
+    console.log(`  ${ok ? 'ok ' : 'MAL'} ${nombre}: ${veredicto}`)
   }
   if (rotas) {
     console.log(`\n${rotas} caso(s) mal: el humo no distingue un sitio roto de uno sano.`)
@@ -364,8 +398,15 @@ if (!comoPrograma) {
 } else if (process.argv.includes('--negativas')) {
   await negativas()
 } else if (argumento('--huella-de')) {
+  // Se escribe DENTRO del sitio, para que el humo la pida publicada; y se imprime, para el
+  // `outputs.huella` del job build. Va al final del build: después de páginas y tarjetas.
   const dist = argumento('--huella-de')
-  console.log(huella(readFileSync(join(dist, 'index.html')), readFileSync(join(dist, 'datos', 'manifest.json'))))
+  const h = huellaDeDist(dist)
+  const destino = join(dist, ...ARCHIVO_HUELLA.split('/'))
+  mkdirSync(join(destino, '..'), { recursive: true })
+  writeFileSync(`${destino}.tmp`, `${h}\n`, 'utf8')
+  renameSync(`${destino}.tmp`, destino)
+  console.log(h)
 } else if (argumento('--base')) {
   const base = argumento('--base').replace(/\/$/, '')
   try {

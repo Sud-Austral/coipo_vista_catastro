@@ -92,7 +92,7 @@ npm run validar:paginas                    # oráculo propio sobre las 359 pági
 node scripts/robots.mjs                    # el robots.txt raíz (docs/robots-raiz.txt), RFC 9309
 npm run verify:cascada                     # el oráculo del cruce, en Node
 npm run prueba                             # node --test: cifras de la prosa y filtro del ámbito
-node scripts/humo.mjs --negativas          # sin red: 10 sitios falsos, cada defecto en rojo
+node scripts/humo.mjs --negativas          # sin red: 23 sitios falsos, cada defecto rojo por SU regla
 node scripts/humo.mjs --base https://sud-austral.github.io/coipo_vista_catastro   # el sitio vivo
 cd ..
 python frontend/verificacion/verificar.py       # ~15 min, necesita Chrome
@@ -137,21 +137,22 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
   faltan **lo dice y cuenta como fallo**, nunca se salta en silencio. El workflow las
   instala.
 
-### Lo que hay hoy, medido el 2026-09-02
+### Lo que hay hoy, medido el 2026-09-26
 
 | suite | cuánto | comando |
 |---|---|---|
 | Aserciones de datos (D1–D27) | 28, y **26 controles negativos** en rojo | `python ETL/verificar_datos.py --negativas` |
 | Oráculo del cruce | 21 casos + 5 negativos | `npm run verify:cascada` |
-| Cifras de la prosa, filtro del ámbito y módulos de `src/web/` | 36 pruebas, con negativas | `npm run prueba` |
+| Cifras de la prosa, filtro del ámbito, esquema y módulos de `src/web/` | 39 pruebas, con negativas | `npm run prueba` |
 | Arnés de navegador | V-1…V-73; 102 ejecuciones el 2026-09-26 (corre después de `build` y `build:web`) | `python frontend/verificacion/verificar.py` |
-| Mutaciones del visor | 36; las 5 de ETL se reportan «NO EJECUTADA» sin el `.duckdb` | `python frontend/verificacion/mutaciones-visor.py [--sin-etl]` |
-| Páginas generadas | 360 páginas, 18 negativas; generador con 8 controles negativos | `npm run build:web -- --negativas && npm run validar:paginas` |
+| Mutaciones del visor | 37; las 5 de ETL se reportan «NO EJECUTADA» sin el `.duckdb` | `python frontend/verificacion/mutaciones-visor.py [--sin-etl]` |
+| Páginas generadas | 360 páginas, 21 negativas; generador con 9 controles negativos | `npm run build:web -- --negativas && python scripts/tarjetas.py && npm run validar:paginas` |
 | Tarjetas PNG | 359 + la genérica; 4 negativas | `python frontend/scripts/tarjetas.py --negativas` |
-| Humo | 19 casos sin red | `node frontend/scripts/humo.mjs --negativas` |
+| Humo | 23 casos sin red | `node frontend/scripts/humo.mjs --negativas` |
 | Mutaciones de la aritmética | 7 (juzgan el oráculo y `npm run prueba`) | `python frontend/verificacion/mutaciones.py` |
 
-Todo verde el 2026-09-02.
+Todo verde el 2026-09-26, salvo las 5 mutaciones de ETL, que necesitan el `.duckdb` y se
+reportan «NO EJECUTADA».
 
 ---
 
@@ -178,7 +179,10 @@ si no coinciden los índices apuntan a la clase equivocada sin ningún error vis
 **El número de esquema vive en cuatro sitios y suben juntos:** `ETL/build_bin.py`
 (`"esquema": 5`), `ETL/verificar_datos.py` (D1), `frontend/src/datos/binario.js` y
 `frontend/scripts/datos-node.mjs` (el lector de Node que comparten el oráculo, las pruebas y
-el generador de páginas). D1 es la aserción que caza que uno se quede atrás. Un `.bin` leído con el esquema equivocado abre
+el generador de páginas). D1 sólo compara el manifest con SU literal; la que exige que los
+cuatro coincidan es `frontend/verificacion/esquema.test.mjs` (`npm run prueba`, en el CI).
+Antes de ella, subir el ETL, D1 y el lector de Node olvidando `binario.js` pasaba el CI y
+publicaba un visor que no abre. Un `.bin` leído con el esquema equivocado abre
 vistas tipadas perfectamente válidas sobre offsets corridos: el mapa sale **plausible** y
 mal, que es el peor fallo posible aquí.
 

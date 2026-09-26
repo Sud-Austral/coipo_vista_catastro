@@ -369,7 +369,8 @@
 /* ---------- estados ---------- */
 .descargando {
   position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
-  z-index: 900; padding: 8px 14px; border-radius: 999px;
+  /* Encima de la portada de carga (.est-mientras, 1001, paginas.css). */
+  z-index: 1002; padding: 8px 14px; border-radius: 999px;
   background: var(--superficie); border: 1px solid var(--borde);
   box-shadow: var(--sombra); font-size: 12.5px;
 }

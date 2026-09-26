@@ -195,7 +195,7 @@ export function CuerpoMetodologia({ manifest, oficiales, simef, pinus, mayor, co
         <section>
           <h3>De cuándo es cada dato</h3>
           <p>
-            Cada región se levantó en un año distinto
+            Las regiones se levantaron en años distintos
             {rango && <>, entre <strong>{rango}</strong></>}. El Catastro es una{' '}
             <strong>foto por región</strong>, no
             una serie temporal: comparar dos regiones compara dos años distintos, y restar una de

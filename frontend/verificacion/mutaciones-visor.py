@@ -809,6 +809,15 @@ MUTACIONES = [
        "const DE_ENCUADRE = ['lat', 'lon', 'z', 'base']",
        "const DE_ENCUADRE = []")]),
 
+    # El evento de compartir sin su direccion normalizada: Umami le pone la de la
+    # barra, que tras mover el mapa lleva lat/lon/z. Es lo que hacia la forma
+    # track('compartir') hasta la revision del 2026-09-26.
+    ("V-73 · compartir se cuenta con el encuadre del mapa",
+     sonda_analitica,
+     [(os.path.join(JSX, "ModalesPanel.jsx"),
+       "  window.umami?.track?.((p) => ({ ...p, url: vista, name: 'compartir', data: { destino } }))",
+       "  window.umami?.track?.((p) => ({ ...p, name: 'compartir', data: { destino } }))")]),
+
     ("V-66 · Compartir deja de ensenar el enlace",
      sonda_compartir,
      [(os.path.join(JSX, "ModalesPanel.jsx"),

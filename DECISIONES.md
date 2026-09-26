@@ -677,6 +677,51 @@ cuenta funcional y comprobar con la Inspección de URL que Google ve la frase; c
 redacción de los ceros (M.9); y la licencia de los datos. Y, cuando esto se publique, repetir
 las mediciones de M.0 contra el sitio vivo.
 
+### M.14 Lo que encontró la revisión adversarial, y cómo se arregló
+
+Antes de dar esto por terminado, cinco revisores de solo lectura recorrieron el diff entero
+—generador y validadores, app, CI, lo publicado, documentación— y un verificador independiente
+intentó refutar cada hallazgo. Sobrevivieron 21. Los que importaban, y su arreglo:
+
+- **La frase nacional decía «cada región actualizada en un año distinto».** Es falso: cinco
+  regiones son de 2024. Lo decían también el «Qué es», la Metodología, el panel, el reporte y
+  las descargas. Ahora: «las regiones se actualizaron en años distintos».
+- **Las descripciones decían «0 ha de bosques» en 33 comunas**, justo lo que la frase evita.
+  Ahora dicen «ningún polígono clasificado como bosque», y `validar-paginas` rechaza un
+  «0 ha» en una descripción.
+- **La descripción del índice decía que Chile tiene 343 comunas.** Tiene 346; son 343 las que
+  el Catastro publicado trae.
+- **La huella del humo sólo cubría la portada y el manifest**: un cambio que tocara sólo las
+  páginas o las tarjetas daba la huella de ayer, y el humo aprobaba el sitio viejo. Ahora es el
+  sha256 de todo `dist/`, publicado en `web/huella.txt`.
+- **Poner el identificador de Umami dejaba el CI en rojo**: las negativas del humo usaban el
+  identificador real. Ahora se inyecta, con casos para las dos situaciones.
+- **Negativas que se cazaban por otra regla.** En `validar-html`, `validar-paginas` y el humo
+  cada negativa declara ahora el problema que TIENE que salir; si sale otro, cuenta como rota.
+  Al endurecerlo aparecieron dos negativas mal apuntadas, y se corrigieron.
+- **El CUT de una región se «encontraba» en cualquier «2015» o «100 %».** Se busca «(CUT) 15».
+- **Una URL publicada podía pasar a mostrar otro territorio** sin que el registro lo notara.
+  Ahora lanza.
+- **La fecha publicada (`lastmod`, `dateModified`) sólo miraba tres rutas.** Ahora mira todo
+  `frontend/src`, `frontend/scripts`, los datos y las dependencias.
+- **Redibujar `og.png` no cambiaba su URL**, así que Facebook seguía con la vieja. Ahora lleva
+  `?v=` con el sha de su contenido.
+- **La app contaba la visita sólo cuando terminaban de bajar los 49 MB** y perdía el
+  `utm_source`. Ahora cuenta al montar y conserva las etiquetas de campaña en la primera. El
+  evento `compartir` va con la dirección normalizada: la forma `track('compartir')` mandaba la
+  URL de carga, con el encuadre.
+- **La portada de carga quedaba debajo del cartel y de los tiradores** (z-index 850 contra 900 y
+  998), y al montar perdía la frase y la tabla hasta que llegaba el manifest. Ahora está por
+  encima de todo lo que es del mapa, y la app se monta con el manifest ya pedido y conservando
+  el scroll.
+- **D1 no vigilaba el literal de esquema de `binario.js`.** Ahora `esquema.test.mjs` exige que
+  los cuatro coincidan.
+
+Descartados por el verificador, con su razón en el registro de la revisión: la resolución de
+día del control de determinismo, la combinación de `noindex` con meta refresh en los alias (es
+la recomendada para una redirección que no puede ser 301) y el token de Google-Extended
+(permitido por decisión, M.2).
+
 ## Fallos propios cometidos al establecer todo esto
 
 Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse.

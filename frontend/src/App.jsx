@@ -39,7 +39,7 @@ import { useFechaImagen } from './hooks/useFechaImagen'
 import { haExacta } from './formato'
 import { haPlantacionEspecie, mayorPoligono } from './hechos.js'
 import Portada from './web/Portada'
-import { urlParaAnalitica } from './web/analitica.js'
+import { claveDeVista, urlParaAnalitica } from './web/analitica.js'
 
 /**
  * Régimen de disposición, que decide si la X pliega una pista o cierra un cajón:
@@ -87,14 +87,14 @@ const PADDING_ENCUADRE = [24, 24]
  */
 const HOLGURA_ENCUADRE = 24
 
-export default function App() {
+export default function App({ manifestInicial = null, manifestPromesa = null, scrollInicial = 0 }) {
   const contenedor = useRef(null)
   const [map, setMap] = useState(null)
   const [base, setBase] = useState(inicial.base ?? 'Claro')
   const [datos, setDatos] = useState(null)
   // El manifest llega ANTES que el .bin (636 kB frente a 49 MB). Con él se
   // dibuja la portada mientras baja el resto, y también si el resto no llega.
-  const [manifestPortada, setManifestPortada] = useState(null)
+  const [manifestPortada, setManifestPortada] = useState(manifestInicial)
   const [error, setError] = useState(null)
   const [oscuro, setOscuro] = useState(temaOscuro)
   const [ambito, setAmbito] = useState(inicial.ambito)
@@ -377,13 +377,14 @@ export default function App() {
   // ---------- datos ----------
   useEffect(() => {
     const ctrl = new AbortController()
-    cargarPuntos(ctrl.signal, { alManifest: setManifestPortada })
+    cargarPuntos(ctrl.signal, { alManifest: setManifestPortada, manifestPromesa })
       .then(setDatos)
       .catch((e) => {
         if (e.name !== 'AbortError') setError(e)
       })
     return () => ctrl.abort()
-  }, [])
+    // manifestPromesa llega de main.jsx y no cambia nunca: esto corre una vez.
+  }, [manifestPromesa])
 
   const manifest = datos?.manifest ?? null
 
@@ -480,21 +481,23 @@ export default function App() {
 
   // LA VISITA SE CUENTA A MANO (DECISIONES §M.11). El rastreo automático de Umami
   // va apagado en la app, porque el visor reescribe la URL en cada paneo y cada
-  // movimiento sería una «página vista». Se registra una al cargar y otra cada vez
-  // que cambia LO QUE SE MIRA (ámbito, usos, filtros), con la dirección sin el
-  // encuadre. Espera a que urlState termine de escribir (lo hace con 250 ms de
-  // retraso). Sin identificador de Umami no hay script y esto no hace nada.
+  // movimiento sería una «página vista». Se registra una AL MONTAR —no al terminar el
+  // .bin: quien lee la portada y se va, o no recibe los 49 MB, también vino— y otra
+  // cada vez que cambia LO QUE SE MIRA (ámbito, usos, filtros), con la dirección sin el
+  // encuadre. La primera conserva las etiquetas de campaña (utm_*), que la app borra
+  // de la barra al escribir su estado; por eso se compara la CLAVE, sin ellas. Espera
+  // a que urlState termine de escribir (250 ms). Sin identificador no hay script.
   const ultimaVista = useRef(null)
   useEffect(() => {
-    if (!datos) return undefined
     const t = setTimeout(() => {
+      const clave = claveDeVista(window.location.search)
+      if (clave === ultimaVista.current || !window.umami?.track) return
+      ultimaVista.current = clave
       const url = import.meta.env.BASE_URL + urlParaAnalitica(window.location.search)
-      if (url === ultimaVista.current || !window.umami?.track) return
-      ultimaVista.current = url
       window.umami.track((p) => ({ ...p, url }))
     }, 600)
     return () => clearTimeout(t)
-  }, [datos, ambito, filtros, usosActivos])
+  }, [ambito, filtros, usosActivos])
 
   // Las tres fuentes de filtro se juntan en un solo objeto antes de bajar al
   // canal: el ámbito (territorio), la leyenda (uso) y los grupos temáticos. Se
@@ -959,7 +962,17 @@ export default function App() {
           es el visor y sus cifras nacionales. Sin manifest todavía, dice lo que
           no depende de él. */}
       {!datos && (
-        <div className="est-mientras">
+        <div
+          className="est-mientras"
+          // La posición de lectura de la portada horneada, que hacía scroll en el
+          // documento; ésta lo hace dentro de la capa.
+          ref={(el) => {
+            if (el && scrollInicial && !el.dataset.scrollPuesto) {
+              el.scrollTop = scrollInicial
+              el.dataset.scrollPuesto = '1'
+            }
+          }}
+        >
           <Portada manifest={manifestPortada} conBanner={false} nivel={2} />
         </div>
       )}

@@ -126,7 +126,8 @@ organización. El humo lee el publicado con el mismo lector, RFC 9309.
 - el evento `compartir`, con `destino` = `vista` o `pagina`;
 - los referentes: `chatgpt.com`, `perplexity.ai`, `claude.ai`, `copilot.microsoft.com`,
   `gemini.google.com`;
-- `utm_source=chatgpt.com`, que llega sin excluir porque la query no se excluye.
+- `utm_source=chatgpt.com` y las demás `utm_*`, en la **primera** visita: la app las conserva al
+  registrarla aunque después las borre de la barra al escribir su estado.
 
 ### 3.3 Search Console y Bing Webmaster
 

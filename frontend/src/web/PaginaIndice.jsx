@@ -37,7 +37,7 @@ export default function PaginaIndice({ manifest, bytesManifest, oficiales, simef
           usos={manifest.usos}
           ha={manifest.total.ha}
           n={manifest.total.filas}
-          rotulo="Todo Chile, según el Catastro (cada región actualizada en un año distinto)."
+          rotulo="Todo Chile, según el Catastro (las regiones se actualizaron en años distintos)."
         />
         <section id="regiones">
           <h2>Regiones y comunas</h2>

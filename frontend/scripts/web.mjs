@@ -30,7 +30,7 @@ import { mkdir, rename, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { cargarDatos, DATOS } from './datos-node.mjs'
-import { construirServidor, versionVista } from './prerender.mjs'
+import { construirServidor, urlOgGenerica, versionVista } from './prerender.mjs'
 import { filtroDelAmbito, resumenYMarginales } from '../src/indicadores.js'
 import { haPlantacionEspecie, mayorPoligono, oficialesPorRegion, rangoAnios } from '../src/hechos.js'
 import { slugDePagina } from '../src/web/textos.js'
@@ -78,7 +78,12 @@ export function fechaDeLoPublicado({ git = gitReal } = {}) {
   if (git(['rev-parse', '--is-shallow-repository']).trim() === 'true') {
     throw new Error('el repositorio es superficial: la fecha de los datos saldría mal (en el CI, fetch-depth: 0)')
   }
-  const rutas = ['frontend/public/datos', 'frontend/src/web', 'frontend/scripts/web.mjs']
+  // Todo lo que cambia los bytes de una página: los datos, TODO src/ (las cifras salen
+  // de indicadores.js, el formato de formato.js, el pie de CitaVisor, la Metodología del
+  // índice…), los scripts (web.mjs, el dibujante y su sello, el registro de URL) y las
+  // dependencias (renderToStaticMarkup cambia con React). Con sólo tres rutas, un
+  // arreglo en formato.js cambiaba las 359 páginas y publicaba la fecha de antes.
+  const rutas = ['frontend/public/datos', 'frontend/src', 'frontend/scripts', 'frontend/package-lock.json']
   const fechas = rutas.map((r) => git(['log', '-1', '--format=%cs', '--', r]).trim()).filter(Boolean)
   if (!fechas.length) throw new Error('git no da ninguna fecha para los datos')
   return {
@@ -192,7 +197,14 @@ export function revisarRegistro(registro, actuales, { registrar = false } = {}) 
   }
   const alias = []
   for (const [clave, cod] of Object.entries(registro)) {
-    if (actuales.has(clave)) continue
+    if (actuales.has(clave)) {
+      // Que la URL exista no basta: tiene que seguir siendo del MISMO territorio. Si otra
+      // comuna hereda el nombre, los enlaces compartidos citarían cifras ajenas.
+      if (actuales.get(clave) !== cod) {
+        throw new Error(`la URL publicada ${clave} era de ${cod} y ahora sería de ${actuales.get(clave)}`)
+      }
+      continue
+    }
     const destino = porCodigo.get(`${clave.split('/')[0]}:${cod}`)
     if (!destino) throw new Error(`la URL publicada ${clave} (${cod}) ya no corresponde a ninguna página`)
     alias.push([clave, destino])
@@ -352,9 +364,12 @@ async function generar({ registrar }) {
     const bytesManifest = statSync(join(DATOS, 'manifest.json')).size
     const descripcionIndice = srv.fraseNacional(man)
     await pagina(srv.URL_INDICE, {
-      imagen: { url: `${URL_PUBLICA}og.png`, ancho: 1200, alto: 630, alt: 'Catastro de Usos de la Tierra y Recursos Vegetacionales de CONAF' },
+      imagen: { url: urlOgGenerica(URL_PUBLICA), ancho: 1200, alto: 630, alt: 'Catastro de Usos de la Tierra y Recursos Vegetacionales de CONAF' },
       titulo: srv.TITULO_INDICE,
-      descripcion: `Superficie por uso de la tierra y bosques de las ${man.regiones.length} regiones y ${actuales.size - man.regiones.length} comunas de Chile, según el Visor del Catastro de CONAF.`,
+      // «de las 16 regiones y 343 comunas de Chile» diría que Chile tiene 343: tiene 346, y
+      // el Catastro publicado no trae Juan Fernández, Isla de Pascua ni la Antártica.
+      descripcion: `Superficie por uso de la tierra y bosques de las ${man.regiones.length} regiones de Chile y de ` +
+        `${actuales.size - man.regiones.length} comunas con polígonos en el Catastro, según el Visor del Catastro de CONAF.`,
       ld: srv.datosDataset({
         urlIndice, descripcion: descripcionIndice, rango: rangoAnios(man), fecha: fecha.datos,
         archivos: [
@@ -426,6 +441,8 @@ async function negativas() {
     ['una URL publicada desaparece', () =>
       revisarRegistro({ 'comuna/no-existe': '99999' }, slugsActuales(man), { registrar: true })],
     ['una URL nueva sin registrar', () => revisarRegistro({}, slugsActuales(man))],
+    ['una URL publicada pasa a otro territorio', () =>
+      revisarRegistro({ 'comuna/valdivia': '14102' }, slugsActuales(man), { registrar: true })],
   ]
   let rotas = 0
   for (const [nombre, romper] of casos) {

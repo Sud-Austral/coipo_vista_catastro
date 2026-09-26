@@ -301,7 +301,7 @@ def medir_analitica(cdp, url):
         tras_filtro = leer()
         abrir_grupo(cdp, "Compartir")
         cdp.evaluar("document.querySelector('.modal-filtro button.compartir')?.click()")
-        esperar(cdp, "(window.__vistas || []).some((v) => v.evento === 'compartir')", segundos=5)
+        esperar(cdp, "(window.__vistas || []).some((v) => (v.name || v.evento) === 'compartir')", segundos=5)
         final = leer()
         cerrar_grupo(cdp)
         return {"inicial": inicial, "tras_paneo": tras_paneo, "tras_filtro": tras_filtro, "final": final}
@@ -313,7 +313,14 @@ def veredicto_analitica(r):
     ini, pan, fil, fin = r["inicial"], r["tras_paneo"], r["tras_filtro"], r["final"]
     sin_encuadre = all(not re.search(r"[?&](lat|lon|z|base)=", v.get("url", "")) for v in fil if "url" in v)
     return bool(len(ini) == 1 and len(pan) == 1 and len(fil) == 2 and sin_encuadre
-                and "tifo=" in fil[1].get("url", "") and any(v.get("evento") == "compartir" for v in fin))
+                and "tifo=" in fil[1].get("url", "") and evento_compartir_ok(fin))
+
+
+def evento_compartir_ok(vistas):
+    """El evento de compartir, con nombre y con la dirección SIN el encuadre: la forma
+    track('compartir') mandaba la URL de carga del script, con lat/lon/z."""
+    ev = [v for v in vistas if v.get("name") == "compartir"]
+    return bool(ev) and all("url" in v and not re.search(r"[?&](lat|lon|z|base)=", v["url"]) for v in ev)
 
 
 # (consulta, página que TIENE que ofrecer Compartir, o None si no tiene que ofrecer ninguna)
@@ -2331,7 +2338,7 @@ def main():
                veredicto_analitica(r73),
                f"al cargar {len(r73['inicial'])} ({(r73['inicial'] or [{}])[0].get('url')}) · "
                f"tras 3 paneos {len(r73['tras_paneo'])} · tras un filtro {len(r73['tras_filtro'])} · "
-               f"compartir: {any(v.get('evento') == 'compartir' for v in r73['final'])}")
+               f"compartir: {evento_compartir_ok(r73['final'])}")
 
         print("\n" + "=" * 62)
         print(f"  {'TODO EN VERDE' if not fallos else str(len(fallos)) + ' EN ROJO'}")

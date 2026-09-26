@@ -15,7 +15,7 @@ import {
 } from '../src/web/textos.js'
 import { escaparHtml, etiquetaUmami, jsonLd, metasVistaPrevia } from '../src/web/cabeza.js'
 import { haEntera } from '../src/formato.js'
-import { urlParaAnalitica } from '../src/web/analitica.js'
+import { claveDeVista, urlParaAnalitica } from '../src/web/analitica.js'
 
 const FRONTEND = join(dirname(fileURLToPath(import.meta.url)), '..')
 const man = JSON.parse(readFileSync(join(FRONTEND, 'public', 'datos', 'manifest.json'), 'utf8'))
@@ -164,6 +164,14 @@ test('analítica: la dirección que se cuenta no lleva el encuadre ni el fondo',
   assert.equal(urlParaAnalitica('?tifo=05&reg=10'), urlParaAnalitica('?reg=10&tifo=05'))
   // «Ninguna clase» (usos vacío) no es «todas»: se conserva.
   assert.equal(urlParaAnalitica('?usos='), '?usos=')
+})
+
+test('analítica: las etiquetas de campaña se mandan, pero no hacen otra vista', () => {
+  // La primera visita lleva utm_source (llegó desde un asistente)...
+  assert.equal(urlParaAnalitica('?utm_source=chatgpt.com&reg=14&z=9'), '?reg=14&utm_source=chatgpt.com')
+  // ...y cuando la app la borra de la barra, la vista sigue siendo la misma: no se cuenta dos veces.
+  assert.equal(claveDeVista('?utm_source=chatgpt.com&reg=14&z=9'), claveDeVista('?reg=14&lat=-39&lon=-73&z=10'))
+  assert.equal(claveDeVista('?utm_source=x&utm_medium=y'), '')
 })
 
 test('Umami: sin identificador no se escribe nada', () => {

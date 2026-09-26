@@ -61,7 +61,7 @@ export default function Portada({ manifest, estado, conBanner = true, conAvisoLe
             ha={manifest.total.ha}
             n={manifest.total.filas}
             Sub={Sub}
-            rotulo={`Todo Chile, según el Catastro (cada región actualizada en un año distinto, entre ${rangoAniosTexto(manifest)}).`}
+            rotulo={`Todo Chile, según el Catastro (las regiones se actualizaron en años distintos, entre ${rangoAniosTexto(manifest)}).`}
           />
         )}
 

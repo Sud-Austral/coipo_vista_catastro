@@ -110,10 +110,14 @@
 /* En la app, mientras baja el .bin: la portada sobre el mapa y los paneles, bajo
    la píldora «Descargando…» (z 900). Mismo contenido que lo horneado, así que al
    montar no cambia lo que se lee. */
+/* Encima de TODO lo que es del mapa: el cartel (900), los tiradores (998) y los
+   botones de abrir los paneles (999) tapaban el título y la frase, y un tirador
+   invisible cambiaba y guardaba el ancho de un panel. La píldora «Descargando…» va
+   encima de esta capa (App.css). */
 .est-mientras {
   position: fixed; left: 0; right: 0; bottom: 0;
   top: max(var(--alto-minimo-banner), calc(100vw / var(--razon-banner)));
-  z-index: 850; overflow: auto; background: var(--superficie);
+  z-index: 1001; overflow: auto; background: var(--superficie);
 }
 
 @media (max-width: 600px) {

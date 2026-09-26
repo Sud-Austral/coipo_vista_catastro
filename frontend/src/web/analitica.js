@@ -15,6 +15,19 @@
 // Encuadre y fondo: cambian al mirar, no cambian lo que se mira.
 const DE_ENCUADRE = ['lat', 'lon', 'z', 'base']
 
+/**
+ * Las etiquetas de campaña (`utm_*`) SÍ se mandan —con ellas se ve que alguien llegó
+ * desde un asistente, `utm_source=chatgpt.com`—, pero no cuentan para decidir si la
+ * vista es otra: la app las borra de la barra al escribir su estado, y sin esto la misma
+ * visita se contaría dos veces, con y sin la etiqueta.
+ */
+export function claveDeVista(search) {
+  const q = new URLSearchParams(urlParaAnalitica(search))
+  for (const k of [...q.keys()]) if (k.startsWith('utm_')) q.delete(k)
+  const s = q.toString()
+  return s ? `?${s}` : ''
+}
+
 /** La query normalizada, con los parámetros en orden estable, o '' si no queda nada. */
 export function urlParaAnalitica(search) {
   const q = new URLSearchParams(search)

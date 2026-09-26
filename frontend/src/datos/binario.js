@@ -23,11 +23,13 @@ const ANCHO = { f32: 4, u16: 2, u8: 1 }
  * rama de error para dibujarla si el .bin no llega: Googlebot no baja un archivo
  * de ese tamaño, y sin esto indexaría la pantalla de error (DECISIONES §M.8).
  */
-export async function cargarPuntos(señal, { alManifest } = {}) {
+export async function cargarPuntos(señal, { alManifest, manifestPromesa } = {}) {
   // El manifest se pide SIN caché: es el índice, pesa poco, y si llega viejo
   // arrastra consigo la versión equivocada de todo lo demás.
-  const man = await pedir(`${DATA}/manifest.json`, señal, { cache: 'no-cache' })
-    .then((r) => r.json())
+  // Si main.jsx ya lo pidió para montar con la portada completa, se reutiliza; si no
+  // llegó (null), se pide aquí como siempre.
+  const man = (manifestPromesa && (await manifestPromesa)) ||
+    (await pedir(`${DATA}/manifest.json`, señal, { cache: 'no-cache' }).then((r) => r.json()))
   if (man.esquema !== 5) {
     // Ruidoso a proposito: un manifest de otra version abriria vistas tipadas
     // perfectamente validas sobre offsets equivocados, y el mapa saldria

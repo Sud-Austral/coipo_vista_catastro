@@ -6,7 +6,7 @@
  *   - el nombre explícito del territorio, nunca «esta comuna»;
  *   - quién lo dice (DECISIONES §M.3): el VISOR publicado por CONAF, calculado
  *     sobre los polígonos; no la cifra oficial, que es otra fuente;
- *   - de cuándo es: cada región se actualizó en un año distinto;
+ *   - de cuándo es: las regiones se actualizaron en años distintos;
  *   - hectáreas ENTERAS, ya redondeadas;
  *   - la salvedad frente a las cifras oficiales.
  *
@@ -46,8 +46,8 @@ export function fraseNacional(manifest) {
   const { filas, ha } = manifest.total
   const rango = rangoAniosTexto(manifest)
   return (
-    `Chile: ${QUIEN}, calculado sobre los ${fmt.format(filas)} polígonos del Catastro —cada ` +
-    `región actualizada en un año distinto, entre ${rango}—, el país tiene ${haEntera(ha)} ` +
+    `Chile: ${QUIEN}, calculado sobre los ${fmt.format(filas)} polígonos del Catastro —las ` +
+    `regiones se actualizaron en años distintos, entre ${rango}—, el país tiene ${haEntera(ha)} ` +
     `catastradas; ${tramoBosques(ha, manifest.usos, manifest.subusos)}. ${SALVEDAD}`
   )
 }
@@ -144,7 +144,7 @@ export function tarjetaDe({ archivo, titulo, subtitulo, anio, resumen, url }) {
   const renglones = [`${haEntera(resumen.ha)} catastradas en ${n(resumen.n)}`]
   if (bosques > 0) {
     renglones.push(`${haEntera(bosques)} de bosques (${pct(bosques, resumen.ha)})`)
-    renglones.push(nativo > 0 ? `${haEntera(nativo)} de bosque nativo` : 'Sin bosque nativo en el Catastro')
+    renglones.push(nativo > 0 ? `${haEntera(nativo)} de bosque nativo` : 'Ningún polígono de bosque nativo')
   } else {
     renglones.push('Ningún polígono clasificado como bosque')
     renglones.push('(el Catastro no dibuja rodales pequeños)')
@@ -170,9 +170,15 @@ export const TITULO_INDICE = 'Cifras por región y comuna — Catastro de Usos d
 export function descripcionEntidad(nombre, anio, resumen) {
   const bosques = haDe(resumen.usos, USO_BOSQUES)
   const nativo = haDe(resumen.subusos, '0402')
+  // Un cero NO se escribe «0 ha»: se leería como ausencia comprobada, y el Catastro no
+  // dibuja los rodales menores que su unidad mínima (la frase lo dice entero; aquí no cabe).
+  const bosque = !(bosques > 0)
+    ? 'ningún polígono clasificado como bosque'
+    : `${haEntera(bosques)} de bosques y ` +
+      (nativo > 0 ? `${haEntera(nativo)} de bosque nativo` : 'ningún polígono de bosque nativo')
   return (
-    `${nombre}: ${haEntera(resumen.ha)} catastradas, ${haEntera(bosques)} de bosques y ` +
-    `${haEntera(nativo)} de bosque nativo, según el Visor del Catastro de CONAF (actualización ${anio}).`
+    `${nombre}: ${haEntera(resumen.ha)} catastradas y ${bosque}, según el Visor del Catastro ` +
+    `de CONAF (actualización ${anio}).`
   )
 }
 

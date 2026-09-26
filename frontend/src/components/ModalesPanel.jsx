@@ -5,6 +5,7 @@ import { flush } from '../urlState'
 import { CajaModal } from './GrupoFiltro'
 import QueEs from './QueEs'
 import { cargarIndiceWeb, paginaDelEnlace } from '../web/enlaces.js'
+import { urlParaAnalitica } from '../web/analitica.js'
 
 /**
  * Los tres botones del pie del panel: Información, Descargar y Compartir.
@@ -137,10 +138,13 @@ export function ModalDescargas({ descargas, onCerrar }) {
 /**
  * Comparte `url`: el menú del sistema si lo hay, si no el portapapeles, y si tampoco,
  * se pide copiarlo a mano. El evento se registra a mano: con el rastreo automático
- * apagado (App.jsx), Umami tampoco escucha los data-umami-event. Sin Umami, nada.
+ * apagado (App.jsx), Umami tampoco escucha los data-umami-event. Y con la dirección
+ * NORMALIZADA: la forma track('nombre') manda la URL con la que se cargó el script, que
+ * trae el encuadre y ni siquiera es la vista actual. Sin Umami, nada.
  */
 async function compartirEnlace(url, setAviso, destino) {
-  window.umami?.track?.('compartir', { destino })
+  const vista = import.meta.env.BASE_URL + urlParaAnalitica(window.location.search)
+  window.umami?.track?.((p) => ({ ...p, url: vista, name: 'compartir', data: { destino } }))
   if (navigator.share) {
     try {
       await navigator.share({ title: document.title, url })

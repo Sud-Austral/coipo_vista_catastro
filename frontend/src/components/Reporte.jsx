@@ -706,7 +706,7 @@ export default function Reporte({
           </p>
           <h3>Las cifras no son de una sola fecha</h3>
           <p>
-            Cada región se levantó en un año distinto{rangoAnios ? `, entre ${rangoAnios}` : ''}.
+            Las regiones se levantaron en años distintos{rangoAnios ? `, entre ${rangoAnios}` : ''}.
             Un total que agregue varias regiones suma superficies medidas con años de diferencia,
             así que no describe un instante sino una acumulación.
           </p>
@@ -738,7 +738,7 @@ export default function Reporte({
             </p>
           ) : (
             <p>
-              <strong>Cada región se catastró en un año distinto.</strong> Este reporte agrega
+              <strong>Las regiones se catastraron en años distintos.</strong> Este reporte agrega
               superficies levantadas
               {rangoAnios ? ` entre ${rangoAnios}` : ' en años distintos'} según la región, así
               que no es una fotografía de una sola fecha. La actualización de cada región figura

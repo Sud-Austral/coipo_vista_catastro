@@ -23,6 +23,7 @@
  * scripts/validar-html.mjs (postbuild) comprueba el resultado, con sus negativas.
  */
 import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
 import { readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -41,6 +42,16 @@ export const MARCA_CABEZA = '<!--cabeza-->'
  */
 export function versionVista(titulo, descripcion, imagen) {
   return createHash('sha256').update(`${titulo}\n${descripcion}\n${imagen ?? ''}`).digest('hex').slice(0, 12)
+}
+
+/**
+ * La URL de la tarjeta genérica, con `?v=` del sha de su contenido. Con la URL fija,
+ * redibujar og.png no cambiaba ni og:image ni la versión de og:url, y Facebook seguía
+ * con la vieja. Pages ignora la query al servir el archivo.
+ */
+export function urlOgGenerica(urlPublica, rutaPublic = resolve(RAIZ, 'public', 'og.png')) {
+  const sha = createHash('sha256').update(readFileSync(rutaPublic)).digest('hex').slice(0, 12)
+  return `${urlPublica}og.png?v=${sha}`
 }
 
 /** Reemplaza `marca` por `por`, exigiendo que aparezca exactamente una vez. */
@@ -76,7 +87,7 @@ async function principal() {
     // La portada lleva la tarjeta GENÉRICA (public/og.png, versionada): esto corre en
     // `npm run build`, antes de que existan las tarjetas por región y comuna.
     const imagen = {
-      url: `${srv.URL_PUBLICA}og.png`, ancho: 1200, alto: 630,
+      url: urlOgGenerica(srv.URL_PUBLICA), ancho: 1200, alto: 630,
       alt: 'Catastro de Usos de la Tierra y Recursos Vegetacionales de CONAF: uso de la tierra y bosques de todo Chile',
     }
     const cabeza = srv.cabezaPortada({
