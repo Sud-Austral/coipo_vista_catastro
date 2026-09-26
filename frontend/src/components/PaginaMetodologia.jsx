@@ -1,4 +1,8 @@
-import { fmt, haExacta } from '../formato'
+import { fmt, fmt1, fmt2, haExacta } from '../formato'
+import {
+  especiesConservacion, haSnaspe, mayorResiduoUso, pctRecortados, rangoAniosTexto,
+} from '../hechos.js'
+import CitaVisor from './CitaVisor'
 
 /**
  * Metodología, definiciones y lo que este visor NO dice.
@@ -24,10 +28,21 @@ import { fmt, haExacta } from '../formato'
  * atrapado, Escape y el anclaje a la izquierda los pone ahora `CajaModal`, la
  * misma de los otros veinte controles: aquí sólo quedan las secciones.
  */
-export function CuerpoMetodologia({ manifest, oficiales, simef }) {
+export function CuerpoMetodologia({ manifest, oficiales, simef, pinus, mayor, consultado }) {
   const cap = manifest?.capas?.cbn_puntos
   const total = manifest?.total
   const oficialTotal = oficiales?.total_pais?.total
+  // Todas las cifras de la prosa salen de los datos (hechos.js), también las que
+  // parecen de adorno: esta Metodología se hornea en HTML y un asistente la cita
+  // suelta. Las dos que necesitan recorrer el .bin —`pinus` y `mayor`— llegan ya
+  // calculadas, una sola vez, por quien tiene los datos; hasta entonces son null y
+  // su frase se dice sin la cifra en vez de con una vieja.
+  const recortados = pctRecortados(manifest)
+  const especies = especiesConservacion(manifest)
+  const rango = rangoAniosTexto(manifest)
+  const residuo = mayorResiduoUso(manifest, oficiales)
+  const bernardo = haSnaspe(manifest, "Parque Nacional Bernardo O'Higgins")
+  const pinusOficial = oficiales?.plantacion_especies?.['Pinus radiata']
 
   return (
     <>
@@ -82,11 +97,15 @@ export function CuerpoMetodologia({ manifest, oficiales, simef }) {
               invadía a su vecino. Recortar es lo que lo resuelve; decir que no
               se recorta sería más simple y falso. */}
           <p>
-            Ese recorte afecta al <strong>56 % de los puntos</strong>, así que en zonas densas{' '}
+            Ese recorte afecta al{' '}
+            <strong>{recortados != null ? `${recortados} % de los puntos` : 'grueso de los puntos'}</strong>,
+            así que en zonas densas{' '}
             <strong>el tamaño ya no se puede leer como superficie</strong>: la cifra exacta está
             siempre en el atributo, en los filtros y en las descargas. A cambio, a partir del zoom
             11 ningún disco tapa a otro. Alejando el mapa vuelven a tocarse, y eso no tiene
-            arreglo: son 1,8 millones de polígonos sobre unos 700.000 píxeles.
+            arreglo:{' '}
+            {cap ? `son ${fmt1.format(cap.filas / 1e6)} millones de polígonos` : 'son millones de polígonos'}{' '}
+            sobre unos 700.000 píxeles.
           </p>
           <p>
             Lo que el disco no reproduce nunca es la <em>forma</em>: una faja estrecha de diez
@@ -118,9 +137,16 @@ export function CuerpoMetodologia({ manifest, oficiales, simef }) {
               <strong>La especie es la principal.</strong> De las seis que puede registrar un
               polígono, aquí filtra y suma la primera, la dominante, y la superficie del polígono se
               le asigna entera. No es una convención de este visor: es la misma que usa la planilla
-              oficial de plantaciones por especie, y reproducirla da{' '}
-              <strong>1.714.737,31 ha</strong> de <em>Pinus radiata</em> contra las{' '}
-              <strong>1.714.736,78</strong> publicadas por CONAF.
+              oficial de plantaciones por especie
+              {pinus != null && pinusOficial != null ? (
+                <>
+                  , y reproducirla da <strong>{haExacta(pinus)}</strong> de{' '}
+                  <em>Pinus radiata</em> contra las <strong>{fmt2.format(pinusOficial)}</strong>{' '}
+                  publicadas por CONAF.
+                </>
+              ) : (
+                '.'
+              )}
             </li>
             <li>
               <strong>La altura viene en dos escalas que se solapan.</strong> Una da tramos en
@@ -148,12 +174,15 @@ export function CuerpoMetodologia({ manifest, oficiales, simef }) {
             hay ninguna columna de categoría de amenaza en ninguna de sus capas. El filtro
             «Estado de conservación» que ofrece este visor <strong>no viene del Catastro</strong>:
             sale de una tabla auxiliar de la Unidad de Información y Análisis que clasifica las
-            989 especies del vocabulario.
+            {' '}{fmt.format(especies.total)} especies del vocabulario.
           </p>
           <p className="pendiente">
             ⚠ Esa tabla <strong>no está validada contra el Reglamento de Clasificación de
-            Especies</strong>, y sólo trae categoría para trece especies: las otras{' '}
-            <strong>976 figuran como «Sin dato - no verificado en RCE»</strong>. Eso significa que
+            Especies</strong>, y sólo trae categoría para {fmt.format(especies.conCategoria)}{' '}
+            especies: las otras{' '}
+            <strong>
+              {fmt.format(especies.sinVerificar)} figuran como «Sin dato - no verificado en RCE»
+            </strong>. Eso significa que
             no se ha comprobado, <strong>no</strong> que la especie esté fuera de peligro. Leer ese
             filtro como un inventario de especies amenazadas lo lee exactamente al revés.
           </p>
@@ -166,8 +195,9 @@ export function CuerpoMetodologia({ manifest, oficiales, simef }) {
         <section>
           <h3>De cuándo es cada dato</h3>
           <p>
-            Cada región se levantó en un año distinto, entre{' '}
-            <strong>2014 y 2024</strong>. El Catastro es una <strong>foto por región</strong>, no
+            Cada región se levantó en un año distinto
+            {rango && <>, entre <strong>{rango}</strong></>}. El Catastro es una{' '}
+            <strong>foto por región</strong>, no
             una serie temporal: comparar dos regiones compara dos años distintos, y restar una de
             otra no mide ningún cambio. Por eso este visor no ofrece ningún control que muestre
             dos años del Catastro a la vez.
@@ -228,7 +258,8 @@ export function CuerpoMetodologia({ manifest, oficiales, simef }) {
           <p>
             Que la tabla exista no es un detalle administrativo: sin ella, el Parque Nacional
             Bernardo O&apos;Higgins figuraba como dos unidades —«Ohiggins» y «OHiggins»— y quien
-            consultara una de las dos obtenía 2,8 de sus 3,8 millones de hectáreas.
+            consultara una de las dos obtenía 2,8 de sus{' '}
+            {bernardo != null ? fmt1.format(bernardo / 1e6) : 'casi cuatro'} millones de hectáreas.
           </p>
           {oficialTotal && total && (
             <p>
@@ -236,7 +267,8 @@ export function CuerpoMetodologia({ manifest, oficiales, simef }) {
               publicada por CONAF es <strong>{haExacta(oficialTotal)}</strong>:{' '}
               <strong>{(total.ha - oficialTotal).toFixed(2)} ha</strong> de diferencia
               ({(((total.ha - oficialTotal) / oficialTotal) * 100).toFixed(7)} %).{' '}
-              <strong>No se ajusta.</strong> El mayor residuo por clase de uso es de unas 6 ha, del
+              <strong>No se ajusta.</strong> El mayor residuo por clase de uso es de unas{' '}
+              {residuo != null ? fmt.format(Math.round(residuo)) : '—'} ha, del
               mismo orden que los residuos regionales que la propia serie tiene contra lo
               publicado. No hay una causa verificada para esa diferencia, así que aquí no se
               afirma ninguna.
@@ -306,14 +338,7 @@ export function CuerpoMetodologia({ manifest, oficiales, simef }) {
             Gerencia de Fiscalización Forestal y Evaluación Ambiental antes de redistribuirlos o
             usarlos en un producto propio.
           </p>
-          {cap && (
-            <p className="cita">
-              CONAF. <em>Visor del Catastro de Usos de la Tierra y Recursos Vegetacionales</em>.
-              Unidad de Información y Análisis para la Gerencia de Fiscalización Forestal y
-              Evaluación Ambiental. Datos <code>sha256 {cap.sha256.slice(0, 16)}…</code>.
-              Consultado el {new Date().toLocaleDateString('es-CL')}.
-            </p>
-          )}
+          {cap && <CitaVisor sha256={cap.sha256} consultado={consultado} />}
           <p>
             El mapa base y sus condiciones son de terceros y se declaran en la atribución de la
             esquina inferior del mapa. La capa Sentinel-2 es un compuesto anual de EOX con
@@ -339,7 +364,8 @@ export function CuerpoMetodologia({ manifest, oficiales, simef }) {
             </li>
             <li>
               No permite contar polígonos como si fueran superficie: un polígono de 0,1 ha y otro
-              de 1.295.122 ha cuentan igual en el conteo y no en las hectáreas.
+              de {mayor != null ? `${fmt.format(Math.round(mayor))} ha` : 'más de un millón de ha'}{' '}
+              cuentan igual en el conteo y no en las hectáreas.
             </li>
             <li>
               Las cifras de SIMEF son de otra fuente y sus períodos no cubren las mismas regiones,
@@ -348,7 +374,8 @@ export function CuerpoMetodologia({ manifest, oficiales, simef }) {
             <li>
               No dice, por sí solo, si una especie está amenazada: el Catastro no registra estado
               de conservación. El filtro que lo ofrece sale de una tabla auxiliar sin validar, con
-              976 de 989 especies sin verificar. Y una especie con poca superficie aquí no es una
+              {' '}{fmt.format(especies.sinVerificar)} de {fmt.format(especies.total)} especies sin
+              verificar. Y una especie con poca superficie aquí no es una
               especie en riesgo.
             </li>
             <li>

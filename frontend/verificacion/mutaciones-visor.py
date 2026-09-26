@@ -448,10 +448,13 @@ def sonda_informacion(cdp, url):
         ".map(e => e.textContent))"))
     met = cdp.evaluar("!!document.querySelector('.modal-filtro .met-cuerpo')")
     V.cerrar_grupo(cdp)
+    faltan = [c for c in V.cifras_de_la_prosa() if c not in texto]
     pasa = (len(texto) > 6000 and met
             and "Qué cuenta el Catastro como bosque" in h3
-            and any("tamaño de los puntos" in x for x in h3))
-    return pasa, f"{len(texto)} caracteres · {len(h3)} apartados · metodologia: {met}"
+            and any("tamaño de los puntos" in x for x in h3)
+            and not faltan)
+    return pasa, (f"{len(texto)} caracteres · {len(h3)} apartados · metodologia: {met}"
+                  f" · faltan: {faltan or 'ninguna'}")
 
 
 def sonda_compartir(cdp, url):
@@ -675,6 +678,15 @@ MUTACIONES = [
      sonda_informacion,
      [(os.path.join(JSX, "ModalesPanel.jsx"),
        '      <div className="met-cuerpo">{metodologia}</div>', "")]),
+
+    # La prosa vuelve a llevar una cifra que no es la de los datos. Se rompe la
+    # FUENTE (hechos.js) y no un texto: es lo que pasaria si alguien "arreglara"
+    # el rango a mano, y todas las frases que lo citan tienen que delatarlo.
+    ("V-65b · la Metodologia cita un rango de anios que no es el de los datos",
+     sonda_informacion,
+     [(os.path.join(FRONTEND, "src", "hechos.js"),
+       "  return { desde: Math.min(...nums), hasta: Math.max(...nums) }",
+       "  return { desde: Math.min(...nums), hasta: Math.max(...nums) - 1 }")]),
 
     ("V-66 · Compartir deja de ensenar el enlace",
      sonda_compartir,

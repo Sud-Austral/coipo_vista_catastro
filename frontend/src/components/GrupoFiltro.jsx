@@ -237,7 +237,11 @@ export function ModalFiltro({
         ) : null
       }
     >
-      {def.nota && <p className="nota">{def.nota}</p>}
+      {def.nota && (
+        <p className="nota">
+          {typeof def.nota === 'function' ? def.nota(manifest) : def.nota}
+        </p>
+      )}
       {/* De dónde sale el vocabulario. «Lo dice la guía de CONAF» y «lo
           dedujimos del dato» no son la misma autoridad, y quien cite una
           cifra tiene derecho a saber cuál de las dos está citando. */}

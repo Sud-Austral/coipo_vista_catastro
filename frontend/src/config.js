@@ -451,7 +451,3 @@ export function fechaLarga(iso) {
 export const AVISO_PUNTOS =
   'Cada punto es el centroide de un polígono del Catastro, no una parcela ni un predio. ' +
   'Su posición representa al polígono completo; la superficie real está en el atributo.'
-
-export const AVISO_SERIE =
-  'El Catastro no es una serie temporal: cada región se actualizó en un año distinto, ' +
-  'entre 2014 y 2024. Comparar regiones entre sí compara fotos de años distintos.'

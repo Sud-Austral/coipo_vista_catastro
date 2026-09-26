@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { BASEMAPS, COLOR_USO } from '../config'
 import { fmt, fmt1, ha, haExacta, pct } from '../formato'
 import { FILTROS } from '../filtros'
+import { rangoAniosTexto } from '../hechos.js'
 import {
   ambitoTexto,
   anioDelAmbito,
@@ -65,25 +66,6 @@ function Donut({ partes, total, paleta, r = 54, grosor = 22 }) {
       </g>
     </svg>
   )
-}
-
-/**
- * El rango de años del catastro, SACADO DEL MANIFEST.
- *
- * Estaba escrito a mano —«entre 2013 y 2023»— y era falso: los años reales van
- * de 2014 a 2024, y algunas regiones traen tramos como «2020-2022». Una fecha
- * inventada en el pie de un documento impreso es peor que no ponerla, porque no
- * hay nada en el papel que la contradiga.
- */
-function rangoDeAnios(manifest) {
-  const nums = (manifest?.regiones ?? [])
-    .flatMap((r) => String(r.anio ?? '').split('-'))
-    .map((t) => parseInt(t, 10))
-    .filter((n) => Number.isFinite(n))
-  if (nums.length === 0) return null
-  const min = Math.min(...nums)
-  const max = Math.max(...nums)
-  return min === max ? String(min) : `${min} y ${max}`
 }
 
 /**
@@ -191,7 +173,9 @@ export default function Reporte({
   const paleta = COLOR_USO[oscuro ? 'oscuro' : 'claro']
   const ambitoTxt = ambitoTexto(ambito, manifest)
   const anio = anioDelAmbito(ambito, manifest)
-  const rangoAnios = rangoDeAnios(manifest)
+  // El rango de años SALE DEL MANIFEST. Estuvo escrito a mano —«entre 2013 y
+  // 2023»— y era falso; ahora lo calcula hechos.js para todo el visor.
+  const rangoAnios = rangoAniosTexto(manifest)
   const bosque = composicionBosque(resumen)
   const snaspe = resumenSnaspe(resumen)
   const estructuras = estructurasBosqueNativo(resumen)

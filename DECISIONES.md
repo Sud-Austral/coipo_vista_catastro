@@ -459,6 +459,37 @@ Además, **hasta el 2026-09-26 los PR no corrían ninguna guarda**: `deploy.yml`
 escuchaba `push`. Ahora un PR corre `datos` y `build` y no publica, en su propio grupo de
 concurrencia para no cancelar un despliegue de `main`.
 
+### M.7 Las cifras de la prosa salen de los datos
+
+La prosa del visor —la Metodología, las advertencias del panel, las cabeceras de las
+descargas— llevaba cifras de los datos escritas a mano: «entre 2014 y 2024» en cinco sitios,
+«976 de 989» en tres, la cifra oficial del país como literal, el Pinus radiata, el polígono más
+grande. Antes daba igual; desde que esa prosa se hornea en HTML para buscadores y asistentes,
+una cifra vieja la cita un asistente, suelta y con el nombre de CONAF delante.
+
+Ahora salen de `frontend/src/hechos.js`, sin imports para que lo carguen el navegador, Node y el
+generador de páginas. Cada valor se comprobó contra el literal que reemplazaba, sobre los datos
+publicados: rango 2014–2024; 976 sin verificar de 989 especies; 56 % de discos recortados;
+residuo máximo por uso 6,32 ha; Bernardo O'Higgins 3.811.947,91 ha; Pinus radiata
+1.714.737,31 ha contra 1.714.736,78 oficiales; polígono mayor 1.295.122,75 ha. La planilla
+oficial casa con las 16 regiones por nombre salvo Magallanes, que usa la misma regla que
+`ETL/cifras_oficiales.py`; si una región deja de casar, lanza en vez de atribuir una cifra a
+otra región.
+
+El filtro del ámbito salió de `App.jsx` a `filtroDelAmbito` (`indicadores.js`), porque el
+generador de páginas por región y comuna tiene que usar el mismo: una página publicada no
+puede citar para una comuna otra cifra que la del panel. La regla de §G viaja con él.
+
+**Lo que costó.** El arnés de navegador quedaba en rojo o se caía en un 30–40 % de las
+aperturas de un filtro, **igual en `main` que en la rama** (medido: 3 y 4 fallos de 10 en
+cada una). No era la app: `esperar()` devolvía los milisegundos transcurridos, y con
+`time.time()` —que en Windows avanza a saltos de ~16 ms— una condición ya cumplida en la
+primera consulta daba exactamente `0.0`, que es falso, y `abrir_grupo` informaba «no abrió» con
+el modal abierto. Con `perf_counter` y un piso de 0,001 ms: 0 fallos de 10, dos veces. Con eso
+el arnés completo dio 95 de 95 en `main` y 95 de 95 en la rama. Queda una intermitente
+conocida, **V-39** (encuadre al filtrar por Palma Chilena): quedó en z=5 en una de dos
+corridas completas de la rama y pasó 2 de 2 aislada; no toca nada de lo que cambió aquí.
+
 ## Fallos propios cometidos al establecer todo esto
 
 Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse.

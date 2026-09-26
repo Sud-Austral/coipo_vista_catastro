@@ -505,6 +505,43 @@ export function ambitoTexto(ambito, manifest) {
   return partes.join(' › ')
 }
 
+/**
+ * El filtro que corresponde a un ámbito territorial, en índices de dominio.
+ *
+ * Vivía dentro de App.jsx y salió aquí porque ahora lo usan DOS: el panel y el
+ * generador de páginas por región y comuna. Si cada uno armara el suyo, la página
+ * de una comuna podría citar una cifra distinta de la que el panel enseña para esa
+ * misma comuna, y las dos se publican.
+ *
+ *  1. La REGIÓN filtra por su propia columna, que existe desde el esquema 4. Ya no
+ *     se deriva de las comunas, así que un hueco en `comuna` no puede volver a
+ *     vaciar el ámbito regional. Y los 4 polígonos de Magallanes que no tienen
+ *     comuna vuelven a contar en su región.
+ *  2. El filtro se aplica SIEMPRE que hay ámbito, aunque el conjunto salga vacío.
+ *     Un ámbito sin coincidencias devuelve CERO y lo dice; nunca el país entero
+ *     (DECISIONES §G). Por eso una región inexistente da un Set VACÍO, no ausente.
+ *
+ * Devuelve null cuando no hay ámbito: eso sí es «todo Chile».
+ */
+export function filtroDelAmbito(ambito, manifest) {
+  if (!manifest || !ambito?.region) return null
+  const i = manifest.regiones.findIndex((r) => r.cod === ambito.region)
+  const f = { region: new Set(i >= 0 ? [i] : []) }
+  // Provincia y comuna siguen saliendo de la columna `comuna`: son los dos
+  // niveles que el .bin sí resuelve por ahí.
+  if (ambito.provincia || ambito.comuna) {
+    const s = new Set()
+    manifest.comunas.forEach((c, k) => {
+      if (c.region !== ambito.region) return
+      if (ambito.provincia && c.provincia !== ambito.provincia) return
+      if (ambito.comuna && c.cod !== ambito.comuna) return
+      s.add(k)
+    })
+    f.comuna = s
+  }
+  return f
+}
+
 /** El año del catastro del ámbito, o null si el ámbito abarca varios. */
 export function anioDelAmbito(ambito, manifest) {
   if (!ambito?.region) return null

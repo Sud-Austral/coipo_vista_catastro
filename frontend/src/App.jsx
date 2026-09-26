@@ -18,7 +18,7 @@ import {
   paletaRGB,
 } from './config'
 import { cargarPuntos, mascaraTodo, tablaColor } from './datos/binario'
-import { ambitoTexto, resumenNacional, resumenYMarginales } from './indicadores'
+import { ambitoTexto, filtroDelAmbito, resumenNacional, resumenYMarginales } from './indicadores'
 import { alternar, filtrosAURL, filtrosDesdeURL } from './filtros'
 import { guardarDisposicion, leerDisposicion } from './preferencias'
 import { escribirURL, leerURL } from './urlState'
@@ -37,6 +37,7 @@ import Tirador from './components/Tirador'
 import { IconoIndicadores } from './components/graficos'
 import { useFechaImagen } from './hooks/useFechaImagen'
 import { haExacta } from './formato'
+import { haPlantacionEspecie, mayorPoligono } from './hechos.js'
 
 /**
  * Régimen de disposición, que decide si la X pliega una pista o cierra un cajón:
@@ -461,34 +462,16 @@ export default function App() {
   // 1.827.933 polígonos— rotuladas «Los Ríos», con el mapa encuadrado sobre la
   // región y su nombre correcto al lado. Convincente y falso.
   //
-  // Dos cambios, y hacen falta los dos:
-  //
-  //  1. La REGIÓN filtra por su propia columna, que existe desde el esquema 4.
-  //     Ya no se deriva de las comunas, así que un hueco en `comuna` no puede
-  //     volver a vaciar el ámbito regional. Y los 4 polígonos de Magallanes que
-  //     no tienen comuna vuelven a contar en su región.
-  //  2. El filtro se aplica SIEMPRE que hay ámbito, aunque el conjunto salga
-  //     vacío. Un ámbito sin coincidencias devuelve CERO y lo dice; nunca el
-  //     país entero. Esto es lo que impide que el próximo hueco en los datos se
-  //     publique otra vez como cifra nacional bajo rótulo regional.
-  const filtroAmbito = useMemo(() => {
-    if (!manifest || !ambito.region) return null
-    const i = manifest.regiones.findIndex((r) => r.cod === ambito.region)
-    const f = { region: new Set(i >= 0 ? [i] : []) }
-    // Provincia y comuna siguen saliendo de la columna `comuna`: son los dos
-    // niveles que el .bin sí resuelve por ahí.
-    if (ambito.provincia || ambito.comuna) {
-      const s = new Set()
-      manifest.comunas.forEach((c, k) => {
-        if (c.region !== ambito.region) return
-        if (ambito.provincia && c.provincia !== ambito.provincia) return
-        if (ambito.comuna && c.cod !== ambito.comuna) return
-        s.add(k)
-      })
-      f.comuna = s
-    }
-    return f
-  }, [manifest, ambito])
+  // Los dos cambios que lo arreglaron viven ahora en `filtroDelAmbito`
+  // (indicadores.js), porque el generador de páginas por región y comuna usa el
+  // mismo filtro: una página publicada no puede citar para una comuna otra cifra
+  // que la del panel.
+  const filtroAmbito = useMemo(() => filtroDelAmbito(ambito, manifest), [manifest, ambito])
+
+  // Las dos cifras de la prosa que exigen recorrer el .bin entero, una sola vez:
+  // las citan el panel y la Metodología (hechos.js).
+  const pinus = useMemo(() => haPlantacionEspecie(datos, manifest, 'PR'), [datos, manifest])
+  const mayorHa = useMemo(() => mayorPoligono(datos), [datos])
 
   // Las tres fuentes de filtro se juntan en un solo objeto antes de bajar al
   // canal: el ámbito (territorio), la leyenda (uso) y los grupos temáticos. Se
@@ -822,7 +805,14 @@ export default function App() {
           />
         }
         metodologia={
-          <CuerpoMetodologia manifest={manifest} oficiales={oficiales} simef={simef} />
+          <CuerpoMetodologia
+            manifest={manifest}
+            oficiales={oficiales}
+            simef={simef}
+            pinus={pinus}
+            mayor={mayorHa}
+            consultado={new Date().toLocaleDateString('es-CL')}
+          />
         }
       />
 
@@ -845,6 +835,8 @@ export default function App() {
         <PanelIndicadores
           resumen={resumen}
           simef={simef}
+          oficiales={oficiales}
+          pinus={pinus}
           manifest={manifest}
           ambito={ambito}
           abierto={kpiVisible}

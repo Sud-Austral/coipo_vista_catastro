@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { COLOR_USO, paletaRGB } from '../config'
-import { fmt, ha, haExacta, numero, pct, titular } from '../formato'
+import { fmt, fmt2, ha, haExacta, numero, pct, titular } from '../formato'
+import { rangoAnios, rangoAniosTexto, totalOficial } from '../hechos.js'
 import {
   ambitoTexto,
   anioDelAmbito,
@@ -44,6 +45,8 @@ import {
 export default function PanelIndicadores({
   resumen,
   simef,
+  oficiales,
+  pinus,
   manifest,
   ambito,
   abierto,
@@ -55,6 +58,11 @@ export default function PanelIndicadores({
 }) {
   const cabecera = useRef(null)
   const montado = useRef(false)
+  // Cifras de la prosa, de los datos y no a mano (hechos.js).
+  const oficialPais = totalOficial(oficiales)
+  const rango = rangoAniosTexto(manifest)
+  const r = rangoAnios(manifest)
+  const aniosEntre = r ? r.hasta - r.desde : null
 
   // Al abrir el cajón el foco entra en su encabezado. Se salta el primer render:
   // anclado, el panel nace visible, y sin la guarda el foco saltaría aquí nada
@@ -113,9 +121,9 @@ export default function PanelIndicadores({
               valor={ha(resumen.ha)}
               etiqueta={`${fmt.format(resumen.n)} polígonos · ${ambitoTxt}`}
               detalle={
-                resumen.fuente === 'manifest'
-                  ? `Cifra oficial de CONAF: 75.661.194,48 ha · aquí sale ${(
-                      resumen.ha - 75661194.48
+                resumen.fuente === 'manifest' && oficialPais != null
+                  ? `Cifra oficial de CONAF: ${fmt2.format(oficialPais)} ha · aquí sale ${(
+                      resumen.ha - oficialPais
                     ).toFixed(2)} ha más. No se ajusta.`
                   : null
               }
@@ -163,7 +171,7 @@ export default function PanelIndicadores({
             advertencia={{
               titulo: 'Por qué estas nueve clases no se comparan con otro año',
               cuerpo:
-                'Cada región se catastró en un año distinto entre 2014 y 2024, así que el reparto ' +
+                `Cada región se catastró en un año distinto entre ${rango}, así que el reparto ` +
                 'nacional mezcla fotos de años diferentes. No es una serie temporal y no existe en ' +
                 'este visor ningún control que ofrezca dos años: lo que no se puede hacer, no se dibuja.',
             }}
@@ -487,9 +495,13 @@ export default function PanelIndicadores({
               cuerpo:
                 'Cada polígono puede registrar hasta SEIS especies y aquí sólo cuenta la primera, ' +
                 'la dominante: la superficie de un polígono se asigna entera a esa especie. No es ' +
-                'una convención de este visor — es la misma que usa la planilla oficial de CONAF, y ' +
-                'reproducirla da 1.714.737,31 ha de Pinus radiata contra las 1.714.736,78 ' +
-                'publicadas. La lista incluye toda la vegetación, no sólo árboles, y no dice nada ' +
+                'una convención de este visor — es la misma que usa la planilla oficial de CONAF' +
+                (pinus != null && oficiales?.plantacion_especies?.['Pinus radiata'] != null
+                  ? `, y reproducirla da ${haExacta(pinus)} de Pinus radiata contra las ${fmt2.format(
+                      oficiales.plantacion_especies['Pinus radiata'],
+                    )} publicadas. `
+                  : '. ') +
+                'La lista incluye toda la vegetación, no sólo árboles, y no dice nada ' +
                 'del estado de conservación de ninguna especie: el Catastro no registra ese dato.',
             }}
             tabla={{
@@ -528,9 +540,9 @@ export default function PanelIndicadores({
             advertencia={{
               titulo: 'Por qué ordenar estas barras ordena años distintos',
               cuerpo:
-                'Cada región se catastró en un año distinto entre 2014 y 2024. Ordenarlas por ' +
+                `Cada región se catastró en un año distinto entre ${rango}. Ordenarlas por ` +
                 'superficie es legítimo; leer el orden como una evolución, no. Dos regiones vecinas ' +
-                'en esta lista pueden estar separadas por diez años de levantamiento.',
+                `en esta lista pueden estar separadas por ${aniosEntre} años de levantamiento.`,
             }}
             tabla={{
               titulo: 'Superficie por región',
