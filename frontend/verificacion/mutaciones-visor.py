@@ -88,6 +88,16 @@ def compilar():
         raise RuntimeError("no compila:\n" + r.stdout[-2000:] + r.stderr[-2000:])
 
 
+def construir_web():
+    """compilar() y ademas las paginas por region y comuna: `vite build` vacia
+    dist/, y las mutaciones 'web' (y V-72 en general) las necesitan."""
+    compilar()
+    r = subprocess.run(["npm", "run", "build:web"], cwd=FRONTEND, shell=True,
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        raise RuntimeError("build:web falla:\n" + r.stdout[-2000:] + r.stderr[-2000:])
+
+
 def construir_datos():
     """Regenera el .bin y el manifest. Cuesta 15 s, medido, asi que las
     mutaciones del ETL --las que rompen el DATO y no el codigo del visor-- salen
@@ -481,6 +491,19 @@ def sonda_excepciones(cdp, url):
                      (f": {exc[0]['params']['exceptionDetails'].get('text', '')[:60]}" if exc else ""))
 
 
+def sonda_enlace_paginas(cdp, url):
+    """V-71: el panel enlaza las paginas por region y comuna."""
+    ir(cdp, url)
+    r = V.medir_enlace_paginas(cdp)
+    return V.veredicto_enlace(r), f"{r.get('texto', 'sin enlace')} -> {r.get('href')}"
+
+
+def sonda_paginas(cdp, url):
+    """V-72: las paginas generadas se leen sin JavaScript en tres anchos."""
+    ok, malas = V.veredicto_paginas(V.medir_paginas(cdp, url))
+    return ok, ("todas bien" if ok else " · ".join(malas)[:160])
+
+
 def sonda_compartir(cdp, url):
     ir(cdp, url + "?reg=10")
     V.abrir_grupo(cdp, "Compartir")
@@ -737,6 +760,22 @@ MUTACIONES = [
        "  useEffect(() => { setTimeout(() => { throw new Error('mutacion V-8') }, 0) }, [])\n"
        "  const alFallo = useCallback(() => {")]),
 
+    # --- las paginas por region y comuna (DECISIONES §M.9) --------------------
+    ("V-71 · el enlace del panel apunta a otro sitio",
+     sonda_enlace_paginas,
+     [(os.path.join(JSX, "PanelLateral.jsx"),
+       "        <a className=\"enlace-paginas\" href={`${import.meta.env.BASE_URL}regiones/`}>",
+       "        <a className=\"enlace-paginas\" href={import.meta.env.BASE_URL}>")]),
+
+    # Las paginas generadas sin su hoja: HTML crudo, ancho de pantalla completo.
+    # Es 'web': hay que regenerarlas con build:web para que la mutacion llegue.
+    ("V-72 · las paginas pierden su hoja de estilos",
+     sonda_paginas,
+     [(os.path.join(FRONTEND, "src", "web", "cabeza.js"),
+       "    `<link rel=\"stylesheet\" href=\"${base}paginas.css\" />`,",
+       "")],
+     'web'),
+
     ("V-66 · Compartir deja de ensenar el enlace",
      sonda_compartir,
      [(os.path.join(JSX, "ModalesPanel.jsx"),
@@ -852,7 +891,7 @@ def main():
         # ya sale roja sin mutar nada, lo que esta mal es la sonda y todo lo que
         # venga detras seria un falso «la mutacion se caza».
         print("=== control positivo: sin mutar, todas las sondas en verde\n")
-        compilar()
+        construir_web()
         proc, perfil, cdp = abrir(url)
         try:
             for caso in casos:
@@ -869,7 +908,7 @@ def main():
         for caso in casos:
             nombre, sonda, ediciones = caso[0], caso[1], caso[2]
             tipo = caso[3] if len(caso) > 3 else None
-            if tipo not in (None, "etl"):
+            if tipo not in (None, "etl", "web"):
                 sys.exit(f"tipo de mutacion desconocido: {tipo!r} en {nombre}")
             toca_datos = tipo == "etl"
             if toca_datos and sin_etl:
@@ -887,7 +926,12 @@ def main():
                 open(archivo, "w", encoding="utf-8").write(texto.replace(de, a, 1))
             else:
                 try:
-                    construir_datos() if toca_datos else compilar()
+                    if toca_datos:
+                        construir_datos()
+                    elif tipo == "web":
+                        construir_web()
+                    else:
+                        compilar()
                     proc, perfil, cdp = abrir(url)
                     try:
                         pasa, det = sonda(cdp, url)
@@ -910,7 +954,8 @@ def main():
         for a, b in respaldo.items():
             shutil.copy2(b, a)
             os.unlink(b)
-        compilar()
+        # Con las paginas: verificar.py (V-72) las necesita en dist/.
+        construir_web()
 
     print("\n" + "=" * 62)
     print(f"  {'TODO EN VERDE' if not fallos else str(len(fallos)) + ' SIN PROTECCION'}")

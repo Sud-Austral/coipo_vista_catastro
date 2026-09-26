@@ -77,6 +77,9 @@ npm install
 npm run dev
 npm run lint                               # oxlint. Verde en el estado base (0 avisos)
 npm run build                              # ~2 s: vite + portada horneada + validar-html
+npm run build:web                          # ~7 s: páginas por región y comuna, sitemap (DESPUÉS de build)
+npm run validar:paginas                    # oráculo propio sobre las 359 páginas, con negativas
+node scripts/robots.mjs                    # el robots.txt raíz (docs/robots-raiz.txt), RFC 9309
 npm run verify:cascada                     # el oráculo del cruce, en Node
 npm run prueba                             # node --test: cifras de la prosa y filtro del ámbito
 node scripts/humo.mjs --negativas          # sin red: 10 sitios falsos, cada defecto en rojo
@@ -95,6 +98,12 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
   importar leaflet, deck.gl ni `App.jsx` (en Node: «window is not defined»).
 - **`public/paginas.css` repite los tokens de `src/index.css`**, y `validar-html` falla si
   difieren. Cambia los dos.
+- **`npm run build` vacía `dist/`, páginas incluidas.** Después hay que correr `build:web`,
+  y V-72 falla si no. `build:web` exige historia git completa (la fecha de los datos sale
+  de `git log`; en un clon superficial se niega a correr).
+- **Una URL nueva** (una comuna que aparece o un nombre que cambia) exige
+  `node scripts/web.mjs --registrar` y commitear `scripts/slugs-publicados.json`. El registro
+  es sólo de alta: una URL publicada no desaparece, se vuelve alias.
 
 - **`npm run prueba` es `node --test verificacion/*.test.mjs`, con el glob.** Con un
   directorio a secas (`node --test verificacion/`) Node ≥21 lo trata como UN archivo y
@@ -116,11 +125,12 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
 |---|---|---|
 | Aserciones de datos (D1–D27) | 28, y **26 controles negativos** en rojo | `python ETL/verificar_datos.py --negativas` |
 | Oráculo del cruce | 21 casos + 5 negativos | `npm run verify:cascada` |
-| Cifras de la prosa, filtro del ámbito y módulos de `src/web/` | 23 pruebas, con negativas | `npm run prueba` |
-| Arnés de navegador | V-1…V-69b; 98 ejecuciones el 2026-09-26 | `python frontend/verificacion/verificar.py` |
-| Mutaciones del visor | 32; las 5 de ETL se reportan «NO EJECUTADA» sin el `.duckdb` | `python frontend/verificacion/mutaciones-visor.py [--sin-etl]` |
+| Cifras de la prosa, filtro del ámbito y módulos de `src/web/` | 27 pruebas, con negativas | `npm run prueba` |
+| Arnés de navegador | V-1…V-72; 100 ejecuciones el 2026-09-26 (corre después de `build` y `build:web`) | `python frontend/verificacion/verificar.py` |
+| Mutaciones del visor | 34; las 5 de ETL se reportan «NO EJECUTADA» sin el `.duckdb` | `python frontend/verificacion/mutaciones-visor.py [--sin-etl]` |
+| Páginas generadas | 360 páginas, 15 negativas; generador con 8 controles negativos | `npm run build:web -- --negativas && npm run validar:paginas` |
+| Humo | 16 casos sin red | `node frontend/scripts/humo.mjs --negativas` |
 | Mutaciones de la aritmética | 7 (juzgan el oráculo y `npm run prueba`) | `python frontend/verificacion/mutaciones.py` |
-| Humo sobre el sitio publicado | 10 casos (4 sanos, 6 rotos), sin red | `node frontend/scripts/humo.mjs --negativas` |
 
 Todo verde el 2026-09-02.
 
@@ -238,8 +248,9 @@ Comprobadas una a una el 2026-09-02:
   429 y 5xx, y compara el `.bin` servido con el declarado). El humo quedó en rojo el
   2026-09-03 por un 503 pasajero de Pages sin reintento; eso es lo que arregló.
 - **Valores acoplados que se cambian juntos**: `base` en `frontend/vite.config.js`, el
-  `--base` del trabajo de humo en `deploy.yml` y el `<link rel="preconnect">` de
-  `index.html`. Un `base` mal resuelto **funciona en la raíz y rompe publicado**, con
+  `--base` del trabajo de humo en `deploy.yml`, `BASE`/`URL_PUBLICA` en
+  `frontend/src/web/sitio.js` (una prueba de `npm run prueba` exige que casen los tres), el
+  `Sitemap` de `docs/robots-raiz.txt` y el `<link rel="preconnect">` de `index.html`. Un `base` mal resuelto **funciona en la raíz y rompe publicado**, con
   código de salida 0.
 - **`.gitattributes` marca `*.bin` como binario sin conversión de finales de línea.** Sin
   esa línea git convertiría cada `0x0A` en `0x0D0A` y corrompería el archivo en silencio:

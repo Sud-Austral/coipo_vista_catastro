@@ -1,0 +1,26 @@
+# robots.txt de https://sud-austral.github.io/ — el ÚNICO que leen los rastreadores
+# para todos los sitios de la organización en GitHub Pages (68 el 2026-09-26).
+#
+# Vive en el repositorio Sud-Austral/sud-austral.github.io; esta es la copia de
+# referencia que vigila frontend/scripts/robots.mjs (con --url, contra lo publicado).
+# Decisión de Luis Monsalve, profesional de la UIA, 2026-09-26:
+# coipo_vista_catastro DECISIONES §M.2.
+#
+# Los que ENTRENAN modelos no pasan mientras los términos de uso de los datos no
+# estén definidos. Bloquearlos NO impide que un asistente cite los sitios: eso lo
+# hacen OAI-SearchBot, Claude-SearchBot, PerplexityBot y los *-User.
+# Google-Extended queda permitido a propósito: controla también el anclaje de Gemini.
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: CCBot
+User-agent: Applebot-Extended
+User-agent: meta-externalagent
+User-agent: Bytespider
+Disallow: /
+
+# Todos los demás. Un bot con grupo propio deja de leer este (RFC 9309 §2.2.1).
+# No se bloquea ninguna ruta de datos: Googlebot la necesita para renderizar.
+User-agent: *
+Allow: /
+
+Sitemap: https://sud-austral.github.io/coipo_vista_catastro/sitemap.xml

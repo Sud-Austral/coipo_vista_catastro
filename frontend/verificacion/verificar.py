@@ -181,6 +181,82 @@ def veredicto_bin_truncado(r):
                 and r.get("peticiones_cortadas", 0) >= 1)
 
 
+PAGINAS = ["regiones/", "region/los-rios/", "comuna/valdivia/"]
+ANCHOS_PAGINAS = [(390, 844), (1050, 800), (1440, 1000)]
+
+_PAGINA = """
+(() => {
+  const h = document.querySelector('h1')
+  const est = document.querySelector('.est')
+  if (!h || !est) return JSON.stringify({ h1: !!h, est: !!est })
+  const b = h.getBoundingClientRect()
+  const el = document.elementFromPoint(b.left + Math.min(b.width / 2, 40), b.top + b.height / 2)
+  return JSON.stringify({
+    h1: true, est: true,
+    enPantalla: b.top >= 0 && b.bottom <= innerHeight && b.width > 0,
+    encima: !!el && h.contains(el),
+    scrollX: document.documentElement.scrollWidth - innerWidth,
+    estilo: getComputedStyle(est).maxWidth !== 'none',
+    frase: (document.querySelector('[data-frase]')?.textContent || '').length,
+  })
+})()
+"""
+
+
+def medir_paginas(cdp, base_url, capturas=False):
+    """V-72. Las páginas por región y comuna son HTML suelto: sin la app y sin
+    JavaScript. Se abren así, en tres anchos, y cada una tiene que enseñar su <h1>
+    en la primera pantalla, sin scroll horizontal y con su hoja (paginas.css)."""
+    if not os.path.isdir(os.path.join(DIST, "regiones")):
+        return [("(todas)", 0, {"falta": "dist/regiones: corre npm run build:web antes"})]
+    salida = []
+    cdp.enviar("Emulation.setScriptExecutionDisabled", value=True)
+    try:
+        for ancho, alto in ANCHOS_PAGINAS:
+            cdp.enviar("Emulation.setDeviceMetricsOverride", width=ancho, height=alto,
+                       deviceScaleFactor=1, mobile=ancho < 600)
+            for ruta in PAGINAS:
+                cdp.enviar("Page.navigate", url=base_url + ruta)
+                esperar(cdp, "document.readyState === 'complete' && !!document.querySelector('h1')", segundos=30)
+                r = json.loads(cdp.evaluar(_PAGINA))
+                salida.append((ruta, ancho, r))
+                if capturas and ruta.startswith("comuna/") and ancho in (390, 1440):
+                    capturar(cdp, os.path.join(AQUI, f"captura-pagina-comuna-{ancho}.png"))
+    finally:
+        cdp.enviar("Emulation.setScriptExecutionDisabled", value=False)
+        cdp.enviar("Emulation.setDeviceMetricsOverride", width=1440, height=1000,
+                   deviceScaleFactor=1, mobile=False)
+    return salida
+
+
+def veredicto_paginas(medidas):
+    malas = [f"{ruta}@{ancho}: {r}" for ruta, ancho, r in medidas
+             if not (r.get("h1") and r.get("enPantalla") and r.get("encima") and r.get("estilo")
+                     and r.get("scrollX", 99) <= 1 and r.get("frase", 0) > 100)]
+    return not malas and len(medidas) == len(PAGINAS) * len(ANCHOS_PAGINAS), malas
+
+
+_ENLACE = """
+(() => {
+  const a = document.querySelector('.panel a.enlace-paginas')
+  if (!a) return JSON.stringify({ existe: false })
+  const b = a.getBoundingClientRect()
+  return JSON.stringify({ existe: true, visible: b.width > 0 && b.height > 0,
+                          href: a.getAttribute('href'), texto: a.textContent.trim() })
+})()
+"""
+
+
+def medir_enlace_paginas(cdp):
+    """V-71. Desde la app montada se llega a las páginas: Google indexa el DOM
+    renderizado, y sin este enlace sólo las encontraría por el sitemap."""
+    return json.loads(cdp.evaluar(_ENLACE))
+
+
+def veredicto_enlace(r):
+    return bool(r.get("existe") and r.get("visible") and r.get("href") == BASE + "regiones/")
+
+
 def excepciones(cdp):
     """Las excepciones de JavaScript sin atrapar que Chrome ha reportado."""
     return [e for e in cdp.eventos if e.get("method") == "Runtime.exceptionThrown"]
@@ -2129,6 +2205,16 @@ def main():
         quedan = cdp.evaluar("document.querySelectorAll('.est-portada, #arranque-lento').length")
         prueba("V-69b con los datos cargados no queda nada de la portada", quedan == 0,
                f"{quedan} restos")
+
+        # --- las páginas por región y comuna (DECISIONES §M.9) -----------------
+        print("\n=== las páginas por región y comuna")
+        r71 = medir_enlace_paginas(cdp)
+        prueba("V-71 el panel enlaza las cifras por región y comuna", veredicto_enlace(r71),
+               f"{r71.get('texto', 'sin enlace')} → {r71.get('href')}")
+        base_url = url
+        ok72, malas72 = veredicto_paginas(medir_paginas(cdp, base_url, capturas=True))
+        prueba("V-72 las páginas se leen sin JavaScript en tres anchos", ok72,
+               f"{len(PAGINAS)} páginas × {len(ANCHOS_PAGINAS)} anchos" if ok72 else " · ".join(malas72)[:300])
 
         print("\n" + "=" * 62)
         print(f"  {'TODO EN VERDE' if not fallos else str(len(fallos)) + ' EN ROJO'}")

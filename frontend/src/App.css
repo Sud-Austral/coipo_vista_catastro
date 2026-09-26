@@ -693,6 +693,8 @@
    salidas, agrupadas, debajo de todo lo que filtra. */
 .filtro-botonera.tres { grid-template-columns: repeat(3, 1fr); }
 .filtro-botonera.tres .grupo-filtro { justify-content: center; }
+/* El enlace a las páginas por región y comuna, bajo los tres botones. */
+.enlace-paginas { display: block; margin-top: 10px; text-align: center; font-size: 12.5px; color: var(--acento); }
 .filtro-botonera.tres .gf-titulo { flex: 0 1 auto; text-align: center; }
 
 .gf-titulo { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }

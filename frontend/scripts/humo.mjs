@@ -16,6 +16,13 @@
  *      16 B) y el .bin entero, que tiene que medir exactamente lo que declara el manifest.
  *   3. Reintenta ante error de red, 429 y 5xx. Un 404 NO se reintenta: es una respuesta.
  *
+ * Y desde que hay páginas por región y comuna (DECISIONES §M.9):
+ *   4. el sitemap publicado tiene exactamente 2 + regiones + comunas URL (la cuenta sale del
+ *      manifest publicado, nunca escrita aquí), y una muestra de ellas responde 200 text/html;
+ *   5. una página pedida sin la barra final responde 301 (lo hace Pages);
+ *   6. el robots.txt de la RAÍZ del host, que es de la organización: si no existe, AVISO
+ *      (ABIERTO, §M.2); si existe, se lee con RFC 9309 y un lector que cita bloqueado es ROJO.
+ *
  * Las comprobaciones son funciones puras y `fetch` se inyecta, así que --negativas monta sitios
  * rotos en memoria y exige que cada uno se ponga ROJO, sin red. Una guarda que nunca se ha visto
  * fallar no es una guarda.
@@ -29,6 +36,7 @@ import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { problemas as problemasRobots } from './robots.mjs'
 
 // ------------------------------------------------------------------ comprobaciones puras
 
@@ -37,8 +45,8 @@ export function huella(index, manifest) {
   return createHash('sha256').update(index).update(manifest).digest('hex')
 }
 
-/** El manifest tiene que ser JSON y declarar cuánto mide el .bin. Devuelve los bytes declarados. */
-export function bytesDeclarados(texto) {
+/** El manifest tiene que ser JSON y declarar cuánto mide el .bin. Devuelve { man, bytes }. */
+export function leerManifestPublicado(texto) {
   let man
   try {
     man = JSON.parse(texto)
@@ -47,7 +55,17 @@ export function bytesDeclarados(texto) {
   }
   const bytes = man?.capas?.cbn_puntos?.bytes
   if (!Number.isInteger(bytes) || bytes <= 0) throw new Error('el manifest no declara capas.cbn_puntos.bytes')
-  return bytes
+  return { man, bytes }
+}
+
+/** Cuántas URL tiene que tener el sitemap: portada, índice, cada región y cada comuna con polígonos. */
+export const urlsEsperadas = (man) =>
+  2 + (man.regiones?.length ?? 0) + (man.comunas ?? []).filter((c) => c.n > 0).length
+
+/** Cinco URL repartidas a lo largo del sitemap, más el índice: una muestra, y siempre la misma. */
+export function muestra(locs) {
+  const idx = new Set([1, ...[0.2, 0.4, 0.6, 0.8, 1].map((f) => Math.round(f * (locs.length - 1)))])
+  return [...idx].filter((i) => i < locs.length).map((i) => locs[i])
 }
 
 /** Una petición de rango 0-15 tiene que volver 206 con exactamente 16 bytes. */
@@ -123,9 +141,9 @@ export async function humo(base, { huella: esperada, run = 'local', ...io }) {
   if (index.status !== 200) throw new Error(`la portada devolvió ${index.status}`)
   log(`--- index.html: HTTP 200, ${(await bytesDe(index)).length} B`)
 
-  const man = await pedir(`${base}/datos/manifest.json?${clave}`, undefined, opciones)
-  if (man.status !== 200) throw new Error(`el manifest devolvió ${man.status}`)
-  const declarado = bytesDeclarados(new TextDecoder().decode(await bytesDe(man)))
+  const rm = await pedir(`${base}/datos/manifest.json?${clave}`, undefined, opciones)
+  if (rm.status !== 200) throw new Error(`el manifest devolvió ${rm.status}`)
+  const { man, bytes: declarado } = leerManifestPublicado(new TextDecoder().decode(await bytesDe(rm)))
   log(`--- manifest.json: JSON válido, declara ${declarado} B para el .bin`)
 
   // Accept-Encoding: identity OBLIGATORIO. Pages comprime application/octet-stream, y sin esto
@@ -140,6 +158,52 @@ export async function humo(base, { huella: esperada, run = 'local', ...io }) {
   if (entero.status !== 200) throw new Error(`el .bin devolvió ${entero.status}`)
   revisarTamano(declarado, (await bytesDe(entero)).length)
   log(`--- cbn_puntos.bin: servido ${declarado} B = declarado`)
+
+  await revisarPaginas(base, man, clave, opciones)
+  await revisarRobotsRaiz(base, opciones)
+}
+
+/** Las páginas por región y comuna: el sitemap entero y una muestra servida. */
+async function revisarPaginas(base, man, clave, opciones) {
+  const { log } = opciones
+  const rs = await pedir(`${base}/sitemap.xml?${clave}`, undefined, opciones)
+  if (rs.status !== 200) throw new Error(`el sitemap devolvió ${rs.status}`)
+  const locs = [...(await rs.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1])
+  const esperadas = urlsEsperadas(man)
+  if (locs.length !== esperadas) throw new Error(`el sitemap tiene ${locs.length} URL y el manifest pide ${esperadas}`)
+  for (const u of muestra(locs)) {
+    const r = await pedir(`${u}?${clave}`, undefined, opciones)
+    const tipo = r.headers.get('content-type') ?? ''
+    if (r.status !== 200 || !tipo.startsWith('text/html')) throw new Error(`${u} devolvió ${r.status} ${tipo}`)
+  }
+  log(`--- sitemap.xml: ${locs.length} URL (= manifest); muestra de ${muestra(locs).length} en 200 text/html`)
+
+  const ri = await pedir(`${base}/web/indice.json?${clave}`, undefined, opciones)
+  if (ri.status !== 200) throw new Error(`web/indice.json devolvió ${ri.status}`)
+  const indice = JSON.parse(await ri.text())
+  const slug = Object.values(indice.comunas ?? {})[0]
+  const sin = await pedir(`${base}/comuna/${slug}`, { redirect: 'manual' }, opciones)
+  if (sin.status !== 301) throw new Error(`/comuna/${slug} sin barra final devolvió ${sin.status}, no 301`)
+  log(`--- /comuna/${slug} sin barra: 301`)
+}
+
+/**
+ * El robots.txt de la raíz del host. Es de la organización (DECISIONES §M.2): si no existe,
+ * AVISO y no rojo, porque crearlo no es de este repositorio; si existe, tiene que dejar pasar
+ * a quien cita y cerrar el paso a quien entrena.
+ */
+async function revisarRobotsRaiz(base, opciones) {
+  const { log } = opciones
+  const url = `${new URL(base).origin}/robots.txt`
+  const r = await pedir(url, undefined, opciones)
+  if (r.status === 404) {
+    log(`::warning::${url} no existe: todo bot, incluidos los de entrenamiento, puede leer el visor (ABIERTO, DECISIONES §M.2)`)
+    return
+  }
+  if (r.status !== 200) throw new Error(`${url} devolvió ${r.status}`)
+  const p = problemasRobots(await r.text())
+  if (p.length) throw new Error(`${url}: ${p[0]}${p.length > 1 ? ` (y ${p.length - 1} más)` : ''}`)
+  log(`--- ${url}: los que citan pasan, los de entrenamiento no`)
 }
 
 // ------------------------------------------------------------------------ negativas
@@ -158,23 +222,41 @@ function sitioFalso(rutas) {
     visitas.set(pathname, n + 1)
     const r = lista[Math.min(n, lista.length - 1)]
     if (r === 'red') throw new TypeError('fetch failed', { cause: { code: 'ECONNRESET' } })
-    const { status = 200, cuerpo = '' } = r
+    const { status = 200, cuerpo = '', tipo = 'text/html; charset=utf-8', a } = r
+    if (a && init?.redirect === 'manual') return new Response(null, { status, headers: { Location: a } })
     const bytes = Buffer.from(cuerpo)
     const rango = init?.headers?.Range?.match(/^bytes=(\d+)-(\d+)$/)
     if (rango && status === 200) {
       return new Response(bytes.subarray(Number(rango[1]), Number(rango[2]) + 1), { status: 206 })
     }
-    return new Response(status === 204 ? null : bytes, { status })
+    return new Response(status === 204 || status === 404 ? cuerpo || null : bytes, { status, headers: { 'Content-Type': tipo } })
   }
 }
 
 const BIN = 'x'.repeat(64)
-const MAN = JSON.stringify({ capas: { cbn_puntos: { bytes: BIN.length } } })
+const MAN = JSON.stringify({
+  capas: { cbn_puntos: { bytes: BIN.length } },
+  regiones: [{ cod: '14', nombre: 'Los Ríos' }],
+  comunas: [{ cod: '14101', etiqueta: 'Valdivia', n: 5 }, { cod: '14999', etiqueta: 'Vacía', n: 0 }],
+})
 const INDEX = '<!doctype html><title>visor</title>'
+const B = 'https://ejemplo.invalid/visor'
+const LOCS = [`${B}/`, `${B}/regiones/`, `${B}/region/los-rios/`, `${B}/comuna/valdivia/`]
+const SITEMAP = LOCS.map((u) => `<url><loc>${u}</loc></url>`).join('\n')
+const ROBOTS = `User-agent: GPTBot\nUser-agent: ClaudeBot\nUser-agent: CCBot\nUser-agent: Applebot-Extended
+User-agent: meta-externalagent\nUser-agent: Bytespider\nDisallow: /\n\nUser-agent: *\nAllow: /
+Sitemap: https://sud-austral.github.io/coipo_vista_catastro/sitemap.xml\n`
 const bueno = (extra = {}) => ({
   '/visor/': [{ cuerpo: INDEX }],
-  '/visor/datos/manifest.json': [{ cuerpo: MAN }],
-  '/visor/datos/cbn_puntos.bin': [{ cuerpo: BIN }],
+  '/visor/datos/manifest.json': [{ cuerpo: MAN, tipo: 'application/json' }],
+  '/visor/datos/cbn_puntos.bin': [{ cuerpo: BIN, tipo: 'application/octet-stream' }],
+  '/visor/sitemap.xml': [{ cuerpo: SITEMAP, tipo: 'application/xml' }],
+  '/visor/regiones/': [{ cuerpo: INDEX }],
+  '/visor/region/los-rios/': [{ cuerpo: INDEX }],
+  '/visor/comuna/valdivia/': [{ cuerpo: INDEX }],
+  '/visor/comuna/valdivia': [{ status: 301, a: `${B}/comuna/valdivia/` }],
+  '/visor/web/indice.json': [{ cuerpo: JSON.stringify({ esquema: 1, regiones: { 14: 'los-rios' }, comunas: { 14101: 'valdivia' } }), tipo: 'application/json' }],
+  '/robots.txt': [{ cuerpo: ROBOTS, tipo: 'text/plain' }],
   ...extra,
 })
 const H = huella(Buffer.from(INDEX), Buffer.from(MAN))
@@ -195,6 +277,12 @@ const CASOS = [
   ['el manifest no es JSON', bueno({ '/visor/datos/manifest.json': [{ cuerpo: '<html>404</html>' }] }), {}, false],
   ['la portada da 404', bueno({ '/visor/': [{ status: 404 }] }), {}, false],
   ['el manifest no declara el tamaño', bueno({ '/visor/datos/manifest.json': [{ cuerpo: '{}' }] }), {}, false],
+  ['sin robots.txt en la raíz: aviso, no rojo', bueno({ '/robots.txt': [{ status: 404 }] }), {}, true],
+  ['al sitemap le falta una comuna', bueno({ '/visor/sitemap.xml': [{ cuerpo: SITEMAP.replace(/<url><loc>[^<]*valdivia[^<]*<\/loc><\/url>/, '') }] }), {}, false],
+  ['una página del sitemap da 404', bueno({ '/visor/comuna/valdivia/': [{ status: 404 }] }), {}, false],
+  ['sin barra final no redirige', bueno({ '/visor/comuna/valdivia': [{ cuerpo: INDEX }] }), {}, false],
+  ['el robots.txt raíz bloquea a un asistente', bueno({ '/robots.txt': [{ cuerpo: `User-agent: OAI-SearchBot\nDisallow: /\n\n${ROBOTS}`, tipo: 'text/plain' }] }), {}, false],
+  ['el robots.txt raíz deja entrenar', bueno({ '/robots.txt': [{ cuerpo: ROBOTS.replace('User-agent: GPTBot\n', ''), tipo: 'text/plain' }] }), {}, false],
 ]
 
 async function negativas() {
@@ -202,7 +290,7 @@ async function negativas() {
   for (const [nombre, rutas, extra, debePasar] of CASOS) {
     let error = null
     try {
-      await humo('https://ejemplo.invalid/visor', {
+      await humo(B, {
         fetch: sitioFalso(rutas), dormir: async () => {}, intentos: 4, intentosHuella: 3, ...extra,
       })
     } catch (e) {

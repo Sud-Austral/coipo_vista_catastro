@@ -11,8 +11,11 @@ spike/captura-*.png
 
 node_modules/
 dist/
-# Paquete SSR de scripts/prerender.mjs: se construye y se borra en cada build.
+# Paquetes SSR de scripts/prerender.mjs y scripts/web.mjs: se construyen y se borran en cada
+# corrida. .web/ es el insumo de las tarjetas PNG (textos ya formateados), no se publica.
 .prerender/
+.prerender-web/
+.web/
 
 # Salidas de los notebooks de analisis: se regeneran con leer_bin.py y pesan
 # ~31 MB cada una. El .bin versionado ya es la fuente.

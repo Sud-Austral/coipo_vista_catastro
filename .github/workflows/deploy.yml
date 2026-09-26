@@ -15,12 +15,14 @@ on:
     branches: [main]
     paths:
       - 'frontend/**'
+      - 'docs/robots-raiz.txt'
       - 'ETL/**'          # el gate de datos vive aqui: si cambia, hay que reejecutarlo
       - '.github/workflows/deploy.yml'
   pull_request:
     branches: [main]
     paths:
       - 'frontend/**'
+      - 'docs/robots-raiz.txt'
       - 'ETL/**'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
@@ -69,9 +71,15 @@ jobs:
     outputs:
       huella: ${{ steps.huella.outputs.huella }}
     steps:
+      # HISTORIA COMPLETA, sin los blobs viejos. Las paginas por region y comuna
+      # llevan la fecha del ultimo commit que toco los datos (dateModified,
+      # lastmod), y en un clon superficial `git log -- <ruta>` devuelve la del
+      # HEAD SIN NINGUN ERROR: por eso web.mjs se niega a correr en uno. El pack
+      # entero pesa ~121 MiB por los .bin viejos; blob:none baja solo el arbol.
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
+          filter: blob:none
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -116,6 +124,37 @@ jobs:
             exit 1
           fi
           echo "base path y datos OK"
+
+      # EL ROBOTS.TXT DE LA RAIZ del host (docs/robots-raiz.txt), leido con
+      # RFC 9309: los que citan pasan, los que entrenan no. Vive en el repo de la
+      # organizacion; aqui se vigila la copia de referencia (DECISIONES §M.2).
+      - run: node scripts/robots.mjs
+        working-directory: frontend
+
+      # LAS PAGINAS POR REGION Y COMUNA (DECISIONES §M.9). --negativas rompe
+      # cada control del generador antes de generar; validar:paginas recalcula
+      # las cifras con un oraculo propio y comprueba el artefacto.
+      - run: npm run build:web -- --negativas
+        working-directory: frontend
+      - run: npm run validar:paginas
+        working-directory: frontend
+
+      # DETERMINISMO: dos corridas del mismo commit, los mismos bytes. Una fecha
+      # de construccion o un orden de claves inestable apareceria aqui. Antes, el
+      # control de que la comparacion sirve: una copia alterada tiene que diferir.
+      - name: El generador es determinista
+        working-directory: frontend
+        run: |
+          mkdir -p "$RUNNER_TEMP/a"
+          cp -r dist "$RUNNER_TEMP/a/"
+          cp -r dist "$RUNNER_TEMP/alterada"
+          echo "x" >> "$RUNNER_TEMP/alterada/comuna/valdivia/index.html"
+          if diff -rq "$RUNNER_TEMP/alterada" dist > /dev/null; then
+            echo "FALLA: diff -r no ve una pagina alterada; el control no sirve"; exit 1
+          fi
+          npm run build:web
+          diff -r "$RUNNER_TEMP/a/dist" dist
+          echo "dos corridas, los mismos bytes"
 
       # La prueba de humo tiene que poder ponerse ROJA. Sus negativas montan
       # sitios rotos en memoria (503 permanente, huella que no llega, .bin que no
@@ -164,10 +203,14 @@ jobs:
       # y devolvio un 503 de Pages un minuto despues de publicar, sin reintento.
       # Ahora vive en frontend/scripts/humo.mjs, que reintenta ante red, 429 y
       # 5xx, espera la huella del build y tiene negativas (job build).
+      # frontend/src/web y no solo scripts: robots.mjs lee sitio.js (el `base`),
+      # y sin el el import falla y el humo quedaria rojo tras cada despliegue.
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          sparse-checkout: frontend/scripts
+          sparse-checkout: |
+            frontend/scripts
+            frontend/src/web
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
