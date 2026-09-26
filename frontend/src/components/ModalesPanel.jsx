@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { AVISO_PUNTOS, BASEMAPS } from '../config'
+import { BASEMAPS } from '../config'
 import { fmt } from '../formato'
 import { flush } from '../urlState'
 import { CajaModal } from './GrupoFiltro'
+import QueEs from './QueEs'
 
 /**
  * Los tres botones del pie del panel: Información, Descargar y Compartir.
@@ -97,22 +98,10 @@ export function ModalInformacion({ manifest, base, hayRecorte, metodologia, onCe
 
       <section>
         <h3>De dónde salen estos datos</h3>
-        <p className="nota">{AVISO_PUNTOS}</p>
-        {/* Las DOS unidades, porque el banner nombra a las dos. AVISO: al mudar
-            el pie aquí dentro, si la imagen del banner no carga la página se
-            queda sin atribución visible. Es el precio de un panel sin pie, y se
-            deja escrito para que la próxima persona sepa que fue una decisión y
-            no un descuido. */}
-        <p className="nota">
-          Publica: CONAF · Gerencia de Fiscalización Forestal y Evaluación Ambiental.
-          Desarrolla: Unidad de Información y Análisis.
-        </p>
-        {manifest && (
-          <p className="nota">
-            Datos <code>{manifest.capas.cbn_puntos.sha256.slice(0, 12)}</code> ·{' '}
-            {fmt.format(manifest.total.filas)} polígonos.
-          </p>
-        )}
+        {/* La misma redacción que la portada horneada que leen los buscadores:
+            QueEs.jsx. Nombra a las DOS unidades, porque el banner nombra a las
+            dos; si la imagen del banner no carga, esto es lo único que lo dice. */}
+        <QueEs manifest={manifest} />
       </section>
 
       {/* LA METODOLOGÍA ENTERA, aquí dentro y no en un diálogo aparte. Eran dos

@@ -1,0 +1,105 @@
+/* Estilos de lo HORNEADO: la portada que se ve antes de que monte la app y las
+   páginas por región y comuna. Nombre estable y en public/ a propósito: la hoja
+   del visor lleva hash y las páginas generadas no la conocen.
+
+   Los TOKENS son copia de los de src/index.css, y la copia está vigilada:
+   scripts/validar-html.mjs compara cada variable de este :root con la de
+   index.css y falla si difieren. Sin fuentes web: system-ui, como el visor.
+
+   Todo lo demás lleva el prefijo est-: el HTML horneado convive con la app en
+   la misma página y no puede tocar sus clases (ni el arnés confundirlo con la
+   app montada). */
+
+:root {
+  color-scheme: light;
+  --superficie: #fcfcfb;
+  --superficie-2: #f2f3f0;
+  --borde: #d9dcd6;
+  --tinta: #14211a;
+  --tinta-2: #4a554e;
+  --tinta-3: #6f7a73;
+  --razon-banner: 17.1299;
+  --alto-minimo-banner: 68px;
+  --verde-institucional: #064928;
+  --acento: #0a6b3d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --superficie: #10161b;
+    --superficie-2: #182028;
+    --borde: #2a343d;
+    --tinta: #e7efe9;
+    --tinta-2: #b3c0b8;
+    --tinta-3: #86958c;
+    --verde-institucional: #0d6b3c;
+    --acento: #4cc98a;
+  }
+}
+
+.est-portada {
+  min-height: 100%;
+  background: var(--superficie);
+  color: var(--tinta);
+  font: 15px/1.55 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* El banner con la misma geometría que en la app (App.css), para que al montar
+   no dé un salto: en las páginas generadas App.css no se carga. */
+.est-portada .banner { overflow: hidden; background: var(--verde-institucional); }
+.est-portada .banner img {
+  display: block;
+  width: max(100%, calc(var(--alto-minimo-banner) * var(--razon-banner)));
+  height: auto;
+  max-width: none;
+}
+
+.est { max-width: 76ch; margin: 0 auto; padding: 18px 20px 56px; }
+.est h1, .est h2, .est h3 { font-weight: 600; line-height: 1.25; }
+.est-titulo { font-size: 1.55rem; margin: 10px 0 4px; }
+.est h2 { font-size: 1.15rem; margin: 30px 0 10px; }
+.est h3 { font-size: 1rem; margin: 22px 0 8px; }
+.est-bajada { margin: 0 0 18px; color: var(--tinta-2); }
+.est p, .est-parrafo { margin: 0 0 10px; }
+.est-estado {
+  margin: 0 0 8px; font-size: 0.9rem; color: var(--tinta-3);
+}
+.est-cita {
+  margin: 0 0 8px; padding: 12px 14px; font-size: 1.02rem;
+  background: var(--superficie-2); border-left: 4px solid var(--verde-institucional);
+  border-radius: 0 6px 6px 0;
+}
+.est-error {
+  margin: 0 0 14px; padding: 12px 14px; border-radius: 6px;
+  border: 1px solid var(--borde); background: var(--superficie-2); color: var(--tinta);
+}
+.est-error p { margin: 0 0 8px; }
+.est-error pre {
+  overflow-x: auto; background: var(--superficie); padding: 10px; border-radius: 6px;
+  font-size: 12px; white-space: pre-wrap;
+}
+.est a { color: var(--acento); }
+.est code { font-size: 0.9em; }
+
+.est-tabla { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.est-tabla caption { caption-side: top; text-align: left; color: var(--tinta-2); padding-bottom: 8px; }
+.est-tabla th, .est-tabla td { padding: 6px 8px; border-bottom: 1px solid var(--borde); text-align: left; }
+.est-tabla thead th { font-weight: 600; border-bottom-width: 2px; }
+.est-tabla .num { text-align: right; white-space: nowrap; }
+.est-tabla tfoot th, .est-tabla tfoot td { font-weight: 600; border-bottom: 0; }
+
+/* En la app, mientras baja el .bin: la portada sobre el mapa y los paneles, bajo
+   la píldora «Descargando…» (z 900). Mismo contenido que lo horneado, así que al
+   montar no cambia lo que se lee. */
+.est-mientras {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  top: max(var(--alto-minimo-banner), calc(100vw / var(--razon-banner)));
+  z-index: 850; overflow: auto; background: var(--superficie);
+}
+
+@media (max-width: 600px) {
+  .est { padding: 14px 14px 48px; }
+  .est-titulo { font-size: 1.3rem; }
+  .est-tabla th, .est-tabla td { padding: 5px 4px; }
+}

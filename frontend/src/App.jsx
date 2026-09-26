@@ -38,6 +38,7 @@ import { IconoIndicadores } from './components/graficos'
 import { useFechaImagen } from './hooks/useFechaImagen'
 import { haExacta } from './formato'
 import { haPlantacionEspecie, mayorPoligono } from './hechos.js'
+import Portada from './web/Portada'
 
 /**
  * Régimen de disposición, que decide si la X pliega una pista o cierra un cajón:
@@ -90,6 +91,9 @@ export default function App() {
   const [map, setMap] = useState(null)
   const [base, setBase] = useState(inicial.base ?? 'Claro')
   const [datos, setDatos] = useState(null)
+  // El manifest llega ANTES que el .bin (636 kB frente a 49 MB). Con él se
+  // dibuja la portada mientras baja el resto, y también si el resto no llega.
+  const [manifestPortada, setManifestPortada] = useState(null)
   const [error, setError] = useState(null)
   const [oscuro, setOscuro] = useState(temaOscuro)
   const [ambito, setAmbito] = useState(inicial.ambito)
@@ -372,7 +376,7 @@ export default function App() {
   // ---------- datos ----------
   useEffect(() => {
     const ctrl = new AbortController()
-    cargarPuntos(ctrl.signal)
+    cargarPuntos(ctrl.signal, { alManifest: setManifestPortada })
       .then(setDatos)
       .catch((e) => {
         if (e.name !== 'AbortError') setError(e)
@@ -723,16 +727,30 @@ export default function App() {
     setAviso((a) => ({ n: (a?.n ?? 0) + 1, texto: 'No hay ninguna figura bajo la mira.' }))
   }, [])
 
+  // SIN DATOS, LA PORTADA. No es cosmética: Googlebot indexa el DOM que queda
+  // después de ejecutar el JavaScript, y no baja un .bin de 49 MB. Antes caía
+  // aquí con una pantalla que sólo decía «no se pudieron cargar los datos», y eso
+  // era lo que Google guardaba del sitio. Ahora el aviso va arriba y debajo la
+  // misma portada que se hornea al construir, calculada del manifest, que sí llega
+  // (DECISIONES §M.8). V-69 lo comprueba con el .bin cortado a 2 MB.
   if (error) {
     return (
-      <main className="pantalla-error">
-        <h1>No se pudieron cargar los datos del Catastro</h1>
-        <p>El visor no puede mostrar nada sin ellos, así que prefiere decirlo a fingir.</p>
-        <details>
-          <summary>Detalle técnico</summary>
-          <pre>{String(error.message ?? error)}</pre>
-        </details>
-      </main>
+      <Portada
+        manifest={manifestPortada}
+        estado={
+          <div className="est-error" role="alert">
+            <p>
+              <strong>No se pudieron cargar los datos del mapa.</strong> El visor no puede
+              dibujarlo sin ellos, así que prefiere decirlo a fingir.
+              {manifestPortada && ' Las cifras de abajo salen del índice publicado, que sí llegó.'}
+            </p>
+            <details>
+              <summary>Detalle técnico</summary>
+              <pre>{String(error.message ?? error)}</pre>
+            </details>
+          </div>
+        }
+      />
     )
   }
 
@@ -915,6 +933,16 @@ export default function App() {
         <p className="descargando" role="status">
           Descargando el Catastro nacional…
         </p>
+      )}
+      {/* Mientras baja el .bin, la MISMA portada que venía horneada, encima del
+          mapa y bajo la píldora: al montar no cambia lo que se lee, y si la
+          descarga no termina —Googlebot no baja 49 MB— el DOM sigue diciendo qué
+          es el visor y sus cifras nacionales. Sin manifest todavía, dice lo que
+          no depende de él. */}
+      {!datos && (
+        <div className="est-mientras">
+          <Portada manifest={manifestPortada} conBanner={false} nivel={2} />
+        </div>
       )}
     </div>
   )

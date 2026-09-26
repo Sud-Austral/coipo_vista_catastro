@@ -51,6 +51,7 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 FRONTEND = os.path.dirname(AQUI)
 RAIZ = os.path.dirname(FRONTEND)
 DIST = os.path.join(FRONTEND, "dist")
+DUCKDB = os.path.join(RAIZ, "data", "catastro_gef_singeometria.duckdb")
 BASE = "/coipo_vista_catastro/"
 TILES = ("openstreetmap.org", "arcgisonline.com", "eox.at")
 sys.path.insert(0, os.path.join(RAIZ, "spike"))
@@ -457,6 +458,29 @@ def sonda_informacion(cdp, url):
                   f" · faltan: {faltan or 'ninguna'}")
 
 
+def sonda_sin_js(cdp, url):
+    """V-68: sin JavaScript, el <h1> horneado se ve y nada lo tapa."""
+    r = V.medir_sin_js(cdp, url)
+    return V.veredicto_sin_js(r), f"encima: {r.get('tapa') or 'nada'} · frase {r.get('frase', 0)} car."
+
+
+def sonda_bin_truncado(cdp, url):
+    """V-69: con el .bin cortado a 2 MB queda la portada, no sólo el aviso."""
+    r = V.medir_bin_truncado(cdp, url)
+    return V.veredicto_bin_truncado(r), (f"aviso {r.get('error')} · h1 {r.get('h1')} · "
+                                         f"{r.get('filas')} filas · frase {len(r.get('frase', ''))} car.")
+
+
+def sonda_excepciones(cdp, url):
+    """V-8: ninguna excepción de JavaScript sin atrapar al montar y cargar."""
+    cdp.eventos.clear()
+    ir(cdp, url)
+    cdp.evaluar("new Promise((r) => setTimeout(r, 1500))")
+    exc = V.excepciones(cdp)
+    return not exc, (f"{len(exc)} excepciones" +
+                     (f": {exc[0]['params']['exceptionDetails'].get('text', '')[:60]}" if exc else ""))
+
+
 def sonda_compartir(cdp, url):
     ir(cdp, url + "?reg=10")
     V.abrir_grupo(cdp, "Compartir")
@@ -656,7 +680,7 @@ MUTACIONES = [
      [(os.path.join(RAIZ, "ETL", "build_bin.py"),
        "    radio = np.floor(np.minimum(r_area, dist[:, 1] / 2.0)).astype(np.uint16)",
        "    radio = np.floor(r_area).astype(np.uint16)")],
-     True),
+     'etl'),
 
     # El reverso: recortar de mas cumple D26 de forma perfecta y deja el mapa en
     # blanco. Sin D26b, «que no se superpongan» se satisface borrandolos.
@@ -665,7 +689,7 @@ MUTACIONES = [
      [(os.path.join(RAIZ, "ETL", "build_bin.py"),
        "    radio = np.floor(np.minimum(r_area, dist[:, 1] / 2.0)).astype(np.uint16)",
        "    radio = np.floor(np.minimum(r_area, dist[:, 1] / 2.0) * 0.05).astype(np.uint16)")],
-     True),
+     'etl'),
 
     ("V-50 · vuelve una nota suelta al panel",
      sonda_panel_limpio,
@@ -688,6 +712,31 @@ MUTACIONES = [
        "  return { desde: Math.min(...nums), hasta: Math.max(...nums) }",
        "  return { desde: Math.min(...nums), hasta: Math.max(...nums) - 1 }")]),
 
+    # --- lo horneado (DECISIONES §M.8) ---------------------------------------
+    # Una capa encima de la portada: es exactamente lo que hacia #arranque, y
+    # validar-html no lo ve (el HTML esta bien; lo tapa el CSS).
+    ("V-68 · una capa tapa la portada horneada",
+     sonda_sin_js,
+     [(os.path.join(FRONTEND, "public", "paginas.css"),
+       ".est-estado {",
+       ".est-estado { position: fixed; inset: 0; z-index: 99; background: #fff;")]),
+
+    # La rama de error vuelve a no tener con que dibujar la portada: es lo que
+    # Google guardaria del sitio, porque no baja los 49 MB del .bin.
+    ("V-69 · la rama de error pierde la portada",
+     sonda_bin_truncado,
+     [(os.path.join(FRONTEND, "src", "App.jsx"),
+       "      <Portada\n        manifest={manifestPortada}\n        estado={",
+       "      <Portada\n        manifest={null}\n        estado={")]),
+
+    # V-8 fue una tautologia hasta el 2026-09-26: esto la habria dejado verde.
+    ("V-8 · una excepcion sin atrapar al montar",
+     sonda_excepciones,
+     [(os.path.join(FRONTEND, "src", "App.jsx"),
+       "  const alFallo = useCallback(() => {",
+       "  useEffect(() => { setTimeout(() => { throw new Error('mutacion V-8') }, 0) }, [])\n"
+       "  const alFallo = useCallback(() => {")]),
+
     ("V-66 · Compartir deja de ensenar el enlace",
      sonda_compartir,
      [(os.path.join(JSX, "ModalesPanel.jsx"),
@@ -706,7 +755,7 @@ MUTACIONES = [
       (os.path.join(RAIZ, "ETL", "build_bin.py"),
        "        WHERE COALESCE(CODCOM, Codcomun) IS NOT NULL AND centroide_lon IS NOT NULL",
        "        WHERE CODCOM IS NOT NULL AND centroide_lon IS NOT NULL")],
-     True),
+     'etl'),
 
     # V-59 protege que el VISOR no se separe del manifest. Su defecto propio no
     # es de datos sino de codigo: que el ambito deje de entrar en el filtro.
@@ -726,7 +775,7 @@ MUTACIONES = [
      sonda_homologacion,
      [(os.path.join(RAIZ, "ETL", "homologacion", "05_subtipo_forestal.csv"),
        "Roble - Hualo,Roble-Hualo,fusion", "Roble - Hualo,Roble - Hualo,sin_cambio")],
-     True),
+     'etl'),
 
     ("V-62 · filtrosDesdeURL deja de consultar el mapa de alias",
      sonda_alias,
@@ -744,7 +793,7 @@ MUTACIONES = [
      [(os.path.join(RAIZ, "ETL", "build_bin.py"),
        '    (500.0, float("inf"), "500 ha o más"),',
        '    (500.0, 10000.0, "500 ha o más"),')],
-     True),
+     'etl'),
 
     ("V-63 · proteccion mira el centinela al reves",
      sonda_tres_nuevas,
@@ -773,7 +822,14 @@ MUTACIONES = [
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--solo", default=None, help="corre solo las mutaciones cuyo nombre contenga esto")
+    ap.add_argument("--sin-etl", action="store_true",
+                    help="no ejecuta las mutaciones que regeneran el .bin (necesitan el .duckdb)")
     args = ap.parse_args()
+    # Las mutaciones de ETL regeneran el .bin con ETL/build_bin.py, que necesita el
+    # .duckdb de origen (fuera del repo) y el modulo duckdb. Sin ellos NO se pueden
+    # ejecutar, y antes eso se contaba como «ROJA (no compila)»: una muerte falsa, y
+    # despues la restauracion abortaba la corrida entera. Ahora se dicen aparte.
+    sin_etl = args.sin_etl or not os.path.exists(DUCKDB) or importlib.util.find_spec("duckdb") is None
 
     casos = [m for m in MUTACIONES if not args.solo or args.solo.lower() in m[0].lower()]
     if not casos:
@@ -790,6 +846,7 @@ def main():
     url = f"http://127.0.0.1:{srv.server_address[1]}{BASE}"
 
     fallos = []
+    no_ejecutadas = []
     try:
         # CONTROL POSITIVO: en limpio, cada sonda tiene que salir VERDE. Si una
         # ya sale roja sin mutar nada, lo que esta mal es la sonda y todo lo que
@@ -811,7 +868,14 @@ def main():
         print("\n=== cada defecto DEBE poner roja su asercion\n")
         for caso in casos:
             nombre, sonda, ediciones = caso[0], caso[1], caso[2]
-            toca_datos = len(caso) > 3 and caso[3]
+            tipo = caso[3] if len(caso) > 3 else None
+            if tipo not in (None, "etl"):
+                sys.exit(f"tipo de mutacion desconocido: {tipo!r} en {nombre}")
+            toca_datos = tipo == "etl"
+            if toca_datos and sin_etl:
+                no_ejecutadas.append(nombre)
+                print(f"  NO EJECUTADA   {nombre}\n             regenera el .bin y falta el .duckdb o el modulo duckdb")
+                continue
             for archivo, de, a in ediciones:
                 if not de.strip():
                     continue
@@ -850,6 +914,8 @@ def main():
 
     print("\n" + "=" * 62)
     print(f"  {'TODO EN VERDE' if not fallos else str(len(fallos)) + ' SIN PROTECCION'}")
+    if no_ejecutadas:
+        print(f"  {len(no_ejecutadas)} de ETL NO EJECUTADAS (sin el .duckdb): no cuentan como cazadas")
     print("=" * 62)
     for f in fallos:
         print("   ·", f)

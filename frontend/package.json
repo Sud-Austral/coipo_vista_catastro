@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender.mjs",
+    "postbuild": "node scripts/validar-html.mjs",
     "lint": "oxlint",
     "preview": "vite preview",
     "verify:cascada": "node verificacion/marginales.mjs --negativas",

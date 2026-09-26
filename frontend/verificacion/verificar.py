@@ -86,6 +86,106 @@ def cifras_de_la_prosa():
             f"{miles(sin)} de {miles(len(man['especies']))} especies sin verificar")
 
 
+# --- lo horneado: la portada que leen quienes no ejecutan JavaScript --------------
+
+_SIN_JS = """
+(() => {
+  const h = document.querySelector('#root h1')
+  const f = document.querySelector('#root [data-frase]')
+  if (!h) return JSON.stringify({ h1: false })
+  const b = h.getBoundingClientRect()
+  const el = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2)
+  return JSON.stringify({
+    h1: true, caja: b.width > 0 && b.height > 0,
+    enPantalla: b.top >= 0 && b.bottom <= innerHeight,
+    encima: !!el && h.contains(el),
+    tapa: el && !h.contains(el) ? (el.id || String(el.className) || el.tagName) : null,
+    frase: (f?.textContent || '').length,
+  })
+})()
+"""
+
+_SIN_BIN = """
+JSON.stringify({
+  error: !!document.querySelector('.est-error'),
+  h1: document.querySelectorAll('h1').length,
+  frase: document.querySelector('[data-frase]')?.textContent || '',
+  filas: document.querySelectorAll('.est-tabla tbody tr').length,
+  app: !!document.querySelector('.app'),
+})
+"""
+
+
+def medir_sin_js(cdp, url):
+    """V-68. Carga la portada CON LOS SCRIPTS APAGADOS, como la recibe un asistente
+    de IA o una vista previa, y mide si el <h1> horneado se VE: con caja, en la
+    primera pantalla y sin nada encima. Encima había antes una capa
+    position:fixed (#arranque): texto que leen los robots y no las personas."""
+    cdp.enviar("Emulation.setScriptExecutionDisabled", value=True)
+    try:
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=url)
+        esperar(cdp, "document.readyState === 'complete' && !!document.querySelector('#root')",
+                segundos=60)
+        return json.loads(cdp.evaluar(_SIN_JS))
+    finally:
+        cdp.enviar("Emulation.setScriptExecutionDisabled", value=False)
+
+
+def veredicto_sin_js(r):
+    return bool(r.get("h1") and r.get("caja") and r.get("enPantalla") and r.get("encima")
+                and r.get("frase", 0) > 100)
+
+
+def medir_bin_truncado(cdp, url, corte=2 * 1024 * 1024):
+    """V-69. Googlebot indexa el DOM DESPUÉS de ejecutar el JavaScript, y no baja un
+    archivo de 49 MB: cada recurso tiene un límite. Aquí se le sirve al visor sólo
+    los primeros 2 MB del .bin (Fetch.fulfillRequest), que es lo que ocurre, y se
+    lee qué queda en la página. Antes: sólo «No se pudieron cargar los datos»."""
+    with open(os.path.join(DIST, "datos", "cbn_puntos.bin"), "rb") as fh:
+        trozo = base64.b64encode(fh.read(corte)).decode()
+    cdp.enviar("Fetch.enable", patterns=[{"urlPattern": "*cbn_puntos.bin*", "requestStage": "Request"}])
+    atendidas = set()
+    try:
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=url)
+        t0 = time.perf_counter()
+        while time.perf_counter() - t0 < 90:
+            cdp.evaluar("1")  # bombea los eventos de CDP
+            for e in list(cdp.eventos):
+                if e.get("method") != "Fetch.requestPaused":
+                    continue
+                rid = e["params"]["requestId"]
+                if rid in atendidas:
+                    continue
+                atendidas.add(rid)
+                cdp.enviar("Fetch.fulfillRequest", requestId=rid, responseCode=200, body=trozo,
+                           responseHeaders=[{"name": "Content-Type", "value": "application/octet-stream"}])
+            if cdp.evaluar("!!document.querySelector('.est-error')"):
+                break
+            time.sleep(0.2)
+        r = json.loads(cdp.evaluar(_SIN_BIN))
+        r["peticiones_cortadas"] = len(atendidas)
+        return r
+    finally:
+        cdp.enviar("Fetch.disable")
+
+
+def veredicto_bin_truncado(r):
+    man = json.load(open(os.path.join(DIST, "datos", "manifest.json"), encoding="utf-8"))
+    polig = f"{man['total']['filas']:,}".replace(",", ".")
+    return bool(r.get("error") and r.get("h1") == 1 and polig in r.get("frase", "")
+                and r.get("filas", 0) >= len(man["usos"]) and not r.get("app")
+                and r.get("peticiones_cortadas", 0) >= 1)
+
+
+def excepciones(cdp):
+    """Las excepciones de JavaScript sin atrapar que Chrome ha reportado."""
+    return [e for e in cdp.eventos if e.get("method") == "Runtime.exceptionThrown"]
+
+
 def esperar(cdp, expr, segundos=120):
     """Se espera una CONDICIÓN, nunca un reloj. Dormir un tiempo fijo tras una
     transición parece de sobra hasta el día que la máquina va cargada.
@@ -711,9 +811,14 @@ def main():
         prueba("V-15 la cifra titular está en pantalla", "75" in str(titular), str(titular))
         secciones = cdp.evaluar("document.querySelectorAll('.seccion').length")
         prueba("V-16 las secciones de indicadores existen", secciones >= 6, f"{secciones}")
-        errores = cdp.evaluar(
-            "(performance.getEntriesByType('resource')||[]).length >= 0 ? 0 : 1")
-        prueba("V-8 sin errores de consola", errores == 0, "0")
+        # V-8 ERA UNA TAUTOLOGÍA: `length >= 0 ? 0 : 1` da 0 siempre, y la
+        # prueba salía verde sin mirar nada. Ahora cuenta las excepciones de
+        # JavaScript sin atrapar que Chrome reportó desde que se abrió la página,
+        # en los tres anchos y sus recargas.
+        exc = excepciones(cdp)
+        prueba("V-8 sin excepciones de JavaScript", not exc,
+               f"{len(exc)}" + (f" · {exc[0]['params']['exceptionDetails'].get('text', '')[:90]}"
+                                if exc else ""))
 
         # --- los filtros temáticos, de punta a punta -----------------------
         # Esto NO comprueba que los controles existan: comprueba que MUEVEN LA
@@ -2002,6 +2107,28 @@ def main():
         prueba("V-63 las nueve dimensiones derivadas filtran de verdad",
                not mudas, " · ".join(mudas) if mudas
                else "las seis de la especie más protección, tamaño y año mueven la cifra")
+
+        # --- lo horneado ------------------------------------------------------
+        # Lo que leen quienes no ejecutan JavaScript (asistentes de IA, vistas
+        # previas) y lo que Google indexa cuando el .bin no le cabe.
+        print("\n=== lo horneado: sin JavaScript y sin el .bin")
+        r68 = medir_sin_js(cdp, url)
+        prueba("V-68 sin JavaScript, la portada horneada se VE", veredicto_sin_js(r68),
+               f"h1 {'en pantalla' if r68.get('enPantalla') else 'fuera'} · "
+               f"encima: {r68.get('tapa') or 'nada'} · frase {r68.get('frase', 0)} caracteres")
+        r69 = medir_bin_truncado(cdp, url)
+        prueba("V-69 con el .bin cortado a 2 MB queda la portada, no sólo el error",
+               veredicto_bin_truncado(r69),
+               f"aviso: {r69.get('error')} · h1: {r69.get('h1')} · {r69.get('filas')} filas de usos · "
+               f"frase: {r69.get('frase', '')[:60]!r}")
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=url)
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+        quedan = cdp.evaluar("document.querySelectorAll('.est-portada, #arranque-lento').length")
+        prueba("V-69b con los datos cargados no queda nada de la portada", quedan == 0,
+               f"{quedan} restos")
 
         print("\n" + "=" * 62)
         print(f"  {'TODO EN VERDE' if not fallos else str(len(fallos)) + ' EN ROJO'}")

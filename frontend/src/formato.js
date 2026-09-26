@@ -33,6 +33,18 @@ export function haExacta(v) {
   return v == null ? '—' : `${fmt2.format(v)} ha`
 }
 
+/**
+ * Superficie en HECTÁREAS ENTERAS, para las frases que se hornean y un asistente
+ * cita sueltas (guía §6.3): un decimal ahí sólo invita a leer una precisión que el
+ * Catastro no tiene. Lo que no llega a media hectárea se dice «menos de 1 ha»: un
+ * «0 ha» se leería como ausencia comprobada, y no lo es.
+ */
+export function haEntera(v) {
+  if (v == null) return '—'
+  if (v > 0 && v < 0.5) return 'menos de 1 ha'
+  return `${fmt.format(Math.round(v))} ha`
+}
+
 /** Porcentaje con un decimal. Nunca se fuerza a que sumen 100. */
 export function pct(parte, total) {
   if (!total) return '—'

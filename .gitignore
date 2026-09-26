@@ -11,6 +11,8 @@ spike/captura-*.png
 
 node_modules/
 dist/
+# Paquete SSR de scripts/prerender.mjs: se construye y se borra en cada build.
+.prerender/
 
 # Salidas de los notebooks de analisis: se regeneran con leer_bin.py y pesan
 # ~31 MB cada una. El .bin versionado ya es la fuente.
