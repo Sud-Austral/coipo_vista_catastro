@@ -15,6 +15,7 @@ import {
 } from '../src/web/textos.js'
 import { escaparHtml, etiquetaUmami, jsonLd, metasVistaPrevia } from '../src/web/cabeza.js'
 import { haEntera } from '../src/formato.js'
+import { urlParaAnalitica } from '../src/web/analitica.js'
 
 const FRONTEND = join(dirname(fileURLToPath(import.meta.url)), '..')
 const man = JSON.parse(readFileSync(join(FRONTEND, 'public', 'datos', 'manifest.json'), 'utf8'))
@@ -154,6 +155,15 @@ test('tarjeta sin bosques: no dice «no hay», dice que el Catastro no lo clasif
   assert.equal(t.renglones[0], '2.310 ha catastradas en 1 polígono')
   assert.ok(t.renglones.some((r) => r.includes('Ningún polígono clasificado como bosque')))
   assert.ok(!t.renglones.some((r) => /no hay bosque/i.test(r)))
+})
+
+test('analítica: la dirección que se cuenta no lleva el encuadre ni el fondo', () => {
+  assert.equal(urlParaAnalitica('?lat=-38.1&lon=-72.2&z=6'), '')
+  assert.equal(urlParaAnalitica('?reg=14&lat=-39&lon=-73&z=9&com=14101&base=Satelital'), '?com=14101&reg=14')
+  // El mismo ámbito y los mismos filtros en otro orden son la misma vista.
+  assert.equal(urlParaAnalitica('?tifo=05&reg=10'), urlParaAnalitica('?reg=10&tifo=05'))
+  // «Ninguna clase» (usos vacío) no es «todas»: se conserva.
+  assert.equal(urlParaAnalitica('?usos='), '?usos=')
 })
 
 test('Umami: sin identificador no se escribe nada', () => {

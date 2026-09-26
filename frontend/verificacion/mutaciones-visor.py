@@ -53,7 +53,6 @@ RAIZ = os.path.dirname(FRONTEND)
 DIST = os.path.join(FRONTEND, "dist")
 DUCKDB = os.path.join(RAIZ, "data", "catastro_gef_singeometria.duckdb")
 BASE = "/coipo_vista_catastro/"
-TILES = ("openstreetmap.org", "arcgisonline.com", "eox.at")
 sys.path.insert(0, os.path.join(RAIZ, "spike"))
 from medir import Cdp, lanzar_chrome  # noqa: E402
 
@@ -67,6 +66,9 @@ import importlib.util  # noqa: E402
 _spec = importlib.util.spec_from_file_location("verificar", os.path.join(AQUI, "verificar.py"))
 V = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(V)
+# Los hosts que se bloquean salen del arnes y no de una copia: la copia ya se
+# habia quedado sin el de Umami.
+TILES = V.TILES
 
 
 # --------------------------------------------------------------- infraestructura
@@ -504,6 +506,14 @@ def sonda_paginas(cdp, url):
     return ok, ("todas bien" if ok else " · ".join(malas)[:160])
 
 
+def sonda_analitica(cdp, url):
+    """V-73: una visita por lo que se mira, ninguna por mover el mapa."""
+    r = V.medir_analitica(cdp, url)
+    primera = (r["inicial"] or [{}])[0].get("url")
+    return V.veredicto_analitica(r), (f"al cargar {len(r['inicial'])} ({primera}) · paneo "
+                                      f"{len(r['tras_paneo'])} · filtro {len(r['tras_filtro'])}")
+
+
 def sonda_compartir(cdp, url):
     ir(cdp, url + "?reg=10")
     V.abrir_grupo(cdp, "Compartir")
@@ -775,6 +785,13 @@ MUTACIONES = [
        "    `<link rel=\"stylesheet\" href=\"${base}paginas.css\" />`,",
        "")],
      'web'),
+
+    # Umami contaria cada paneo si la direccion llevara el encuadre (DECISIONES §M.11).
+    ("V-73 · la visita se cuenta con el encuadre del mapa",
+     sonda_analitica,
+     [(os.path.join(FRONTEND, "src", "web", "analitica.js"),
+       "const DE_ENCUADRE = ['lat', 'lon', 'z', 'base']",
+       "const DE_ENCUADRE = []")]),
 
     ("V-66 · Compartir deja de ensenar el enlace",
      sonda_compartir,

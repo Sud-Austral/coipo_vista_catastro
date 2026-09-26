@@ -1,7 +1,7 @@
 import { AVISO_PUNTOS } from '../config'
 import { fmt } from '../formato'
 import { rangoAniosTexto } from '../hechos.js'
-import { DESARROLLA, PUBLICA } from '../web/sitio.js'
+import { DESARROLLA, PUBLICA, UMAMI } from '../web/sitio.js'
 
 /**
  * Qué es este visor y de dónde salen sus datos, en una sola redacción.
@@ -38,6 +38,15 @@ export default function QueEs({ manifest, clase = 'nota' }) {
       <p className={clase}>
         Publica: {PUBLICA}. Desarrolla: {DESARROLLA}.
       </p>
+      {/* Sólo cuando el sitio cuenta visitas de verdad: prometer privacidad sobre
+          una medición que no existe, o callar una que sí, serían dos mentiras. */}
+      {UMAMI.id && (
+        <p className={clase}>
+          Este sitio cuenta visitas con Umami: sin cookies; no guarda su dirección IP (sí el país y
+          la ciudad que se deducen de ella) y registra la dirección visitada con su ámbito y sus
+          filtros, sin el encuadre del mapa.
+        </p>
+      )}
       {manifest && (
         <p className={clase}>
           Datos <code>{manifest.capas.cbn_puntos.sha256.slice(0, 12)}</code> ·{' '}

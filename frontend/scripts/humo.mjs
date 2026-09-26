@@ -38,6 +38,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { problemas as problemasRobots } from './robots.mjs'
+import { UMAMI } from '../src/web/sitio.js'
 
 // ------------------------------------------------------------------ comprobaciones puras
 
@@ -164,9 +165,21 @@ export async function humo(base, { huella: esperada, run = 'local', ...io }) {
   revisarTamano(declarado, (await bytesDe(entero)).length)
   log(`--- cbn_puntos.bin: servido ${declarado} B = declarado`)
 
+  revisarUmami(htmlPortada)
   await revisarImagen(imagenDe(htmlPortada), 'la portada', clave, opciones)
   await revisarPaginas(base, man, clave, opciones)
   await revisarRobotsRaiz(base, opciones)
+}
+
+/**
+ * Umami en la portada publicada (DECISIONES §M.11): sin identificador, ninguna etiqueta;
+ * con él, una sola y con el rastreo automático apagado, o cada paneo sería una visita.
+ */
+export function revisarUmami(html, id = UMAMI.id) {
+  const n = (html.match(/conaf\.js/g) ?? []).length
+  if (!id && n) throw new Error('la portada publicada trae Umami y el sitio no tiene identificador')
+  if (id && n !== 1) throw new Error(`la portada publicada trae ${n} etiquetas de Umami; tiene que ser una`)
+  if (id && !html.includes('data-auto-track="false"')) throw new Error('Umami con rastreo automático en la app')
 }
 
 /** Una og:image tiene que servirse como PNG: si no, la vista previa sale sin tarjeta. */
@@ -302,6 +315,7 @@ const CASOS = [
   ['el manifest no declara el tamaño', bueno({ '/visor/datos/manifest.json': [{ cuerpo: '{}' }] }), {}, false],
   ['la og:image de la portada no existe', bueno({ '/visor/og.png': [{ status: 404 }] }), {}, false],
   ['la tarjeta de una página no existe', bueno({ '/visor/tarjetas/s/comuna-valdivia.png': [{ status: 404 }] }), {}, false],
+  ['Umami en la portada sin identificador', bueno({ '/visor/': [{ cuerpo: INDEX + '<script src="https://prueba5.conaf.cl/conaf.js"></script>' }] }), {}, false],
   ['sin robots.txt en la raíz: aviso, no rojo', bueno({ '/robots.txt': [{ status: 404 }] }), {}, true],
   ['al sitemap le falta una comuna', bueno({ '/visor/sitemap.xml': [{ cuerpo: SITEMAP.replace(/<url><loc>[^<]*valdivia[^<]*<\/loc><\/url>/, '') }] }), {}, false],
   ['una página del sitemap da 404', bueno({ '/visor/comuna/valdivia/': [{ status: 404 }] }), {}, false],

@@ -42,7 +42,9 @@ BASE = "/coipo_vista_catastro/"
 # agosto de 2026; cartocdn.com salio de BASEMAPS y sale tambien de aqui, porque
 # una lista con hosts fantasma deja de ser legible y a la proxima nadie sabra si
 # sigue por necesidad o por olvido.
-TILES = ("openstreetmap.org", "arcgisonline.com", "eox.at")
+TILES = ("openstreetmap.org", "arcgisonline.com", "eox.at",
+         # Umami de la flota: la verificacion no puede contar visitas de verdad.
+         "prueba5.conaf.cl")
 
 # Los tres regímenes, con un ancho a cada lado de los cortes (1200 y 900).
 REGIMENES = [
@@ -255,6 +257,63 @@ def medir_enlace_paginas(cdp):
 
 def veredicto_enlace(r):
     return bool(r.get("existe") and r.get("visible") and r.get("href") == BASE + "regiones/")
+
+
+# Un Umami de mentira, instalado antes que la app: guarda lo que el visor le pide
+# registrar. El de verdad no se carga nunca en la verificacion (TILES lo bloquea).
+_UMAMI_FALSO = (
+    "window.__vistas = [];"
+    "window.umami = { track: (a) => window.__vistas.push("
+    "typeof a === 'function' ? a({ url: location.pathname + location.search }) : { evento: a }) };"
+)
+
+
+def medir_analitica(cdp, url):
+    """V-73. Con el rastreo automático apagado, la app cuenta la visita a mano: una
+    al cargar, sin el encuadre en la dirección; NINGUNA por mover el mapa; una más
+    al cambiar un filtro; y el evento de compartir."""
+    ident = cdp.enviar("Page.addScriptToEvaluateOnNewDocument", source=_UMAMI_FALSO)["identifier"]
+    leer = lambda: json.loads(cdp.evaluar("JSON.stringify(window.__vistas || [])"))  # noqa: E731
+    try:
+        cdp.enviar("Page.navigate", url="about:blank")
+        esperar(cdp, "document.readyState === 'complete'", segundos=30)
+        cdp.enviar("Page.navigate", url=url)
+        esperar(cdp, "!!document.querySelector('.grupo-filtro')", segundos=60)
+        esperar(cdp, "!document.querySelector('.descargando')", segundos=120)
+        esperar(cdp, "(window.__vistas || []).length > 0", segundos=10)
+        inicial = leer()
+        caja = json.loads(cdp.evaluar(
+            "JSON.stringify(document.querySelector('.leaflet-container').getBoundingClientRect())"))
+        cx, cy = caja["x"] + caja["width"] / 2, caja["y"] + caja["height"] / 2
+        for _ in range(3):
+            cdp.enviar("Input.dispatchMouseEvent", type="mousePressed", x=cx, y=cy,
+                       button="left", clickCount=1, buttons=1)
+            for dx in (30, 80, 140):
+                cdp.enviar("Input.dispatchMouseEvent", type="mouseMoved", x=cx + dx, y=cy,
+                           button="left", buttons=1)
+            cdp.enviar("Input.dispatchMouseEvent", type="mouseReleased", x=cx + 140, y=cy,
+                       button="left", clickCount=1, buttons=0)
+            time.sleep(0.6)
+        time.sleep(1.2)
+        tras_paneo = leer()
+        marcar_clase(cdp, "Tipo forestal", "Palma Chilena")
+        esperar(cdp, "(window.__vistas || []).length > %d" % len(tras_paneo), segundos=10)
+        tras_filtro = leer()
+        abrir_grupo(cdp, "Compartir")
+        cdp.evaluar("document.querySelector('.modal-filtro button.compartir')?.click()")
+        esperar(cdp, "(window.__vistas || []).some((v) => v.evento === 'compartir')", segundos=5)
+        final = leer()
+        cerrar_grupo(cdp)
+        return {"inicial": inicial, "tras_paneo": tras_paneo, "tras_filtro": tras_filtro, "final": final}
+    finally:
+        cdp.enviar("Page.removeScriptToEvaluateOnNewDocument", identifier=ident)
+
+
+def veredicto_analitica(r):
+    ini, pan, fil, fin = r["inicial"], r["tras_paneo"], r["tras_filtro"], r["final"]
+    sin_encuadre = all(not re.search(r"[?&](lat|lon|z|base)=", v.get("url", "")) for v in fil if "url" in v)
+    return bool(len(ini) == 1 and len(pan) == 1 and len(fil) == 2 and sin_encuadre
+                and "tifo=" in fil[1].get("url", "") and any(v.get("evento") == "compartir" for v in fin))
 
 
 def excepciones(cdp):
@@ -2215,6 +2274,15 @@ def main():
         ok72, malas72 = veredicto_paginas(medir_paginas(cdp, base_url, capturas=True))
         prueba("V-72 las páginas se leen sin JavaScript en tres anchos", ok72,
                f"{len(PAGINAS)} páginas × {len(ANCHOS_PAGINAS)} anchos" if ok72 else " · ".join(malas72)[:300])
+
+        # --- las visitas (DECISIONES §M.11) -----------------------------------
+        print("\n=== las visitas que se cuentan")
+        r73 = medir_analitica(cdp, url)
+        prueba("V-73 una visita por lo que se mira, ninguna por mover el mapa",
+               veredicto_analitica(r73),
+               f"al cargar {len(r73['inicial'])} ({(r73['inicial'] or [{}])[0].get('url')}) · "
+               f"tras 3 paneos {len(r73['tras_paneo'])} · tras un filtro {len(r73['tras_filtro'])} · "
+               f"compartir: {any(v.get('evento') == 'compartir' for v in r73['final'])}")
 
         print("\n" + "=" * 62)
         print(f"  {'TODO EN VERDE' if not fallos else str(len(fallos)) + ' EN ROJO'}")

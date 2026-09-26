@@ -143,6 +143,9 @@ export function ModalCompartir({ onCerrar }) {
   const [aviso, setAviso] = useState('')
 
   const copiar = async () => {
+    // El evento se registra a mano: con el rastreo automático apagado (ver App.jsx),
+    // Umami tampoco escucha los data-umami-event. Sin Umami, no hace nada.
+    window.umami?.track?.('compartir')
     if (navigator.share) {
       try {
         await navigator.share({ title: document.title, url })

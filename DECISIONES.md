@@ -604,6 +604,34 @@ versión (dos corridas, `diff -r` vacío, medido). `validar-paginas` exige que c
 exista, mida 1200×630 y pese menos de 300 kB, y que cada PNG dibujada esté citada; el humo
 pide la de la portada y la de una página publicada.
 
+### M.11 Las visitas se cuentan con el Umami de la flota, sin el encuadre del mapa
+
+**Luis Monsalve, 2026-09-26** (ver M.5). Revierte lo que declaraba `preferencias.js` («ni
+telemetría de ninguna clase»); el comentario quedó enmendado con fecha, y la regla de ese
+archivo —no guardar nada del visitante en el navegador— no cambia.
+
+En Pages no hay nginx del host que inserte el script, como en el resto de la flota: la
+etiqueta va escrita en el HTML que se hornea (`cabeza.js`), con un solo lugar para la URL y el
+identificador (`src/web/sitio.js`). **El identificador del sitio lo crea un admin de Umami y
+todavía no existe**: mientras esté vacío no se escribe ninguna etiqueta, y las guardas
+(`validar-html`, `validar-paginas`, el humo) lo exigen. Cuando llegue es un cambio de una línea.
+
+**Sin `data-exclude-search`**: el visor no tiene inicio de sesión y su dirección lleva lo que
+interesa medir, el ámbito y los filtros; la flota lo abre por dominio con el mismo criterio
+(`coipo_umami/ops/nginx-host/analitica-sitios.conf`). **Pero con el rastreo automático apagado
+en la app**: el visor reescribe la URL en cada paneo, y Umami 3 escucha esos cambios; cada
+movimiento del mapa habría sido una «página vista». La app registra la visita a mano al cargar
+y cada vez que cambia lo que se mira, con la dirección normalizada (`src/web/analitica.js`: sin
+`lat`, `lon`, `z` ni `base`), y el evento `compartir`. Las páginas estáticas, que no se
+mueven, van con el rastreo automático. V-73 lo comprueba con un Umami de mentira: una visita
+al cargar, ninguna tras tres paneos, una más al filtrar, y el evento.
+
+La línea de privacidad del «Qué es» aparece sólo cuando hay identificador, y dice lo que hace:
+sin cookies, no guarda la IP (sí el país y la ciudad que se deducen de ella), registra la
+dirección con su ámbito y filtros. **Pendiente**: el aviso por la Ley 21.719 que
+`coipo_umami/DEUDA.md` marca [VERIFICAR], y anotar en `coipo_umami` que este sitio es un
+segundo lugar con la URL de Umami (su conf del host se declara el único).
+
 ## Fallos propios cometidos al establecer todo esto
 
 Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse.

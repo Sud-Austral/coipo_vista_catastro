@@ -39,6 +39,7 @@ import { useFechaImagen } from './hooks/useFechaImagen'
 import { haExacta } from './formato'
 import { haPlantacionEspecie, mayorPoligono } from './hechos.js'
 import Portada from './web/Portada'
+import { urlParaAnalitica } from './web/analitica.js'
 
 /**
  * Régimen de disposición, que decide si la X pliega una pista o cierra un cajón:
@@ -476,6 +477,24 @@ export default function App() {
   // las citan el panel y la Metodología (hechos.js).
   const pinus = useMemo(() => haPlantacionEspecie(datos, manifest, 'PR'), [datos, manifest])
   const mayorHa = useMemo(() => mayorPoligono(datos), [datos])
+
+  // LA VISITA SE CUENTA A MANO (DECISIONES §M.11). El rastreo automático de Umami
+  // va apagado en la app, porque el visor reescribe la URL en cada paneo y cada
+  // movimiento sería una «página vista». Se registra una al cargar y otra cada vez
+  // que cambia LO QUE SE MIRA (ámbito, usos, filtros), con la dirección sin el
+  // encuadre. Espera a que urlState termine de escribir (lo hace con 250 ms de
+  // retraso). Sin identificador de Umami no hay script y esto no hace nada.
+  const ultimaVista = useRef(null)
+  useEffect(() => {
+    if (!datos) return undefined
+    const t = setTimeout(() => {
+      const url = import.meta.env.BASE_URL + urlParaAnalitica(window.location.search)
+      if (url === ultimaVista.current || !window.umami?.track) return
+      ultimaVista.current = url
+      window.umami.track((p) => ({ ...p, url }))
+    }, 600)
+    return () => clearTimeout(t)
+  }, [datos, ambito, filtros, usosActivos])
 
   // Las tres fuentes de filtro se juntan en un solo objeto antes de bajar al
   // canal: el ámbito (territorio), la leyenda (uso) y los grupos temáticos. Se
