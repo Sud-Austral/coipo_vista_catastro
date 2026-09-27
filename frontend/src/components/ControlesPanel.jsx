@@ -76,7 +76,7 @@ export function ModalTerritorio({ manifest, marginales, ambito, onAmbito, onCerr
           es el dato que hace que dos cifras regionales no sean comparables sin
           más, y leerlo al elegir es cuando importa. */}
       <p className="nota">
-        Cada región se catastró en un año distinto. El año va junto a su nombre, y las cifras de
+        Las regiones se catastraron en años distintos. El año va junto a su nombre, y las cifras de
         dos regiones no son de la misma fecha.
       </p>
 

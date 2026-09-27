@@ -1,0 +1,10 @@
+{
+  "archivo": "AtkinsonHyperlegibleNext-wght.ttf",
+  "sha256": "5a455d1cfa099b601ab70751bb9673e8fe1854dc4500c80e1a220d0d75e31745",
+  "origen": "https://github.com/google/fonts/tree/95f4904fc8bcf26d3420fe315560c96417c6dec7/ofl/atkinsonhyperlegiblenext",
+  "archivo_origen": "AtkinsonHyperlegibleNext[wght].ttf",
+  "copiado_de": "coipo_boton_rojo/datos_base/fuentes/ (mismo sha256), 2026-09-26",
+  "licencia": "SIL Open Font License 1.1 (OFL-AtkinsonHyperlegibleNext.txt)",
+  "sha256_licencia": "aca6a428580965d2297d1b718042dd427c2a9443ece3b0d02d758e161e0c4030",
+  "uso": "tarjetas PNG de la vista previa (frontend/scripts/tarjetas.py); fuente variable, eje wght"
+}

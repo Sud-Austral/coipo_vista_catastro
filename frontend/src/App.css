@@ -237,6 +237,7 @@
 }
 .compartir { background: var(--acento); color: #fff; border-color: transparent; }
 .aviso-copia { display: block; margin-top: 6px; font-size: 11.5px; color: var(--acento); }
+.compartir-pagina { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--borde); }
 
 /* ---------- gemela accesible ----------
    La clase va en el <div> y NO en la <table>: width:1px no encoge una tabla —con
@@ -368,7 +369,8 @@
 /* ---------- estados ---------- */
 .descargando {
   position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
-  z-index: 900; padding: 8px 14px; border-radius: 999px;
+  /* Encima de la portada de carga (.est-mientras, 1001, paginas.css). */
+  z-index: 1002; padding: 8px 14px; border-radius: 999px;
   background: var(--superficie); border: 1px solid var(--borde);
   box-shadow: var(--sombra); font-size: 12.5px;
 }

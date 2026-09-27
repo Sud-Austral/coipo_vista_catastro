@@ -171,7 +171,7 @@ export default function PanelIndicadores({
             advertencia={{
               titulo: 'Por qué estas nueve clases no se comparan con otro año',
               cuerpo:
-                `Cada región se catastró en un año distinto entre ${rango}, así que el reparto ` +
+                `Las regiones se catastraron en años distintos, entre ${rango}, así que el reparto ` +
                 'nacional mezcla fotos de años diferentes. No es una serie temporal y no existe en ' +
                 'este visor ningún control que ofrezca dos años: lo que no se puede hacer, no se dibuja.',
             }}
@@ -540,7 +540,7 @@ export default function PanelIndicadores({
             advertencia={{
               titulo: 'Por qué ordenar estas barras ordena años distintos',
               cuerpo:
-                `Cada región se catastró en un año distinto entre ${rango}. Ordenarlas por ` +
+                `Las regiones se catastraron en años distintos, entre ${rango}. Ordenarlas por ` +
                 'superficie es legítimo; leer el orden como una evolución, no. Dos regiones vecinas ' +
                 `en esta lista pueden estar separadas por ${aniosEntre} años de levantamiento.`,
             }}
@@ -815,7 +815,7 @@ function SeccionAnios({ manifest }) {
       id="s8"
       titulo="De cuándo es cada dato"
       cifra={`${min}–${max}`}
-      bajada="Cada región se levantó en un año distinto. Ésta es la lista completa, de la más antigua a la más reciente."
+      bajada="Las regiones se levantaron en años distintos. Ésta es la lista completa, de la más antigua a la más reciente."
       nota={`${max - min} años entre la región más antigua y la más reciente`}
       advertencia={{
         titulo: 'Por qué esto no es una serie temporal',

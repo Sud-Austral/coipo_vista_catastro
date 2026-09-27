@@ -24,22 +24,41 @@
  *   --registrar  da de alta en scripts/slugs-publicados.json las URL nuevas.
  */
 import { execFileSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { mkdir, rename, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { cargarDatos, DATOS } from './datos-node.mjs'
-import { construirServidor, versionVista } from './prerender.mjs'
+import { construirServidor, urlOgGenerica, versionVista } from './prerender.mjs'
 import { filtroDelAmbito, resumenYMarginales } from '../src/indicadores.js'
 import { haPlantacionEspecie, mayorPoligono, oficialesPorRegion, rangoAnios } from '../src/hechos.js'
 import { slugDePagina } from '../src/web/textos.js'
-import { ORIGEN } from '../src/web/sitio.js'
+import { ORIGEN, URL_PUBLICA } from '../src/web/sitio.js'
 
 const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const REPO = resolve(RAIZ, '..')
 const DIST = join(RAIZ, 'dist')
 const SSR = join(RAIZ, '.prerender-web')
 export const REGISTRO = join(RAIZ, 'scripts', 'slugs-publicados.json')
+const WEB = join(RAIZ, '.web')
+
+/**
+ * El sello de la carpeta de las tarjetas: sha256[:12] de tarjetas.json crudo, de
+ * scripts/tarjetas.py con saltos LF, de la tipografía y de requirements.txt. Cambia
+ * exactamente cuando puede cambiar un píxel. LA MISMA RECETA que `sello()` en
+ * tarjetas.py, que la recalcula y se niega a dibujar si no coincide.
+ */
+export function selloTarjetas(bytesJson) {
+  const lf = (ruta) => Buffer.from(readFileSync(ruta, 'utf8').replace(/\r\n/g, '\n'), 'utf8')
+  return createHash('sha256')
+    .update(bytesJson)
+    .update(lf(join(RAIZ, 'scripts', 'tarjetas.py')))
+    .update(readFileSync(join(RAIZ, 'scripts', 'fuentes', 'AtkinsonHyperlegibleNext-wght.ttf')))
+    .update(lf(join(RAIZ, 'scripts', 'requirements.txt')))
+    .digest('hex')
+    .slice(0, 12)
+}
 
 // Tolerancia de las hectáreas contra el manifest: la de marginales.mjs. El
 // manifest suma en float64 los valores originales y aquí se suma la columna
@@ -59,7 +78,12 @@ export function fechaDeLoPublicado({ git = gitReal } = {}) {
   if (git(['rev-parse', '--is-shallow-repository']).trim() === 'true') {
     throw new Error('el repositorio es superficial: la fecha de los datos saldría mal (en el CI, fetch-depth: 0)')
   }
-  const rutas = ['frontend/public/datos', 'frontend/src/web', 'frontend/scripts/web.mjs']
+  // Todo lo que cambia los bytes de una página: los datos, TODO src/ (las cifras salen
+  // de indicadores.js, el formato de formato.js, el pie de CitaVisor, la Metodología del
+  // índice…), los scripts (web.mjs, el dibujante y su sello, el registro de URL) y las
+  // dependencias (renderToStaticMarkup cambia con React). Con sólo tres rutas, un
+  // arreglo en formato.js cambiaba las 359 páginas y publicaba la fecha de antes.
+  const rutas = ['frontend/public/datos', 'frontend/src', 'frontend/scripts', 'frontend/package-lock.json']
   const fechas = rutas.map((r) => git(['log', '-1', '--format=%cs', '--', r]).trim()).filter(Boolean)
   if (!fechas.length) throw new Error('git no da ninguna fecha para los datos')
   return {
@@ -173,7 +197,14 @@ export function revisarRegistro(registro, actuales, { registrar = false } = {}) 
   }
   const alias = []
   for (const [clave, cod] of Object.entries(registro)) {
-    if (actuales.has(clave)) continue
+    if (actuales.has(clave)) {
+      // Que la URL exista no basta: tiene que seguir siendo del MISMO territorio. Si otra
+      // comuna hereda el nombre, los enlaces compartidos citarían cifras ajenas.
+      if (actuales.get(clave) !== cod) {
+        throw new Error(`la URL publicada ${clave} era de ${cod} y ahora sería de ${actuales.get(clave)}`)
+      }
+      continue
+    }
     const destino = porCodigo.get(`${clave.split('/')[0]}:${cod}`)
     if (!destino) throw new Error(`la URL publicada ${clave} (${cod}) ya no corresponde a ninguna página`)
     alias.push([clave, destino])
@@ -248,17 +279,20 @@ async function generar({ registrar }) {
 
   const srv = await construirServidor(SSR)
   try {
-    for (const d of ['regiones', 'region', 'comuna', 'web']) await rm(join(DIST, d), { recursive: true, force: true })
+    for (const d of ['regiones', 'region', 'comuna', 'web', 'tarjetas']) await rm(join(DIST, d), { recursive: true, force: true })
     const abs = (ruta) => ORIGEN + ruta
     const urlIndice = abs(srv.URL_INDICE)
     const urls = [abs(srv.BASE), urlIndice]
-    const pagina = async (ruta, { titulo, descripcion, ld, cuerpo }) => {
+    const pagina = async (ruta, { titulo, descripcion, ld, cuerpo, imagen }) => {
       const canonical = abs(ruta)
       const cabeza = srv.cabezaPagina({
-        canonical, titulo, descripcion, imagen: null, version: versionVista(titulo, descripcion, null), ld,
+        canonical, titulo, descripcion, imagen, version: versionVista(titulo, descripcion, imagen?.url), ld,
       })
       await escribir(join(DIST, ruta.slice(srv.BASE.length), 'index.html'), srv.documento({ base: srv.BASE, titulo, cabeza, cuerpo }))
     }
+    // Las páginas de región y comuna esperan hasta tener el sello de sus tarjetas:
+    // su og:image lo lleva en la ruta.
+    const pendientes = []
 
     // Regiones
     const discrepancias = new Map((oficiales.anio_discrepante ?? []).map((d) => [d.region, d]))
@@ -272,14 +306,18 @@ async function generar({ registrar }) {
       const descripcion = srv.descripcionEntidad(r.oficial, r.anio, resumen)
       const ruta = srv.urlRegion(r)
       urls.push(abs(ruta))
-      await pagina(ruta, {
+      pendientes.push([ruta, {
         titulo, descripcion,
+        tarjeta: srv.tarjetaDe({
+          archivo: `region-${srv.slugDePagina(r.nombre)}.png`, titulo: r.oficial,
+          subtitulo: `Chile · código regional ${r.cod}`, anio: r.anio, resumen, url: abs(ruta),
+        }),
         ld: srv.datosPagina({ url: abs(ruta), titulo, descripcion, fecha: fecha.paginas, urlIndice, lugar: { nombre: r.oficial, cut: r.cod } }),
         cuerpo: srv.renderRegion({
           region: r, resumen, manifest: man, oficial: oficialDe.get(r.cod),
           discrepancia: discrepancias.get(r.nombre), comunas, sinComuna,
         }),
-      })
+      }])
     }
 
     // Comunas
@@ -291,13 +329,33 @@ async function generar({ registrar }) {
       const descripcion = srv.descripcionEntidad(`Comuna de ${c.etiqueta} (${r.nombre})`, r.anio, resumen)
       const ruta = srv.urlComuna(c)
       urls.push(abs(ruta))
-      await pagina(ruta, {
+      pendientes.push([ruta, {
         titulo, descripcion,
+        tarjeta: srv.tarjetaDe({
+          archivo: `comuna-${srv.slugDePagina(c.etiqueta)}.png`, titulo: `Comuna de ${c.etiqueta}`,
+          subtitulo: r.oficial, anio: r.anio, resumen, url: abs(ruta),
+        }),
         ld: srv.datosPagina({
           url: abs(ruta), titulo, descripcion, fecha: fecha.paginas, urlIndice,
           lugar: { nombre: `Comuna de ${c.etiqueta}`, cut: c.cod, dentroDe: r.oficial },
         }),
         cuerpo: srv.renderComuna({ comuna: c, region: r, resumen, manifest: man }),
+      }])
+    }
+
+    // Las tarjetas: los textos ya formateados van a .web/tarjetas.json (fuera de
+    // dist/: es un insumo, no se publica) y el sello a su lado. tarjetas.py dibuja.
+    const bytesTarjetas = Buffer.from(JSON.stringify({ tarjetas: pendientes.map(([, p]) => p.tarjeta) }) + '\n', 'utf8')
+    const sello = selloTarjetas(bytesTarjetas)
+    await escribir(join(WEB, 'tarjetas.json'), bytesTarjetas.toString('utf8'))
+    await escribir(join(WEB, 'tarjetas.sello'), sello + '\n')
+    for (const [ruta, { tarjeta, ...p }] of pendientes) {
+      await pagina(ruta, {
+        ...p,
+        imagen: {
+          url: `${URL_PUBLICA}tarjetas/${sello}/${tarjeta.archivo}`, ancho: 1200, alto: 630,
+          alt: `${tarjeta.titulo}: ${tarjeta.renglones.join(' · ')}`,
+        },
       })
     }
 
@@ -306,8 +364,12 @@ async function generar({ registrar }) {
     const bytesManifest = statSync(join(DATOS, 'manifest.json')).size
     const descripcionIndice = srv.fraseNacional(man)
     await pagina(srv.URL_INDICE, {
+      imagen: { url: urlOgGenerica(URL_PUBLICA), ancho: 1200, alto: 630, alt: 'Catastro de Usos de la Tierra y Recursos Vegetacionales de CONAF' },
       titulo: srv.TITULO_INDICE,
-      descripcion: `Superficie por uso de la tierra y bosques de las ${man.regiones.length} regiones y ${actuales.size - man.regiones.length} comunas de Chile, según el Visor del Catastro de CONAF.`,
+      // «de las 16 regiones y 343 comunas de Chile» diría que Chile tiene 343: tiene 346, y
+      // el Catastro publicado no trae Juan Fernández, Isla de Pascua ni la Antártica.
+      descripcion: `Superficie por uso de la tierra y bosques de las ${man.regiones.length} regiones de Chile y de ` +
+        `${actuales.size - man.regiones.length} comunas con polígonos en el Catastro, según el Visor del Catastro de CONAF.`,
       ld: srv.datosDataset({
         urlIndice, descripcion: descripcionIndice, rango: rangoAnios(man), fecha: fecha.datos,
         archivos: [
@@ -332,7 +394,8 @@ async function generar({ registrar }) {
 
     const ms = Math.round(performance.now() - t0)
     console.log(`✓ build:web: ${urls.length} URL en el sitemap (${man.regiones.length} regiones, ` +
-      `${actuales.size - man.regiones.length} comunas), ${alias.length} alias; cifras ${Math.round(tCalc)} ms, total ${ms} ms`)
+      `${actuales.size - man.regiones.length} comunas), ${alias.length} alias, ${pendientes.length} tarjetas por ` +
+      `dibujar con sello ${sello}; cifras ${Math.round(tCalc)} ms, total ${ms} ms`)
   } finally {
     await rm(SSR, { recursive: true, force: true })
   }
@@ -378,6 +441,8 @@ async function negativas() {
     ['una URL publicada desaparece', () =>
       revisarRegistro({ 'comuna/no-existe': '99999' }, slugsActuales(man), { registrar: true })],
     ['una URL nueva sin registrar', () => revisarRegistro({}, slugsActuales(man))],
+    ['una URL publicada pasa a otro territorio', () =>
+      revisarRegistro({ 'comuna/valdivia': '14102' }, slugsActuales(man), { registrar: true })],
   ]
   let rotas = 0
   for (const [nombre, romper] of casos) {

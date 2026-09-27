@@ -154,9 +154,22 @@ como patrón; **todo lo que toca datos por punto se rediseña** (ver «Construir
 
 ### Prioridad baja
 
-16. **Metadatos OpenGraph/Twitter en `index.html`.** La referencia trae
+16. ~~**Metadatos OpenGraph/Twitter en `index.html`.** La referencia trae
     `og:type/site_name/locale/url/title/description` y `twitter:card` (sin `og:image` hasta
-    tener el asset 1200×630, decisión documentada). Aquí: cero metadatos de tarjeta social.
+    tener el asset 1200×630, decisión documentada). Aquí: cero metadatos de tarjeta social.~~
+    *Enmendado el 2026-09-26: la portada, el índice y cada región y comuna llevan su vista
+    previa completa, con `og:image` de 1200×630 (la genérica `og.png` y una tarjeta por
+    territorio) y `twitter:card=summary_large_image` (DECISIONES §M.8–§M.10).*
+
+17. **La URL tarda hasta un segundo en reflejar los usos al cargar un enlace.** Medido el
+    2026-09-26 con `?reg=14&com=14101&usos=04`: en t+0 s la barra dice
+    `?reg=14&com=14101&lat=…` sin `usos`; en t+1 s ya lo trae. Un `moveend` temprano del mapa
+    reescribe la URL con el cierre de ANTES de restaurar los usos (`App.jsx`, efecto del
+    encuadre). Consecuencia: quien comparta en ese primer segundo copia un enlace sin el uso
+    marcado. Compartir ya no decide por la URL cuál página ofrecer (DECISIONES §M.12), pero
+    el enlace de la vista sí la usa. Arreglo probable: que el manejador de `moveend` lea el
+    estado de un `ref` en vez de su cierre, con una V que cargue con `?usos=` y compare la URL
+    a los 100 ms.
 
 ---
 
@@ -196,10 +209,12 @@ como patrón; **todo lo que toca datos por punto se rediseña** (ver «Construir
 
 ### Prioridad media
 
-3. **Script `verify:base` roto.** `package.json` declara `"verify:base": "node
+3. ~~**Script `verify:base` roto.** `package.json` declara `"verify:base": "node
    scripts/verify-base.mjs"` y `frontend/scripts/` no existe. Crear el script (la trampa del
    base path está cubierta en el `verify-banner.mjs` de la referencia) o borrar la entrada:
-   hoy el CI ya cubre el base path con un grep sobre `dist/index.html`.
+   hoy el CI ya cubre el base path con un grep sobre `dist/index.html`.~~
+   *Enmendado el 2026-09-26: se borró la entrada (DECISIONES §M.7). El base path lo cubren el
+   `grep` del CI y `scripts/validar-html.mjs`, que exige que todo asset exista bajo el `base`.*
 
 4. **Pantalla de error sin botón Reintentar.** Explica y muestra el detalle técnico, pero
    con un `.bin` de 23,8 MB en redes móviles el fallo transitorio es el caso común y la
@@ -225,11 +240,14 @@ como patrón; **todo lo que toca datos por punto se rediseña** (ver «Construir
    al cambiar de tema). Eliminar el campo, el parámetro `paletaRGB` de `cargarPuntos` y el
    `eslint-disable` que existía para no refetchear al cambiar el tema.
 
-8. **La cifra 1.827.933 hardcodeada en TRES sitios.** La píldora de carga
+8. ~~**La cifra 1.827.933 hardcodeada en TRES sitios.** La píldora de carga
    ([App.jsx:251](frontend/src/App.jsx#L251)), la **meta description** de
    [index.html:12-15](frontend/index.html#L12-L15) (lo que ven buscadores y tarjetas; es
    HTML estático, así que el arreglo es distinto: redactar sin cifra o regenerar en build) y
-   el comentario de cabecera de `CapaPuntos.jsx`. Tras cualquier reproceso, las tres mienten.
+   el comentario de cabecera de `CapaPuntos.jsx`. Tras cualquier reproceso, las tres mienten.~~
+   *Enmendado el 2026-09-26: la descripción del `<head>` se genera del manifest al construir
+   (`scripts/prerender.mjs`, DECISIONES §M.8), y la prosa cita las cifras de `src/hechos.js`
+   (§M.7). Queda sólo como comentario de código en `CapaPuntos.jsx`, que no se publica.*
 
 9. **Encuadre inicial fijo en vez del bbox del manifest.** `VISTA_INICIAL` constante; la
    referencia hace `fitBounds(limitesDelManifest(manifest))` solo si la URL no trae
@@ -261,6 +279,20 @@ como patrón; **todo lo que toca datos por punto se rediseña** (ver «Construir
     Decidir: borrar, ignorar o (DIACRITICOS/banner) conservar con un comentario de destino.
 
 ---
+
+### Medida: visibilidad para buscadores, asistentes de IA y vistas previas (2026-09-26)
+
+Implementada en ocho pasos (`implementacion_ceo.md`; decisiones y cifras en DECISIONES §M;
+operación en `docs/visibilidad.md`). **Criterio de término**, todo comprobable desde fuera:
+
+- [x] un lector sin JavaScript recibe en la portada la frase citable con las cifras nacionales;
+- [x] cada región y comuna tiene su página, en el sitemap, con frase, tablas, JSON-LD y tarjeta;
+- [x] Compartir ofrece la página del territorio cuando la vista es ese territorio;
+- [x] el humo del CI comprueba lo publicado y los PR corren las guardas;
+- [ ] `https://sud-austral.github.io/robots.txt` existe y bloquea a los que entrenan (§3.1 de
+      `docs/visibilidad.md`, lo hace un admin de la organización);
+- [ ] Umami tiene el identificador del sitio (§3.2);
+- [ ] Search Console muestra la frase en el HTML rastreado de `/` y de una comuna (§3.3).
 
 ## 3. Construir (no se puede copiar: los datos difieren)
 

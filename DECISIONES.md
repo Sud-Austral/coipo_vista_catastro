@@ -575,6 +575,153 @@ no exista. **Lo que no se hace**: páginas por provincia (sólo existen como nom
 estado de conservación en las páginas (sin validar contra el RCE) y `noindex` para `/datos/`
 (Pages no deja poner cabeceras, y bloquearlo impediría a Googlebot renderizar).
 
+### M.10 La tarjeta de la vista previa, por región y por comuna
+
+Un enlace a una comuna compartido por WhatsApp mostraba el título y nada más: sin `og:image`
+no hay tarjeta grande. Ahora cada página de región y de comuna cita la suya, de 1200×630:
+el nombre en grande, la región, tres renglones (superficie catastrada con sus polígonos,
+bosques con su porcentaje, bosque nativo) y, en la franja de abajo y en grande, **de qué
+actualización es la cifra**, porque la vista previa se guarda días y tiene que delatarse sola.
+La portada y el índice llevan una genérica sin cifras (`public/og.png`, versionada). Medido:
+**359 PNG, 62.649 B de media**, lejos de los 300 kB en que WhatsApp la descarta; ~40 s de
+dibujo con `optimize=True`.
+
+**Python sólo dibuja.** Los textos llegan formateados desde `scripts/web.mjs`, con las mismas
+funciones que las páginas: no hay una segunda redacción de las cifras que pueda divergir. La
+tipografía es Atkinson Hyperlegible Next (OFL), la misma de Botón Rojo con el mismo sha256,
+catalogada en `frontend/scripts/fuentes/fuentes.json` y marcada `-text` en `.gitattributes`.
+
+**El sello de la carpeta** (`dist/tarjetas/<sello>/`) es el sha256 de los textos, del dibujante,
+de la tipografía y de `requirements.txt`: cambia exactamente cuando puede cambiar un píxel, y
+con él cambian `og:image` y la versión de `og:url`, así que Facebook no se queda con la
+tarjeta vieja. Node lo calcula y lo declara; Python lo recalcula y se niega a dibujar si no
+coincide, porque las páginas citarían una carpeta vacía. **Pillow va fijado (12.3.0)** y
+`tarjetas.py` se niega a correr con otra versión: otra versión dibuja otros píxeles con el
+mismo sello. En local hay que usar un entorno con esa versión (Anaconda trae la 10.4).
+
+Las tarjetas no se commitean: se dibujan en el CI y son deterministas en la misma máquina y
+versión (dos corridas, `diff -r` vacío, medido). `validar-paginas` exige que cada `og:image`
+exista, mida 1200×630 y pese menos de 300 kB, y que cada PNG dibujada esté citada; el humo
+pide la de la portada y la de una página publicada.
+
+### M.11 Las visitas se cuentan con el Umami de la flota, sin el encuadre del mapa
+
+**Luis Monsalve, 2026-09-26** (ver M.5). Revierte lo que declaraba `preferencias.js` («ni
+telemetría de ninguna clase»); el comentario quedó enmendado con fecha, y la regla de ese
+archivo —no guardar nada del visitante en el navegador— no cambia.
+
+En Pages no hay nginx del host que inserte el script, como en el resto de la flota: la
+etiqueta va escrita en el HTML que se hornea (`cabeza.js`), con un solo lugar para la URL y el
+identificador (`src/web/sitio.js`). **El identificador del sitio lo crea un admin de Umami y
+todavía no existe**: mientras esté vacío no se escribe ninguna etiqueta, y las guardas
+(`validar-html`, `validar-paginas`, el humo) lo exigen. Cuando llegue es un cambio de una línea.
+
+**Sin `data-exclude-search`**: el visor no tiene inicio de sesión y su dirección lleva lo que
+interesa medir, el ámbito y los filtros; la flota lo abre por dominio con el mismo criterio
+(`coipo_umami/ops/nginx-host/analitica-sitios.conf`). **Pero con el rastreo automático apagado
+en la app**: el visor reescribe la URL en cada paneo, y Umami 3 escucha esos cambios; cada
+movimiento del mapa habría sido una «página vista». La app registra la visita a mano al cargar
+y cada vez que cambia lo que se mira, con la dirección normalizada (`src/web/analitica.js`: sin
+`lat`, `lon`, `z` ni `base`), y el evento `compartir`. Las páginas estáticas, que no se
+mueven, van con el rastreo automático. V-73 lo comprueba con un Umami de mentira: una visita
+al cargar, ninguna tras tres paneos, una más al filtrar, y el evento.
+
+La línea de privacidad del «Qué es» aparece sólo cuando hay identificador, y dice lo que hace:
+sin cookies, no guarda la IP (sí el país y la ciudad que se deducen de ella), registra la
+dirección con su ámbito y filtros. **Pendiente**: el aviso por la Ley 21.719 que
+`coipo_umami/DEUDA.md` marca [VERIFICAR], y anotar en `coipo_umami` que este sitio es un
+segundo lugar con la URL de Umami (su conf del host se declara el único).
+
+### M.12 Compartir ofrece la página del territorio, sólo cuando la vista es ese territorio
+
+El enlace de Compartir reproduce la vista exacta (`?reg=14&com=14101&lat=…`), y por eso mismo
+muestra en WhatsApp la tarjeta de la portada: Pages no mira la query. Cuando la vista es
+**exactamente** una región o una comuna, el modal ofrece además, debajo, el enlace a su página
+(`/comuna/valdivia/`), que trae su tarjeta y su frase citable. Con un uso o un filtro marcado
+no la ofrece: las cifras de la página serían otras que las de la pantalla. La regla es una
+función pura con pruebas (`src/web/enlaces.js`), el slug se lee de `web/indice.json` y nunca se
+recalcula, y en `npm run dev` —donde ese índice no existe y el servidor responde HTML a
+cualquier ruta— simplemente no se ofrece. El enlace de la vista sigue primero (V-66).
+
+**Lo que encontró la prueba.** V-70 dio rojo la primera vez con `?reg=14&com=14101&usos=04`: el
+modal ofrecía la página de Valdivia con un uso marcado. La causa no era la regla sino la URL:
+**al cargar un enlace con usos, la URL tarda hasta un segundo en reflejarlos** (medido: en
+t+0 s no está `usos=04`; en t+1 s sí), porque un `moveend` temprano la reescribe con el cierre
+de antes de restaurarlos. Por eso la decisión sale del ESTADO de la vista (ámbito, usos y
+filtros activos) y no de la URL. La carrera en sí es anterior a este cambio y afecta al enlace
+de la vista si se comparte en ese primer segundo; no se toca aquí y queda anotada.
+
+### M.13 Cómo quedó, y lo que falta
+
+Frente a la línea base (M.0), medido en local sobre el artefacto el 2026-09-26, antes de
+publicar:
+
+| qué | antes | ahora |
+|---|---|---|
+| texto que recibe un lector sin JavaScript en la portada | «Cargando el Catastro nacional…» | ~2.700 caracteres de texto (5.679 de HTML): la frase con 1.827.933 polígonos, 75.661.200 ha y 15.536.329 ha de bosque nativo, «qué es», la tabla de usos y enlaces a las 16 regiones |
+| URL con las cifras de una comuna | ninguna | 343 comunas y 16 regiones, en el sitemap (361 URL) |
+| «¿cuántas ha de bosque nativo tiene Panguipulli?» | sin respuesta | «216.838 ha de bosque nativo», en la frase citable de `/comuna/panguipulli/` |
+| vista previa al compartir una comuna | la de la portada, sin imagen | la de la comuna, con su tarjeta de 1200×630 |
+| lo que queda en el DOM si Google no baja el `.bin` | la pantalla de error | la portada, con la frase y la tabla (V-69) |
+| los PR | sin ninguna guarda | `datos` y `build` completos |
+
+Las guardas nuevas, todas con sus controles negativos: `validar-html` (20), `validar-paginas`
+(18), el generador de páginas (8), `robots.mjs` (8), `tarjetas.py` (4), el humo (19),
+`npm run prueba` (36 pruebas) y el arnés de navegador (V-68 a V-73, V-8 real; 102 ejecuciones
+en verde), con siete mutaciones nuevas que ponen roja cada una.
+
+**Falta, y no es código** (el detalle y los pasos en `docs/visibilidad.md` §3): crear el
+repositorio raíz de la organización con el `robots.txt` (hasta entonces los que entrenan leen
+todo, y el humo lo avisa); el identificador de Umami; dar de alta Search Console y Bing con una
+cuenta funcional y comprobar con la Inspección de URL que Google ve la frase; confirmar la
+redacción de los ceros (M.9); y la licencia de los datos. Y, cuando esto se publique, repetir
+las mediciones de M.0 contra el sitio vivo.
+
+### M.14 Lo que encontró la revisión adversarial, y cómo se arregló
+
+Antes de dar esto por terminado, cinco revisores de solo lectura recorrieron el diff entero
+—generador y validadores, app, CI, lo publicado, documentación— y un verificador independiente
+intentó refutar cada hallazgo. Sobrevivieron 21. Los que importaban, y su arreglo:
+
+- **La frase nacional decía «cada región actualizada en un año distinto».** Es falso: cinco
+  regiones son de 2024. Lo decían también el «Qué es», la Metodología, el panel, el reporte y
+  las descargas. Ahora: «las regiones se actualizaron en años distintos».
+- **Las descripciones decían «0 ha de bosques» en 33 comunas**, justo lo que la frase evita.
+  Ahora dicen «ningún polígono clasificado como bosque», y `validar-paginas` rechaza un
+  «0 ha» en una descripción.
+- **La descripción del índice decía que Chile tiene 343 comunas.** Tiene 346; son 343 las que
+  el Catastro publicado trae.
+- **La huella del humo sólo cubría la portada y el manifest**: un cambio que tocara sólo las
+  páginas o las tarjetas daba la huella de ayer, y el humo aprobaba el sitio viejo. Ahora es el
+  sha256 de todo `dist/`, publicado en `web/huella.txt`.
+- **Poner el identificador de Umami dejaba el CI en rojo**: las negativas del humo usaban el
+  identificador real. Ahora se inyecta, con casos para las dos situaciones.
+- **Negativas que se cazaban por otra regla.** En `validar-html`, `validar-paginas` y el humo
+  cada negativa declara ahora el problema que TIENE que salir; si sale otro, cuenta como rota.
+  Al endurecerlo aparecieron dos negativas mal apuntadas, y se corrigieron.
+- **El CUT de una región se «encontraba» en cualquier «2015» o «100 %».** Se busca «(CUT) 15».
+- **Una URL publicada podía pasar a mostrar otro territorio** sin que el registro lo notara.
+  Ahora lanza.
+- **La fecha publicada (`lastmod`, `dateModified`) sólo miraba tres rutas.** Ahora mira todo
+  `frontend/src`, `frontend/scripts`, los datos y las dependencias.
+- **Redibujar `og.png` no cambiaba su URL**, así que Facebook seguía con la vieja. Ahora lleva
+  `?v=` con el sha de su contenido.
+- **La app contaba la visita sólo cuando terminaban de bajar los 49 MB** y perdía el
+  `utm_source`. Ahora cuenta al montar y conserva las etiquetas de campaña en la primera. El
+  evento `compartir` va con la dirección normalizada: la forma `track('compartir')` mandaba la
+  URL de carga, con el encuadre.
+- **La portada de carga quedaba debajo del cartel y de los tiradores** (z-index 850 contra 900 y
+  998), y al montar perdía la frase y la tabla hasta que llegaba el manifest. Ahora está por
+  encima de todo lo que es del mapa, y la app se monta con el manifest ya pedido y conservando
+  el scroll.
+- **D1 no vigilaba el literal de esquema de `binario.js`.** Ahora `esquema.test.mjs` exige que
+  los cuatro coincidan.
+
+Descartados por el verificador, con su razón en el registro de la revisión: la resolución de
+día del control de determinismo, la combinación de `noindex` con meta refresh en los alias (es
+la recomendada para una redirección que no puede ser 301) y el token de Google-Extended
+(permitido por decisión, M.2).
+
 ## Fallos propios cometidos al establecer todo esto
 
 Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse.

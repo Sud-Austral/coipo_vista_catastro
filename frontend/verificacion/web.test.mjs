@@ -11,10 +11,11 @@ import { fileURLToPath } from 'node:url'
 import test from 'node:test'
 import { BASE, URL_PUBLICA, UMAMI } from '../src/web/sitio.js'
 import {
-  descripcionPortada, fraseComuna, fraseNacional, fraseRegion, QUIEN, SALVEDAD, slugDePagina,
+  descripcionPortada, fraseComuna, fraseNacional, fraseRegion, QUIEN, SALVEDAD, slugDePagina, tarjetaDe,
 } from '../src/web/textos.js'
 import { escaparHtml, etiquetaUmami, jsonLd, metasVistaPrevia } from '../src/web/cabeza.js'
 import { haEntera } from '../src/formato.js'
+import { claveDeVista, urlParaAnalitica } from '../src/web/analitica.js'
 
 const FRONTEND = join(dirname(fileURLToPath(import.meta.url)), '..')
 const man = JSON.parse(readFileSync(join(FRONTEND, 'public', 'datos', 'manifest.json'), 'utf8'))
@@ -133,6 +134,44 @@ test('frase de región: la cifra oficial va con el año de SU planilla', () => {
   assert.ok(f.startsWith('Región de Valparaíso: '))
   assert.ok(f.includes('actualización 2014 del Catastro'))
   assert.ok(f.includes('planilla de la actualización 2015, es de 4.061.628 ha'))
+})
+
+test('tarjeta: tres renglones enteros, la actualización en la franja y la URL sin protocolo', () => {
+  const t = tarjetaDe({
+    archivo: 'comuna-valdivia.png', titulo: 'Comuna de Valdivia', subtitulo: 'Región de Los Ríos', anio: '2020-2022',
+    resumen: resumenDe({ ha: 101790.23, n: 9664, bosques: 69724.6, nativo: 43309.4 }),
+    url: `${URL_PUBLICA}comuna/valdivia/`,
+  })
+  assert.deepEqual(t.renglones, [
+    '101.790 ha catastradas en 9.664 polígonos', '69.725 ha de bosques (68,5 %)', '43.309 ha de bosque nativo',
+  ])
+  assert.equal(t.franja, 'CATASTRO DE CONAF · ACTUALIZACIÓN 2020-2022')
+  assert.ok(!t.url.startsWith('http') && t.url.endsWith('/comuna/valdivia/'))
+  for (const r of t.renglones) assert.doesNotMatch(r, /\d,\d+ ha/)
+})
+
+test('tarjeta sin bosques: no dice «no hay», dice que el Catastro no lo clasifica', () => {
+  const t = tarjetaDe({ archivo: 'x.png', titulo: 'Comuna de Santiago', anio: 2019, resumen: resumenDe({ ha: 2310, n: 1 }), url: 'https://x/' })
+  assert.equal(t.renglones[0], '2.310 ha catastradas en 1 polígono')
+  assert.ok(t.renglones.some((r) => r.includes('Ningún polígono clasificado como bosque')))
+  assert.ok(!t.renglones.some((r) => /no hay bosque/i.test(r)))
+})
+
+test('analítica: la dirección que se cuenta no lleva el encuadre ni el fondo', () => {
+  assert.equal(urlParaAnalitica('?lat=-38.1&lon=-72.2&z=6'), '')
+  assert.equal(urlParaAnalitica('?reg=14&lat=-39&lon=-73&z=9&com=14101&base=Satelital'), '?com=14101&reg=14')
+  // El mismo ámbito y los mismos filtros en otro orden son la misma vista.
+  assert.equal(urlParaAnalitica('?tifo=05&reg=10'), urlParaAnalitica('?reg=10&tifo=05'))
+  // «Ninguna clase» (usos vacío) no es «todas»: se conserva.
+  assert.equal(urlParaAnalitica('?usos='), '?usos=')
+})
+
+test('analítica: las etiquetas de campaña se mandan, pero no hacen otra vista', () => {
+  // La primera visita lleva utm_source (llegó desde un asistente)...
+  assert.equal(urlParaAnalitica('?utm_source=chatgpt.com&reg=14&z=9'), '?reg=14&utm_source=chatgpt.com')
+  // ...y cuando la app la borra de la barra, la vista sigue siendo la misma: no se cuenta dos veces.
+  assert.equal(claveDeVista('?utm_source=chatgpt.com&reg=14&z=9'), claveDeVista('?reg=14&lat=-39&lon=-73&z=10'))
+  assert.equal(claveDeVista('?utm_source=x&utm_medium=y'), '')
 })
 
 test('Umami: sin identificador no se escribe nada', () => {

@@ -6,9 +6,16 @@
 //   SE GUARDA   el ancho de cada panel y si cada barra esta plegada.
 //               Dos numeros y dos booleanos sobre la forma de una ventana.
 //   NO SE GUARDA nada del visitante: ni identificador, ni sesion, ni que filtros
-//               consulto, ni cuando vino, ni telemetria de ninguna clase. Lo
-//               que se analiza (filtros, capas, encuadre) sigue viviendo SOLO en
-//               la URL, que es visible, editable y compartible por quien la usa.
+//               consulto, ni cuando vino. Lo que se analiza (filtros, capas,
+//               encuadre) sigue viviendo SOLO en la URL, que es visible, editable
+//               y compartible por quien la usa.
+//
+// ENMENDADO EL 2026-09-26 (DECISIONES §M.11): decia tambien «ni telemetria de
+// ninguna clase», y dejo de ser cierto. Luis Monsalve decidio contar las visitas
+// con el Umami de la flota: sin cookies y sin guardar la IP, registra la direccion
+// visitada con su ambito y sus filtros (sin el encuadre del mapa) y el evento de
+// compartir. ESTE archivo sigue sin guardar nada del visitante en el navegador:
+// la regla de abajo no cambia.
 //
 // El motivo de la excepcion: sin ella, cada F5 devuelve el panel a 320 px y
 // vuelve a desplegar las dos barras, y quien trabaja con el visor todos los dias

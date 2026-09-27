@@ -26,7 +26,7 @@ import Portada from './Portada.jsx'
 export { cabezaPagina, cabezaPortada, datosDataset, datosPagina, documento, escaparHtml } from './cabeza.js'
 export {
   descripcionEntidad, descripcionPortada, fraseComuna, fraseNacional, fraseRegion, slugDePagina,
-  TITULO_INDICE, tituloComuna, tituloRegion,
+  tarjetaDe, TITULO_INDICE, tituloComuna, tituloRegion,
 } from './textos.js'
 export { BASE, ESQUEMA_INDICE, TITULO, URL_PUBLICA } from './sitio.js'
 export { URL_INDICE, urlComuna, urlRegion } from './rutas.js'

@@ -43,6 +43,23 @@ const miles = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 const desescapar = (s) => s.replaceAll('&quot;', '"').replaceAll('&#x27;', "'").replaceAll('&#39;', "'")
   .replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&')
 
+/** (ancho, alto) de la cabecera IHDR de un PNG, o null si no es un PNG. */
+export function medidasPng(bytes) {
+  const firma = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
+  if (!bytes || bytes.length < 24 || firma.some((b, i) => bytes[i] !== b)) return null
+  if (bytes.toString('latin1', 12, 16) !== 'IHDR') return null
+  return [bytes.readUInt32BE(16), bytes.readUInt32BE(20)]
+}
+
+/** Lo que exige WhatsApp de una vista previa: 1200×630 y menos de 300 kB (guía §8.1). */
+export function problemaPng(bytes, nombre) {
+  const m = medidasPng(bytes)
+  if (!m) return `${nombre} no es un PNG`
+  if (m[0] !== 1200 || m[1] !== 630) return `${nombre} mide ${m[0]}×${m[1]} y no 1200×630`
+  if (bytes.length >= 300_000) return `${nombre} pesa ${bytes.length} B: WhatsApp descarta desde 300.000`
+  return null
+}
+
 export function raiz(html) {
   const i = html.indexOf('<div id="root">')
   if (i < 0) return null
@@ -71,7 +88,7 @@ export function tokens(css) {
  * Los problemas del HTML horneado. `ctx`: { manifest, existe(rutaEnDist), indexCss,
  * paginasCss }. Devuelve una lista de textos; vacía es que está bien.
  */
-export function problemas(html, { manifest, existe, indexCss, paginasCss }) {
+export function problemas(html, { manifest, existe, leer, indexCss, paginasCss }) {
   const p = []
   const r = raiz(html)
   if (r == null) return ['no hay <div id="root">']
@@ -147,8 +164,14 @@ export function problemas(html, { manifest, existe, indexCss, paginasCss }) {
   const ogImg = metas(html, 'property', 'og:image')
   if (ogImg.length) {
     const img = ogImg[0]
+    const ruta = img.slice(URL_PUBLICA.length).split(/[?#]/)[0]
     if (!img.startsWith(URL_PUBLICA)) p.push(`og:image «${img}» no es absoluta bajo ${URL_PUBLICA}`)
-    else if (!existe(img.slice(URL_PUBLICA.length))) p.push(`og:image «${img}» no existe en dist/`)
+    else if (!existe(ruta)) p.push(`og:image «${img}» no existe en dist/`)
+    else {
+      const malo = problemaPng(leer(ruta), 'og:image')
+      if (malo) p.push(malo)
+    }
+    if (metas(html, 'name', 'twitter:card')[0] !== 'summary_large_image') p.push('con og:image la tarjeta tiene que ser summary_large_image')
   } else if (metas(html, 'name', 'twitter:card')[0] !== 'summary') {
     p.push('sin og:image la tarjeta tiene que ser twitter:card=summary')
   }
@@ -172,7 +195,10 @@ export function problemas(html, { manifest, existe, indexCss, paginasCss }) {
 
 // ------------------------------------------------------------------ negativas
 
-/** [nombre, alterar(html, ctx) -> [html, ctx]] — cada una tiene que dar al menos un problema. */
+/**
+ * [nombre, trozo esperado, alterar(html, ctx) -> [html, ctx]]. Cada una tiene que dar un
+ * problema que CONTENGA el trozo: que salte por otra regla no prueba la suya.
+ */
 function negativas(html, ctx) {
   const reemplazo = (de, a) => (h) => {
     if (!h.includes(de)) throw new Error(`la negativa no encaja: no aparece ${JSON.stringify(de.slice(0, 50))}`)
@@ -184,24 +210,26 @@ function negativas(html, ctx) {
   const banner = html.match(/src="(\/coipo_vista_catastro\/assets\/banner[^"]+)"/)?.[1] ?? ''
   const soloHtml = (f) => (h, c) => [f(h), c]
   return [
-    ['#root vacío', soloHtml((h) => h.replace(/<div id="root">[\s\S]*<\/body>/, '<div id="root"></div></body>'))],
-    ['sin <h1>', soloHtml(reemplazo('<h1', '<p'))],
-    ['sin «Qué es»', soloHtml(reemplazo('id="que-es"', 'id="otra"'))],
-    ['sin #arranque-lento', soloHtml(reemplazo('id="arranque-lento"', 'id="x"'))],
-    ['vuelve #arranque', soloHtml(reemplazo('<body>', '<body><div id="arranque"></div>'))],
-    ['la frase cita otro total', soloHtml(reemplazo(frase, frase.replace(total, '1 ha')))],
-    ['la frase sin la salvedad', soloHtml(reemplazo(frase, frase.replace('pueden diferir levemente de las oficiales', 'son las oficiales')))],
-    ['una clase de la app en #root', soloHtml(reemplazo('<div id="root">', '<div id="root"><div class="grupo-filtro"></div>'))],
-    ['un asset que no existe', (h, c) => [h, { ...c, existe: (r) => !banner.endsWith(r) && c.existe(r) }]],
-    ['un favicon con ruta relativa', soloHtml((h) => h.replace(/href="\/coipo_vista_catastro\/favicon-32\.png"/, 'href="./favicon-32.png"'))],
-    ['dos canonical', soloHtml(reemplazo(canon, canon + canon))],
-    ['og:url sin versión', soloHtml((h) => h.replace(/(og:url" content="[^"?]*)\?v=[0-9a-f]+/, '$1'))],
-    ['og:title distinto de <title>', soloHtml((h) => h.replace(/(og:title" content=")/, '$1Otro '))],
-    ['description distinta de og:description', soloHtml((h) => h.replace(/(name="description" content=")/, '$1Otra '))],
-    ['marca sin reemplazar', soloHtml(reemplazo('</head>', '<!--cabeza--></head>'))],
-    ['og:image que no existe', soloHtml(reemplazo('</head>', `<meta property="og:image" content="${URL_PUBLICA}no-existe.png" /></head>`))],
-    ['un token de paginas.css distinto', (h, c) => [h, { ...c, paginasCss: c.paginasCss.replace('--verde-institucional: #064928', '--verde-institucional: #000000') }]],
-    ['Umami sin identificador', soloHtml(reemplazo('</head>', '<script defer src="https://prueba5.conaf.cl/conaf.js"></script></head>'))],
+    ['#root vacío', '#root vacío', soloHtml((h) => h.replace(/<div id="root">[\s\S]*<\/body>/, '<div id="root"></div></body>'))],
+    ['sin <h1>', '<h1>', soloHtml(reemplazo('<h1', '<p'))],
+    ['sin «Qué es»', 'Qué es', soloHtml(reemplazo('id="que-es"', 'id="otra"'))],
+    ['sin #arranque-lento', '#arranque-lento', soloHtml(reemplazo('id="arranque-lento"', 'id="x"'))],
+    ['vuelve #arranque', 'volvió #arranque', soloHtml(reemplazo('<body>', '<body><div id="arranque"></div>'))],
+    ['la frase cita otro total', 'hectáreas del país', soloHtml(reemplazo(frase, frase.replace(total, '1 ha')))],
+    ['la frase sin la salvedad', 'salvedad', soloHtml(reemplazo(frase, frase.replace('pueden diferir levemente de las oficiales', 'son las oficiales')))],
+    ['una clase de la app en #root', 'toma por la app montada', soloHtml(reemplazo('<div id="root">', '<div id="root"><div class="grupo-filtro"></div>'))],
+    ['un asset que no existe', 'no existe en dist/', (h, c) => [h, { ...c, existe: (r) => !banner.endsWith(r) && c.existe(r) }]],
+    ['un favicon con ruta relativa', 'ruta relativa', soloHtml((h) => h.replace(/href="\/coipo_vista_catastro\/favicon-32\.png"/, 'href="./favicon-32.png"'))],
+    ['dos canonical', 'canonical; tiene que haber uno', soloHtml(reemplazo(canon, canon + canon))],
+    ['og:url sin versión', 'og:url', soloHtml((h) => h.replace(/(og:url" content="[^"?]*)\?v=[0-9a-f]+/, '$1'))],
+    ['og:title distinto de <title>', 'og:title', soloHtml((h) => h.replace(/(og:title" content=")/, '$1Otro '))],
+    ['description distinta de og:description', 'og:description', soloHtml((h) => h.replace(/(name="description" content=")/, '$1Otra '))],
+    ['marca sin reemplazar', '<!--cabeza-->', soloHtml(reemplazo('</head>', '<!--cabeza--></head>'))],
+    ['og:image que no existe', 'og:image «', soloHtml((h) => h.replace(/(og:image" content="[^"]*)og\.png/, '$1no-existe.png'))],
+    ['og:image que no es de 1200×630', 'no 1200×630', (h, c) => [h, { ...c, leer: () => Buffer.concat([c.leer('og.png').subarray(0, 16), Buffer.from([0, 0, 4, 176, 0, 0, 2, 119]), c.leer('og.png').subarray(24)]) }]],
+    ['sin tarjeta grande con og:image', 'summary_large_image', soloHtml((h) => h.replace('content="summary_large_image"', 'content="summary"'))],
+    ['un token de paginas.css distinto', '--verde-institucional = #000000', (h, c) => [h, { ...c, paginasCss: c.paginasCss.replace('--verde-institucional: #064928', '--verde-institucional: #000000') }]],
+    ['Umami sin identificador', 'Umami', soloHtml(reemplazo('</head>', '<script defer src="https://prueba5.conaf.cl/conaf.js"></script></head>'))],
   ]
 }
 
@@ -210,13 +238,14 @@ function principal() {
   const ctx = {
     manifest: leerManifest(join(DIST, 'datos')),
     existe: (ruta) => existsSync(join(DIST, ruta)),
+    leer: (ruta) => readFileSync(join(DIST, ruta)),
     indexCss: readFileSync(join(RAIZ, 'src', 'index.css'), 'utf8'),
     paginasCss: readFileSync(join(DIST, 'paginas.css'), 'utf8'),
   }
 
   let rotas = 0
   const casos = negativas(html, ctx)
-  for (const [nombre, alterar] of casos) {
+  for (const [nombre, esperado, alterar] of casos) {
     let caza
     try {
       const [h, c] = alterar(html, ctx)
@@ -225,10 +254,10 @@ function principal() {
       caza = null
       console.log(`  MAL  negativa «${nombre}»: ${e.message}`)
     }
-    if (!caza?.length) {
+    if (caza && !caza.some((m) => m.includes(esperado))) {
       rotas++
-      if (caza) console.log(`  MAL  negativa «${nombre}»: VERDE, el validador no la caza`)
-    }
+      console.log(`  MAL  negativa «${nombre}»: ${caza.length ? `salta por otra regla (${caza[0]})` : 'VERDE, el validador no la caza'}`)
+    } else if (!caza) rotas++
   }
   if (rotas) {
     console.log(`\nvalidar-html: ${rotas} negativa(s) sin cazar: el validador está roto.`)

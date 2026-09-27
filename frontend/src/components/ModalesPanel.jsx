@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BASEMAPS } from '../config'
 import { fmt } from '../formato'
 import { flush } from '../urlState'
 import { CajaModal } from './GrupoFiltro'
 import QueEs from './QueEs'
+import { cargarIndiceWeb, paginaDelEnlace } from '../web/enlaces.js'
+import { urlParaAnalitica } from '../web/analitica.js'
 
 /**
  * Los tres botones del pie del panel: Información, Descargar y Compartir.
@@ -76,7 +78,7 @@ export function ModalInformacion({ manifest, base, hayRecorte, metodologia, onCe
         </p>
         <p className="nota">
           Alejando el mapa vuelven a tocarse, y eso no tiene arreglo: a escala de país hay{' '}
-          {manifest ? fmt.format(manifest.total.filas) : '1,8 millones de'} polígonos sobre unos
+          {manifest ? fmt.format(manifest.total.filas) : 'millones de'} polígonos sobre unos
           700.000 píxeles.
         </p>
       </section>
@@ -133,7 +135,33 @@ export function ModalDescargas({ descargas, onCerrar }) {
  * ocasión de leer eso, y una cifra regional citada como nacional es el error más
  * caro que puede cometer este visor — ya ocurrió por otra vía.
  */
-export function ModalCompartir({ onCerrar }) {
+/**
+ * Comparte `url`: el menú del sistema si lo hay, si no el portapapeles, y si tampoco,
+ * se pide copiarlo a mano. El evento se registra a mano: con el rastreo automático
+ * apagado (App.jsx), Umami tampoco escucha los data-umami-event. Y con la dirección
+ * NORMALIZADA: la forma track('nombre') manda la URL con la que se cargó el script, que
+ * trae el encuadre y ni siquiera es la vista actual. Sin Umami, nada.
+ */
+async function compartirEnlace(url, setAviso, destino) {
+  const vista = import.meta.env.BASE_URL + urlParaAnalitica(window.location.search)
+  window.umami?.track?.((p) => ({ ...p, url: vista, name: 'compartir', data: { destino } }))
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: document.title, url })
+      return
+    } catch {
+      /* cancelado: se sigue por el portapapeles */
+    }
+  }
+  try {
+    await navigator.clipboard.writeText(url)
+    setAviso('Enlace copiado')
+  } catch {
+    setAviso('No se pudo copiar: selecciona el enlace y cópialo a mano.')
+  }
+}
+
+export function ModalCompartir({ manifest, ambito, usosActivos, filtros, onCerrar }) {
   // flush PRIMERO: la URL se escribe con 250 ms de retraso, así que sin esto el
   // modal enseñaría el encuadre ANTERIOR al último movimiento del mapa.
   const [url] = useState(() => {
@@ -141,23 +169,33 @@ export function ModalCompartir({ onCerrar }) {
     return window.location.href
   })
   const [aviso, setAviso] = useState('')
+  const [avisoPagina, setAvisoPagina] = useState('')
 
-  const copiar = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: document.title, url })
-        return
-      } catch {
-        /* cancelado: se sigue por el portapapeles */
-      }
+  // LA PÁGINA DEL TERRITORIO, si la vista es exactamente uno (DECISIONES §M.12). El
+  // enlace de la vista abre en WhatsApp con la tarjeta de la portada —Pages no mira
+  // la query—; la página /comuna/x/ trae la suya y la frase citable. El índice se
+  // lee de web/indice.json: en `npm run dev` no existe, y entonces no se ofrece.
+  const [indice, setIndice] = useState(null)
+  useEffect(() => {
+    let vivo = true
+    cargarIndiceWeb(import.meta.env.BASE_URL).then((i) => vivo && setIndice(i))
+    return () => {
+      vivo = false
     }
-    try {
-      await navigator.clipboard.writeText(url)
-      setAviso('Enlace copiado')
-    } catch {
-      setAviso('No se pudo copiar: selecciona el enlace y cópialo a mano.')
-    }
-  }
+  }, [])
+  // La decisión sale del ESTADO de la vista, no de la URL: al cargar un enlace con
+  // usos, la URL tarda hasta un segundo en reflejarlos (medido el 2026-09-26: un
+  // moveend temprano la reescribe con el cierre de antes de restaurarlos), y
+  // leerla ofrecería la página de la comuna con un uso marcado. Se arma una
+  // consulta con lo que se ve y decide paginaDelEnlace, la regla con pruebas.
+  const vista = new URLSearchParams()
+  if (ambito?.region) vista.set('reg', ambito.region)
+  if (ambito?.provincia) vista.set('prov', ambito.provincia)
+  if (ambito?.comuna) vista.set('com', ambito.comuna)
+  if (usosActivos?.size) vista.set('usos', [...usosActivos].join(','))
+  if (Object.values(filtros ?? {}).some((s) => s?.size)) vista.set('filtros', '1')
+  const ruta = paginaDelEnlace(`?${vista}`, indice, manifest)
+  const urlPagina = ruta ? new URL(ruta, url).href : null
 
   return (
     <CajaModal
@@ -176,10 +214,28 @@ export function ModalCompartir({ onCerrar }) {
         <span className="visualmente-oculto">Enlace de esta vista</span>
         <input type="text" readOnly value={url} onFocus={(e) => e.target.select()} />
       </label>
-      <button type="button" className="compartir" onClick={copiar}>
+      <button type="button" className="compartir" onClick={() => compartirEnlace(url, setAviso, 'vista')}>
         Copiar enlace
       </button>
       <span className="aviso-copia" aria-live="polite">{aviso}</span>
+      {/* DEBAJO y no en lugar del de la vista: el de la vista sigue siendo el que
+          reproduce exactamente la pantalla (V-66). */}
+      {urlPagina && (
+        <div className="compartir-pagina">
+          <p className="nota">
+            Esta vista es un territorio entero y tiene <strong>su propia página</strong>: con su
+            tarjeta al compartirla en WhatsApp o redes, y sus cifras en una frase que se puede citar.
+          </p>
+          <label className="gf-buscar">
+            <span className="visualmente-oculto">Página de este territorio</span>
+            <input type="text" readOnly value={urlPagina} onFocus={(e) => e.target.select()} />
+          </label>
+          <button type="button" className="compartir" onClick={() => compartirEnlace(urlPagina, setAvisoPagina, 'pagina')}>
+            Copiar enlace a la página
+          </button>
+          <span className="aviso-copia" aria-live="polite">{avisoPagina}</span>
+        </div>
+      )}
     </CajaModal>
   )
 }

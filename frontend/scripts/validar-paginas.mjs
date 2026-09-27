@@ -28,6 +28,8 @@ import { cargarDatos } from './datos-node.mjs'
 import { BASE, ORIGEN, UMAMI, URL_PUBLICA } from '../src/web/sitio.js'
 import { QUIEN, SALVEDAD, slugDePagina } from '../src/web/textos.js'
 import { escaparHtml } from '../src/web/cabeza.js'
+import { problemaPng } from './validar-html.mjs'
+import { readdirSync } from 'node:fs'
 
 const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const DIST = join(RAIZ, 'dist')
@@ -81,7 +83,7 @@ const enDist = (ruta) => {
 }
 
 /** Los problemas de UNA página generada (región, comuna o índice). */
-export function problemasPagina(html, pag, { existe, oraculo: o }) {
+export function problemasPagina(html, pag, { existe, leer, oraculo: o }) {
   const p = []
   const canonical = ORIGEN + pag.ruta
   const canon = [...cabeza(html).matchAll(/<link rel="canonical" href="([^"]*)"/g)].map((m) => m[1])
@@ -93,9 +95,17 @@ export function problemasPagina(html, pag, { existe, oraculo: o }) {
   const titulo = desescapar(html.match(/<title>([^<]*)<\/title>/)?.[1] ?? '')
   if (metas(html, 'property', 'og:title')[0] !== titulo) p.push('og:title ≠ <title>')
   const d = metas(html, 'name', 'description')
+  // Un cero se lee como ausencia comprobada: la frase lo evita, y la descripción —que es
+  // lo que muestran el buscador y la vista previa— también tiene que evitarlo.
+  if (d.some((x) => /(^|[^\d.])0 ha\b/.test(x))) p.push('la descripción dice «0 ha»: se leería como ausencia comprobada')
   if (d.length !== 1 || d[0] !== metas(html, 'property', 'og:description')[0]) p.push('description ≠ og:description')
   const img = metas(html, 'property', 'og:image')[0]
-  if (img && (!img.startsWith(URL_PUBLICA) || !existe(enDist(img.slice(ORIGEN.length))))) p.push(`og:image «${img}» no existe`)
+  if (!img) p.push('sin og:image: la vista previa saldría sin tarjeta')
+  else if (!img.startsWith(URL_PUBLICA) || !existe(enDist(img.slice(ORIGEN.length)))) p.push(`og:image «${img}» no existe`)
+  else {
+    const malo = problemaPng(leer(enDist(img.slice(ORIGEN.length))), 'og:image')
+    if (malo) p.push(malo)
+  }
 
   // JSON-LD: parsea, sin «<», y lo que declara se ve.
   const vis = texto(html)
@@ -106,7 +116,9 @@ export function problemasPagina(html, pag, { existe, oraculo: o }) {
     let ld = null
     try { ld = JSON.parse(b) } catch { p.push('el JSON-LD no parsea') }
     const id = ld?.about?.identifier
-    if (id && !vis.includes(id)) p.push(`el JSON-LD declara el código ${id} y la página no lo muestra`)
+    // En su forma EXACTA, «(CUT) 15»: el código suelto de una región son dos dígitos que
+    // aparecen en cualquier año o cifra («2015», «100 %»), y la regla no probaba nada.
+    if (id && !vis.includes(`(CUT) ${id}`)) p.push(`el JSON-LD declara el código ${id} y la página no lo muestra`)
     for (const dist of ld?.distribution ?? []) {
       const nombre = dist.contentUrl.split('/').at(-1)
       if (!vis.includes(nombre)) p.push(`el Dataset declara ${nombre} y la página no lo muestra`)
@@ -162,8 +174,13 @@ export function problemasPagina(html, pag, { existe, oraculo: o }) {
 }
 
 /** Los problemas del conjunto: el sitemap y el registro de URL publicadas. */
-export function problemasSitio({ man, sitemap, registro, existe }) {
+export function problemasSitio({ man, sitemap, registro, existe, tarjetas, citadas }) {
   const p = []
+  // Cada tarjeta dibujada se cita y cada citada existe: una PNG huérfana es trabajo que
+  // nadie ve, y suele delatar que las páginas citan OTRA carpeta.
+  const huerfanas = tarjetas.filter((t) => !citadas.has(t))
+  if (huerfanas.length) p.push(`${huerfanas.length} tarjetas que ninguna página cita (${huerfanas[0]})`)
+  if (!tarjetas.length) p.push('no hay tarjetas en dist/tarjetas/: ¿corriste scripts/tarjetas.py?')
   const esperadas = paginasEsperadas(man).map((x) => ORIGEN + x.ruta)
   const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1])
   if (locs.length !== esperadas.length) p.push(`el sitemap tiene ${locs.length} URL y tienen que ser ${esperadas.length}`)
@@ -189,22 +206,36 @@ function negativas(pags, ctx) {
   }
   const unaPagina = (x, alterar, extra = {}) => () => problemasPagina(alterar(x.html), x.pag, { ...ctx, ...extra })
   const frase = comuna.html.match(/<p[^>]*data-frase[^>]*>[\s\S]*?<\/p>/)[0]
+  const arica = pags.find((x) => x.pag.tipo === 'region' && x.pag.r.cod === '15')
+  // Un asset que SÍ existe: la regla del paquete de la app no puede saltar por «enlace roto».
+  const paquete = ctx.assetDeLaApp
+  // Cada negativa: [nombre, trozo del problema que TIENE que salir, correr]. Que salte por
+  // otra regla no prueba la suya.
   return [
-    ['sin canonical', unaPagina(comuna, (h) => h.replace(/<link rel="canonical"[^>]*>/, ''))],
-    ['canonical de otra página', unaPagina(comuna, (h) => h.replace(/(rel="canonical" href="[^"]*)panguipulli/, '$1valdivia'))],
-    ['og:url sin versión', unaPagina(comuna, (h) => h.replace(/(og:url" content="[^"?]*)\?v=[0-9a-f]+/, '$1'))],
-    ['la frase no empieza por «La comuna de»', unaPagina(comuna, (h) => reemplazo(h, frase, frase.replace('La comuna de ', '')))],
-    ['la frase cita otra superficie', unaPagina(comuna, (h) => reemplazo(h, frase, frase.replace(/\d{1,3}(\.\d{3})* ha catastradas/, '1 ha catastradas')))],
-    ['la frase sin la salvedad', unaPagina(comuna, (h) => reemplazo(h, frase, frase.replace('Las cifras del visor', 'Las cifras oficiales')))],
-    ['hectáreas con decimales en la frase', unaPagina(comuna, (h) => reemplazo(h, frase, frase.replace(' ha catastradas', ',5 ha catastradas')))],
-    ['el CUT no se ve', unaPagina(comuna, (h) => h.replace(/Código comunal \(CUT\) \d+/, 'Código comunal'))],
-    ['JSON-LD con «<»', unaPagina(comuna, (h) => h.replace('"@type":"WebPage"', '"@type":"WebPage","x":"</b>"'))],
-    ['un enlace interno roto', unaPagina(comuna, (h) => h, { existe: (r) => !r.includes('region') && ctx.existe(r) })],
-    ['la página carga la app', unaPagina(comuna, (h) => h.replace('</body>', '<script type="module" src="/coipo_vista_catastro/assets/index-x.js"></script></body>'))],
-    ['el Dataset con licencia', unaPagina(indice, (h) => h.replace('"@type":"Dataset"', '"@type":"Dataset","license":"CC-BY"'))],
-    ['el Dataset declara un archivo que no se ve', unaPagina(indice, (h) => h.replace(/>manifest\.json<\/a>/, '>índice</a>'))],
-    ['falta una comuna en el sitemap', () => problemasSitio({ ...ctx, sitemap: ctx.sitemap.replace(/<url><loc>[^<]*panguipulli[^<]*<\/loc>[^\n]*\n/, '') })],
-    ['una URL publicada sin página', () => problemasSitio({ ...ctx, registro: { ...ctx.registro, 'comuna/no-existe': '99999' } })],
+    ['sin canonical', 'canonical', unaPagina(comuna, (h) => h.replace(/<link rel="canonical"[^>]*>/, ''))],
+    ['canonical de otra página', 'canonical', unaPagina(comuna, (h) => h.replace(/(rel="canonical" href="[^"]*)panguipulli/, '$1valdivia'))],
+    ['og:url sin versión', 'og:url', unaPagina(comuna, (h) => h.replace(/(og:url" content="[^"?]*)\?v=[0-9a-f]+/, '$1'))],
+    ['la frase no empieza por «La comuna de»', 'no empieza por «La comuna de', unaPagina(comuna, (h) => reemplazo(h, frase, frase.replace('La comuna de ', '')))],
+    ['la frase cita otra superficie', 'oráculo', unaPagina(comuna, (h) => reemplazo(h, frase, frase.replace(/\d{1,3}(\.\d{3})* ha catastradas/, '1 ha catastradas')))],
+    ['la frase sin la salvedad', 'salvedad', unaPagina(comuna, (h) => reemplazo(h, frase, frase.replace('Las cifras del visor', 'Las cifras oficiales')))],
+    ['hectáreas con decimales en la frase', 'la frase lleva hectáreas con decimales',
+      unaPagina(comuna, (h) => reemplazo(h, frase, frase.replace(/ ha de bosque nativo/, ',5 ha de bosque nativo')))],
+    ['hectáreas con decimales en una tabla', 'una tabla lleva',
+      unaPagina(comuna, (h) => h.replace(/(<td class="num">[\d.]+) ha<\/td>/, '$1,5 ha</td>'))],
+    ['el CUT de una región no se ve', 'no lo muestra', unaPagina(arica, (h) => h.replace(/\(CUT\) 15/, ''))],
+    ['la descripción dice «0 ha»', '0 ha', unaPagina(comuna, (h) => h.replace(/(name="description" content="[^"]*?)\d[\d.]* ha de bosque nativo/, '$10 ha de bosque nativo'))],
+    ['el CUT no se ve', 'no lo muestra', unaPagina(comuna, (h) => h.replace(/Código comunal \(CUT\) \d+/, 'Código comunal'))],
+    ['JSON-LD con «<»', 'contiene «<»', unaPagina(comuna, (h) => h.replace('"@type":"WebPage"', '"@type":"WebPage","x":"</b>"'))],
+    ['un enlace interno roto', 'enlace roto', unaPagina(comuna, (h) => h, { existe: (r) => !r.includes('region') && ctx.existe(r) })],
+    ['la página carga la app', 'carga el paquete',
+      unaPagina(comuna, (h) => h.replace('</body>', `<script type="module" src="${paquete}"></script></body>`))],
+    ['el Dataset con licencia', 'licencia', unaPagina(indice, (h) => h.replace('"@type":"Dataset"', '"@type":"Dataset","license":"CC-BY"'))],
+    ['el Dataset declara un archivo que no se ve', 'declara manifest.json', unaPagina(indice, (h) => h.replace(/>manifest\.json<\/a>/, '>índice</a>'))],
+    ['falta una comuna en el sitemap', 'sitemap', () => problemasSitio({ ...ctx, sitemap: ctx.sitemap.replace(/<url><loc>[^<]*panguipulli[^<]*<\/loc>[^\n]*\n/, '') })],
+    ['una URL publicada sin página', 'no tiene página', () => problemasSitio({ ...ctx, registro: { ...ctx.registro, 'comuna/no-existe': '99999' } })],
+    ['una tarjeta que nadie cita', 'ninguna página cita', () => problemasSitio({ ...ctx, tarjetas: [...ctx.tarjetas, `${BASE}tarjetas/x/huerfana.png`] })],
+    ['la página no cita su tarjeta', 'sin og:image', unaPagina(comuna, (h) => h.replace(/<meta property="og:image" [^>]*>/, ''))],
+    ['la tarjeta citada no es de 1200×630', 'no es un PNG', unaPagina(comuna, (h) => h, { leer: () => Buffer.from('no es un png') })],
   ]
 }
 
@@ -220,9 +251,18 @@ function principal() {
     process.exit(1)
   }
   const pags = esperadas.map((pag) => ({ pag, html: leer(pag.ruta) }))
+  const dirTarjetas = join(DIST, 'tarjetas')
+  const tarjetas = existsSync(dirTarjetas)
+    ? readdirSync(dirTarjetas).flatMap((s) => readdirSync(join(dirTarjetas, s)).map((f) => `${BASE}tarjetas/${s}/${f}`))
+    : []
+  const citadas = new Set(pags.map(({ html }) => metas(html, 'property', 'og:image')[0]?.slice(ORIGEN.length)).filter(Boolean))
   const ctx = {
     man,
     existe,
+    assetDeLaApp: `${BASE}assets/${readdirSync(join(DIST, 'assets')).find((f) => /^index-.*\.js$/.test(f))}`,
+    leer: (r) => readFileSync(join(DIST, r)),
+    tarjetas,
+    citadas,
     oraculo: oraculo(datos),
     sitemap: readFileSync(join(DIST, 'sitemap.xml'), 'utf8'),
     registro: JSON.parse(readFileSync(join(RAIZ, 'scripts', 'slugs-publicados.json'), 'utf8')),
@@ -230,12 +270,13 @@ function principal() {
 
   let rotas = 0
   const casos = negativas(pags, ctx)
-  for (const [nombre, correr] of casos) {
+  for (const [nombre, esperado, correr] of casos) {
     let caza
     try { caza = correr() } catch (e) { caza = null; console.log(`  MAL  negativa «${nombre}»: ${e.message}`) }
-    if (!caza?.length) {
+    if (!caza) rotas++
+    else if (!caza.some((m) => m.includes(esperado))) {
       rotas++
-      if (caza) console.log(`  MAL  negativa «${nombre}»: VERDE, el validador no la caza`)
+      console.log(`  MAL  negativa «${nombre}»: ${caza.length ? `salta por otra regla (${caza[0]})` : 'VERDE, el validador no la caza'}`)
     }
   }
   if (rotas) {

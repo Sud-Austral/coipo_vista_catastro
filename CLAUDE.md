@@ -25,6 +25,9 @@ deliberado — el sitio es estático y los datos viajan en un binario columnar d
   publican esas cifras para buscadores, asistentes de IA y vistas previas. **Léelo antes de tocar `ETL/`**: casi todo lo
   que parece un error ahí está explicado y medido.
 - **`mejoras.md`** es el catálogo de mejoras pendientes y de hallazgos aún abiertos.
+- **`docs/visibilidad.md`** es la guía de operación de lo que se publica para buscadores,
+  asistentes de IA y vistas previas: qué hay, cómo se comprueba tras un despliegue y lo que
+  falta hacer fuera del repo (el `robots.txt` de la organización, Umami, Search Console).
 
 El **`README.md` no manda y no se edita a mano**: lo genera un bot
 (`.github/workflows/readme.yml` llama a un generador centralizado en otro repo) y
@@ -44,8 +47,14 @@ ETL/                     produce los datos publicados
 frontend/
   src/datos/             carga del .bin y columnas derivadas
   src/mapa/              deck.gl sobre Leaflet, y la copia del mapa para el reporte
-  verificacion/          el arnés de navegador y los dos mutadores
+  src/web/               lo que se hornea: portada, páginas por región y comuna, <head>,
+                         frases citables, rutas, Umami. Módulos puros (Node y navegador)
+  src/hechos.js          las cifras que cita la prosa, calculadas de los datos
+  scripts/               prerender, generador de páginas, tarjetas PNG (Python), validadores,
+                         humo y guarda del robots.txt raíz. Todos con --negativas
+  verificacion/          el arnés de navegador, los dos mutadores y las pruebas de Node
   public/datos/          GENERADO Y COMMITEADO. No se edita a mano.
+docs/                    visibilidad.md (operación) y robots-raiz.txt (el de la organización)
 spike/                   código de medición (se versiona; sus salidas no)
 data/                    la base de origen. NO se versiona.
 INSUMO/                  insumos de la Unidad (informe, libro de homologación, PDF modelo)
@@ -78,11 +87,12 @@ npm run dev
 npm run lint                               # oxlint. Verde en el estado base (0 avisos)
 npm run build                              # ~2 s: vite + portada horneada + validar-html
 npm run build:web                          # ~7 s: páginas por región y comuna, sitemap (DESPUÉS de build)
+python scripts/tarjetas.py                 # ~40 s: las 359 PNG de la vista previa (Pillow 12.3.0 FIJADO)
 npm run validar:paginas                    # oráculo propio sobre las 359 páginas, con negativas
 node scripts/robots.mjs                    # el robots.txt raíz (docs/robots-raiz.txt), RFC 9309
 npm run verify:cascada                     # el oráculo del cruce, en Node
 npm run prueba                             # node --test: cifras de la prosa y filtro del ámbito
-node scripts/humo.mjs --negativas          # sin red: 10 sitios falsos, cada defecto en rojo
+node scripts/humo.mjs --negativas          # sin red: 23 sitios falsos, cada defecto rojo por SU regla
 node scripts/humo.mjs --base https://sud-austral.github.io/coipo_vista_catastro   # el sitio vivo
 cd ..
 python frontend/verificacion/verificar.py       # ~15 min, necesita Chrome
@@ -92,7 +102,7 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
 **Trampas que cuestan tiempo si no las sabes:**
 
 - **`npm run build` hornea la portada en `dist/index.html`** (`scripts/prerender.mjs`) y
-  después la valida (`scripts/validar-html.mjs`, postbuild, con 18 negativas). El `<head>`
+  después la valida (`scripts/validar-html.mjs`, postbuild, con 20 negativas). El `<head>`
   de `index.html` tiene una marca `<!--cabeza-->` donde van la descripción, el canonical y la
   vista previa: **no se escriben a mano**. El grafo de `src/web/servidor.jsx` no puede
   importar leaflet, deck.gl ni `App.jsx` (en Node: «window is not defined»).
@@ -101,6 +111,14 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
 - **`npm run build` vacía `dist/`, páginas incluidas.** Después hay que correr `build:web`,
   y V-72 falla si no. `build:web` exige historia git completa (la fecha de los datos sale
   de `git log`; en un clon superficial se niega a correr).
+- **Umami**: la URL y el identificador viven sólo en `src/web/sitio.js`. En la app el
+  rastreo automático va APAGADO y la visita se registra a mano sin el encuadre
+  (`src/web/analitica.js`); no lo «arregles» activándolo: cada paneo sería una visita.
+  La verificación bloquea `prueba5.conaf.cl` (TILES) y usa un Umami de mentira (V-73).
+- **`scripts/tarjetas.py` se niega a correr con otro Pillow** que el de
+  `scripts/requirements.txt` (12.3.0): otra versión dibuja otros píxeles con el mismo sello.
+  Anaconda trae la 10.4: usa un venv (`pip install -r frontend/scripts/requirements.txt`).
+  La genérica `public/og.png` se regenera con `--generica` y SÍ se commitea.
 - **Una URL nueva** (una comuna que aparece o un nombre que cambia) exige
   `node scripts/web.mjs --registrar` y commitear `scripts/slugs-publicados.json`. El registro
   es sólo de alta: una URL publicada no desaparece, se vuelve alias.
@@ -119,20 +137,22 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
   faltan **lo dice y cuenta como fallo**, nunca se salta en silencio. El workflow las
   instala.
 
-### Lo que hay hoy, medido el 2026-09-02
+### Lo que hay hoy, medido el 2026-09-26
 
 | suite | cuánto | comando |
 |---|---|---|
 | Aserciones de datos (D1–D27) | 28, y **26 controles negativos** en rojo | `python ETL/verificar_datos.py --negativas` |
 | Oráculo del cruce | 21 casos + 5 negativos | `npm run verify:cascada` |
-| Cifras de la prosa, filtro del ámbito y módulos de `src/web/` | 27 pruebas, con negativas | `npm run prueba` |
-| Arnés de navegador | V-1…V-72; 100 ejecuciones el 2026-09-26 (corre después de `build` y `build:web`) | `python frontend/verificacion/verificar.py` |
-| Mutaciones del visor | 34; las 5 de ETL se reportan «NO EJECUTADA» sin el `.duckdb` | `python frontend/verificacion/mutaciones-visor.py [--sin-etl]` |
-| Páginas generadas | 360 páginas, 15 negativas; generador con 8 controles negativos | `npm run build:web -- --negativas && npm run validar:paginas` |
-| Humo | 16 casos sin red | `node frontend/scripts/humo.mjs --negativas` |
+| Cifras de la prosa, filtro del ámbito, esquema y módulos de `src/web/` | 39 pruebas, con negativas | `npm run prueba` |
+| Arnés de navegador | V-1…V-73; 102 ejecuciones el 2026-09-26 (corre después de `build` y `build:web`) | `python frontend/verificacion/verificar.py` |
+| Mutaciones del visor | 37; las 5 de ETL se reportan «NO EJECUTADA» sin el `.duckdb` | `python frontend/verificacion/mutaciones-visor.py [--sin-etl]` |
+| Páginas generadas | 360 páginas, 21 negativas; generador con 9 controles negativos | `npm run build:web -- --negativas && python scripts/tarjetas.py && npm run validar:paginas` |
+| Tarjetas PNG | 359 + la genérica; 4 negativas | `python frontend/scripts/tarjetas.py --negativas` |
+| Humo | 23 casos sin red | `node frontend/scripts/humo.mjs --negativas` |
 | Mutaciones de la aritmética | 7 (juzgan el oráculo y `npm run prueba`) | `python frontend/verificacion/mutaciones.py` |
 
-Todo verde el 2026-09-02.
+Todo verde el 2026-09-26, salvo las 5 mutaciones de ETL, que necesitan el `.duckdb` y se
+reportan «NO EJECUTADA».
 
 ---
 
@@ -159,7 +179,10 @@ si no coinciden los índices apuntan a la clase equivocada sin ningún error vis
 **El número de esquema vive en cuatro sitios y suben juntos:** `ETL/build_bin.py`
 (`"esquema": 5`), `ETL/verificar_datos.py` (D1), `frontend/src/datos/binario.js` y
 `frontend/scripts/datos-node.mjs` (el lector de Node que comparten el oráculo, las pruebas y
-el generador de páginas). D1 es la aserción que caza que uno se quede atrás. Un `.bin` leído con el esquema equivocado abre
+el generador de páginas). D1 sólo compara el manifest con SU literal; la que exige que los
+cuatro coincidan es `frontend/verificacion/esquema.test.mjs` (`npm run prueba`, en el CI).
+Antes de ella, subir el ETL, D1 y el lector de Node olvidando `binario.js` pasaba el CI y
+publicaba un visor que no abre. Un `.bin` leído con el esquema equivocado abre
 vistas tipadas perfectamente válidas sobre offsets corridos: el mapa sale **plausible** y
 mal, que es el peor fallo posible aquí.
 
@@ -231,13 +254,21 @@ Comprobadas una a una el 2026-09-02:
    sigue visible en la Metodología. Es cierta; corresponde decidirla, no borrarla.
 7. **El `README.md` está desfasado** y se regenera solo. No lo edites: arregla el generador
    o ignóralo.
+8. **Visibilidad, lo que no es código** (2026-09-26, `docs/visibilidad.md` §3): el
+   `robots.txt` de la organización no existe (el humo lo avisa), Umami no tiene identificador,
+   Search Console y Bing no están dados de alta, y la redacción de los ceros (DECISIONES §M.9)
+   es una propuesta. **No crees el repositorio de la organización por tu cuenta**: afecta a
+   68 sitios.
+9. **La URL tarda hasta un segundo en reflejar los usos al cargar un enlace** (`mejoras.md`
+   §2.17). Compartir ya no depende de eso; el enlace de la vista sí.
 
 ---
 
 ## 8. Git y despliegue
 
 - Rama por defecto **`main`**. `.github/workflows/deploy.yml` se dispara con cada push a
-  `main` que toque `frontend/**`, `ETL/**` o el propio workflow, y publica en GitHub Pages.
+  `main` que toque `frontend/**`, `ETL/**`, `docs/robots-raiz.txt` o el propio workflow, y
+  publica en GitHub Pages.
   **Con cada PR contra `main` que toque lo mismo corren `datos` y `build`**, sin publicar
   (desde 2026-09-26; antes los PR no corrían nada). Cada PR tiene su propio grupo de
   concurrencia, para no cancelar un despliegue de `main`.

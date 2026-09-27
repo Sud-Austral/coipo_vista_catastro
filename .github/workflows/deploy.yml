@@ -85,6 +85,12 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: frontend/package-lock.json
+      # Pillow FIJADO para las tarjetas PNG (scripts/tarjetas.py se niega a dibujar
+      # con otra version: otros pixeles con el mismo sello de carpeta).
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install --quiet -r frontend/scripts/requirements.txt
       - run: npm ci
         working-directory: frontend
       - run: npm run lint
@@ -136,6 +142,13 @@ jobs:
       # las cifras con un oraculo propio y comprueba el artefacto.
       - run: npm run build:web -- --negativas
         working-directory: frontend
+      # LAS TARJETAS de la vista previa, una por region y por comuna, en
+      # dist/tarjetas/<sello>/ (DECISIONES §M.10). Van entre build:web, que
+      # escribe sus textos, y validar:paginas, que exige que cada og:image exista.
+      - run: python scripts/tarjetas.py --negativas
+        working-directory: frontend
+      - run: python scripts/tarjetas.py
+        working-directory: frontend
       - run: npm run validar:paginas
         working-directory: frontend
 
@@ -153,6 +166,7 @@ jobs:
             echo "FALLA: diff -r no ve una pagina alterada; el control no sirve"; exit 1
           fi
           npm run build:web
+          python scripts/tarjetas.py
           diff -r "$RUNNER_TEMP/a/dist" dist
           echo "dos corridas, los mismos bytes"
 
