@@ -10,7 +10,9 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import test from 'node:test'
 import { BASE, URL_PUBLICA, UMAMI } from '../src/web/sitio.js'
-import { descripcionPortada, fraseNacional, QUIEN, SALVEDAD } from '../src/web/textos.js'
+import {
+  descripcionPortada, fraseComuna, fraseNacional, fraseRegion, QUIEN, SALVEDAD, slugDePagina,
+} from '../src/web/textos.js'
 import { escaparHtml, etiquetaUmami, jsonLd, metasVistaPrevia } from '../src/web/cabeza.js'
 import { haEntera } from '../src/formato.js'
 
@@ -80,6 +82,57 @@ test('vista previa: og:url = canonical + ?v=, y sin imagen la tarjeta es summary
   const img = { url: `${URL_PUBLICA}og.png`, ancho: 1200, alto: 630, alt: 'A' }
   const con = metasVistaPrevia({ canonical, titulo: 'T', descripcion: 'D', imagen: img, version: 'v' }).join('\n')
   assert.ok(con.includes('summary_large_image') && con.includes('og:image:width" content="1200"'))
+})
+
+test('slug: sin tildes ni apóstrofos, sólo [a-z0-9-], y único dentro de cada nivel', () => {
+  assert.equal(slugDePagina('Los Ríos'), 'los-rios')
+  assert.equal(slugDePagina("O'Higgins"), 'ohiggins')
+  assert.equal(slugDePagina('Ñuble'), 'nuble')
+  assert.equal(slugDePagina('San Pedro de Atacama'), 'san-pedro-de-atacama')
+  const re = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+  const comunas = man.comunas.filter((c) => c.n > 0).map((c) => slugDePagina(c.etiqueta))
+  const regiones = man.regiones.map((r) => slugDePagina(r.nombre))
+  for (const s of [...comunas, ...regiones]) assert.match(s, re)
+  assert.equal(new Set(comunas).size, comunas.length, 'dos comunas con el mismo slug')
+  assert.equal(new Set(regiones).size, regiones.length, 'dos regiones con el mismo slug')
+  // Seis comunas se llaman como su región: por eso cada nivel tiene su prefijo.
+  const choques = comunas.filter((s) => regiones.includes(s))
+  assert.ok(choques.length >= 1, `sin comunas homónimas no haría falta el prefijo (${choques})`)
+})
+
+const resumenDe = ({ ha, n, bosques = 0, nativo = 0, plant = 0, mixto = 0 }) => ({
+  ha, n,
+  usos: [{ cod: '04', ha: bosques }],
+  subusos: [{ cod: '0402', ha: nativo, uso: '04' }, { cod: '0401', ha: plant, uso: '04' }, { cod: '0403', ha: mixto, uso: '04' }],
+})
+const region = { cod: '05', nombre: 'Valparaíso', oficial: 'Región de Valparaíso', anio: '2019' }
+
+test('frase de comuna: «La comuna de X» siempre, aunque se llame como su región', () => {
+  const f = fraseComuna({ cod: '05101', etiqueta: 'Valparaíso' }, region,
+    resumenDe({ ha: 30900.4, n: 1200, bosques: 5000, nativo: 3000, plant: 1900, mixto: 100 }))
+  assert.ok(f.startsWith('La comuna de Valparaíso (Región de Valparaíso): '))
+  assert.ok(f.includes(QUIEN) && f.endsWith(SALVEDAD))
+  assert.ok(f.includes('actualización 2019'))
+  assert.ok(f.includes('30.900 ha catastradas en 1.200 polígonos'))
+  assert.ok(f.includes('3.000 ha de bosque nativo, 1.900 ha de plantación forestal y 100 ha de bosque mixto'))
+  assert.doesNotMatch(f, /\d,\d+ ha/)
+})
+
+test('frase de comuna sin bosques: no afirma que no los haya (unidad mínima cartografiable)', () => {
+  const f = fraseComuna({ cod: '13101', etiqueta: 'Santiago' }, region, resumenDe({ ha: 2310, n: 1 }))
+  assert.ok(f.includes('en 1 polígono;'), 'singular')
+  assert.ok(f.includes('no clasifica como bosque ningún polígono de la comuna de Santiago'))
+  assert.ok(f.includes('no prueba que no los haya'))
+  const sinNativo = fraseComuna({ cod: '1', etiqueta: 'X' }, region, resumenDe({ ha: 10, n: 2, bosques: 5, plant: 5 }))
+  assert.ok(sinNativo.includes('no registra bosque nativo en la comuna de X'))
+})
+
+test('frase de región: la cifra oficial va con el año de SU planilla', () => {
+  const oficial = { anio_actualizacion: '2015', valores: { total: 4061628.2 } }
+  const f = fraseRegion({ ...region, anio: '2014' }, resumenDe({ ha: 4061628.1, n: 42025, bosques: 1, nativo: 1 }), oficial)
+  assert.ok(f.startsWith('Región de Valparaíso: '))
+  assert.ok(f.includes('actualización 2014 del Catastro'))
+  assert.ok(f.includes('planilla de la actualización 2015, es de 4.061.628 ha'))
 })
 
 test('Umami: sin identificador no se escribe nada', () => {

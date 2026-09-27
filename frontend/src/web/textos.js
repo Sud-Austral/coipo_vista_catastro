@@ -53,6 +53,102 @@ export function fraseNacional(manifest) {
 }
 
 /**
+ * El trozo de URL de una región o comuna: «Los Ríos» → los-rios, «O'Higgins» →
+ * ohiggins, «Ñuble» → nuble. Se calcula SÓLO aquí; Compartir lo lee de
+ * web/indice.json y nunca lo recalcula.
+ *
+ * No es el `slug` de descargas.js (nombres de archivo): ése convierte O'Higgins en
+ * o-higgins y corta a 40 caracteres. Seis comunas se llaman como su región
+ * (Antofagasta, Coquimbo, Valparaíso, Maule, O'Higgins, Los Lagos), así que cada
+ * nivel va bajo su propio prefijo: /region/…/ y /comuna/…/.
+ */
+export function slugDePagina(nombre) {
+  return String(nombre)
+    .normalize('NFKD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/['’]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+// La unidad mínima cartografiable (UMC) deja fuera los rodales pequeños: que el
+// Catastro no dibuje un bosque no prueba que no exista. Una frase suelta que dijera
+// «X no tiene bosque» la citaría un asistente como un hecho (DECISIONES §M.9).
+const SIN_PRUEBA = 'los rodales menores que la unidad mínima cartografiable no se dibujan, así que eso no prueba que no los haya'
+
+const n = (x) => `${fmt.format(x)} ${x === 1 ? 'polígono' : 'polígonos'}`
+
+/** El tramo de los bosques de una entidad, para las frases de región y comuna. */
+function tramoBosquesEntidad(quien, resumen) {
+  const total = resumen.ha
+  const bosques = haDe(resumen.usos, USO_BOSQUES)
+  if (!(bosques > 0)) {
+    return `el Catastro no clasifica como bosque ningún polígono de ${quien} (${SIN_PRUEBA})`
+  }
+  const partes = SUBUSOS_BOSQUE
+    .map(([cod, nombre]) => [haDe(resumen.subusos, cod), nombre])
+    .filter(([ha]) => ha > 0)
+    .map(([ha, nombre]) => `${haEntera(ha)} de ${nombre}`)
+  const lista = partes.length > 1 ? `${partes.slice(0, -1).join(', ')} y ${partes.at(-1)}` : partes[0]
+  let t = `${haEntera(bosques)} (${pct(bosques, total)}) son bosques: ${lista}`
+  if (!(haDe(resumen.subusos, '0402') > 0)) {
+    t += `; el Catastro no registra bosque nativo en ${quien} (${SIN_PRUEBA})`
+  }
+  return t
+}
+
+/**
+ * La frase citable de una comuna. Empieza por «La comuna de X» SIEMPRE: seis comunas
+ * se llaman como su región, y «Valparaíso (Región de Valparaíso) tiene 30.900 ha»
+ * se leería como la cifra de la región (el mismo defecto de DECISIONES §G).
+ */
+export function fraseComuna(comuna, region, resumen) {
+  const quien = `la comuna de ${comuna.etiqueta}`
+  return (
+    `La comuna de ${comuna.etiqueta} (${region.oficial}): ${QUIEN}, calculado sobre los ` +
+    `polígonos de la actualización ${region.anio} del Catastro para la ${region.oficial.replace(/^Región/, 'región')}, ` +
+    `tiene ${haEntera(resumen.ha)} catastradas en ${n(resumen.n)}; ${tramoBosquesEntidad(quien, resumen)}. ${SALVEDAD}`
+  )
+}
+
+/**
+ * La frase citable de una región. Con la cifra oficial de su planilla y EL AÑO de esa
+ * planilla: en tres regiones no coincide con el de las capas (oficiales.anio_discrepante),
+ * y sin el año la frase pondría lado a lado dos cifras de años distintos.
+ */
+export function fraseRegion(region, resumen, oficial) {
+  const quien = `la ${region.oficial.replace(/^Región/, 'región')}`
+  let f =
+    `${region.oficial}: ${QUIEN}, calculado sobre los polígonos de su actualización ` +
+    `${region.anio} del Catastro, tiene ${haEntera(resumen.ha)} catastradas en ${n(resumen.n)}; ` +
+    `${tramoBosquesEntidad(quien, resumen)}.`
+  const total = oficial?.valores?.total
+  if (total != null) {
+    f += ` La cifra oficial publicada por CONAF para la región, en su planilla de la actualización ` +
+      `${oficial.anio_actualizacion}, es de ${haEntera(total)}.`
+  }
+  return `${f} ${SALVEDAD}`
+}
+
+/** <title> y og:title. Cortos a propósito: los buscadores cortan hacia los 60 caracteres. */
+export const tituloComuna = (comuna, region) =>
+  `Comuna de ${comuna.etiqueta} (${region.nombre}): uso de la tierra y bosques — Catastro CONAF`
+export const tituloRegion = (region) =>
+  `${region.oficial}: uso de la tierra y bosques — Catastro CONAF`
+export const TITULO_INDICE = 'Cifras por región y comuna — Catastro de Usos de la Tierra, CONAF'
+
+/** Descripción corta (meta description = og:description) de una región o comuna. */
+export function descripcionEntidad(nombre, anio, resumen) {
+  const bosques = haDe(resumen.usos, USO_BOSQUES)
+  const nativo = haDe(resumen.subusos, '0402')
+  return (
+    `${nombre}: ${haEntera(resumen.ha)} catastradas, ${haEntera(bosques)} de bosques y ` +
+    `${haEntera(nativo)} de bosque nativo, según el Visor del Catastro de CONAF (actualización ${anio}).`
+  )
+}
+
+/**
  * La descripción de la portada (meta description y og:description, que son el
  * MISMO texto: dos redacciones divergen a la primera edición). Las cifras salen del
  * manifest al construir; escritas a mano se quedaban diciendo lo de antes (mejoras

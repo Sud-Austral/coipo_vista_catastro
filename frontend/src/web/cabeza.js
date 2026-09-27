@@ -97,6 +97,95 @@ export function etiquetaUmami({ autoTrack = true } = {}) {
   )
 }
 
+const CONAF = { '@type': 'Organization', name: 'CONAF — Corporación Nacional Forestal' }
+
+/**
+ * El Dataset del índice. SIN `license`: los términos de uso están pendientes de
+ * definir por CONAF (la Metodología lo dice), y declarar una sería inventarla.
+ * Todo lo que declara —archivos, formato, tamaño— está a la vista en la página.
+ */
+export function datosDataset({ urlIndice, descripcion, rango, fecha, archivos }) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    '@id': `${urlIndice}#dataset`,
+    name: 'Catastro de Usos de la Tierra y Recursos Vegetacionales — cifras por región y comuna',
+    description: descripcion,
+    url: urlIndice,
+    creator: CONAF,
+    publisher: CONAF,
+    inLanguage: 'es-CL',
+    isAccessibleForFree: true,
+    temporalCoverage: rango ? `${rango.desde}/${rango.hasta}` : undefined,
+    spatialCoverage: { '@type': 'Place', name: 'Chile' },
+    dateModified: fecha,
+    distribution: archivos.map((a) => ({
+      '@type': 'DataDownload', encodingFormat: a.formato, contentUrl: a.url, contentSize: a.tamano,
+    })),
+  }
+}
+
+/**
+ * La página de una región o comuna: una WebPage sobre un área administrativa, con
+ * el código (CUT) que la página muestra y el territorio que la contiene.
+ */
+export function datosPagina({ url, titulo, descripcion, fecha, urlIndice, lugar }) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    url,
+    name: titulo,
+    description: descripcion,
+    inLanguage: 'es-CL',
+    dateModified: fecha,
+    isPartOf: { '@id': `${urlIndice}#dataset` },
+    publisher: CONAF,
+    about: {
+      '@type': 'AdministrativeArea',
+      name: lugar.nombre,
+      identifier: lugar.cut,
+      containedInPlace: lugar.dentroDe
+        ? { '@type': 'AdministrativeArea', name: lugar.dentroDe }
+        : { '@type': 'Country', name: 'Chile' },
+    },
+  }
+}
+
+/**
+ * Un documento HTML completo para las páginas generadas (no pasan por index.html:
+ * no hay app que montar). Rutas absolutas con el `base`, para que valgan igual
+ * desde /region/x/ que desde /comuna/y/.
+ */
+export function documento({ base, titulo, cabeza, cuerpo }) {
+  return [
+    '<!doctype html>',
+    '<html lang="es-CL">',
+    '<head>',
+    '<meta charset="utf-8" />',
+    '<meta name="viewport" content="width=device-width, initial-scale=1" />',
+    `<title>${escaparHtml(titulo)}</title>`,
+    `<link rel="icon" type="image/png" sizes="32x32" href="${base}favicon-32.png" />`,
+    '<meta name="theme-color" content="#064928" />',
+    `<link rel="stylesheet" href="${base}paginas.css" />`,
+    ...cabeza,
+    '</head>',
+    '<body>',
+    cuerpo,
+    '</body>',
+    '</html>',
+    '',
+  ].join('\n')
+}
+
+/** El <head> de una página generada: vista previa, datos estructurados y Umami. */
+export function cabezaPagina({ canonical, titulo, descripcion, imagen, version, ld }) {
+  return [
+    ...metasVistaPrevia({ canonical, titulo, descripcion, imagen, version }),
+    jsonLd(ld),
+    etiquetaUmami({ autoTrack: true }),
+  ].filter(Boolean)
+}
+
 /** El <head> horneado de la portada, una etiqueta por línea. */
 export function cabezaPortada({ canonical, descripcion, imagen, version }) {
   return [

@@ -1,7 +1,8 @@
 import Banner from '../components/Banner'
 import QueEs from '../components/QueEs'
-import { fmt, haEntera, pct } from '../formato'
 import { rangoAniosTexto } from '../hechos.js'
+import { TablaUsos } from './piezas.jsx'
+import { URL_INDICE, urlRegion } from './rutas.js'
 import { fraseNacional } from './textos.js'
 
 /**
@@ -54,51 +55,34 @@ export default function Portada({ manifest, estado, conBanner = true, conAvisoLe
           <QueEs manifest={manifest} clase="est-parrafo" />
         </section>
 
-        {manifest && <TablaUsos manifest={manifest} Sub={Sub} />}
+        {manifest && (
+          <TablaUsos
+            usos={manifest.usos}
+            ha={manifest.total.ha}
+            n={manifest.total.filas}
+            Sub={Sub}
+            rotulo={`Todo Chile, según el Catastro (cada región actualizada en un año distinto, entre ${rangoAniosTexto(manifest)}).`}
+          />
+        )}
+
+        {/* Los enlaces a las páginas por región y al índice, EN EL HTML CRUDO:
+            por aquí las descubre un rastreador antes de leer el sitemap. */}
+        {manifest && (
+          <section id="regiones">
+            <Sub>Cifras por región y comuna</Sub>
+            <ul className="est-lista">
+              {manifest.regiones.map((r) => (
+                <li key={r.cod}>
+                  <a href={urlRegion(r)}>{r.oficial}</a>
+                </li>
+              ))}
+            </ul>
+            <p>
+              <a href={URL_INDICE}>Todas las regiones y sus comunas, los datos publicados y la metodología</a>
+            </p>
+          </section>
+        )}
       </div>
     </div>
-  )
-}
-
-/** Superficie por uso de la tierra, todo Chile: la tabla que un asistente puede leer entera. */
-function TablaUsos({ manifest, Sub }) {
-  const total = manifest.total.ha
-  const rango = rangoAniosTexto(manifest)
-  return (
-    <section>
-      <Sub>Superficie por uso de la tierra</Sub>
-      <table className="est-tabla">
-        <caption>
-          Todo Chile, según el Catastro (cada región actualizada en un año distinto, entre {rango}).
-          Hectáreas enteras.
-        </caption>
-        <thead>
-          <tr>
-            <th scope="col">Uso de la tierra</th>
-            <th scope="col" className="num">Superficie</th>
-            <th scope="col" className="num">Del total</th>
-            <th scope="col" className="num">Polígonos</th>
-          </tr>
-        </thead>
-        <tbody>
-          {manifest.usos.map((u) => (
-            <tr key={u.cod}>
-              <th scope="row">{u.etiqueta}</th>
-              <td className="num">{haEntera(u.ha)}</td>
-              <td className="num">{pct(u.ha, total)}</td>
-              <td className="num">{fmt.format(u.n)}</td>
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr>
-            <th scope="row">Total</th>
-            <td className="num">{haEntera(total)}</td>
-            <td className="num">100 %</td>
-            <td className="num">{fmt.format(manifest.total.filas)}</td>
-          </tr>
-        </tfoot>
-      </table>
-    </section>
   )
 }

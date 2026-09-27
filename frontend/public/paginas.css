@@ -79,6 +79,24 @@
   overflow-x: auto; background: var(--superficie); padding: 10px; border-radius: 6px;
   font-size: 12px; white-space: pre-wrap;
 }
+.est-nota { color: var(--tinta-2); font-size: 0.93rem; }
+.est-migas ol { list-style: none; display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 6px; padding: 0; font-size: 0.88rem; color: var(--tinta-3); }
+.est-migas li + li::before { content: '›'; margin-right: 4px; }
+.est-lista { columns: 16rem; column-gap: 24px; margin: 0 0 12px; padding-left: 18px; }
+.est-lista li { break-inside: avoid; margin: 0 0 3px; }
+.est-region h3 { margin-top: 20px; }
+.est-anio { font-weight: 400; color: var(--tinta-3); font-size: 0.9rem; }
+.est-datos li { margin-bottom: 6px; overflow-wrap: anywhere; }
+.est-pie { margin-top: 36px; padding-top: 14px; border-top: 1px solid var(--borde); color: var(--tinta-2); font-size: 0.92rem; }
+.est-pie .cita { margin: 4px 0 12px; padding-left: 12px; border-left: 3px solid var(--borde); }
+/* La Metodología horneada en el índice trae sus clases de siempre (App.css no se
+   carga en las páginas generadas). */
+.est-met .pendiente { padding: 8px 12px; border-left: 3px solid #b7791f; background: var(--superficie-2); }
+.est-met .met-lista { padding-left: 20px; }
+.est-met .met-tabla { border-collapse: collapse; margin: 6px 0 12px; }
+.est-met .met-tabla th, .est-met .met-tabla td { padding: 4px 8px; border-bottom: 1px solid var(--borde); text-align: left; }
+.est-met .cita { padding-left: 12px; border-left: 3px solid var(--borde); }
+.est-met code, .est-datos code { overflow-wrap: anywhere; }
 .est a { color: var(--acento); }
 .est code { font-size: 0.9em; }
 

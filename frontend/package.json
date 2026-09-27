@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build && node scripts/prerender.mjs",
     "postbuild": "node scripts/validar-html.mjs",
+    "build:web": "node scripts/web.mjs",
+    "validar:paginas": "node scripts/validar-paginas.mjs",
     "lint": "oxlint",
     "preview": "vite preview",
     "verify:cascada": "node verificacion/marginales.mjs --negativas",

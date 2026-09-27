@@ -18,11 +18,23 @@
  */
 import { StrictMode } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
+import PaginaComuna from './PaginaComuna.jsx'
+import PaginaIndice from './PaginaIndice.jsx'
+import PaginaRegion from './PaginaRegion.jsx'
 import Portada from './Portada.jsx'
 
-export { cabezaPortada } from './cabeza.js'
-export { descripcionPortada } from './textos.js'
-export { TITULO, URL_PUBLICA } from './sitio.js'
+export { cabezaPagina, cabezaPortada, datosDataset, datosPagina, documento, escaparHtml } from './cabeza.js'
+export {
+  descripcionEntidad, descripcionPortada, fraseComuna, fraseNacional, fraseRegion, slugDePagina,
+  TITULO_INDICE, tituloComuna, tituloRegion,
+} from './textos.js'
+export { BASE, ESQUEMA_INDICE, TITULO, URL_PUBLICA } from './sitio.js'
+export { URL_INDICE, urlComuna, urlRegion } from './rutas.js'
+
+const html = (el) => renderToStaticMarkup(<StrictMode>{el}</StrictMode>)
+export const renderComuna = (props) => html(<PaginaComuna {...props} />)
+export const renderRegion = (props) => html(<PaginaRegion {...props} />)
+export const renderIndice = (props) => html(<PaginaIndice {...props} />)
 
 export function renderPortada({ manifest }) {
   return renderToStaticMarkup(

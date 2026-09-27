@@ -525,6 +525,56 @@ leído igual.
 consola» salía verde sin mirar nada. Ahora cuenta las excepciones que Chrome reporta, y
 una mutación (un `throw` en un efecto) la pone roja.
 
+### M.9 Una página por región y por comuna
+
+Un enlace al visor con `?com=14101` mostraba la vista previa de la portada, y ninguna URL decía
+las cifras de una comuna sin ejecutar JavaScript. Ahora `npm run build:web` escribe **16 páginas
+de región y 343 de comuna** (las 346 del país menos Juan Fernández, Isla de Pascua y Antártica,
+que el Catastro publicado no trae), un índice con el `Dataset` y la Metodología, el
+`sitemap.xml` (361 URL) y `web/indice.json`. Cada página lleva su frase citable, la tabla de
+usos, sus bosques y tipos forestales, sus unidades del SNASPE, su canonical, su vista previa y
+su JSON-LD. La de Panguipulli responde la pregunta de la línea base: **216.838 ha de bosque
+nativo**, calculadas sobre la actualización 2024 de la región.
+
+**Las cifras son las del panel por construcción**: `resumenYMarginales` con `filtroDelAmbito`,
+las funciones del visor. Para no recorrer 1,8 M de filas 359 veces se le pasa a cada región el
+subconjunto de sus filas en el mismo orden: el resultado es idéntico bit a bit, y se comprueba en
+cada corrida contra la pasada completa (Valdivia, Santiago con un solo polígono, Magallanes con
+polígonos sin comuna). Cuesta **~4,5 s** de cifras y ~7 s en total. Cada entidad cuadra con el
+manifest: `n` exacto y `ha` con la tolerancia del oráculo del cruce (medido: ninguna comuna
+difiere en más de 0,059 ha, porque el manifest suma en float64 y el `.bin` guarda float32).
+`validar-paginas.mjs` recalcula polígonos y hectáreas con un oráculo propio, a pelo sobre las
+columnas, y exige esos enteros en la frase de las 359 páginas.
+
+**La frase de una comuna empieza siempre por «La comuna de X».** Seis comunas se llaman como su
+región (Antofagasta, Coquimbo, Valparaíso, Maule, O'Higgins, Los Lagos), y «Valparaíso (Región de
+Valparaíso) tiene 30.900 ha» se leería como la cifra de la región: el mismo defecto de §G. Por lo
+mismo las URL van bajo `/region/…/` y `/comuna/…/`.
+
+**La cifra oficial de una región va con el año de su planilla.** En Arica y Parinacota,
+Antofagasta y Coquimbo ese año no es el de las capas; sin decirlo, la tabla pondría lado a lado
+dos cifras de años distintos. Magallanes dice además que 4 polígonos, con 127.169 ha, no traen
+comuna.
+
+**PROPUESTA, a confirmar: los ceros.** 25 comunas no tienen ninguna hectárea clasificada como
+bosque y 33 no tienen bosque nativo (Santiago tiene un solo polígono, de 2.310 ha). Una frase
+«X no tiene bosque» la citaría un asistente como un hecho. La redacción publicada dice «el
+Catastro no clasifica como bosque ningún polígono de la comuna de X (los rodales menores que la
+unidad mínima cartografiable no se dibujan, así que eso no prueba que no los haya)». Si la Unidad
+prefiere otra, es un cambio de una línea en `src/web/textos.js`.
+
+**Las URL publicadas no desaparecen.** `scripts/slugs-publicados.json` es un registro sólo de
+alta: el generador falla si una URL registrada ya no corresponde a nada, y si CONAF resuelve una
+grafía en disputa (`14_REVISAR`: Coihaique, Calera, Mariquina…) la URL vieja pasa a ser un alias
+que lleva a la nueva por su código. Los nombres se publican como vienen del manifest; aquí no se
+resuelve ninguna grafía.
+
+**El robots.txt de la raíz** queda escrito en `docs/robots-raiz.txt` y vigilado por
+`scripts/robots.mjs` (lector RFC 9309, 8 negativas); el humo lo lee publicado y avisa mientras
+no exista. **Lo que no se hace**: páginas por provincia (sólo existen como nombre, sin código),
+estado de conservación en las páginas (sin validar contra el RCE) y `noindex` para `/datos/`
+(Pages no deja poner cabeceras, y bloquearlo impediría a Googlebot renderizar).
+
 ## Fallos propios cometidos al establecer todo esto
 
 Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse.

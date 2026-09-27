@@ -224,6 +224,13 @@ export default function PanelLateral({
           <BotonControl col="compartir" corto="Compartir" total={null}
                         onAbrir={setAbierta} titulo="El enlace de esta vista exacta" />
         </div>
+        {/* Las páginas por región y comuna (DECISIONES §M.9), a la vista desde la
+            app montada: Google indexa el DOM renderizado, y por aquí las
+            descubre. Un <a> suelto y no un <p> ni un botón más: V-50 cuenta los
+            párrafos del panel y CONTROLES (verificar.py) los botones. */}
+        <a className="enlace-paginas" href={`${import.meta.env.BASE_URL}regiones/`}>
+          Cifras por región y comuna
+        </a>
       </section>
 
       {/* UN SOLO modal a la vez, y montado sólo cuando hay uno abierto. Se monta
