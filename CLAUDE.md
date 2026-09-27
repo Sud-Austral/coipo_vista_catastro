@@ -21,7 +21,8 @@ deliberado — el sitio es estático y los datos viajan en un binario columnar d
 ### Dos documentos mandan sobre este
 
 - **`DECISIONES.md`** manda sobre los DATOS. Doce secciones (A–L) con por qué cada decisión
-  del ETL es como es, con las cifras medidas. **Léelo antes de tocar `ETL/`**: casi todo lo
+  del ETL es como es, con las cifras medidas, y una decimotercera (**M**) sobre cómo se
+  publican esas cifras para buscadores, asistentes de IA y vistas previas. **Léelo antes de tocar `ETL/`**: casi todo lo
   que parece un error ahí está explicado y medido.
 - **`mejoras.md`** es el catálogo de mejoras pendientes y de hallazgos aún abiertos.
 
@@ -77,6 +78,8 @@ npm run dev
 npm run lint                               # oxlint. Verde en el estado base (0 avisos)
 npm run build                              # ~1 s
 npm run verify:cascada                     # el oráculo del cruce, en Node
+node scripts/humo.mjs --negativas          # sin red: 10 sitios falsos, cada defecto en rojo
+node scripts/humo.mjs --base https://sud-austral.github.io/coipo_vista_catastro   # el sitio vivo
 cd ..
 python frontend/verificacion/verificar.py       # ~15 min, necesita Chrome
 python frontend/verificacion/mutaciones-visor.py # ~40 min
@@ -84,8 +87,9 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
 
 **Trampas que cuestan tiempo si no las sabes:**
 
-- **`npm run verify:base` está roto.** Apunta a `node scripts/verify-base.mjs` y
-  `frontend/scripts/` no existe. Verificado el 2026-09-02: falla con `requireStack`. O se
+- **`npm run verify:base` está roto.** Apunta a `node scripts/verify-base.mjs`, que no
+  existe (la carpeta `frontend/scripts/` sí, desde 2026-09-26: ahí vive `humo.mjs`).
+  Verificado el 2026-09-02: falla con `requireStack`. O se
   escribe el script o se borra la entrada de `package.json`; el CI ya cubre el base path
   con un `grep` sobre `dist/index.html`.
 - **`verificar.py` y los mutadores necesitan Chrome** y lo manejan por CDP
@@ -108,6 +112,7 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
 | Arnés de navegador | **83 aserciones distintas**, 95 ejecuciones (V-1…V-67) | `python frontend/verificacion/verificar.py` |
 | Mutaciones del visor | 28 | `python frontend/verificacion/mutaciones-visor.py` |
 | Mutaciones de la aritmética | 6 | `python frontend/verificacion/mutaciones.py` |
+| Humo sobre el sitio publicado | 10 casos (4 sanos, 6 rotos), sin red | `node frontend/scripts/humo.mjs --negativas` |
 
 Todo verde el 2026-09-02.
 
@@ -206,11 +211,17 @@ Comprobadas una a una el 2026-09-02:
 
 - Rama por defecto **`main`**. `.github/workflows/deploy.yml` se dispara con cada push a
   `main` que toque `frontend/**`, `ETL/**` o el propio workflow, y publica en GitHub Pages.
+  **Con cada PR contra `main` que toque lo mismo corren `datos` y `build`**, sin publicar
+  (desde 2026-09-26; antes los PR no corrían nada). Cada PR tiene su propio grupo de
+  concurrencia, para no cancelar un despliegue de `main`.
 - Cuatro trabajos encadenados: **datos** (integridad de lo commiteado, con `--negativas`) →
-  **build** (lint, oráculo del cruce, compilación y comprobación del base path en
-  `dist/index.html`) → **deploy** → **humo** (pide el sitio publicado y sus datos).
+  **build** (lint, oráculo del cruce, compilación, comprobación del base path en
+  `dist/index.html`, negativas del humo y la **huella** del build) → **deploy** → **humo**
+  (`frontend/scripts/humo.mjs`: espera a que Pages sirva ESA huella, reintenta ante red,
+  429 y 5xx, y compara el `.bin` servido con el declarado). El humo quedó en rojo el
+  2026-09-03 por un 503 pasajero de Pages sin reintento; eso es lo que arregló.
 - **Valores acoplados que se cambian juntos**: `base` en `frontend/vite.config.js`, el
-  `BASE` del trabajo de humo en `deploy.yml` y el `<link rel="preconnect">` de
+  `--base` del trabajo de humo en `deploy.yml` y el `<link rel="preconnect">` de
   `index.html`. Un `base` mal resuelto **funciona en la raíz y rompe publicado**, con
   código de salida 0.
 - **`.gitattributes` marca `*.bin` como binario sin conversión de finales de línea.** Sin

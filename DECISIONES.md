@@ -4,6 +4,10 @@ Bitácora de las decisiones que **no** son automatizables y de las que sí lo so
 requieren justificación. Cada una dice qué se decidió, con qué evidencia medida, y cuántas
 filas y hectáreas afecta. Reproducir: `python ETL/analisis_codigos.py`.
 
+La sección **M** no trata cómo se calculan los datos sino cómo se **publican**: qué ven de
+ellos un buscador, un asistente de IA y la vista previa de un enlace compartido. Va aquí
+porque sus decisiones también dicen qué cifra sale con qué nombre, y eso es de los datos.
+
 Estado a 2026-08-18.
 
 ---
@@ -368,6 +372,92 @@ un peor caso de 337. El techo de `verificar.py` estaba en 400 y se subió a **90
 garantizado un rojo intermitente, y una aserción que parpadea acaba desactivada. Sigue siendo un
 gate de orden de magnitud, que es para lo que está; el fino sigue en Node, con techo de 500 y
 medida de 128-197 ms.
+
+## M. Publicar para buscadores, asistentes de IA y vistas previas
+
+Lo pide la guía `implementacion_ceo.md`, destilada de la implementación de Botón Rojo
+(`coipo_boton_rojo`, DECISIONES §AL). Aquí no aplica tal cual: Botón Rojo tiene nginx, SSI y
+datos que cambian cada día; este visor es un sitio **estático en GitHub Pages**, sin
+cabeceras propias ni redirecciones de servidor, y sus datos sólo cambian con un commit. Se
+implementa por pasos, un PR cada uno, y cada paso agrega aquí lo que decidió y lo que midió.
+
+### M.0 Línea base, medida en vivo el 2026-09-26
+
+| qué | resultado |
+|---|---|
+| 10 User-Agents (navegador, Googlebot, bingbot, OAI-SearchBot, Claude-SearchBot, ClaudeBot, PerplexityBot, WhatsApp, facebookexternalhit, LinkedInBot) | los 10 reciben 200 y los mismos **5.128 B**: no hay filtro por agente |
+| texto del `<body>` sin JavaScript | sólo «Cargando el Catastro nacional…» y «Está tardando más de lo normal» |
+| un asistente (WebFetch) ante «¿cuántas ha de bosque nativo tiene Panguipulli?» | «la página no proporciona datos» |
+| `https://sud-austral.github.io/robots.txt` | **404**: la organización no tiene repositorio raíz, así que hoy cualquier bot lee todo |
+| `robots.txt` y `sitemap.xml` bajo `/coipo_vista_catastro/` | 404; y un `robots.txt` bajo un subpath no lo lee ningún rastreador |
+| vista previa | canonical y `og:*` presentes, **sin `og:image`**, `twitter:card=summary`; `?reg=13` muestra la misma que la portada |
+| Pages | `Cache-Control: max-age=600`; no admite `X-Robots-Tag`; http→https con 301 |
+
+Un asistente que no ejecuta JavaScript no podía citar una sola cifra del Catastro.
+
+### M.1 Se indexa ya, sin rótulo de estado
+
+**Luis Monsalve, profesional de la UIA, 2026-09-26.** El `<title>`, la descripción y las
+frases citables no llevan «en validación». Los pendientes que sí existen —la redacción de la
+Ley 20.283, el estado de conservación sin verificar contra el RCE, los términos de uso—
+siguen visibles donde estaban, en la Metodología. **Pendiente**: si esta decisión necesita
+ratificación de la Gerencia.
+
+### M.2 Los bots de entrenamiento se bloquean desde un repositorio raíz nuevo
+
+**Luis Monsalve, 2026-09-26.** GPTBot, ClaudeBot, CCBot, Applebot-Extended,
+meta-externalagent y Bytespider no pasan mientras los términos de uso de los datos no estén
+definidos (la Metodología dice que están pendientes). Bloquearlos no impide que un asistente
+cite el sitio: eso lo hacen OAI-SearchBot, Claude-SearchBot, PerplexityBot y los `*-User`.
+**Google-Extended queda permitido**, porque también controla el anclaje de Gemini.
+
+En Pages el único `robots.txt` que cuenta es el de la raíz del host, y ese host es de la
+organización: el archivo vive en un repositorio nuevo, `Sud-Austral/sud-austral.github.io`,
+y **afecta a los 68 repositorios de la organización que publican en Pages** (contados el
+2026-09-26 con `gh api orgs/Sud-Austral/repos`). Se aprobó sabiéndolo. Lo crea un admin de la
+organización; mientras no exista, todo sigue permitido.
+
+### M.3 Quién dice cada cifra
+
+**Luis Monsalve, 2026-09-26.** Cada frase citable dice «según el Visor del Catastro de Usos
+de la Tierra y Recursos Vegetacionales publicado por CONAF (Gerencia de Fiscalización
+Forestal y Evaluación Ambiental), calculado sobre los polígonos de la actualización AAAA del
+Catastro para la región…» y cierra con «las cifras del visor pueden diferir levemente de las
+oficiales de CONAF». No es modestia: el visor suma polígonos y la planilla oficial es otra
+fuente. El país da **75.661.200,40 ha** en el visor y **75.661.194,48** en la planilla. Las
+páginas de región muestran además la cifra oficial, con el año de su planilla.
+
+### M.4 Una tarjeta de vista previa por región y por comuna
+
+**Luis Monsalve, 2026-09-26.** PNG de 1200×630 dibujadas en el CI y **no commiteadas**, más
+una genérica versionada. Un enlace a Valdivia enseña Valdivia, no la portada.
+
+### M.5 Se cuentan las visitas con el Umami de la flota
+
+**Luis Monsalve, 2026-09-26.** Revierte lo que declaraba `frontend/src/preferencias.js`
+(«ni telemetría de ninguna clase»). En Pages no hay nginx del host que inserte el script,
+así que va escrito en el HTML; el identificador del sitio lo crea un admin de Umami y está
+**pendiente**. Qué se mide y cómo se escribe se registra al implementarlo.
+
+### M.6 El humo reintenta y espera a su build, y los PR corren las guardas
+
+El despliegue del 2026-09-03 (corrida 33760242075) quedó **en rojo con el sitio bien
+publicado**: la petición de rango del `.bin` tardó 60 s y devolvió un 503 de Pages un minuto
+después de publicar, y el bloque de `curl` no reintentaba. Un rojo que no es un fallo enseña
+a ignorar los rojos.
+
+El humo pasó a `frontend/scripts/humo.mjs`: reintenta ocho veces cada 15 s ante red, 429 y
+5xx (un 404 no se reintenta, es una respuesta); **espera a que Pages sirva la huella del
+build** —sha256 de `index.html` más el manifest—, pidiendo con `?humo=<corrida>` para que la
+caché de 600 s no conteste por el origen, y así no puede aprobar el sitio de ayer; y compara
+el `.bin` servido con el declarado. Sus negativas montan diez sitios en memoria —cuatro
+sanos, seis rotos— y exigen que cada uno dé lo que debe; corren sin red en el job `build`.
+Verificado contra el sitio vivo: la huella de un build local, con los saltos de línea como
+los deja el CI, coincidió al primer intento.
+
+Además, **hasta el 2026-09-26 los PR no corrían ninguna guarda**: `deploy.yml` sólo
+escuchaba `push`. Ahora un PR corre `datos` y `build` y no publica, en su propio grupo de
+concurrencia para no cancelar un despliegue de `main`.
 
 ## Fallos propios cometidos al establecer todo esto
 
