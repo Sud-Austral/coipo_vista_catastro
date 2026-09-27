@@ -17,7 +17,13 @@ import { derivarDeColumnas, derivarDeEspecie } from './derivadas'
 const CONSTRUCTOR = { f32: Float32Array, u16: Uint16Array, u8: Uint8Array }
 const ANCHO = { f32: 4, u16: 2, u8: 1 }
 
-export async function cargarPuntos(señal) {
+/**
+ * `alManifest`, opcional, recibe el manifest EN CUANTO llega y antes del .bin. Lo
+ * usa la app para dibujar la portada (Portada.jsx) mientras bajan los 49 MB, y la
+ * rama de error para dibujarla si el .bin no llega: Googlebot no baja un archivo
+ * de ese tamaño, y sin esto indexaría la pantalla de error (DECISIONES §M.8).
+ */
+export async function cargarPuntos(señal, { alManifest } = {}) {
   // El manifest se pide SIN caché: es el índice, pesa poco, y si llega viejo
   // arrastra consigo la versión equivocada de todo lo demás.
   const man = await pedir(`${DATA}/manifest.json`, señal, { cache: 'no-cache' })
@@ -33,6 +39,7 @@ export async function cargarPuntos(señal) {
   }
   const capa = man.capas?.cbn_puntos
   if (!capa) throw new Error('manifest.json no declara la capa cbn_puntos')
+  alManifest?.(man)
 
   // El sha256 va en la URL, y no es adorno: el .bin se llama siempre igual, así
   // que sin esto un navegador que ya lo visitó reutiliza su copia en caché y la

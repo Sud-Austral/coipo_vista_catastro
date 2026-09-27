@@ -372,11 +372,6 @@
   background: var(--superficie); border: 1px solid var(--borde);
   box-shadow: var(--sombra); font-size: 12.5px;
 }
-.pantalla-error { max-width: 60ch; margin: 12vh auto; padding: 0 20px; display: grid; gap: 12px; }
-.pantalla-error pre {
-  overflow-x: auto; background: var(--superficie-2); padding: 10px; border-radius: 6px;
-  font-size: 12px; white-space: pre-wrap;
-}
 
 .fecha-imagen {
   background: var(--superficie); border: 1px solid var(--borde);

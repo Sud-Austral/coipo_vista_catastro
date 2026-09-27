@@ -490,6 +490,41 @@ el arnés completo dio 95 de 95 en `main` y 95 de 95 en la rama. Queda una inter
 conocida, **V-39** (encuadre al filtrar por Palma Chilena): quedó en z=5 en una de dos
 corridas completas de la rama y pasó 2 de 2 aislada; no toca nada de lo que cambió aquí.
 
+### M.8 La portada se hornea, y se dibuja también cuando el .bin no llega
+
+`dist/index.html` traía `<div id="root"></div>` vacío. Ahora `npm run build` hornea dentro
+la portada: el banner, el título, la **frase citable con las cifras nacionales**, «Qué es este
+visor» y la tabla de superficie por uso. Lo que recibe un lector sin JavaScript pasó de dos
+líneas («Cargando…») a unos 4.000 caracteres con 1.827.933 polígonos, 75.661.200 ha y
+15.536.329 ha de bosque nativo. La descripción, el canonical y la vista previa del `<head>`
+se generan del manifest al construir (se cierra mejoras M8: la cifra de la descripción ya
+no se escribe a mano).
+
+Cómo se hace. Una construcción SSR aparte con la API de Vite (`scripts/prerender.mjs`,
+el patrón probado en Botón Rojo) y un reemplazo de texto en `index.html`, no un reparseo.
+`npm run build` pasó de ~1 s a **~2 s**; importa, porque `mutaciones-visor.py` compila una
+vez por mutación. `scripts/validar-html.mjs` (postbuild) comprueba el artefacto con 18
+negativas: si alguna no la caza, el validador está roto y el build falla.
+
+**Lo que no se veía y habría salido mal.** Google no indexa el HTML que llega sino el DOM
+que queda después de ejecutar el JavaScript, y no baja un archivo de 49 MB: cada recurso
+tiene un límite. `createRoot` borra lo horneado, `cargarPuntos` falla con el `.bin`
+incompleto y la app dejaba la pantalla «No se pudieron cargar los datos del Catastro». Eso
+es lo que Google habría guardado del sitio. Ahora la misma `<Portada>` se dibuja también
+en la rama de carga (encima del mapa, bajo la píldora «Descargando…») y en la de error,
+con el manifest, que llega antes que el `.bin` y pesa 636 kB. V-69 lo comprueba cortando
+el `.bin` a 2 MB en el navegador.
+
+**Se quitó `#arranque`**, la capa `position:fixed` que tapaba `#root` mientras cargaba. Con
+texto horneado debajo, eso habría sido texto que leen los robots y no las personas:
+ocultación. Su banda y su «Cargando…» viven ahora dentro de la portada; el aviso de 15 s
+cambia el texto de esa línea en vez de destapar un párrafo oculto, que un asistente habría
+leído igual.
+
+**V-8 era una tautología.** `length >= 0 ? 0 : 1` da 0 siempre: la aserción «sin errores de
+consola» salía verde sin mirar nada. Ahora cuenta las excepciones que Chrome reporta, y
+una mutación (un `throw` en un efecto) la pone roja.
+
 ## Fallos propios cometidos al establecer todo esto
 
 Se dejan escritos porque el diagnóstico falso fue plausible y podría repetirse.

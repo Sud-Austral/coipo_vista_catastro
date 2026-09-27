@@ -9,11 +9,11 @@ import './index.css'
 import './App.css'
 import App from './App.jsx'
 
-// El cascaron de arranque de index.html se quita ANTES del primer render, no
-// dentro de un efecto: si se quitara despues habria un frame con el cascaron y
-// la app pintados a la vez.
-document.getElementById('arranque')?.remove()
-
+// #root trae la portada HORNEADA al construir (scripts/prerender.mjs). createRoot
+// no hidrata: en su primer commit vacía el contenedor y pone la app, que mientras
+// baja el .bin dibuja la MISMA portada encima (App.jsx), así que no cambia lo que
+// se lee. Hidratar no serviría: el primer render depende del tema, del ancho de
+// la ventana, de localStorage y de la URL, que en Node no existen.
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />

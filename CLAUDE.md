@@ -76,7 +76,7 @@ cd frontend
 npm install
 npm run dev
 npm run lint                               # oxlint. Verde en el estado base (0 avisos)
-npm run build                              # ~1 s
+npm run build                              # ~2 s: vite + portada horneada + validar-html
 npm run verify:cascada                     # el oráculo del cruce, en Node
 npm run prueba                             # node --test: cifras de la prosa y filtro del ámbito
 node scripts/humo.mjs --negativas          # sin red: 10 sitios falsos, cada defecto en rojo
@@ -87,6 +87,14 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
 ```
 
 **Trampas que cuestan tiempo si no las sabes:**
+
+- **`npm run build` hornea la portada en `dist/index.html`** (`scripts/prerender.mjs`) y
+  después la valida (`scripts/validar-html.mjs`, postbuild, con 18 negativas). El `<head>`
+  de `index.html` tiene una marca `<!--cabeza-->` donde van la descripción, el canonical y la
+  vista previa: **no se escriben a mano**. El grafo de `src/web/servidor.jsx` no puede
+  importar leaflet, deck.gl ni `App.jsx` (en Node: «window is not defined»).
+- **`public/paginas.css` repite los tokens de `src/index.css`**, y `validar-html` falla si
+  difieren. Cambia los dos.
 
 - **`npm run prueba` es `node --test verificacion/*.test.mjs`, con el glob.** Con un
   directorio a secas (`node --test verificacion/`) Node ≥21 lo trata como UN archivo y
@@ -108,9 +116,9 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
 |---|---|---|
 | Aserciones de datos (D1–D27) | 28, y **26 controles negativos** en rojo | `python ETL/verificar_datos.py --negativas` |
 | Oráculo del cruce | 21 casos + 5 negativos | `npm run verify:cascada` |
-| Cifras de la prosa y filtro del ámbito | 15 pruebas, con negativas | `npm run prueba` |
-| Arnés de navegador | **83 aserciones distintas**, 95 ejecuciones (V-1…V-67) | `python frontend/verificacion/verificar.py` |
-| Mutaciones del visor | 28 | `python frontend/verificacion/mutaciones-visor.py` |
+| Cifras de la prosa, filtro del ámbito y módulos de `src/web/` | 23 pruebas, con negativas | `npm run prueba` |
+| Arnés de navegador | V-1…V-69b; 98 ejecuciones el 2026-09-26 | `python frontend/verificacion/verificar.py` |
+| Mutaciones del visor | 32; las 5 de ETL se reportan «NO EJECUTADA» sin el `.duckdb` | `python frontend/verificacion/mutaciones-visor.py [--sin-etl]` |
 | Mutaciones de la aritmética | 7 (juzgan el oráculo y `npm run prueba`) | `python frontend/verificacion/mutaciones.py` |
 | Humo sobre el sitio publicado | 10 casos (4 sanos, 6 rotos), sin red | `node frontend/scripts/humo.mjs --negativas` |
 
