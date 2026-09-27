@@ -51,6 +51,13 @@ MUTACIONES = [
        "        const j = v\n        a.cuenta[j] += 1")], True),
     ("la mascara marca tambien las filas que fallan una",
      [("      mascara[i] = 1\n      nTotal += 1", "      nTotal += 1")], True),
+    # El filtro del ambito vive aqui desde que lo comparten el panel y las paginas
+    # por region y comuna. La regla que no se puede perder (DECISIONES §G): un
+    # ambito sin coincidencias es un conjunto VACIO, nunca «todas». Lo caza
+    # verificacion/ambito.test.mjs, no el oraculo del cruce.
+    ("una region inexistente deja de filtrar a cero",
+     [("  const f = { region: new Set(i >= 0 ? [i] : []) }",
+       "  const f = { region: new Set([i]) }")], True),
     ("(control) desactivar el atajo no debe cambiar el resultado",
      [("  const soloUna = na === 1", "  const soloUna = false")], False),
 ]
@@ -78,10 +85,17 @@ def main():
                 continue
             open(OBJETIVO, "w", encoding="utf-8").write(s)
 
-            r = subprocess.run([shutil.which("node") or "node", "verificacion/marginales.mjs"],
+            # Dos jueces: el oraculo del cruce y las pruebas de Node, que cubren
+            # lo que el oraculo no mira (el filtro del ambito). Rojo si cualquiera
+            # de los dos se entera.
+            node = shutil.which("node") or "node"
+            r = subprocess.run([node, "verificacion/marginales.mjs"],
                                cwd=FRONTEND, capture_output=True, text=True,
                                encoding="utf-8", errors="replace")
-            rojo = r.returncode != 0
+            r2 = subprocess.run([node, "--test", "verificacion/*.test.mjs"],
+                                cwd=FRONTEND, capture_output=True, text=True,
+                                encoding="utf-8", errors="replace")
+            rojo = r.returncode != 0 or r2.returncode != 0
             acierto = rojo == espera_rojo
             if not acierto:
                 fallos.append(etiqueta)

@@ -90,6 +90,12 @@ jobs:
       - run: node verificacion/marginales.mjs --negativas
         working-directory: frontend
 
+      # Las cifras que cita la PROSA (src/hechos.js), recalculadas por otro camino
+      # sobre los datos commiteados, y el filtro del ambito que comparten el panel
+      # y las paginas por region y comuna. Node pelado, un segundo.
+      - run: npm run prueba
+        working-directory: frontend
+
       - run: npm run build
         working-directory: frontend
 

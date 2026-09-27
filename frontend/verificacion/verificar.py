@@ -70,13 +70,37 @@ def servir():
     return srv, srv.server_address[1]
 
 
+def cifras_de_la_prosa():
+    """Lo que la Metodologia TIENE que decir, calculado aqui desde el manifest
+    compilado y por otro camino que hechos.js: el rango de anios con regex y no
+    partiendo por guion, y las especies sin verificar contando a mano.
+
+    Existe porque esas cifras estuvieron escritas a mano en cinco sitios, y desde
+    que la prosa se hornea para buscadores y asistentes, una cifra vieja la cita
+    un asistente suelta."""
+    man = json.load(open(os.path.join(DIST, "datos", "manifest.json"), encoding="utf-8"))
+    anios = [int(a) for r in man["regiones"] for a in re.findall(r"\d{4}", str(r["anio"]))]
+    sin = sum(1 for e in man["especies"] if str(e.get("conservacion", "")).startswith("Sin dato"))
+    miles = lambda n: f"{n:,}".replace(",", ".")
+    return (f"entre {min(anios)} y {max(anios)}",
+            f"{miles(sin)} de {miles(len(man['especies']))} especies sin verificar")
+
+
 def esperar(cdp, expr, segundos=120):
     """Se espera una CONDICIÓN, nunca un reloj. Dormir un tiempo fijo tras una
-    transición parece de sobra hasta el día que la máquina va cargada."""
-    t0 = time.time()
-    while time.time() - t0 < segundos:
+    transición parece de sobra hasta el día que la máquina va cargada.
+
+    Devuelve los milisegundos que tardó, y NUNCA 0: quien llama lo usa también como
+    verdadero/falso («ok» if esperar(...)). Con time.time(), que en Windows avanza
+    a saltos de ~16 ms, una condición ya cumplida en la primera consulta daba
+    exactamente 0.0, o sea FALSO: abrir_grupo informaba «no abrio» con el modal
+    abierto. Medido el 2026-09-26: 3 o 4 de cada 10 aperturas, igual en main que
+    en la rama, y tumbaba V-31. perf_counter tiene resolución de microsegundos, y
+    el piso de 0,001 ms deja la cifra intacta y la respuesta siempre verdadera."""
+    t0 = time.perf_counter()
+    while time.perf_counter() - t0 < segundos:
         if cdp.evaluar(expr):
-            return (time.time() - t0) * 1000
+            return max((time.perf_counter() - t0) * 1000, 0.001)
         time.sleep(0.2)
     return None
 
@@ -1764,12 +1788,17 @@ def main():
         met_dentro = cdp.evaluar(
             "!!document.querySelector('.modal-filtro .met-cuerpo')")
         cerrar_grupo(cdp)
+        # Y la Metodología dice las cifras DE LOS DATOS: el rango de años y las
+        # especies sin verificar, recalculados aquí por otro camino.
+        esperadas = cifras_de_la_prosa()
+        faltan = [c for c in esperadas if c not in texto_info]
         prueba("V-65 Información trae la prosa del panel y la Metodología",
                len(texto_info) > 6000 and met_dentro
                and "Qué cuenta el Catastro como bosque" in h3_info
-               and any("tamaño de los puntos" in x for x in h3_info),
+               and any("tamaño de los puntos" in x for x in h3_info)
+               and not faltan,
                f"{len(texto_info)} caracteres · {len(h3_info)} apartados · "
-               f"metodología dentro: {met_dentro}")
+               f"metodología dentro: {met_dentro} · cifras que faltan: {faltan or 'ninguna'}")
 
         # V-66: Compartir enseña el enlace DE ESTA VISTA. Que lo enseñe y no sólo
         # lo copie es deliberado: el enlace lleva el ámbito y los filtros, así que

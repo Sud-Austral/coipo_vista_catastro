@@ -1,3 +1,6 @@
+// hechos.js no importa nada: filtros.js sigue pudiendo cargarse desde Node.
+import { especiesConservacion } from './hechos.js'
+
 /**
  * Las dimensiones por las que se puede filtrar, con lo que hay que decir de
  * cada una.
@@ -155,9 +158,17 @@ export const FILTROS = [
     titulo: 'Estado de conservación',
     corto: 'Conservación',
     // LA ADVERTENCIA MÁS IMPORTANTE DEL PANEL, y va aquí porque es donde se usa
-    // el dato. 976 de las 989 especies están sin verificar: leer esta dimensión
-    // como un inventario de especies amenazadas sería exactamente al revés.
-    nota: 'El Catastro NO registra estado de conservación. Esta columna viene de una tabla auxiliar SIN validar contra el Reglamento de Clasificación de Especies, y 976 de las 989 especies figuran como «Sin dato». Eso no es ausencia de amenaza.',
+    // el dato. Casi todas las especies están sin verificar (976 de 989 el
+    // 2026-09-26): leer esta dimensión como un inventario de especies amenazadas
+    // sería exactamente al revés. Es una FUNCIÓN del manifest y no un texto: la
+    // cuenta sale de los datos, y ModalFiltro la llama con el suyo.
+    nota: (manifest) => {
+      const { total, sinVerificar } = especiesConservacion(manifest)
+      return 'El Catastro NO registra estado de conservación. Esta columna viene de una ' +
+        'tabla auxiliar SIN validar contra el Reglamento de Clasificación de Especies, y ' +
+        `${sinVerificar} de las ${total} especies figuran como «Sin dato». ` +
+        'Eso no es ausencia de amenaza.'
+    },
   },
   // --- las tres que responden preguntas que el visor no dejaba hacer --------
   {

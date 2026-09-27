@@ -19,6 +19,7 @@
  */
 
 import { DATA } from './config'
+import { rangoAniosTexto } from './hechos.js'
 
 // ---------------------------------------------------------------------------
 // CSV
@@ -134,7 +135,7 @@ export function csvCifras(resumen, manifest, ambitoTxt) {
   const cabecera = [
     `# Catastro de Usos de la Tierra y Recursos Vegetacionales · CONAF`,
     `# Ámbito: ${ambitoTxt}`,
-    `# ADVERTENCIA: cada región se catastró en un año distinto, entre 2014 y 2024.`,
+    `# ADVERTENCIA: cada región se catastró en un año distinto, entre ${rangoAniosTexto(manifest)}.`,
     `# El Catastro no es una serie temporal: comparar regiones compara años distintos.`,
     `# Datos sha256 ${manifest.capas.cbn_puntos.sha256}`,
     `# Descargado el ${hoy()}`,
@@ -209,7 +210,7 @@ export function geojsonPuntos(datos, mascara, manifest, ambitoTxt, tope = 200000
       ambito: ambitoTxt,
       aviso:
         'Cada punto es el centroide de un polígono, no una parcela ni un predio. ' +
-        'Cada región se catastró en un año distinto entre 2014 y 2024. ' +
+        `Cada región se catastró en un año distinto entre ${rangoAniosTexto(manifest)}. ` +
         'El Catastro no registra propiedad.',
       sha256: manifest.capas.cbn_puntos.sha256,
       descargado: hoy(),

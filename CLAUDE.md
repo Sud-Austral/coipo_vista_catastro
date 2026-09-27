@@ -78,6 +78,7 @@ npm run dev
 npm run lint                               # oxlint. Verde en el estado base (0 avisos)
 npm run build                              # ~1 s
 npm run verify:cascada                     # el oráculo del cruce, en Node
+npm run prueba                             # node --test: cifras de la prosa y filtro del ámbito
 node scripts/humo.mjs --negativas          # sin red: 10 sitios falsos, cada defecto en rojo
 node scripts/humo.mjs --base https://sud-austral.github.io/coipo_vista_catastro   # el sitio vivo
 cd ..
@@ -87,11 +88,9 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
 
 **Trampas que cuestan tiempo si no las sabes:**
 
-- **`npm run verify:base` está roto.** Apunta a `node scripts/verify-base.mjs`, que no
-  existe (la carpeta `frontend/scripts/` sí, desde 2026-09-26: ahí vive `humo.mjs`).
-  Verificado el 2026-09-02: falla con `requireStack`. O se
-  escribe el script o se borra la entrada de `package.json`; el CI ya cubre el base path
-  con un `grep` sobre `dist/index.html`.
+- **`npm run prueba` es `node --test verificacion/*.test.mjs`, con el glob.** Con un
+  directorio a secas (`node --test verificacion/`) Node ≥21 lo trata como UN archivo y
+  falla. El glob lo expande el propio Node, así que funciona también en cmd.exe.
 - **`verificar.py` y los mutadores necesitan Chrome** y lo manejan por CDP
   (`spike/medir.py`). Bloquean la red hacia los proveedores de teselas a propósito: la
   verificación no puede depender de un tercero.
@@ -109,9 +108,10 @@ python frontend/verificacion/mutaciones-visor.py # ~40 min
 |---|---|---|
 | Aserciones de datos (D1–D27) | 28, y **26 controles negativos** en rojo | `python ETL/verificar_datos.py --negativas` |
 | Oráculo del cruce | 21 casos + 5 negativos | `npm run verify:cascada` |
+| Cifras de la prosa y filtro del ámbito | 15 pruebas, con negativas | `npm run prueba` |
 | Arnés de navegador | **83 aserciones distintas**, 95 ejecuciones (V-1…V-67) | `python frontend/verificacion/verificar.py` |
 | Mutaciones del visor | 28 | `python frontend/verificacion/mutaciones-visor.py` |
-| Mutaciones de la aritmética | 6 | `python frontend/verificacion/mutaciones.py` |
+| Mutaciones de la aritmética | 7 (juzgan el oráculo y `npm run prueba`) | `python frontend/verificacion/mutaciones.py` |
 | Humo sobre el sitio publicado | 10 casos (4 sanos, 6 rotos), sin red | `node frontend/scripts/humo.mjs --negativas` |
 
 Todo verde el 2026-09-02.
@@ -128,14 +128,20 @@ deja de correr, y ése es el gate que protege la aritmética de 1,8 M de filas.
 
 Si necesitas una constante ahí, pásala como argumento o léela del manifest.
 
+Lo mismo vale para **`frontend/src/hechos.js`** (las cifras que cita la prosa): cero
+imports, porque lo cargan el navegador, las pruebas de Node y el generador de páginas.
+`filtros.js` lo importa y por eso sigue siendo cargable desde Node. Los imports entre
+estos módulos llevan la extensión `.js`, que Node exige y Vite tolera.
+
 **El manifest es la única fuente del orden de los dominios.** El ETL decide el orden de
 cada vocabulario y lo publica; el cliente lo LEE y nunca lo recalcula. Ordenar en los dos
 lados es pedir que dos `sort` distintos coincidan sobre `«Sí»` y `«En Peligro Crítico»`, y
 si no coinciden los índices apuntan a la clase equivocada sin ningún error visible.
 
-**El número de esquema vive en tres sitios y suben juntos:** `ETL/build_bin.py`
-(`"esquema": 5`), `ETL/verificar_datos.py` (D1) y `frontend/src/datos/binario.js`. D1 es la
-aserción que caza que uno se quede atrás. Un `.bin` leído con el esquema equivocado abre
+**El número de esquema vive en cuatro sitios y suben juntos:** `ETL/build_bin.py`
+(`"esquema": 5`), `ETL/verificar_datos.py` (D1), `frontend/src/datos/binario.js` y
+`frontend/scripts/datos-node.mjs` (el lector de Node que comparten el oráculo, las pruebas y
+el generador de páginas). D1 es la aserción que caza que uno se quede atrás. Un `.bin` leído con el esquema equivocado abre
 vistas tipadas perfectamente válidas sobre offsets corridos: el mapa sale **plausible** y
 mal, que es el peor fallo posible aquí.
 
@@ -178,7 +184,9 @@ Y una aserción que nunca se ha visto roja no es una prueba: por eso existen los
 mutadores. Si añades una aserción, añade su mutación.
 
 **Las cifras de la interfaz salen del manifest, nunca escritas a mano.** Ya se cayó una
-aserción por llevar dentro un número de los datos.
+aserción por llevar dentro un número de los datos. Las de la **prosa** —rango de años,
+especies sin verificar, cifra oficial, Pinus radiata, el polígono mayor— salen de
+`src/hechos.js`, y V-65 comprueba en el navegador que la Metodología dice las del manifest.
 
 ---
 
@@ -186,7 +194,8 @@ aserción por llevar dentro un número de los datos.
 
 Comprobadas una a una el 2026-09-02:
 
-1. **`npm run verify:base` roto** (arriba). Abierta.
+1. ~~**`npm run verify:base` roto.**~~ Cerrada el 2026-09-26: se borró la entrada de
+   `package.json`; el base path lo cubre el `grep` del CI sobre `dist/index.html`.
 2. **14 casos en `ETL/homologacion/14_REVISAR.csv`** esperando decisión institucional: pares
    de códigos que designan la misma especie, `Adulta`/`Adulto` en estructura, grafías
    oficiales en disputa. **No los resuelvas por tu cuenta.**

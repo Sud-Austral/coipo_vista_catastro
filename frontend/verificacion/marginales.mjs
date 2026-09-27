@@ -24,15 +24,8 @@
  * se ponga ROJA. Una prueba que no se ha visto fallar no es una prueba, y ésta
  * es la que sostiene toda la cascada.
  */
-import fs from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { DIMENSIONES, SIN_DATO_POR_COL, resumenYMarginales } from '../src/indicadores.js'
-import { derivarDeColumnas, derivarDeEspecie } from '../src/datos/derivadas.js'
-
-const AQUI = path.dirname(fileURLToPath(import.meta.url))
-const DATOS = path.join(AQUI, '..', 'public', 'datos')
-const CTOR = { f32: Float32Array, u16: Uint16Array, u8: Uint8Array }
+import { cargarDatos } from '../scripts/datos-node.mjs'
 
 // Los recuentos se exigen EXACTOS; las hectáreas con 1e-7 relativo.
 //
@@ -45,22 +38,11 @@ const CTOR = { f32: Float32Array, u16: Uint16Array, u8: Uint8Array }
 // EQUIVOCADA sigue cayendo: se diferencian en órdenes de magnitud.
 const casi = (a, b) => Math.abs(a - b) <= 0.02 + 1e-7 * Math.abs(a)
 
-function cargar() {
-  const man = JSON.parse(fs.readFileSync(path.join(DATOS, 'manifest.json'), 'utf8'))
-  const capa = man.capas.cbn_puntos
-  const b = fs.readFileSync(path.join(DATOS, capa.archivo))
-  const ab = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)
-  const n = capa.filas
-  const datos = { n, manifest: man }
-  for (const [nombre, c] of Object.entries(capa.campos)) {
-    datos[nombre] = new CTOR[c.tipo](ab, c.offset, n)
-  }
-  // Las seis derivadas de la especie NO están en el .bin: las construye el
-  // mismo módulo que usa el visor, para que el oráculo mida lo que se publica.
-  Object.assign(datos, derivarDeEspecie(datos.especie, n, man))
-  Object.assign(datos, derivarDeColumnas(datos, n, man))
-  return datos
-}
+// El cargador vive en scripts/datos-node.mjs, compartido con el generador de
+// páginas y las pruebas de la prosa, y comprueba el esquema: un manifest de otra
+// versión abriría vistas válidas sobre bytes corridos y el oráculo compararía
+// basura contra basura.
+const cargar = () => cargarDatos()
 
 // ---------------------------------------------------------------- el oráculo
 // A propósito tonto y lento: Set.has() por fila y una pasada por dimensión. Si
