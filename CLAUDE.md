@@ -29,11 +29,7 @@ deliberado — el sitio es estático y los datos viajan en un binario columnar d
   asistentes de IA y vistas previas: qué hay, cómo se comprueba tras un despliegue y lo que
   falta hacer fuera del repo (el `robots.txt` de la organización, Umami, Search Console).
 
-El **`README.md` no manda y no se edita a mano**: lo genera un bot
-(`.github/workflows/readme.yml` llama a un generador centralizado en otro repo) y
-`README_CANDIDATE.md` es su borrador. Hoy ya miente — dice que hay 3 workflows y hay 2, y
-presenta `BASE_URL` como variable de entorno configurable cuando es la de Vite, derivada
-del `base` que `frontend/vite.config.js` fija a mano.
+El **`README.md`** ya no lo genera ningún bot: el workflow que lo reconstruía se retiró el 2026-09-26 (commit `24f5c8e`; hoy solo existe `deploy.yml`). Se reescribió a mano el 2026-10-24 y se mantiene a mano. `README_CANDIDATE.md`, `readme_context/` y `scripts/update_readme.py` son restos de ese bot.
 
 ---
 
@@ -59,7 +55,7 @@ spike/                   código de medición (se versiona; sus salidas no)
 data/                    la base de origen. NO se versiona.
 INSUMO/                  insumos de la Unidad (informe, libro de homologación, PDF modelo)
 INSUMO_GRAFICO/          banners institucionales y sus capturas de verificación
-notebooks/, scripts/     análisis suelto y el script del bot del README
+notebooks/, scripts/     análisis suelto y el script del bot del README (retirado, ver §1)
 ```
 
 **`frontend/public/datos/` es salida del ETL y está commiteada.** Es lo que despliega el
@@ -252,8 +248,7 @@ Comprobadas una a una el 2026-09-02:
    descuido: fue una decisión, y está pendiente de validación institucional.
 6. **La nota «Antes de publicar, CONAF debe validar la redacción contra la Ley 20.283»**
    sigue visible en la Metodología. Es cierta; corresponde decidirla, no borrarla.
-7. **El `README.md` está desfasado** y se regenera solo. No lo edites: arregla el generador
-   o ignóralo.
+7. ~~**El `README.md` está desfasado.**~~ Cerrada el 2026-10-24: el bot que lo regeneraba ya no existe y el README se reescribió a mano.
 8. **Visibilidad, lo que no es código** (2026-09-26, `docs/visibilidad.md` §3): el
    `robots.txt` de la organización no existe (el humo lo avisa), Umami no tiene identificador,
    Search Console y Bing no están dados de alta, y la redacción de los ceros (DECISIONES §M.9)
