@@ -197,3 +197,14 @@ que fechar esas iteraciones: [PENDIENTE].
 - Los dos documentos de evolucion [DECISIONES.md] y [mejoras.md] suman 64 KB
   de texto que este documento no leyo, y que muy probablemente contienen las
   respuestas a varios de los [PENDIENTE] de mas arriba.
+
+## Actualización 2026-10-24
+
+Este documento se leyó del código del 2026-09-07. Desde entonces (VERIFICADO leyendo `CLAUDE.md`, `DECISIONES.md`, `frontend/package.json` y `.github/workflows/deploy.yml`; no ejecuté nada):
+
+- Además de la aplicación hay **páginas estáticas por región y comuna** (`npm run build:web`, 360 páginas según `CLAUDE.md`), sitemap, tarjetas PNG de vista previa (`scripts/tarjetas.py`) y datos estructurados para buscadores (`docs/visibilidad.md`, `DECISIONES.md` §M).
+- El flujo de publicación (`deploy.yml`) ya no es un contenido sin leer: son cuatro trabajos encadenados `datos` (integridad de lo commiteado: `ETL/verificar_datos.py --negativas`) -> `build` (lint, oráculo del cruce, pruebas de Node, compilación, base path) -> `deploy` (GitHub Pages) -> `humo` (comprueba el sitio vivo). **El ETL no corre en el CI**: necesita el `.duckdb` de origen, que no se versiona.
+- La verificación incluye un arnés de navegador (V-1 a V-73), mutadores y pruebas de Node (`frontend/verificacion/`).
+- Hay un manual en PDF para enviar fuera del equipo (`documentacion/`).
+- El README ya no lo genera un bot.
+- Sigue pendiente de confirmar por el equipo: dueño del catastro de origen, periodicidad del binario, la validación jurídica de la redacción (Ley 20.283) y el estado de conservación de 976 de 989 especies sin verificar (`CLAUDE.md` §7).

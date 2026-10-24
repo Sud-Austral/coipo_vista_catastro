@@ -122,3 +122,9 @@ la verificacion lo detecta [frontend/verificacion/mutaciones.py], mas capturas
 de pantalla guardadas como referencia
 [frontend/verificacion/captura-app.png]. Eso responde "esta correcto", no
 "esta terminado", y son preguntas distintas.
+
+## Actualización 2026-10-24
+
+Desde la redacción (2026-09-07) el alcance creció hacia la **difusión pública**: páginas por región y comuna, vistas previas y visibilidad para buscadores y asistentes de IA, y un manual para enviar fuera del equipo
+(VERIFICADO en `docs/visibilidad.md`, `DECISIONES.md` §M y `documentacion/`). Eso agrega un riesgo ya anotado en `CLAUDE.md` §7: cifras y redacción publicadas antes de la validación institucional
+(Ley 20.283; estado de conservación sin verificar). Quién pidió el visor, para qué decisión y los criterios de éxito siguen **pendientes de confirmar por el equipo**.
