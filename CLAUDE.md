@@ -4,6 +4,8 @@ Notas para quien vaya a **modificar** este repo. Lo que ya se deduce leyendo el 
 está aquí; lo que costó una sesión averiguar, sí.
 
 Verificado ejecutando el **2026-09-02**. Los números llevan fecha porque caducan.
+Revisado el **2026-11-24**: `npm run prueba` 39 pass / 0 fail, `npm run lint` limpio y
+`python ETL/verificar_datos.py --negativas` en verde; lo demás no se volvió a comprobar.
 
 ---
 
@@ -56,6 +58,8 @@ data/                    la base de origen. NO se versiona.
 INSUMO/                  insumos de la Unidad (informe, libro de homologación, PDF modelo)
 INSUMO_GRAFICO/          banners institucionales y sus capturas de verificación
 notebooks/, scripts/     análisis suelto y el script del bot del README (retirado, ver §1)
+HOMOLOGACIONES_Y_APROBACIONES_MONITOREO.md/.pdf  informe para Monitoreo (oct. 2026); DECISIONES.md sigue mandando
+HUSKY_AUDIT.md           auditoría del 2026-10-23 de hooks y validaciones (foto de esa fecha)
 ```
 
 **`frontend/public/datos/` es salida del ETL y está commiteada.** Es lo que despliega el

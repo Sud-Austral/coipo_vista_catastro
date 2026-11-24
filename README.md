@@ -35,7 +35,7 @@ npm run verify:cascada # oráculo del cruce de filtros
 
 Regenerar los datos necesita `data/catastro_gef_singeometria.duckdb` (300 MB, **no se versiona**): `python ETL/build_bin.py` y luego `python ETL/verificar_datos.py --negativas`.
 Las tarjetas PNG: `pip install -r frontend/scripts/requirements.txt` (Pillow fijado) y `python scripts/tarjetas.py`. El arnés de navegador (`python frontend/verificacion/verificar.py`) necesita Chrome.
-La lista completa de comandos y sus trampas está en [`CLAUDE.md`](CLAUDE.md), sección 3. En esta revisión de documentación **no ejecuté** ninguno.
+La lista completa de comandos y sus trampas está en [`CLAUDE.md`](CLAUDE.md), sección 3. Verificado ejecutando el 2026-11-24: `npm ci` + `npm run prueba` (39 pass, 0 fail), `npm run lint` (código 0) y `python ETL/verificar_datos.py --negativas` (integridad OK, todas las aserciones se vieron fallar). No comprobado ese día: `npm run build`, `build:web`, `verify:cascada`, el arnés con Chrome y el ETL (falta el `.duckdb`).
 
 ## Configuración
 
@@ -50,4 +50,5 @@ los PR contra `main` corren `datos` y `build` sin publicar. El README ya no lo r
 ## Documentación
 
 [`CLAUDE.md`](CLAUDE.md) (guía para agentes) · [`DECISIONES.md`](DECISIONES.md) (por qué los datos son como son) · [`mejoras.md`](mejoras.md) · [`docs/visibilidad.md`](docs/visibilidad.md) ·
-[`insumos/00-PROBLEMA.md`](insumos/00-PROBLEMA.md) · [`insumos/01-SOLUCION.md`](insumos/01-SOLUCION.md) · [`documentacion/README.md`](documentacion/README.md).
+[`insumos/00-PROBLEMA.md`](insumos/00-PROBLEMA.md) · [`insumos/01-SOLUCION.md`](insumos/01-SOLUCION.md) · [`documentacion/README.md`](documentacion/README.md) ·
+[`HOMOLOGACIONES_Y_APROBACIONES_MONITOREO.md`](HOMOLOGACIONES_Y_APROBACIONES_MONITOREO.md) (informe de homologaciones para Monitoreo, octubre 2026, con su PDF).
